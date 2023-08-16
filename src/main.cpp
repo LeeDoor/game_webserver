@@ -2,5 +2,5 @@
 
 int main(int argc, char** argv) {
     initializer::Initializer initializer;
-    initer.init(argc, argv);
+    return initializer.init(argc, argv);
 }
