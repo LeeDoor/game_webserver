@@ -11,7 +11,7 @@ to build this application i created special shell script build.sh
 ```
 git clone https://github.com/LeeDoor/hex_chess_backend
 cd hex_chess_backend
-./build
+./build.sh
 ./build/bin/hex_chess
 ```
 port is 8080 by default
