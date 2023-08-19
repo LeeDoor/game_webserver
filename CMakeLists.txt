@@ -13,6 +13,10 @@ add_executable(${PROJECT_NAME}
         src/initializer/initializer.hpp
         src/server/http_server.cpp
         src/server/http_server.hpp
+        src/server/session.hpp
+        src/server/session_base.cpp
+        src/server/session_base.hpp
+        src/server/listener.hpp
 )
 target_include_directories(${PROJECT_NAME} PRIVATE src/server)
 #link conan libraries

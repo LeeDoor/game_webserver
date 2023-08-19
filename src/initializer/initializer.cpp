@@ -5,6 +5,8 @@
 #include <boost/asio.hpp>
 #include <iostream>
 
+#define PORT 8888
+
 namespace initializer {
 template <typename Fn>
 void RunWorkers(unsigned num_threads, const Fn& fn) {
@@ -36,7 +38,7 @@ int Initializer::start_server() {
         std::cout << "babab";
     };
     const auto address = net::ip::make_address("127.0.0.1");
-    constexpr net::ip::port_type port = 8888;
+    constexpr net::ip::port_type port = PORT;
     http_server::ServeHttp(ioc, {address, port}, [handler](auto&& req, auto&& send) {
         handler(
                 std::forward<decltype(req)>(req),
@@ -46,6 +48,7 @@ int Initializer::start_server() {
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });
+    return 0;
 }
 
 }
