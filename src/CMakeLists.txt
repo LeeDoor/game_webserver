@@ -1,9 +1,16 @@
-#add sources
-add_subdirectory(initializer)
-add_subdirectory(server)
+#list with all libraries
+set (DEPENDENCIES initializer server)
 
+#add subdirectories
+foreach (dir IN ITEMS ${DEPENDENCIES})
+    add_subdirectory(${dir})
+endforeach ()
+
+#create exe file
 add_executable(${PROJECT_NAME} main.cpp)
-target_include_directories(${PROJECT_NAME} PRIVATE server initializer)
+
+#include folders for headers
+target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDENCIES})
 
 #link conan libraries
-target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} server initializer)
+target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} ${DEPENDENCIES})
