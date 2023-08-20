@@ -1,6 +1,65 @@
 # UML diagrams online
 i use [this](https://www.mermaidchart.com) website to visualize UML diagrams 
 
-### there is the list of tables:
-- [http server class diagram](https://mermaid.live/edit#pako:eNqFk8Fq3DAQhl9F6LA41HoBHwppe8ihJbB7KASDmZWmXRF5pGrGISHJu1ex5V3TltSn0T-_R59Go2dto0PdaWNMT-IlYKcIRuQEFtVJJA2M-QFzT7PFBmD-4uFnhrGu1OHNcFOszz2p8n04C42Pg40k-CitQnIpeirRCcgFzFc9va41vnoWJMxrif1EzdUSm1u6thaTNJhzzMMbcas42nuU1XLNT2TLPwdk9pGaJbvbrfkLx64qYtMAc9mYq5Tx14QsQ8XrlOCYAgiqAOPRwQa37vMJGP9FvEdwG_x5uYU_PgnykIu8muDIksGKupk33y8oTUW6HOR79oJF5hSJ8aLf0pJ5f5fPITKewWrxv49Vj2RiuffsHf4P6t2G9XQeB2M-rvesOmUhBFa1bateLJve_umqKWNeti7d6hHzCN6VQZ7Zey0nHLHXXQkd5PteF5big0nioYyK7iRP2OopuYJb51l3PyBwUdH5MhXflpcxP5BWJ6C7GFfP629_YxwD)
-- [http server call sequence](https://mermaid.live/edit#pako:eNplkrtuwzAMRX9F0BwPfUweCqTNkCFFAXvo4kWVmFiITLkS1aII8u-lbKd1HE3UvYcUSegktTcgS1kURYNkyUEpWqJeRAhfEIRWznH8mQA1NDhge-e_dasCiV3VoOBTZ3ib04riSexsJEAIZVklHIGYPg5B9e2fN8pXJOfe5fSNX2sNPY3I5cbufXbfcO5ebuw-ZHcdf1BzrRpitB5voMfbBwDNoscp-VlFGJ1F1WHIGTSbc6kOaAVqeiJHYpziXxzjQd4qNA6qvO44tXclDdB7sDQ1NoRTwZk8XdjQHhE05aZtFNr5CCbjLzlawtHrI1AGUy_4WRESosXD9Qy8L7mSHYROWcM_55TlRlILHTSy5NCocGxkg2fmVCJf8_ZkSSHBSqbeKIKNVbzqTpZ75SKrYCz58Dp-xeFHnn8BYE_XkA)
+### http server class diagram
+```mermaid
+---
+title: namespace http_server
+---
+classDiagram
+class ServeHttp{
++ServeHttp(io_context, endpoint, handler)
+}
+class Listener{
++Run()
+-OnAccept(error_code, socket)
+-AsyncRunSession(socket&&)
+-io_context&
+-tcp_acceptor
+-request_handler: template lambda
+}
+class SessionBase{
++Run()
+-Read()
+-OnRead(error_code, bytes_read)
+-abstract HandleRequest(request&&)
+-Write(response&&)
+-OnWrite(error_code, bytes_read)
+-Close()
+-request
+}
+class Session{
+-override HandleRequest(request&&)
+-handler: template lambda
+}
+
+ServeHttp-->Listener : calls Run()
+Listener-->SessionBase : calls Run()
+Session--|>SessionBase
+```
+
+### http server call sequence
+
+```mermaid
+---
+title: http server call sequence
+---
+flowchart TB
+    ServeHttp --> Listener::Run
+    subgraph Listener
+        Listener::Run --1--> DoAccept
+        DoAccept --2--> OnAccept
+        OnAccept --3--> AsyncRunSession
+        OnAccept --4--> DoAccept
+    end
+    subgraph SessionBase
+        AsyncRunSession --> SessionBase::Run
+        SessionBase::Run --> Read
+        Read --> OnRead
+        OnRead --> HandleRequest
+        HandleRequest --> Write
+        Write --> OnWrite
+        OnWrite --connection is closed--> Close
+        OnWrite --socket is up and running--> Read
+    end
+```
