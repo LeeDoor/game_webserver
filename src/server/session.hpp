@@ -21,12 +21,8 @@ namespace http_server {
     private:
         void HandleRequest(HttpRequest &&request) override {
             std::string ip = stream_.socket().remote_endpoint().address().to_string();
-            //logger::LogRequest(request, ip);
-
             std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
             request_handler_(std::move(request), [self = this->shared_from_this(), begin](auto &&response) {
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                //logger::LogResponse(response, std::chrono::duration_cast<std::chrono::microseconds>(end - begin));
                 self->Write(std::move(response));
             });
         }
