@@ -19,7 +19,7 @@ namespace http_server {
                 : SessionBase(std::move(socket)), request_handler_(std::forward<Handler>(request_handler)) {}
 
     private:
-        void HandleRequest(HttpRequest &&request) override {
+        void handle_request(HttpRequest &&request) override {
             std::string ip = stream_.socket().remote_endpoint().address().to_string();
             //logger::LogRequest(request, ip);
 
@@ -27,11 +27,11 @@ namespace http_server {
             request_handler_(std::move(request), [self = this->shared_from_this(), begin](auto &&response) {
                 std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
                 //logger::LogResponse(response, std::chrono::duration_cast<std::chrono::microseconds>(end - begin));
-                self->Write(std::move(response));
+                self->write(std::move(response));
             });
         }
 
-        std::shared_ptr <SessionBase> GetSharedThis() override {
+        std::shared_ptr <SessionBase> get_shared_this() override {
             return this->shared_from_this();
         }
 
