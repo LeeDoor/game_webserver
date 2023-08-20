@@ -21,7 +21,7 @@ namespace http_server {
 
         SessionBase &operator=(const SessionBase &) = delete;
 
-        void run();
+        void Run();
 
     protected:
         ~SessionBase() = default;
@@ -29,29 +29,29 @@ namespace http_server {
         explicit SessionBase(tcp::socket &&socket) : stream_(std::move(socket)) {}
 
         template<typename Body, typename Fields>
-        void write(http::response<Body, Fields> &&response) {
+        void Write(http::response<Body, Fields> &&response) {
             auto safe_response = std::make_shared<http::response<Body, Fields>>(std::move(response));
-            auto self = get_shared_this();
+            auto self = GetSharedThis();
 
             http::async_write(stream_, *safe_response,
                               [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
-                                  self->on_write(safe_response->need_eof(), ec, bytes_written);
+                                  self->OnWrite(safe_response->need_eof(), ec, bytes_written);
                               });
         }
 
         beast::tcp_stream stream_;
     private:
-        void read();
+        void Read();
 
-        void on_read(beast::error_code ec, std::size_t byets_read);
+        void OnRead(beast::error_code ec, std::size_t byets_read);
 
-        void on_write(bool close, beast::error_code ec, std::size_t bytes_written);
+        void OnWrite(bool close, beast::error_code ec, std::size_t bytes_written);
 
-        void close();
+        void Close();
 
-        virtual void handle_request(HttpRequest &&request) = 0;
+        virtual void HandleRequest(HttpRequest &&request) = 0;
 
-        virtual std::shared_ptr<SessionBase> get_shared_this() = 0;
+        virtual std::shared_ptr<SessionBase> GetSharedThis() = 0;
 
         beast::flat_buffer buffer_;
         HttpRequest request_;

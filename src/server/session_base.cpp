@@ -4,37 +4,37 @@
 #define CONNECTION_EXPIRY_TIME 30s
 
 namespace http_server {
-    void SessionBase::run() {
-        net::dispatch(stream_.get_executor(), beast::bind_front_handler(&SessionBase::read, get_shared_this()));
+    void SessionBase::Run() {
+        net::dispatch(stream_.get_executor(), beast::bind_front_handler(&SessionBase::Read, GetSharedThis()));
     }
 
-    void SessionBase::read() {
+    void SessionBase::Read() {
         request_ = {};
         stream_.expires_after(CONNECTION_EXPIRY_TIME);
         http::async_read(stream_, buffer_, request_,
-                         beast::bind_front_handler(&SessionBase::on_read, get_shared_this()));
+                         beast::bind_front_handler(&SessionBase::OnRead, GetSharedThis()));
     }
 
-    void SessionBase::on_read(beast::error_code ec, std::size_t byets_read) {
+    void SessionBase::OnRead(beast::error_code ec, std::size_t byets_read) {
         if(ec == http::error::end_of_stream) {
-            return close();
+            return Close();
         }
         if(ec) {
-            return report_error(ec, "read");
+            return ReportError(ec, "Read");
         }
-        handle_request(std::move(request_));
+        HandleRequest(std::move(request_));
     }
 
-    void SessionBase::on_write(bool close, beast::error_code ec, std::size_t bytes_written) {
+    void SessionBase::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {
         if(ec) {
-            return report_error(ec, "write");
+            return ReportError(ec, "write");
         }
         if(close) {
-            return close();
+            return Close();
         }
-        read();
+        Read();
     }
-    void SessionBase::close() {
+    void SessionBase::Close() {
         stream_.socket().shutdown(tcp::socket::shutdown_send);
     }
 }
