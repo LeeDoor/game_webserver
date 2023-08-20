@@ -21,12 +21,12 @@ void RunWorkers(unsigned num_threads, const Fn& fn) {
 }
 
 
-int Initializer::init(int argc, char **argv) {
-    return start_server();
+int Initializer::Init(int argc, char **argv) {
+    return StartServer();
 }
 
 
-int Initializer::start_server() {
+int Initializer::StartServer() {
     namespace net = boost::asio;
 
     unsigned num_threads = std::thread::hardware_concurrency(); // number of threads

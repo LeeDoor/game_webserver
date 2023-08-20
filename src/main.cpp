@@ -2,5 +2,5 @@
 
 int main(int argc, char** argv) {
     initializer::Initializer initializer;
-    return initializer.init(argc, argv);
+    return initializer.Init(argc, argv);
 }
