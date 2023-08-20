@@ -1,6 +1,7 @@
 # hex_chess_backend
 backend part of pet-project Hexagonal Chess written on C++.
 
+# build and run
 to run server on your machine, you need to have conan(1.60) and cmake installed (also compilers etc).
 
 ```
@@ -15,4 +16,8 @@ cd hex_chess_backend
 ./build/bin/hex_chess
 ```
 port is 8080 by default
+
+# uml diagrams
+you can look at UML diagrams about this code, go [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/uml_diagrams.md)
+
 enjoy 
