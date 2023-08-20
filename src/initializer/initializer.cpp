@@ -39,7 +39,7 @@ int Initializer::start_server() {
     };
     const auto address = net::ip::make_address("127.0.0.1");
     constexpr net::ip::port_type port = PORT;
-    http_server::ServeHttp(ioc, {address, port}, [handler](auto&& req, auto&& send) {
+    http_server::serve_http(ioc, {address, port}, [handler](auto &&req, auto &&send) {
         handler(
                 std::forward<decltype(req)>(req),
                 std::forward<decltype(send)>(send)

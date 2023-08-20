@@ -25,26 +25,26 @@ namespace http_server {
             acceptor_.listen(net::socket_base::max_listen_connections);
         }
 
-        void Run(){
-            DoAccept();
+        void run(){
+            do_accept();
         }
     private:
-        void DoAccept() {
+        void do_accept() {
             acceptor_.async_accept(
                     net::make_strand(ioc_),
-                    beast::bind_front_handler(&Listener::OnAccept, this->shared_from_this())
+                    beast::bind_front_handler(&Listener::on_accept, this->shared_from_this())
             );
         }
 
-        void OnAccept(sys::error_code ec, tcp::socket socket) {
+        void on_accept(sys::error_code ec, tcp::socket socket) {
             if(ec) return;
 
-            AsyncRunSession(std::move(socket));
-            DoAccept();
+            async_run_session(std::move(socket));
+            do_accept();
         }
 
-        void AsyncRunSession(tcp::socket&& socket) {
-            std::make_shared<Session<RequestHandler>> (std::move(socket), request_handler_)->Run();
+        void async_run_session(tcp::socket&& socket) {
+            std::make_shared<Session<RequestHandler>>(std::move(socket), request_handler_)->run();
         }
 
         net::io_context& ioc_;
