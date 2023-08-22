@@ -29,7 +29,7 @@ namespace http_server {
         HandleRequest(std::move(request_));
     }
 
-    void Session::HandleRequest(http_server::HttpRequest &&request) {
+    void Session::HandleRequest(HttpRequest &&request) {
         request_handler_(std::move(request), [self = this->shared_from_this()](auto &&response) {
             self->Write(std::move(response));
         });

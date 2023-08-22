@@ -1,7 +1,6 @@
 #pragma once
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/strand.hpp>
-#include "beast_typedefs.hpp"
 #include "http_handler.hpp"
 #include <memory>
 

@@ -1,12 +1,19 @@
 #pragma once
-#include "../server/beast_typedefs.hpp"
+#include "static_handler.hpp"
+#include "api_handler.hpp"
 #include <iostream>
 
 namespace http_handler {
 
     class HttpHandler {
     public:
-        void operator()(http_server::HttpRequest&& request, http_server::ResponseSender&& response_func);
+        void operator()(HttpRequest&& request, ResponseSender&& response_func);
+    private:
+        void HandleRequest(HttpRequest&& request, ResponseSender&& response_func);
+        bool IsApiRequest(const HttpRequest& request);
+
+        StaticHandler static_handler_;
+        ApiHandler api_handler_;
     };
 
 }
