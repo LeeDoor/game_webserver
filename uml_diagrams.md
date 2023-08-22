@@ -18,7 +18,7 @@ class Listener{
 -tcp_acceptor
 -request_handler: template lambda
 }
-class SessionBase{
+class Session{
 +Run()
 -Read()
 -OnRead(error_code, bytes_read)
@@ -34,8 +34,8 @@ class Session{
 }
 
 ServeHttp-->Listener : calls Run()
-Listener-->SessionBase : calls Run()
-Session--|>SessionBase
+Listener-->Session : calls Run()
+Session--|>Session
 ```
 
 ### http server call sequence
@@ -52,9 +52,9 @@ flowchart TB
         OnAccept --3--> AsyncRunSession
         OnAccept --4--> DoAccept
     end
-    subgraph SessionBase
-        AsyncRunSession --> SessionBase::Run
-        SessionBase::Run --> Read
+    subgraph Session
+        AsyncRunSession --> Session::Run
+        Session::Run --> Read
         Read --> OnRead
         OnRead --> HandleRequest
         HandleRequest --> Write

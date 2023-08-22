@@ -1,42 +1,56 @@
 #pragma once
-#include "session_base.hpp"
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/strand.hpp>
+#include "beast_typedefs.hpp"
+#include "http_handler.hpp"
+#include <memory>
 
 namespace http_server {
-
-    namespace net = boost::asio;
-    namespace sys = boost::system;
-    using tcp = net::ip::tcp;
-    namespace beast = boost::beast;
-    namespace http = beast::http;
-    using namespace std::literals;
-    typedef http::request <http::string_body> HttpRequest;
-
-    template<typename RequestHandler>
-    class Session : public SessionBase, public std::enable_shared_from_this<Session<RequestHandler>> {
+    class Session : public std::enable_shared_from_this<Session> {
     public:
-        template<typename Handler>
-        Session(tcp::socket &&socket, Handler &&request_handler)
-                : SessionBase(std::move(socket)), request_handler_(std::forward<Handler>(request_handler)) {}
+        explicit Session(tcp::socket &&socket) : stream_(std::move(socket)) {}
+
+        Session(const Session &) = delete;
+
+        Session &operator=(const Session &) = delete;
+
+        void Run();
+
+        std::shared_ptr<Session> GetSharedThis() {
+            return shared_from_this();
+        }
 
     private:
-        void HandleRequest(HttpRequest &&request) override {
-            std::string ip = stream_.socket().remote_endpoint().address().to_string();
-            //logger::LogRequest(request, ip);
+        void Write(StringResponse &&response) {
+            auto safe_response = std::make_shared<StringResponse>(std::move(response));
+            auto self = GetSharedThis();
 
-            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-            request_handler_(std::move(request), [self = this->shared_from_this(), begin](auto &&response) {
-                std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-                //logger::LogResponse(response, std::chrono::duration_cast<std::chrono::microseconds>(end - begin));
+            http::async_write(stream_, *safe_response,
+                              [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
+                                  self->OnWrite(safe_response->need_eof(), ec, bytes_written);
+                              });
+        }
+
+        void HandleRequest(HttpRequest &&request) {
+            request_handler_(std::move(request), [self = this->shared_from_this()](StringResponse &&response) {
                 self->Write(std::move(response));
             });
         }
 
-        std::shared_ptr <SessionBase> GetSharedThis() override {
-            return this->shared_from_this();
-        }
+        beast::tcp_stream stream_;
 
-        RequestHandler request_handler_;
+        void Read();
 
+        void OnRead(beast::error_code ec, std::size_t bytes_read);
+
+        void OnWrite(bool close, beast::error_code ec, std::size_t bytes_written);
+
+        void Close();
+
+        beast::flat_buffer buffer_;
+        HttpRequest request_;
+
+        http_handler::HttpHandler request_handler_;
     };
 
 }
