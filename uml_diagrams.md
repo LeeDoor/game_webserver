@@ -7,35 +7,30 @@ i use [this](https://www.mermaidchart.com) website to visualize UML diagrams
 title: namespace http_server
 ---
 classDiagram
-class ServeHttp{
-+ServeHttp(io_context, endpoint, handler)
-}
-class Listener{
-+Run()
--OnAccept(error_code, socket)
--AsyncRunSession(socket&&)
--io_context&
--tcp_acceptor
--request_handler: template lambda
-}
-class Session{
-+Run()
--Read()
--OnRead(error_code, bytes_read)
--abstract HandleRequest(request&&)
--Write(response&&)
--OnWrite(error_code, bytes_read)
--Close()
--request
-}
-class Session{
--override HandleRequest(request&&)
--handler: template lambda
-}
+    class ServeHttp{
+        +ServeHttp(io_context, endpoint, handler)
+    }
+    class Listener{
+        +Run()
+        -OnAccept(error_code, socket)
+        -AsyncRunSession(socket&&)
+        -io_context&
+        -tcp_acceptor
+        -request_handler: template lambda
+    }
+    class Session{
+        +Run()
+        -Read()
+        -OnRead(error_code, bytes_read)
+        -HandleRequest(request&&)
+        -Write(response&&)
+        -OnWrite(error_code, bytes_read)
+        -Close()
+        -request
+    }
 
-ServeHttp-->Listener : calls Run()
-Listener-->Session : calls Run()
-Session--|>Session
+    ServeHttp-->Listener : calls Run()
+    Listener-->Session : calls Run()
 ```
 
 ### http server call sequence

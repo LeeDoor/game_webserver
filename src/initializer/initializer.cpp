@@ -34,9 +34,6 @@ int Initializer::StartServer() {
     net::io_context ioc (static_cast<int>(num_threads)); // core io functionality for socket users
     boost::asio::ip::tcp::acceptor acceptor (net::make_strand(ioc), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8080));
 
-    auto handler = [] (auto&& a, auto&& b){
-        std::cout << "bababa" << std::endl;
-    };
     const auto address = net::ip::make_address("127.0.0.1");
     constexpr net::ip::port_type port = PORT;
     http_server::ServeHttp(ioc, {address, port});

@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/strand.hpp>
+#include <boost/any.hpp> // for responses with different body_type
 #include "beast_typedefs.hpp"
 #include "http_handler.hpp"
 #include <memory>
@@ -21,8 +22,9 @@ namespace http_server {
         }
 
     private:
-        void Write(StringResponse &&response) {
-            auto safe_response = std::make_shared<StringResponse>(std::move(response));
+        template<typename ResponseBodyType>
+        void Write(http::response<ResponseBodyType> &&response) {
+            auto safe_response = std::make_shared<http::response<ResponseBodyType>>(std::forward<http::response<ResponseBodyType>>(response));
             auto self = GetSharedThis();
 
             http::async_write(stream_, *safe_response,
@@ -32,7 +34,7 @@ namespace http_server {
         }
 
         void HandleRequest(HttpRequest &&request) {
-            request_handler_(std::move(request), [self = this->shared_from_this()](StringResponse &&response) {
+            request_handler_(std::move(request), [self = this->shared_from_this()](auto&& response) {
                 self->Write(std::move(response));
             });
         }
