@@ -1,7 +1,6 @@
 #pragma once
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/strand.hpp>
-#include <boost/any.hpp> // for responses with different body_type
 #include "beast_typedefs.hpp"
 #include "http_handler.hpp"
 #include <memory>
@@ -17,9 +16,7 @@ namespace http_server {
 
         void Run();
 
-        std::shared_ptr<Session> GetSharedThis() {
-            return shared_from_this();
-        }
+        std::shared_ptr<Session> GetSharedThis();
 
     private:
         template<typename ResponseBodyType>
@@ -33,13 +30,7 @@ namespace http_server {
                               });
         }
 
-        void HandleRequest(HttpRequest &&request) {
-            request_handler_(std::move(request), [self = this->shared_from_this()](auto&& response) {
-                self->Write(std::move(response));
-            });
-        }
-
-        beast::tcp_stream stream_;
+        void HandleRequest(HttpRequest &&request);
 
         void Read();
 
@@ -51,6 +42,8 @@ namespace http_server {
 
         beast::flat_buffer buffer_;
         HttpRequest request_;
+        beast::tcp_stream stream_;
+
 
         http_handler::HttpHandler request_handler_;
     };

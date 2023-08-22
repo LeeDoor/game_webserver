@@ -4,6 +4,7 @@ set(LIBRARY_NAME http_handler)
 #creating library
 add_library(${LIBRARY_NAME}
         http_handler.hpp
+        http_handler.cpp
 )
 
 set_target_properties(${LIBRARY_NAME} PROPERTIES LINKER_LANGUAGE CXX)

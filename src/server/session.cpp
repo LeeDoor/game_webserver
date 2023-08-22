@@ -4,6 +4,10 @@
 #define CONNECTION_EXPIRY_TIME 30s
 
 namespace http_server {
+    std::shared_ptr<Session> Session::GetSharedThis() {
+        return shared_from_this();
+    }
+
     void Session::Run() {
         net::dispatch(stream_.get_executor(), beast::bind_front_handler(&Session::Read, GetSharedThis()));
     }
@@ -23,6 +27,12 @@ namespace http_server {
             return ReportError(ec, "Read");
         }
         HandleRequest(std::move(request_));
+    }
+
+    void Session::HandleRequest(http_server::HttpRequest &&request) {
+        request_handler_(std::move(request), [self = this->shared_from_this()](auto &&response) {
+            self->Write(std::move(response));
+        });
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {

@@ -8,6 +8,7 @@ add_library(${LIBRARY_NAME}
         listener.hpp
         http_server.cpp
         session.cpp
+        listener.cpp
 )
 
 #including and linking dependencies
