@@ -7,19 +7,19 @@
 namespace http_handler {
     void StaticHandler::HandleFile(fs::path&& path,
                             fs::path&& root, 
-                            StrResponseSender&& stringSender,
-                            FileResponseSender&& fileSender) {
+                            StrResponseSender&& string_sender,
+                            FileResponseSender&& file_sender) {
         if(!IsSubdirectory(path, root)) {
-            return SendNoAccessError(std::move(stringSender));
+            return SendNoAccessError(std::move(string_sender));
         }
         if(!fs::exists(path)) {
-            return SendWrongPathError(std::move(stringSender));
+            return SendWrongPathError(std::move(string_sender));
         }
         std::cout << "file sending\n";
-        return SendFile(std::move(path), std::move(fileSender));
+        return SendFile(std::move(path), std::move(file_sender));
     }
 
-    void StaticHandler::SendFile(const fs::path& path, FileResponseSender&& sender){
+    void StaticHandler::SendFile(const fs::path& path, FileResponseSender&& file_sender){
         FileResponse response;
 
         http::file_body::value_type file;
@@ -28,13 +28,13 @@ namespace http_handler {
         response.body() = std::move(file);
         
         response.prepare_payload();
-        sender(std::move(response));
+        file_sender(std::move(response));
     }
-    void StaticHandler::SendWrongPathError(StrResponseSender&& sender){
+    void StaticHandler::SendWrongPathError(StrResponseSender&& string_sender){
 
         std::cout << "wrong path\n";
     }
-    void StaticHandler::SendNoAccessError(StrResponseSender&& sender){
+    void StaticHandler::SendNoAccessError(StrResponseSender&& string_sender){
 
         std::cout << "no access\n";
     }
