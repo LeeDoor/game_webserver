@@ -3,6 +3,7 @@ set(DEPENDENCIES )
 set(LIBRARY_NAME http_handler)
 #creating library
 add_library(${LIBRARY_NAME}
+        http_types.hpp
         http_handler.hpp
         http_handler.cpp
         api_handler.cpp

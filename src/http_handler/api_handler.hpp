@@ -6,9 +6,7 @@ namespace http_handler {
 
     class ApiHandler {
     public:
-        ApiHandler();
-
-        void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);
+        void HandleApiFunction(HttpRequest&& request, StrResponseSender&& sender);
 
     private:
         void BuildTargetsMap();

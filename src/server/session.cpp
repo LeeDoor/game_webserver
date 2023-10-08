@@ -30,9 +30,14 @@ namespace http_server {
     }
 
     void Session::HandleRequest(HttpRequest &&request) {
-        request_handler_(std::move(request), [self = this->shared_from_this()](auto &&response) {
+        std::cout << "start listening\n";
+        auto strHandler = [self = this->shared_from_this()](StringResponse &&response) {
             self->Write(std::move(response));
-        });
+        };
+        auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
+            self->Write(std::move(response));
+        };
+        request_handler_(std::move(request), std::move(strHandler), std::move(fileHandler));
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {

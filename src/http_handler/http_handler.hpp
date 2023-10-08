@@ -7,9 +7,13 @@ namespace http_handler {
 
     class HttpHandler {
     public:
-        void operator()(HttpRequest&& request, ResponseSender&& response_func);
+        void operator()(HttpRequest&& request, 
+                        StrResponseSender&& string_sender, 
+                        FileResponseSender&& file_sender);
     private:
-        void HandleRequest(HttpRequest&& request, ResponseSender&& response_func);
+        void HandleRequest(HttpRequest&& request, 
+                        StrResponseSender&& string_sender, 
+                        FileResponseSender&& file_sender);
         bool IsApiRequest(const HttpRequest& request);
 
         StaticHandler static_handler_;

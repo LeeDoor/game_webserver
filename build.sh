@@ -1,5 +1,5 @@
 mkdir cmake-build-debug
 cd cmake-build-debug
 conan install .. --build=missing -s compiler.libcxx=libstdc++11
-cmake ..
+cmake -DBUILD_SHARED_LIBS=ON .. 
 make

@@ -2,7 +2,7 @@
 #include "http_types.hpp"
 #include <functional>
 namespace http_handler {
-    typedef std::function<void(HttpRequest&&, ResponseSender&&)> ExecutorFunction;
+    typedef std::function<void(HttpRequest&&, StrResponseSender&&)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
 
     class ApiFunction {
