@@ -67,8 +67,8 @@ title: namespace http_handler
 ---
 classDiagram
     class HttpHandler {
-        +operator() (http_request&&, send_func&&)
-        -HandleRequest(http_request&&, send_func&&)
+        +operator() (http_request&&, send_string&&, send_file&&)
+        -HandleRequest(http_request&&, send_string&&, send_file&&)
         -IsApiRequest(http_request&) bool
 
         -StaticHandler
@@ -84,7 +84,12 @@ classDiagram
     note for ApiHandler "handles all http API requests"
 
     class StaticHandler {
-        +SendStaticFile(file_path, sender_func) 
+        +HandleFile(path, root, tringSender, fileSender)
+        -SendFile(path, fileSender)
+        -SendWrongPathError(stringSender)
+        -SendNoAccessError(stringSender)
+        -IsSubdirectory(path, root): bool
+        
     }
     note for StaticHandler "handles all requests for files"
 
