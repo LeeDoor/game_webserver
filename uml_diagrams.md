@@ -1,70 +1,4 @@
-# UML diagrams online
-i use [this](https://www.mermaidchart.com) website to visualize UML diagrams 
 
-### http server class diagram
-```mermaid
----
-title: namespace http_server
----
-classDiagram
-    class ServeHttp{
-        +ServeHttp(io_context, endpoint, handler)
-    }
-    class Listener{
-        +Run()
-        -OnAccept(error_code, socket)
-        -AsyncRunSession(socket&&)
-        -io_context&
-        -tcp_acceptor
-        -request_handler: template lambda
-    }
-    class Session{
-        +Run()
-        -Read()
-        -OnRead(error_code, bytes_read)
-        -HandleRequest(request&&)
-        -Write(response&&)
-        -OnWrite(error_code, bytes_read)
-        -Close()
-        -request
-    }
-
-    ServeHttp-->Listener : calls Run()
-    Listener-->Session : calls Run()
-```
-
-### http server call sequence
-
-```mermaid
----
-title: http server call sequence
----
-flowchart TB
-    ServeHttp --> Listener::Run
-    subgraph Listener
-        Listener::Run --1--> DoAccept
-        DoAccept --2--> OnAccept
-        OnAccept --3--> AsyncRunSession
-        OnAccept --4--> DoAccept
-    end
-    subgraph Session
-        AsyncRunSession --> Session::Run
-        Session::Run --> Read
-        Read --> OnRead
-        OnRead --> HandleRequest
-        HandleRequest --> Write
-        Write --> OnWrite
-        OnWrite --connection is closed--> Close
-        OnWrite --socket is up and running--> Read
-    end
-```
-
-### http handler class diagram
-
-```mermaid
----
-title: namespace http_handler
----
 classDiagram
     class HttpHandler {
         +operator() (http_request&&, send_string&&, send_file&&)
@@ -116,9 +50,12 @@ classDiagram
     }
     note for ApiFunctionBuilder "creates ApiFunctionExecutor.\nsets its ApiFunction parameters,\nallowed methods, auth requirement etc."
 
+    class JsonHandler 
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
+    JsonHandler <.. ApiHandler : depends
+    JsonHandler <.. StaticHandler :depends
     ApiHandler ..> ApiFunctionExecutor : contains map of
     ApiHandler --> ApiFunctionBuilder : uses
     ApiFunctionExecutor ..> ApiFunction : contains & calls
-```
+
