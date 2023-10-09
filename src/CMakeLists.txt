@@ -1,5 +1,5 @@
 #list with all libraries
-set (DEPENDENCIES initializer server http_handler)
+set (DEPENDENCIES serializer initializer server http_handler )
 
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})
