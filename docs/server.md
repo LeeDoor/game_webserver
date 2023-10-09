@@ -61,4 +61,4 @@ flowchart TB
     end
 ```
 
-to handle request server appeals to [http_handler](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/http_handler) module
+to handle request server appeals to [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md) module
