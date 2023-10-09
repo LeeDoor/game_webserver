@@ -1,4 +1,4 @@
-# [serializer]("google.com")
+# [serializer]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src/serializer")
 ## what is it for
 to communicate with http requests it is necessary to serialize and deserialize data from text according to one single format. it may change one day, but now i am using JSON. to separate logic of serialization with user-class, i used interface *ISerializer*.
 ## classes

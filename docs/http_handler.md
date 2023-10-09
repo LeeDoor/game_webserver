@@ -1,6 +1,6 @@
-# [http_handler]("google.com")
+# [http_handler]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src/http_handler")
 ## what is it for
-this module contains a bunch of files to handle each http request. this module is used by [server]("google.com") module via **HttpHandler** class.
+this module contains a bunch of files to handle each http request. this module is used by [server]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src/server") module via **HttpHandler** class.
 ## classes
 * **HttpHandler** - connecting point with this module. its *operator()* handles passed HTTP reuqest and responses it, sending data to **one** of passed send functions (one for string response, other for file response). inside contains two separated handlers for API requests and static file requests
 * **Static Handler** - handles requests for static files, like html pages and javascript scripts. it also requires sender for string because if request is wrong, it will send string error text in JSON format.
