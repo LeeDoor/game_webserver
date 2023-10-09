@@ -23,7 +23,7 @@ while reading docs you can see beatiful diagrams and schemas. framework called [
 # documentation
 NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
 as i write my code i also try to documentate it. here is the list of readmes for each module:
-* [new module creation]
+* [new module creation](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/new_module_creation.md)
 * [initializer](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/initializer.md)
 * [server](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md)
 * [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
