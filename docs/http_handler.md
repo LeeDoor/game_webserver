@@ -1,66 +1,18 @@
-# UML diagrams online
-i use [this](https://www.mermaidchart.com) website to visualize UML diagrams 
+# [http_handler]("google.com")
+## what is it for
+this module contains a bunch of files to handle each http request. this module is used by [server]("google.com") module via **HttpHandler** class.
+## classes
+* **HttpHandler** - connecting point with this module. its *operator()* handles passed HTTP reuqest and responses it, sending data to **one** of passed send functions (one for string response, other for file response). inside contains two separated handlers for API requests and static file requests
+* **Static Handler** - handles requests for static files, like html pages and javascript scripts. it also requires sender for string because if request is wrong, it will send string error text in JSON format.
+* **Api Handler** - handles api requests. in project there will be a bunch of api entry points, so i created a class system to handle them more comfortable. each API entry point is presented with map, where key is HTTP target, like */api/send/privet/* and value is **ApiFunctionExecutor** object. each **ApiFunctionExecutor** object is created with special builder **ApiFunctionBuilder**.
+* **ApiFunctionBuilder** - creates **ApiFunctionExecutor** objects with required:
+    1. allowed methods
+    2. LIST WILL BE FINISHED AS PROJECT PROGRESS MOVE ON
+* **ApiFunctionExecutor** - launches execution of **ApiFunction**. in fact, this class is a wrapper over the **ApiFunction**, since first it runs all the verification functions to correlate the request data and the allowed data (for example, so that the request method is correct) and only then **ApiFunction** is executed.
+* **ApiFunction** - contains data built by **ApiFunctionBuilder**. it is just a function of api method.
 
-### http server class diagram
-```mermaid
----
-title: namespace http_server
----
-classDiagram
-    class ServeHttp{
-        +ServeHttp(io_context, endpoint, handler)
-    }
-    class Listener{
-        +Run()
-        -OnAccept(error_code, socket)
-        -AsyncRunSession(socket&&)
-        -io_context&
-        -tcp_acceptor
-        -request_handler: template lambda
-    }
-    class Session{
-        +Run()
-        -Read()
-        -OnRead(error_code, bytes_read)
-        -HandleRequest(request&&)
-        -Write(response&&)
-        -OnWrite(error_code, bytes_read)
-        -Close()
-        -request
-    }
-
-    ServeHttp-->Listener : calls Run()
-    Listener-->Session : calls Run()
-```
-
-### http server call sequence
-
-```mermaid
----
-title: http server call sequence
----
-flowchart TB
-    ServeHttp --> Listener::Run
-    subgraph Listener
-        Listener::Run --1--> DoAccept
-        DoAccept --2--> OnAccept
-        OnAccept --3--> AsyncRunSession
-        OnAccept --4--> DoAccept
-    end
-    subgraph Session
-        AsyncRunSession --> Session::Run
-        Session::Run --> Read
-        Read --> OnRead
-        OnRead --> HandleRequest
-        HandleRequest --> Write
-        Write --> OnWrite
-        OnWrite --connection is closed--> Close
-        OnWrite --socket is up and running--> Read
-    end
-```
-
-### http handler class diagram
-
+## graph
+whole class system looks like this: 
 ```mermaid
 ---
 title: namespace http_handler

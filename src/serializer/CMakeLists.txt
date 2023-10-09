@@ -3,6 +3,8 @@ set(DEPENDENCIES )
 set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
+    boost_json_includer.cpp
+
     i_serializer.hpp
     json_serializer.cpp
     json_serializer.hpp

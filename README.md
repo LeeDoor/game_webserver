@@ -18,6 +18,15 @@ cd hex_chess_backend
 port is 8080 by default
 
 # uml diagrams
-you can look at UML diagrams about this code, go [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/uml_diagrams.md)
+while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)
+
+# documentation
+NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
+as i write my code i also try to documentate it. here is the list of readmes for each module:
+* [new module creation]
+* [initializer]
+* [server]
+* [http_handler]
+* [serializer(JSON)]
 
 enjoy 
