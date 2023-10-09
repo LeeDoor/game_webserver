@@ -20,7 +20,7 @@ flowchart
 each node is clickable to read more info about module.
 
 # how to create module
-root contains bash script called [*add_dependency.sh*]("https://github.com/LeeDoor/hex_chess_backend/blob/main/add_dependency.sh"). launch it with name of new module like:
+root contains bash script called [*add_dependency.sh*](https://github.com/LeeDoor/hex_chess_backend/blob/main/add_dependency.sh). launch it with name of new module like:
 ```
 ./add_dependency.sh initializer
 ```
@@ -48,9 +48,9 @@ endforeach ()
 
 # created CMake file
 newly created cmake file contains two variables.
-* **DEPENDENCIES** - list of modules that are required for this module. should be entered space-separated like [here]("https://github.com/LeeDoor/hex_chess_backend/blob/main/src/server/CMakeLists.txt")
+* **DEPENDENCIES** - list of modules that are required for this module. should be entered space-separated like [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/src/server/CMakeLists.txt)
 * **LIBRARY_NAME** - name of library. the variable is needed so that other modules can refer to it by name (to pass it in DEPENDENCIES list for example).
 
-variables are followed by add_libary command. it creates dynamic library (change [build.sh]("https://github.com/LeeDoor/hex_chess_backend/blob/main/build.sh") script if you want to create shared library) with given source files.
+variables are followed by add_libary command. it creates dynamic library (change [build.sh](https://github.com/LeeDoor/hex_chess_backend/blob/main/build.sh) script if you want to create shared library) with given source files.
 
-after that cmakelists links dependencies to our project and targetly includes headers from other folders in cycle. thats why all modules must be in one directory: [hex_chess_backend/src]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src")
+after that cmakelists links dependencies to our project and targetly includes headers from other folders in cycle. thats why all modules must be in one directory: [hex_chess_backend/src](https://github.com/LeeDoor/hex_chess_backend/tree/main/src)

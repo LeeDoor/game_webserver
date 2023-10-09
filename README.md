@@ -24,9 +24,9 @@ while reading docs you can see beatiful diagrams and schemas. framework called [
 NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
 as i write my code i also try to documentate it. here is the list of readmes for each module:
 * [new module creation]
-* [initializer]("https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/initializer.md")
-* [server]("https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md")
-* [http_handler]("https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md")
-* [serializer(JSON)]("https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md")
+* [initializer](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/initializer.md)
+* [server](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md)
+* [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
+* [serializer(JSON)](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md)
 
 enjoy 

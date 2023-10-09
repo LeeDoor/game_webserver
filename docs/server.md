@@ -1,4 +1,4 @@
-# [server]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src/server")
+# [server](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/server)
 ## what is it for
 server module launches server and starts handling incoming HTTP requests.
 ## classes
@@ -61,4 +61,4 @@ flowchart TB
     end
 ```
 
-to handle request server appeals to [http_handler]("https://github.com/LeeDoor/hex_chess_backend/tree/main/src/http_handler") module
+to handle request server appeals to [http_handler](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/http_handler) module
