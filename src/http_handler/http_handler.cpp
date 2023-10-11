@@ -1,6 +1,8 @@
 #include "http_handler.hpp"
 
 namespace http_handler{
+    HttpHandler::HttpHandler(std::shared_ptr<ISerializer> serializer) : serializer_(serializer), static_handler_(serializer){}
+
     void HttpHandler::operator()(HttpRequest &&request,
                                 StrResponseSender&& string_sender, 
                                 FileResponseSender&& file_sender) {

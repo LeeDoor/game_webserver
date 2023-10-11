@@ -3,11 +3,13 @@
 #include <boost/asio/strand.hpp>
 #include "http_handler.hpp"
 #include <memory>
+#include "json_serializer.hpp"
 
 namespace http_server {
     class Session : public std::enable_shared_from_this<Session> {
     public:
-        explicit Session(tcp::socket &&socket) : stream_(std::move(socket)) {}
+        explicit Session(tcp::socket &&socket) : stream_(std::move(socket)), request_handler_(std::make_shared<serializer::JSONSerializer>()) {
+        }
 
         Session(const Session &) = delete;
 
@@ -42,7 +44,6 @@ namespace http_server {
         beast::flat_buffer buffer_;
         HttpRequest request_;
         beast::tcp_stream stream_;
-
 
         http_handler::HttpHandler request_handler_;
     };
