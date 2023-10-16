@@ -11,7 +11,7 @@ namespace http_handler{
     void HttpHandler::HandleRequest(HttpRequest&& request, 
                     StrResponseSender&& string_sender, 
                     FileResponseSender&& file_sender) {
-        static_handler_.HandleFile(fs::path("/home/leedoor/Documents/hex_chess_backend/static/index.html"),
+        static_handler_.HandleFile(std::move(request),
         fs::path("/home/leedoor/Documents/hex_chess_backend/static"), std::move(string_sender), std::move(file_sender));
     }
 }

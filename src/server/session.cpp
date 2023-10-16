@@ -30,7 +30,6 @@ namespace http_server {
     }
 
     void Session::HandleRequest(HttpRequest &&request) {
-        std::cout << "start listening\n";
         auto strHandler = [self = this->shared_from_this()](StringResponse &&response) {
             self->Write(std::move(response));
         };

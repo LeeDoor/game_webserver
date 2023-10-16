@@ -11,16 +11,16 @@ namespace http_handler {
     public:
         StaticHandler(std::shared_ptr<ISerializer> serializer);
 
-        void HandleFile(fs::path&& path, 
+        void HandleFile(HttpRequest&& request, 
                         fs::path&& root, 
                         StrResponseSender&& string_sender,
                         FileResponseSender&& file_sender);
     private:
-        void SendFile(const fs::path& path, FileResponseSender&& file_sender);
-        void SendWrongPathError(StrResponseSender&& string_sender);    
-        void SendNoAccessError(StrResponseSender&& string_sender);
+        void SendFile(HttpRequest&& request, FileResponseSender&& file_sender);
+        void SendWrongPathError(HttpRequest&& request, StrResponseSender&& string_sender);    
+        void SendNoAccessError(HttpRequest&& request, StrResponseSender&& string_sender);
 
-        bool IsSubdirectory(fs::path& path, fs::path& base);
+        bool IsSubdirectory(fs::path&& path, fs::path&& base);
 
         std::shared_ptr<ISerializer> serializer_;
     };
