@@ -7,7 +7,7 @@ namespace http_handler {
     public:
         ApiFunctionExecutor(ApiFunction&& api_function);
 
-        void Execute(HttpRequest&& http_request, StrResponseSender&& response_sender);
+        void Execute(HttpRequest&& request, ResponseSender&& sender);
 
     private:
         bool MatchMethod(const http::verb& verb);

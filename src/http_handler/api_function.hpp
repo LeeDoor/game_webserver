@@ -1,13 +1,18 @@
 #pragma once
 #include "http_types.hpp"
 #include <functional>
+#include "response_sender.hpp"
 namespace http_handler {
-    typedef std::function<void(HttpRequest&&, StrResponseSender&&)> ExecutorFunction;
+    typedef std::function<void(HttpRequest&&, ResponseSender&&)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
 
     class ApiFunction {
     public:
         ApiFunction(ExecutorFunction&& executor_function, AllowedMethods&& allowed_methods);
+
+        AllowedMethods& GetAllowedMethods();
+
+        void operator()(HttpRequest&& request, ResponseSender&& sender);
 
     private:
         ExecutorFunction executor_function_;

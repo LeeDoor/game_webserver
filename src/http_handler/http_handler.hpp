@@ -9,18 +9,14 @@ namespace http_handler {
     public:
         HttpHandler(std::shared_ptr<ISerializer> serializer);
 
-        void operator()(HttpRequest&& request, 
-                        StrResponseSender&& string_sender, 
-                        FileResponseSender&& file_sender);
+        void operator()(HttpRequest&& request, ResponseSender&& sender);
     private:
-        void HandleRequest(HttpRequest&& request, 
-                        StrResponseSender&& string_sender, 
-                        FileResponseSender&& file_sender);
+        void HandleRequest(HttpRequest&& request, ResponseSender&& sender);
         bool IsApiRequest(const HttpRequest& request);
 
         std::shared_ptr<ISerializer> serializer_;
         StaticHandler static_handler_;
-        ApiHandler api_handler_;
+        std::shared_ptr<ApiHandler> api_handler_;
     };
 
 }

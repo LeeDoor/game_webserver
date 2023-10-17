@@ -10,21 +10,18 @@ namespace http_handler {
         serializer_ = serializer;
     }
 
-    void StaticHandler::HandleFile(HttpRequest&& request,
-                            fs::path&& root, 
-                            StrResponseSender&& string_sender,
-                            FileResponseSender&& file_sender) {
+    void StaticHandler::HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender) {
         std::string path_str = static_cast<std::string>(request.target());
         fs::path path = root.concat(path_str);
         if(!IsSubdirectory(std::move(path), std::move(root))) {
             std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
            " but boost beast not allowing sockets send this kind of targets\n";
-            return SendNoAccessError(std::move(request), std::move(string_sender));
+            return SendNoAccessError(std::move(request), std::move(sender.string));
         }
         if(!fs::exists(path) || fs::is_directory(path)) {
-            return SendWrongPathError(std::move(request), std::move(string_sender));
+            return SendWrongPathError(std::move(request), std::move(sender.string));
         }
-        return SendFile(std::move(path), std::move(request), std::move(file_sender));
+        return SendFile(std::move(path), std::move(request), std::move(sender.file));
     }
 
     void StaticHandler::SendFile(fs::path&& path, HttpRequest&& request, FileResponseSender&& file_sender){

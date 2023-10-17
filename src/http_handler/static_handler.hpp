@@ -3,6 +3,7 @@
 #include <memory>
 #include "http_types.hpp"
 #include "i_serializer.hpp"
+#include "response_sender.hpp"
 
 namespace http_handler {
     using namespace serializer;
@@ -11,10 +12,7 @@ namespace http_handler {
     public:
         StaticHandler(std::shared_ptr<ISerializer> serializer);
 
-        void HandleFile(HttpRequest&& request, 
-                        fs::path&& root, 
-                        StrResponseSender&& string_sender,
-                        FileResponseSender&& file_sender);
+        void HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender);
     private:
         void SendFile(fs::path&& path, HttpRequest&& request, FileResponseSender&& file_sender);
         void SendWrongPathError(HttpRequest&& request, StrResponseSender&& string_sender);    

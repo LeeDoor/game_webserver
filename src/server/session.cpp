@@ -36,7 +36,7 @@ namespace http_server {
         auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
             self->Write(std::move(response));
         };
-        request_handler_(std::move(request), std::move(strHandler), std::move(fileHandler));
+        request_handler_(std::move(request), {strHandler, fileHandler});
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {
