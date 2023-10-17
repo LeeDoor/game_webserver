@@ -10,7 +10,9 @@ this module contains a bunch of files to handle each http request. this module i
     2. LIST WILL BE FINISHED AS PROJECT PROGRESS MOVE ON
 * **ApiFunctionExecutor** - launches execution of **ApiFunction**. in fact, this class is a wrapper over the **ApiFunction**, since first it runs all the verification functions to correlate the request data and the allowed data (for example, so that the request method is correct) and only then **ApiFunction** is executed.
 * **ApiFunction** - contains data built by **ApiFunctionBuilder**. it is just a function of api method.
+* **ResponseMaker** - bunch of functions for preparing http responses. moved this to separate cpp because it takes a lot of lines to form it up each time i need it
 
+all handlers have [ISerializer](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md) object. this object can serialize/deserialize data to string and vice versa. made it with interface because i may want to change format from JSON to XML or smth in future.
 ## graph
 whole class system looks like this: 
 ```mermaid
@@ -25,15 +27,16 @@ classDiagram
 
         -StaticHandler
         -ApiHandler
+        -ISerializer
     }
-    note for HttpHandler "handles all http requests on server"
 
     class ApiHandler {
         +HandleApiFunction(http_request, sender_func)
         -request_to_executor: map < string, ApiFunctionExeuctor >
         -BuildTargetsMap()
+
+        -ISerializer
     }
-    note for ApiHandler "handles all http API requests"
 
     class StaticHandler {
         +HandleFile(path, root, tringSender, fileSender)
@@ -41,22 +44,21 @@ classDiagram
         -SendWrongPathError(stringSender)
         -SendNoAccessError(stringSender)
         -IsSubdirectory(path, root): bool
+
+        -ISerializer
         
     }
-    note for StaticHandler "handles all requests for files"
 
     class ApiFunction {
         -allowed_methods: vector of methods
         -executor: Function param: request, sender_func
     }
-    note for ApiFunction "function unit being executed at the end"
 
     class ApiFunctionExecutor {
         +execute(http_request, sender_func)
         -MatchMethod() bool
         -api_function : ApiFunction
     }
-    note for ApiFunctionExecutor "checks all requirements before\ncalling ApiFunction\n(e.g. auth check, method check)"
 
     class ApiFunctionBuilder {
         +SetMethods(vector< method >)
@@ -66,9 +68,15 @@ classDiagram
         -allowed_methods: vector < methods >
         -execution_function: function
     }
-    note for ApiFunctionBuilder "creates ApiFunctionExecutor.\nsets its ApiFunction parameters,\nallowed methods, auth requirement etc."
+
+    class ResponseMaker {
+        +MakeFileResponse(path&&, request&&) FileResponse
+        +MakeStringResponse(body&&, request&&) StringResponse
+    }
 
     class JsonHandler 
+    ApiHanlder --> ResponseMaker : uses
+    StaticHandler --> ResponseMaker : uses
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
     JsonHandler <.. ApiHandler : depends
