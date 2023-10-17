@@ -12,8 +12,6 @@ namespace http_handler{
     const std::string PIC_SVG = "image/svg+xml";
     const std::string UNKNOWN_TYPE = TEXT_PLAIN;
 
-
-
     std::unordered_map<std::string, std::string> extensions = {
         {"htm", TEXT_HTML },
         {"html", TEXT_HTML },
@@ -36,18 +34,17 @@ namespace http_handler{
         {"mp3", "audio/mpeg" },
 
     };
-    FileResponse MakeFileResponse(HttpRequest&& request) {
+    FileResponse MakeFileResponse(fs::path&& path, HttpRequest&& request) {
         FileResponse response;
 
         response.result(http::status::ok);
 
-        auto path = request.target();
-        std::string extension = extensions[static_cast<std::string>(path.substr(1 + path.rfind(".")))];
+        std::string extension = extensions[path.string().substr(1 + path.string().rfind("."))];
         response.set(http::field::content_type, extension);
 
         http::file_body::value_type file;
         beast::error_code ec;
-        file.open(path.data(), beast::file_mode::read, ec);
+        file.open(path.c_str(), beast::file_mode::read, ec);
         response.body() = std::move(file);
 
         response.prepare_payload();

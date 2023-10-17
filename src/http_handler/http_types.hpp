@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/beast.hpp>
+#include <filesystem>
 
 namespace fs = std::filesystem;
 namespace net = boost::asio;

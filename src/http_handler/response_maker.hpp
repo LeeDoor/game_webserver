@@ -3,7 +3,7 @@
 
 namespace http_handler{
 
-    FileResponse MakeFileResponse(HttpRequest&& request);
+    FileResponse MakeFileResponse(fs::path&& path, HttpRequest&& request);
     StringResponse MakeStringResponse(HttpRequest&& request, std::string&& body);
 
 }

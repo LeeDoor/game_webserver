@@ -16,7 +16,7 @@ namespace http_handler {
                         StrResponseSender&& string_sender,
                         FileResponseSender&& file_sender);
     private:
-        void SendFile(HttpRequest&& request, FileResponseSender&& file_sender);
+        void SendFile(fs::path&& path, HttpRequest&& request, FileResponseSender&& file_sender);
         void SendWrongPathError(HttpRequest&& request, StrResponseSender&& string_sender);    
         void SendNoAccessError(HttpRequest&& request, StrResponseSender&& string_sender);
 
