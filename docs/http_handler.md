@@ -75,7 +75,7 @@ classDiagram
     }
 
     class JsonHandler 
-    ApiHanlder --> ResponseMaker : uses
+    ApiHandler --> ResponseMaker : uses
     StaticHandler --> ResponseMaker : uses
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
