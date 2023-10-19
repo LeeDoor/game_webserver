@@ -16,24 +16,24 @@ namespace http_handler {
         if(!IsSubdirectory(std::move(path), std::move(root))) {
             std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
            " but boost beast not allowing sockets send this kind of targets\n";
-            return SendNoAccessError(std::move(request), std::move(sender.string));
+            return SendNoAccessError(request, sender.string);
         }
         if(!fs::exists(path) || fs::is_directory(path)) {
-            return SendWrongPathError(std::move(request), std::move(sender.string));
+            return SendWrongPathError(request, sender.string);
         }
-        return SendFile(std::move(path), std::move(request), std::move(sender.file));
+        return SendFile(std::move(path), request, sender.file);
     }
 
-    void StaticHandler::SendFile(fs::path&& path, HttpRequest&& request, FileResponseSender&& file_sender){
-        file_sender(std::move(MakeFileResponse(std::move(path), std::move(request))));
+    void StaticHandler::SendFile(fs::path&& path, const HttpRequest& request, const FileResponseSender& sender){
+        sender(std::move(MakeFileResponse(std::move(path), request)));
     }
-    void StaticHandler::SendWrongPathError(HttpRequest&& request, StrResponseSender&& string_sender){
+    void StaticHandler::SendWrongPathError(const HttpRequest& request, const StrResponseSender& sender){
         std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
-        string_sender(std::move(MakeStringResponse(std::move(request), std::move(body))));
+        sender(std::move(MakeStringResponse(request, std::move(body))));
     }
-    void StaticHandler::SendNoAccessError(HttpRequest&& request, StrResponseSender&& string_sender){
+    void StaticHandler::SendNoAccessError(const HttpRequest& request, const StrResponseSender& sender){
         std::string body = serializer_->SerializeError("no_acess", "path is out of root");
-        string_sender(std::move(MakeStringResponse(std::move(request), std::move(body))));
+        sender(std::move(MakeStringResponse(request,  std::move(body))));
     }
 
 

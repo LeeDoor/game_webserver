@@ -3,11 +3,16 @@
 
 namespace http_handler {
 
+    enum ApiStatus {
+        Ok,
+        WrongMethod
+    };
+
     class ApiFunctionExecutor {
     public:
         ApiFunctionExecutor(ApiFunction&& api_function);
 
-        void Execute(HttpRequest&& request, ResponseSender&& sender);
+        ApiStatus Execute(const HttpRequest& request, const ResponseSender& sender);
 
     private:
         bool MatchMethod(const http::verb& verb);

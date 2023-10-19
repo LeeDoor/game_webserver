@@ -34,7 +34,7 @@ namespace http_handler{
         {"mp3", "audio/mpeg" },
 
     };
-    FileResponse MakeFileResponse(fs::path&& path, HttpRequest&& request) {
+    FileResponse MakeFileResponse(fs::path&& path, const HttpRequest& request) {
         FileResponse response;
 
         response.result(http::status::ok);
@@ -50,7 +50,7 @@ namespace http_handler{
         response.prepare_payload();
         return response;
     }
-    StringResponse MakeStringResponse(HttpRequest&& request, std::string&& body) {
+    StringResponse MakeStringResponse(const HttpRequest& request, std::string&& body) {
         StringResponse response;
 
         response.result(http::status::ok);

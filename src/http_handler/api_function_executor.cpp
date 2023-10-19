@@ -9,11 +9,12 @@ namespace http_handler {
     ApiFunctionExecutor::ApiFunctionExecutor(ApiFunction&& api_function):
          api_function_ (std::move(api_function)){}
 
-    void ApiFunctionExecutor::Execute(HttpRequest&& request, ResponseSender&& sender) {
-        //if(!MatchMethod(request.method())){
-
-        //}
-        api_function_(std::move(request), std::move(sender));
+    ApiStatus ApiFunctionExecutor::Execute(const HttpRequest& request, const ResponseSender& sender) {
+        if(!MatchMethod(request.method())){
+            return ApiStatus::WrongMethod;
+        }
+        api_function_(request, sender);
+        return ApiStatus::Ok;
     }
 
     bool ApiFunctionExecutor::MatchMethod(const http::verb& verb) {
