@@ -25,15 +25,15 @@ namespace http_handler {
     }
 
     void StaticHandler::SendFile(fs::path&& path, const HttpRequest& request, const FileResponseSender& sender){
-        sender(std::move(MakeFileResponse(std::move(path), request)));
+        sender(std::move(MakeFileResponse(http::status::ok, std::move(path), request)));
     }
     void StaticHandler::SendWrongPathError(const HttpRequest& request, const StrResponseSender& sender){
         std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
-        sender(std::move(MakeStringResponse(request, std::move(body))));
+        sender(std::move(MakeStringResponse(http::status::bad_request, std::move(body), request)));
     }
     void StaticHandler::SendNoAccessError(const HttpRequest& request, const StrResponseSender& sender){
         std::string body = serializer_->SerializeError("no_acess", "path is out of root");
-        sender(std::move(MakeStringResponse(request,  std::move(body))));
+        sender(std::move(MakeStringResponse(http::status::bad_request, std::move(body), request)));
     }
 
 

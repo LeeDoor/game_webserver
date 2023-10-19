@@ -22,9 +22,6 @@ namespace http_handler {
             ApiFunctionExecutor& executor = request_to_executor_.at(function);
             ApiStatus result = executor.Execute(request, sender);
             if(result != ApiStatus::Ok)
-            //pass executor here?
-            //TODO: make custom response methods and Allow header for method_not_allowed response
-            //make && refs where response is necessary and const& where is optional
                 return HandleApiError(result, executor, request, sender.string);
         }
         else{
@@ -42,8 +39,8 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiGetTestJson(const HttpRequest& request, const ResponseSender& sender) {
-        sender.string(MakeStringResponse(request, 
-            serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}})));
+        sender.string(MakeStringResponse(http::status::ok,
+            serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}}), request));
     }
         
     void ApiHandler::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender) {
@@ -57,15 +54,15 @@ namespace http_handler {
         }
     }
     void ApiHandler::SendWrongApiFunction(const HttpRequest& request, const StrResponseSender& sender) {
-        sender( MakeStringResponse(request, 
-                serializer_->SerializeError("api_error", "wrong api function")));
+        sender(MakeStringResponse(http::status::bad_request,
+            serializer_->SerializeError("api_error", "wrong api function"), request));
     }
     void ApiHandler::SendWrongMethod(const HttpRequest& request, const StrResponseSender& sender){
-        sender(MakeStringResponse(request, 
-            serializer_->SerializeError("wrong_method", "method not allowed")));
+        sender(MakeStringResponse(http::status::method_not_allowed, 
+            serializer_->SerializeError("wrong_method", "method not allowed"), request));
     }
     void ApiHandler::SendUndefinedError(const HttpRequest& request, const StrResponseSender& sender){
-        sender(MakeStringResponse(request, 
-            serializer_->SerializeError("undefined_error", "some weird error happened")));
+        sender(MakeStringResponse( http::status::bad_request, 
+            serializer_->SerializeError("undefined_error", "some weird error happened"), request));
     }
 } // http_handler

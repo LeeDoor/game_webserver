@@ -34,10 +34,10 @@ namespace http_handler{
         {"mp3", "audio/mpeg" },
 
     };
-    FileResponse MakeFileResponse(fs::path&& path, const HttpRequest& request) {
+    FileResponse MakeFileResponse(http::status status, fs::path&& path, const HttpRequest& request) {
         FileResponse response;
 
-        response.result(http::status::ok);
+        response.result(status);
 
         std::string extension = extensions[path.string().substr(1 + path.string().rfind("."))];
         response.set(http::field::content_type, extension);
@@ -50,10 +50,10 @@ namespace http_handler{
         response.prepare_payload();
         return response;
     }
-    StringResponse MakeStringResponse(const HttpRequest& request, std::string&& body) {
+    StringResponse MakeStringResponse(http::status status, std::string&& body, const HttpRequest& request) {
         StringResponse response;
 
-        response.result(http::status::ok);
+        response.result(status);
 
         response.set(http::field::content_type, TEXT_JSON);
         response.body() = std::move(body); 
