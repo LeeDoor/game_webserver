@@ -13,7 +13,7 @@ namespace http_handler {
         if(!MatchMethod(request.method())){
             return ApiStatus::WrongMethod;
         }
-        api_function_(request, sender);
+        api_function_(sender);
         return ApiStatus::Ok;
     }
     const ApiFunction& ApiFunctionExecutor::GetApiFunction() const{

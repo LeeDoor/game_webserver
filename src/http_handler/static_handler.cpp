@@ -16,27 +16,27 @@ namespace http_handler {
         if(!IsSubdirectory(std::move(path), std::move(root))) {
             std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
            " but boost beast not allowing sockets send this kind of targets\n";
-            return SendNoAccessError(request, sender.string);
+            return SendNoAccessError(sender.string);
         }
         if(!fs::exists(path) || fs::is_directory(path)) {
-            return SendWrongPathError(request, sender.string);
+            return SendWrongPathError(sender.string);
         }
-        return SendFile(std::move(path), request, sender.file);
+        return SendFile(std::move(path), sender.file);
     }
 
-    void StaticHandler::SendFile(fs::path&& path, const HttpRequest& request, const FileResponseSender& sender){
+    void StaticHandler::SendFile(fs::path&& path, const FileResponseSender& sender){
         ResponseBuilder<http::file_body> builder;
-        sender(std::move(builder.File(path).Status(status::ok).GetProduct(request)));
+        sender(std::move(builder.File(path).Status(status::ok).GetProduct()));
     }
-    void StaticHandler::SendWrongPathError(const HttpRequest& request, const StrResponseSender& sender){
+    void StaticHandler::SendWrongPathError(const StrResponseSender& sender){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
-        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request)));
+        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct()));
     }
-    void StaticHandler::SendNoAccessError(const HttpRequest& request, const StrResponseSender& sender){
+    void StaticHandler::SendNoAccessError(const StrResponseSender& sender){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("no_acess", "path is out of root");
-        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request)));
+        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct()));
     }
 
 

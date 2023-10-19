@@ -14,9 +14,9 @@ namespace http_handler {
 
         void HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender);
     private:
-        void SendFile(fs::path&& path, const HttpRequest& request, const FileResponseSender& sender);
-        void SendWrongPathError(const HttpRequest& request, const StrResponseSender& sender);    
-        void SendNoAccessError(const HttpRequest& request, const StrResponseSender& sender);
+        void SendFile(fs::path&& path, const FileResponseSender& sender);
+        void SendWrongPathError(const StrResponseSender& sender);    
+        void SendNoAccessError(const StrResponseSender& sender);
 
         bool IsSubdirectory(fs::path&& path, fs::path&& base);
 

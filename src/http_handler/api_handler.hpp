@@ -17,14 +17,13 @@ namespace http_handler {
         void BuildTargetsMap();
 
         //api functions
-        void ApiGetTestJson(const HttpRequest& request, const ResponseSender& sender);
+        void ApiGetTestJson(const ResponseSender& sender);
         
         //api errors
-        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, 
-                        const HttpRequest& request, const StrResponseSender& sender);
-        void SendWrongApiFunction(const HttpRequest& request, const StrResponseSender& sender);
-        void SendWrongMethod(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender);
-        void SendUndefinedError(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender);
+        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const StrResponseSender& sender);
+        void SendWrongApiFunction(const StrResponseSender& sender);
+        void SendWrongMethod(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
+        void SendUndefinedError(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         std::shared_ptr<ISerializer> serializer_;

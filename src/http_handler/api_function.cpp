@@ -12,7 +12,7 @@ namespace http_handler {
         return allowed_methods_;
     }
 
-    void ApiFunction::operator()(const HttpRequest& request, const ResponseSender& sender) {
-        executor_function_(request, sender);
+    void ApiFunction::operator()(const ResponseSender& sender) {
+        executor_function_(sender);
     }
 } // http_handler
