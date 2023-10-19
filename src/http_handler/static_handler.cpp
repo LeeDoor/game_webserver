@@ -3,7 +3,7 @@
 //
 
 #include "static_handler.hpp"
-#include "response_maker.hpp"
+#include "response_builder.hpp"
 #include <iostream>
 namespace http_handler {
     StaticHandler::StaticHandler(std::shared_ptr<ISerializer> serializer){
@@ -25,15 +25,18 @@ namespace http_handler {
     }
 
     void StaticHandler::SendFile(fs::path&& path, const HttpRequest& request, const FileResponseSender& sender){
-        sender(std::move(MakeFileResponse(http::status::ok, std::move(path), request)));
+        ResponseBuilder<http::file_body> builder;
+        sender(std::move(builder.File(path).Status(status::ok).GetProduct(request)));
     }
     void StaticHandler::SendWrongPathError(const HttpRequest& request, const StrResponseSender& sender){
+        ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
-        sender(std::move(MakeStringResponse(http::status::bad_request, std::move(body), request)));
+        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request)));
     }
     void StaticHandler::SendNoAccessError(const HttpRequest& request, const StrResponseSender& sender){
+        ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("no_acess", "path is out of root");
-        sender(std::move(MakeStringResponse(http::status::bad_request, std::move(body), request)));
+        sender(std::move(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request)));
     }
 
 

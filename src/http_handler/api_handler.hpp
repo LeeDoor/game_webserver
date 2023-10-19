@@ -1,7 +1,7 @@
 #pragma once
 #include "api_function_builder.hpp"
 #include "i_serializer.hpp"
-#include "response_maker.hpp"
+#include "response_builder.hpp"
 #include <map>
 
 namespace http_handler {
@@ -23,8 +23,8 @@ namespace http_handler {
         void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, 
                         const HttpRequest& request, const StrResponseSender& sender);
         void SendWrongApiFunction(const HttpRequest& request, const StrResponseSender& sender);
-        void SendWrongMethod(const HttpRequest& request, const StrResponseSender& sender);
-        void SendUndefinedError(const HttpRequest& request, const StrResponseSender& sender);
+        void SendWrongMethod(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender);
+        void SendUndefinedError(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         std::shared_ptr<ISerializer> serializer_;

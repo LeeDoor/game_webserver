@@ -16,9 +16,12 @@ namespace http_handler {
         api_function_(request, sender);
         return ApiStatus::Ok;
     }
+    const ApiFunction& ApiFunctionExecutor::GetApiFunction() const{
+        return api_function_;
+    }
 
     bool ApiFunctionExecutor::MatchMethod(const http::verb& verb) {
-        AllowedMethods& methods = api_function_.GetAllowedMethods();
+        const AllowedMethods& methods = api_function_.GetAllowedMethods();
         return std::find(methods.begin(), methods.end(), verb) != methods.end();
     }
 } // http_handler

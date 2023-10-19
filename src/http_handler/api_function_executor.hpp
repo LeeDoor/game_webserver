@@ -13,7 +13,7 @@ namespace http_handler {
         ApiFunctionExecutor(ApiFunction&& api_function);
 
         ApiStatus Execute(const HttpRequest& request, const ResponseSender& sender);
-
+        const ApiFunction& GetApiFunction() const;
     private:
         bool MatchMethod(const http::verb& verb);
 

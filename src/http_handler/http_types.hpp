@@ -8,6 +8,7 @@ namespace sys = boost::system;
 using tcp = net::ip::tcp;
 namespace beast = boost::beast;
 namespace http = beast::http;
+using status = http::status;
 using namespace std::literals;
 typedef http::request <http::string_body> HttpRequest;
 typedef http::response <http::string_body> StringResponse;

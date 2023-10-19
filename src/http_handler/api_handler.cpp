@@ -4,7 +4,6 @@
 
 #include "api_handler.hpp"
 #include <iostream>
-#include "response_maker.hpp"
 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2)
             
@@ -34,35 +33,39 @@ namespace http_handler {
         ApiFunctionBuilder builder;
         request_to_executor_.emplace(
             std::make_pair("/api/gethellojson/test", 
-                builder.SetGetHeadMethods()
-                .SetExecutionFunction(BIND(&ApiHandler::ApiGetTestJson)).GetProduct()));
+                builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetTestJson)).GetProduct()));
     }
 
     void ApiHandler::ApiGetTestJson(const HttpRequest& request, const ResponseSender& sender) {
-        sender.string(MakeStringResponse(http::status::ok,
-            serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}}), request));
+        ResponseBuilder<http::string_body> builder;
+        std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
+        sender.string(builder.BodyText(std::move(body)).Status(status::ok).GetProduct(request));
     }
         
     void ApiHandler::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender) {
         switch(status) {
         case ApiStatus::WrongMethod:
-            SendWrongMethod(request, sender);
+            SendWrongMethod(executor, request, sender);
             break;
         default:
-            SendUndefinedError(request, sender);
+            SendUndefinedError(executor, request, sender);
             break;
         }
     }
     void ApiHandler::SendWrongApiFunction(const HttpRequest& request, const StrResponseSender& sender) {
-        sender(MakeStringResponse(http::status::bad_request,
-            serializer_->SerializeError("api_error", "wrong api function"), request));
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("api_error", "wrong api function");
+        sender(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request));
     }
-    void ApiHandler::SendWrongMethod(const HttpRequest& request, const StrResponseSender& sender){
-        sender(MakeStringResponse(http::status::method_not_allowed, 
-            serializer_->SerializeError("wrong_method", "method not allowed"), request));
+    void ApiHandler::SendWrongMethod(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender){
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("wrong_method", "method not allowed");
+        const std::vector<http::verb>& methods = executor.GetApiFunction().GetAllowedMethods();
+        sender(builder.BodyText(std::move(body)).Status(status::method_not_allowed).Allow(methods).GetProduct(request));
     }
-    void ApiHandler::SendUndefinedError(const HttpRequest& request, const StrResponseSender& sender){
-        sender(MakeStringResponse( http::status::bad_request, 
-            serializer_->SerializeError("undefined_error", "some weird error happened"), request));
+    void ApiHandler::SendUndefinedError(const ApiFunctionExecutor& executor, const HttpRequest& request, const StrResponseSender& sender){
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("undefined_error", "some weird error happened");
+        sender(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct(request));
     }
 } // http_handler

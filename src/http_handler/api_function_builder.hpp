@@ -5,10 +5,10 @@
 namespace http_handler {
     class ApiFunctionBuilder {
     public:
-        ApiFunctionBuilder& SetMethods(AllowedMethods&& allowed_methods);
-        ApiFunctionBuilder& SetGetHeadMethods();
-        ApiFunctionBuilder& SetPostMethods();
-        ApiFunctionBuilder& SetExecutionFunction(ExecutorFunction&& function);
+        ApiFunctionBuilder& Methods(AllowedMethods&& allowed_methods);
+        ApiFunctionBuilder& GetHead();
+        ApiFunctionBuilder& Post();
+        ApiFunctionBuilder& ExecFunc(ExecutorFunction&& function);
         ApiFunctionExecutor GetProduct();
 
     private:

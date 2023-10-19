@@ -10,7 +10,7 @@ namespace http_handler {
     public:
         ApiFunction(ExecutorFunction&& executor_function, AllowedMethods&& allowed_methods);
 
-        AllowedMethods& GetAllowedMethods();
+        const AllowedMethods& GetAllowedMethods() const;
 
         void operator()(const HttpRequest& request, const ResponseSender& sender);
 
