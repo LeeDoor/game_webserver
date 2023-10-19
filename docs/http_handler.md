@@ -35,11 +35,16 @@ classDiagram
         -request_to_executor: map < string, ApiFunctionExeuctor >
         -BuildTargetsMap()
 
+        -HandleApiError(status, executor)
+        -SendWrongApiFunction(sender)
+        -SendWrongMethod(executor, sender)
+        -SendUndefinedError(executor, sender)
+
         -ISerializer
     }
 
     class StaticHandler {
-        +HandleFile(path, root, tringSender, fileSender)
+        +HandleFile(path, root, stringSender, fileSender)
         -SendFile(path, fileSender)
         -SendWrongPathError(stringSender)
         -SendNoAccessError(stringSender)
