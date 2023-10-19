@@ -5,15 +5,16 @@ namespace http_handler{
     template<typename BodyType>
     class ResponseBuilder{
     public:
-        void Reset(){
-            response_ = {};
-        }
-
+        //ONLY IF BodyType IS http::string_body
+        //sets body string to given
         ResponseBuilder& BodyText(std::string&& body) {
             response_.body() = std::move(body);
             response_.set(http::field::content_type, TEXT_JSON); 
+            response_.content_length(response_.body().size());
             return *this;
         }
+        //ONLY IF BodyType IS http::file_body
+        //sets body file to given in path
         ResponseBuilder& File(const fs::path& path) {
             http::file_body::value_type file;
             beast::error_code ec;
@@ -21,16 +22,20 @@ namespace http_handler{
             response_.body() = std::move(file);
             std::string extension = extensions[path.string().substr(1 + path.string().rfind("."))];
             response_.set(http::field::content_type, extension);
+            response_.content_length(response_.body().size());
             return *this;
         }
+        //sets response status to given
         ResponseBuilder& Status(http::status status) {
             response_.result(status);
             return *this;
         }
+        //sets any required header to given value
         ResponseBuilder& Header(http::field field_name, std::string&& value){
             response_.set(field_name, std::move(value));
             return *this;
         }
+        //sets allow method to given methods
         ResponseBuilder& Allow(const std::vector<http::verb>& methods){
             std::stringstream ss;
             for(int i = 0; i < methods.size() - 1; ++i)
@@ -39,9 +44,8 @@ namespace http_handler{
             response_.set(http::field::allow, ss.str());
             return *this;
         }
-
-        http::response<BodyType> GetProduct(const HttpRequest& request){
-            response_.content_length(response_.body().size());
+        //sets content_length and returns response object
+        http::response<BodyType> GetProduct(){
             return std::move(response_);
         }
     private:

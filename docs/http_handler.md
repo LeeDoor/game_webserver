@@ -61,22 +61,30 @@ classDiagram
     }
 
     class ApiFunctionBuilder {
-        +SetMethods(vector< method >)
-        +SetExecutionFunction(function)
+        +Methods(vector< method >)
+        +ExecFunc(function)
+        +GetHead()
+        +Post()
         +GetProduct() ApiFunctionExeuctor
 
         -allowed_methods: vector < methods >
         -execution_function: function
     }
 
-    class ResponseMaker {
-        +MakeFileResponse(path&&, request&&) FileResponse
-        +MakeStringResponse(body&&, request&&) StringResponse
+    class ResponseBuilder {
+        +BodyText(body&&)
+        +File(const path&)
+        +Status(status)
+        +Header(name, value&&)
+        +Allow(const methods&)
+        +GetProduct(const request&)
+
+        -response_: http::response < template_body_type >
     }
 
     class JsonHandler 
-    ApiHandler --> ResponseMaker : uses
-    StaticHandler --> ResponseMaker : uses
+    ApiHandler --> ResponseBuilder : uses
+    StaticHandler --> ResponseBuilder : uses
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
     JsonHandler <.. ApiHandler : depends
