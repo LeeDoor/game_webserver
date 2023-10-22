@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(DEPENDENCIES serializer)
+set(DEPENDENCIES serializer user_data)
 set(LIBRARY_NAME http_handler)
 #creating library
 add_library(${LIBRARY_NAME}
