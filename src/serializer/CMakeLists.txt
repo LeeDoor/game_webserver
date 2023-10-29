@@ -1,9 +1,9 @@
 #initializer's dependencies
-set(DEPENDENCIES )
+set(DEPENDENCIES user_data)
 set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
-    boost_json_includer.cpp
+    json_type_converter.hpp
     i_serializer.hpp
     json_serializer.cpp
     json_serializer.hpp

@@ -3,8 +3,14 @@
 #include <functional>
 #include "response_sender.hpp"
 namespace http_handler {
-    typedef std::function<void(const ResponseSender&)> ExecutorFunction;
+    struct RequestNSender{
+        const HttpRequest& request;
+        const ResponseSender& sender;
+    };
+    
+    typedef std::function<void(RequestNSender)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
+
 
     class ApiFunction {
     public:
@@ -12,7 +18,7 @@ namespace http_handler {
 
         const AllowedMethods& GetAllowedMethods() const;
 
-        void operator()(const ResponseSender& sender);
+        void operator()(RequestNSender rns);
 
     private:
         ExecutorFunction executor_function_;

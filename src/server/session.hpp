@@ -1,14 +1,18 @@
 #pragma once
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/strand.hpp>
-#include "http_handler.hpp"
 #include <memory>
-#include "json_serializer.hpp"
+#include "http_handler.hpp"
+#include "i_serializer.hpp"
 
 namespace http_server {
     class Session : public std::enable_shared_from_this<Session> {
     public:
-        explicit Session(tcp::socket &&socket) : stream_(std::move(socket)), request_handler_(std::make_shared<serializer::JSONSerializer>()) {
+        explicit Session(tcp::socket &&socket, 
+            std::shared_ptr<serializer::ISerializer> serializer, 
+            std::shared_ptr<user_data::Players> players) :
+            stream_(std::move(socket)), 
+            request_handler_(serializer, players) {
         }
 
         Session(const Session &) = delete;

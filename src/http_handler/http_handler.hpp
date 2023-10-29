@@ -7,7 +7,7 @@ namespace http_handler {
     using namespace serializer;
     class HttpHandler {
     public:
-        HttpHandler(std::shared_ptr<ISerializer> serializer);
+        HttpHandler(std::shared_ptr<ISerializer> serializer, std::shared_ptr<ud::Players> players);
 
         void operator()(HttpRequest&& request, ResponseSender&& sender);
     private:

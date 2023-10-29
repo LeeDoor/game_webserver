@@ -2,13 +2,15 @@
 #include "api_function_builder.hpp"
 #include "i_serializer.hpp"
 #include "response_builder.hpp"
+#include "players.hpp"
 #include <map>
 
 namespace http_handler {
     using namespace serializer;
+    namespace ud = user_data;
     class ApiHandler :  public std::enable_shared_from_this<ApiHandler> {
     public:
-        ApiHandler(std::shared_ptr<ISerializer> serializer);
+        ApiHandler(std::shared_ptr<ISerializer> serializer, std::shared_ptr<ud::Players> players);
         void Init();
         
         void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);
@@ -17,16 +19,23 @@ namespace http_handler {
         void BuildTargetsMap();
 
         //api functions
-        void ApiGetTestJson(const ResponseSender& sender);
+        void ApiGetTestJson(RequestNSender rns);
+        void ApiRegister(RequestNSender rns);
         
-        //api errors
-        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const StrResponseSender& sender);
+        //api requests
+        void SendSuccess(const StrResponseSender& sender);
+        
         void SendWrongApiFunction(const StrResponseSender& sender);
+        void SendWrongBodyData(const StrResponseSender& sender);
+        void SendLoginTaken(const StrResponseSender& sender);
+
+        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const StrResponseSender& sender);
         void SendWrongMethod(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
         void SendUndefinedError(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         std::shared_ptr<ISerializer> serializer_;
+        std::shared_ptr<ud::Players> players_;
     };
 
 } // http_handler

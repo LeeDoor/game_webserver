@@ -9,11 +9,11 @@ namespace http_handler {
     ApiFunctionExecutor::ApiFunctionExecutor(ApiFunction&& api_function):
          api_function_ (std::move(api_function)){}
 
-    ApiStatus ApiFunctionExecutor::Execute(const HttpRequest& request, const ResponseSender& sender) {
-        if(!MatchMethod(request.method())){
+    ApiStatus ApiFunctionExecutor::Execute(RequestNSender rns) {
+        if(!MatchMethod(rns.request.method())){
             return ApiStatus::WrongMethod;
         }
-        api_function_(sender);
+        api_function_(rns);
         return ApiStatus::Ok;
     }
     const ApiFunction& ApiFunctionExecutor::GetApiFunction() const{

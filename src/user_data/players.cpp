@@ -1,6 +1,6 @@
 #include "players.hpp"
 #include <algorithm>
-
+#include <iostream>
 namespace user_data{
     std::optional<PlayerData> Players::GetPlayerData(const uuid& uuid){
         auto iter = std::find_if(players_.begin(), players_.end(), [&](const PlayerData& pd){return pd.uuid == uuid;});

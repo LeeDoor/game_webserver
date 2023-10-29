@@ -6,7 +6,7 @@ add_library(${LIBRARY_NAME}
     player_data.hpp
     players.cpp
     players.hpp
-    
+    registration_data.hpp
 )
 
 #including and linking dependencies
