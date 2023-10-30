@@ -14,7 +14,7 @@ classDiagram
     class Listener{
         +Run()
         -OnAccept(error_code, socket)
-        -AsyncRunSession(socket&&)
+        -AsyncRunSession(socket&&, ISerializer, Players)
         -io_context&
         -tcp_acceptor
         -request_handler: template lambda
