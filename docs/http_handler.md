@@ -21,7 +21,7 @@ title: namespace http_handler
 ---
 classDiagram
     class HttpHandler {
-        +operator() (http_request&&, send_string&&, send_file&&)
+        +operator() (http_request&&, sender&&)
         -HandleRequest(http_request&&, send_string&&, send_file&&)
         -IsApiRequest(http_request&) bool
 
@@ -35,12 +35,13 @@ classDiagram
         -request_to_executor: map < string, ApiFunctionExeuctor >
         -BuildTargetsMap()
 
-        -HandleApiError(status, executor)
-        -SendWrongApiFunction(sender)
-        -SendWrongMethod(executor, sender)
-        -SendUndefinedError(executor, sender)
+        -ApiFunctionMethod(RequestNSender)
+        -ApiResponseSender( StrResponseSender& )
+        -HandleApiError(ApiStatus, ApiFunctionExecutor&, StrResponseSender& )
+        -SendInFunctionError(ApiFunctionExecutor&, StrResponseSender&)
 
         -ISerializer
+        -Players
     }
 
     class StaticHandler {
