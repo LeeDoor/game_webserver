@@ -1,1 +1,1 @@
-./cmake-build-debug/bin/hex_chess
+./cmake-build-debug/bin/executable

@@ -1,2 +1,2 @@
 cd cmake-build-debug
-ctest
+ctest --output-on-failure
