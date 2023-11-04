@@ -16,7 +16,6 @@ SCENARIO("server launches and responses to test api", "[launch][test_api]") {
     net::connect(socket, results.begin(), results.end());
 
     http::request<http::string_body> req{http::verb::get, "/api/test", 11};
-
     http::write(socket, req);
 
     beast::flat_buffer buffer;
