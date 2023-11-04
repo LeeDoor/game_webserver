@@ -8,8 +8,8 @@ SCENARIO("server launches and responses to test api", "[launch][test_api]") {
     namespace net = boost::asio;
     using tcp = net::ip::tcp;
     net::io_context ioc;
-
-    tcp::resolver resolver(ioc);
+ 
+    tcp::resolver resolver(ioc); 
     auto const results = resolver.resolve("127.0.0.1", "9999");
 
     tcp::socket socket(ioc);
