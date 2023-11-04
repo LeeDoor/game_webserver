@@ -21,7 +21,9 @@ namespace http_server {
     }
 
     void Listener::OnAccept(sys::error_code ec, tcp::socket socket) {
-        if(ec) return;
+        if(ec) {
+            return;
+        }
 
         AsyncRunSession(std::move(socket));
         DoAccept();

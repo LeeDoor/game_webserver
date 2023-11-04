@@ -49,6 +49,7 @@ namespace http_server {
         Read();
     }
     void Session::Close() {
-        stream_.socket().shutdown(tcp::socket::shutdown_send);
+        stream_.socket().close();
+        
     }
 }
