@@ -23,15 +23,15 @@ namespace http_handler {
         void ApiRegister(RequestNSender rns);
         
         //api requests
-        void SendSuccess(const StrResponseSender& sender);
+        void SendSuccess(RequestNSender rns);
         
-        void SendWrongApiFunction(const StrResponseSender& sender);
-        void SendWrongBodyData(const StrResponseSender& sender);
-        void SendLoginTaken(const StrResponseSender& sender);
+        void SendWrongApiFunction(RequestNSender rns);
+        void SendWrongBodyData(RequestNSender rns);
+        void SendLoginTaken(RequestNSender rns);
 
-        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const StrResponseSender& sender);
-        void SendWrongMethod(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
-        void SendUndefinedError(const ApiFunctionExecutor& executor, const StrResponseSender& sender);
+        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
+        void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);
+        void SendUndefinedError(const ApiFunctionExecutor& executor, RequestNSender rns);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         std::shared_ptr<ISerializer> serializer_;

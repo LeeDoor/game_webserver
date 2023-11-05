@@ -14,14 +14,15 @@ namespace http_handler {
 
     void ApiHandler::HandleApiFunction(HttpRequest&& request, ResponseSender&& sender){
         std::string function = static_cast<std::string>(request.target());
+        RequestNSender rns {request, sender};
         if(request_to_executor_.contains(function)) {
             ApiFunctionExecutor& executor = request_to_executor_.at(function);
-            ApiStatus result = executor.Execute({request, sender});
+            ApiStatus result = executor.Execute(rns);
             if(result != ApiStatus::Ok)
-                return HandleApiError(result, executor, sender.string);
+                return HandleApiError(result, executor, rns);
         }
         else{
-            SendWrongApiFunction(sender.string);
+            SendWrongApiFunction(rns);
         }
 
     }
@@ -37,7 +38,7 @@ namespace http_handler {
     void ApiHandler::ApiGetTestJson(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
-        rns.sender.string(builder.BodyText(std::move(body)).Status(status::ok).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
 
     void ApiHandler::ApiRegister(RequestNSender rns) {
@@ -46,56 +47,56 @@ namespace http_handler {
         if(pd.has_value()) {
             bool success = players_->RegisterPlayer(std::move(pd->login), std::move(pd->password));
             if(success){
-                return SendSuccess(rns.sender.string);
+                return SendSuccess(rns);
             }
-            return SendLoginTaken(rns.sender.string);
+            return SendLoginTaken(rns);
         }
-        return SendWrongBodyData(rns.sender.string);
+        return SendWrongBodyData(rns);
     }
 
 
-    void ApiHandler::SendSuccess(const StrResponseSender& sender) {
+    void ApiHandler::SendSuccess(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeEmpty();
-        sender(builder.BodyText(std::move(body)).Status(status::ok).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
     
-    void ApiHandler::SendWrongBodyData(const StrResponseSender& sender) {
+    void ApiHandler::SendWrongBodyData(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("body_data_error", "wrong body data");
-        sender(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
-    void ApiHandler::SendLoginTaken(const StrResponseSender& sender) {
+    void ApiHandler::SendLoginTaken(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("login_taken", "login is already taken");
-        sender(builder.BodyText(std::move(body)).Status(status::conflict).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::conflict).GetProduct());
     }
     
         
-    void ApiHandler::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, const StrResponseSender& sender) {
+    void ApiHandler::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns) {
         switch(status) {
         case ApiStatus::WrongMethod:
-            SendWrongMethod(executor, sender);
+            SendWrongMethod(executor, rns);
             break;
         default:
-            SendUndefinedError(executor, sender);
+            SendUndefinedError(executor, rns);
             break;
         }
     }
-    void ApiHandler::SendWrongApiFunction(const StrResponseSender& sender) {
+    void ApiHandler::SendWrongApiFunction(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("api_error", "wrong api function");
-        sender(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
-    void ApiHandler::SendWrongMethod(const ApiFunctionExecutor& executor,const StrResponseSender& sender){
+    void ApiHandler::SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_method", "method not allowed");
         const std::vector<http::verb>& methods = executor.GetApiFunction().GetAllowedMethods();
-        sender(builder.BodyText(std::move(body)).Status(status::method_not_allowed).Allow(methods).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::method_not_allowed).Allow(methods).GetProduct());
     }
-    void ApiHandler::SendUndefinedError(const ApiFunctionExecutor& executor,const StrResponseSender& sender){
+    void ApiHandler::SendUndefinedError(const ApiFunctionExecutor& executor, RequestNSender rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("undefined_error", "some weird error happened");
-        sender(builder.BodyText(std::move(body)).Status(status::bad_request).GetProduct());
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
 } // http_handler

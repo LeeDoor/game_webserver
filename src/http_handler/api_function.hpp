@@ -1,13 +1,7 @@
 #pragma once
 #include "http_types.hpp"
 #include <functional>
-#include "response_sender.hpp"
 namespace http_handler {
-    struct RequestNSender{
-        const HttpRequest& request;
-        const ResponseSender& sender;
-    };
-    
     typedef std::function<void(RequestNSender)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
 

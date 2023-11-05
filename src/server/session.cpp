@@ -1,5 +1,6 @@
 #include "listener.hpp"
 #include "http_server.hpp"
+#include <iostream>
 
 #define CONNECTION_EXPIRY_TIME 30s
 
@@ -9,6 +10,7 @@ namespace http_server {
     }
 
     void Session::Run() {
+        std::cout << "connected\n";
         net::dispatch(stream_.get_executor(), beast::bind_front_handler(&Session::Read, GetSharedThis()));
     }
 
@@ -49,6 +51,7 @@ namespace http_server {
         Read();
     }
     void Session::Close() {
+        std::cout << "disconnected\n";
         stream_.socket().close();
         
     }

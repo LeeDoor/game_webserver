@@ -3,7 +3,6 @@
 #include <memory>
 #include "http_types.hpp"
 #include "i_serializer.hpp"
-#include "response_sender.hpp"
 
 namespace http_handler {
     using namespace serializer;
@@ -14,9 +13,9 @@ namespace http_handler {
 
         void HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender);
     private:
-        void SendFile(fs::path&& path, const FileResponseSender& sender);
-        void SendWrongPathError(const StrResponseSender& sender);    
-        void SendNoAccessError(const StrResponseSender& sender);
+        void SendFile(fs::path&& path, RequestNSender rns);
+        void SendWrongPathError(RequestNSender rns);    
+        void SendNoAccessError(RequestNSender rns);
 
         bool IsSubdirectory(fs::path&& path, fs::path&& base);
 
