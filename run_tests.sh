@@ -1,2 +1,2 @@
-cd cmake-build-debug
-ctest --output-on-failure
+cd cmake-build-debug/bin
+./tests $1 
