@@ -49,4 +49,26 @@ TEST_CASE("SerializeError", "[jsonserializer]") {
     REQUIRE_NOTHROW(given = j.template get<Error>());
     compare_errors(given, {"error name 1", ""});
 
+    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("", "")));
+    REQUIRE_NOTHROW(given = j.template get<Error>());
+    compare_errors(given, {"", ""});
+}
+
+TEST_CASE("SerializeMap", "[jsonserializer]") {
+    using StringMap = std::map<std::string, std::string>;
+    
+    JSONSerializer serializer;
+    StringMap map;
+    StringMap given;
+    json j;
+
+    map = {{"first", "second"}, {"third", "fourth"}};
+    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+    REQUIRE_NOTHROW(given = j.template get<StringMap>());
+    CHECK(map == given);
+
+    map = {{"", ""}};
+    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+    REQUIRE_NOTHROW(given = j.template get<StringMap>());
+    CHECK(map == given);
 }
