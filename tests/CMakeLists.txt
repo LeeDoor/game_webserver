@@ -1,12 +1,14 @@
-set(TESTS_NAME tests)
+include (Catch)
 
-add_executable(${TESTS_NAME} default_api_test.cpp)
+macro (create_test EXEC_NAME FILES_NAME INCLUDE_DIRS LIBS)
+    add_executable(${EXEC_NAME} ${FILES_NAME})
+    target_include_directories(${EXEC_NAME} PRIVATE ${INCLUDE_DIRS})
+    target_link_libraries(${EXEC_NAME} ${LIBS})
+    add_test(
+        NAME ${EXEC_NAME}
+        COMMAND $<TARGET_FILE:${EXEC_NAME}>
+    )
+endmacro()
 
-target_include_directories(${TESTS_NAME} PRIVATE ../src/serializer)
-target_link_libraries(${TESTS_NAME} ${CONAN_LIBS_CATCH2} ${CONAN_LIBS_BOOST} serializer )
-  
-add_test(
-    NAME ${TESTS_NAME}
-    COMMAND $<TARGET_FILE:${TESTS_NAME}>
-)
-
+create_test(test_api_test test_api_test.cpp ../src/serializer "${CONAN_LIBS_CATCH2};${CONAN_LIBS_BOOST};serializer")
+create_test(test_serialization test_serialization.cpp ../src/serializer "${CONAN_LIBS_CATCH2};serializer")

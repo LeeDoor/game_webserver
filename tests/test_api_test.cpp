@@ -16,7 +16,7 @@ void ConnectSocket(net::io_context& ioc, tcp::socket& socket){
     net::connect(socket, results.begin(), results.end());
 }
 
-TEST_CASE("server launches and responses to test api", "[connect][api]") {
+TEST_CASE("server launches and responses to test api", "[api][test]") {
     net::io_context ioc;
     tcp::socket socket{ioc};
 
