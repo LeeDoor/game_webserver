@@ -11,4 +11,4 @@ macro (create_test EXEC_NAME FILES_NAME INCLUDE_DIRS LIBS)
 endmacro()
 
 create_test(test_api_test test_api_test.cpp ../src/serializer "${CONAN_LIBS_CATCH2};${CONAN_LIBS_BOOST};serializer")
-create_test(test_serialization test_serialization.cpp ../src/serializer "${CONAN_LIBS_CATCH2};serializer")
+create_test(test_serialization test_jsonserializer.cpp ../src/serializer "${CONAN_LIBS_CATCH2};serializer")

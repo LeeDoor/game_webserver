@@ -32,19 +32,22 @@ TEST_CASE("server launches and responses to test api", "[api][test]") {
         http::response<http::string_body> response;
         http::read(socket, buffer, response);
 
-        REQUIRE(response.result() == http::status::ok);
-        REQUIRE(response.body() == "{\"LOL\":\"KEK\",\"SASI\":\"LALKA\"}");
+        CHECK(response.result() == http::status::ok);
+        CHECK(response.body() == "{\"LOL\":\"KEK\",\"SASI\":\"LALKA\"}");
 
         auto content_length_iter = response.find(http::field::content_length);
-        REQUIRE(content_length_iter != response.end());
-
-        int content_length = std::stoi(content_length_iter->value().to_string());
-        REQUIRE(content_length == response.body().size());
+        if(content_length_iter != response.end())
+            FAIL_CHECK("no content_length header");
+        else{
+            int content_length = std::stoi(content_length_iter->value().to_string());
+            CHECK(content_length == response.body().size());
+        }
 
         auto content_type_iter = response.find(http::field::content_type);
-        REQUIRE(content_type_iter != response.end());
-
-        REQUIRE(content_type_iter->value().to_string() == "application/json");
+        if(content_type_iter != response.end())
+            FAIL_CHECK("no content_type header");
+        else CHECK(content_type_iter->value().to_string() == "application/json");
+        
     }
     SECTION("/api/test request sent with head method"){
         http::request<http::string_body> req{http::verb::head, "/api/test", 11};
