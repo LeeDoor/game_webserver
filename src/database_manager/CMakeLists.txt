@@ -6,6 +6,7 @@ add_library(${LIBRARY_NAME}
     i_user_data_manager.hpp
     user_data_postgres.cpp
     user_data_postgres.hpp
+    user_data.hpp
 )
 
 #including and linking dependencies
