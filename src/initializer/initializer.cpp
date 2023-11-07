@@ -39,9 +39,8 @@ int Initializer::StartServer() {
     constexpr net::ip::port_type port = PORT;
 
     std::shared_ptr<serializer::ISerializer> serializer = std::make_shared<serializer::JSONSerializer>();
-    std::shared_ptr<user_data::Players> players = std::make_shared<user_data::Players>();
 
-    http_server::ServeHttp(ioc, {address, port}, serializer, players);
+    http_server::ServeHttp(ioc, {address, port}, serializer);
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });

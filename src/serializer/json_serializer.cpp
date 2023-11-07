@@ -18,17 +18,5 @@ namespace serializer{
             obj[pair.first] = pair.second;
         }
         return obj.dump();
-    }
-
-    std::optional<user_data::RegistrationData> JSONSerializer::DeserializeRegData(std::string&& json_str) {
-        user_data::RegistrationData rd;
-        try{
-            nlohmann::json j = nlohmann::json::parse(json_str);
-            rd = j.template get<user_data::RegistrationData>();
-        }
-        catch(...){
-            return std::nullopt;
-        }
-        return rd;
-    }
+    } 
 }

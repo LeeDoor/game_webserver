@@ -1,12 +1,11 @@
 #initializer's dependencies
 set(DEPENDENCIES )
-set(LIBRARY_NAME user_data)
+set(LIBRARY_NAME database_manager)
 #creating library
 add_library(${LIBRARY_NAME}
-    player_data.hpp
-    players.cpp
-    players.hpp
-    registration_data.hpp
+    i_user_data_manager.hpp
+    user_data_postgres.cpp
+    user_data_postgres.hpp
 )
 
 #including and linking dependencies

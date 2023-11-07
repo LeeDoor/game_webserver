@@ -1,9 +1,9 @@
 #include "http_handler.hpp"
 
 namespace http_handler{
-    HttpHandler::HttpHandler(std::shared_ptr<ISerializer> serializer, std::shared_ptr<ud::Players> players) 
+    HttpHandler::HttpHandler(std::shared_ptr<ISerializer> serializer) 
         : serializer_(serializer), static_handler_(serializer){
-            api_handler_ = std::make_shared<ApiHandler>(serializer, players);
+            api_handler_ = std::make_shared<ApiHandler>(serializer);
             api_handler_->Init();
         }
 

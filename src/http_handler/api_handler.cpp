@@ -1,4 +1,3 @@
-
 #include "api_handler.hpp"
 #include <iostream>
 
@@ -6,8 +5,8 @@
             
 
 namespace http_handler {
-    ApiHandler::ApiHandler(std::shared_ptr<ISerializer> serializer, std::shared_ptr<ud::Players> players) 
-        : serializer_(serializer), players_(players){ }
+    ApiHandler::ApiHandler(std::shared_ptr<ISerializer> serializer) 
+        : serializer_(serializer){ }
     void ApiHandler::Init(){
         BuildTargetsMap();
     }
@@ -30,7 +29,6 @@ namespace http_handler {
     void ApiHandler::BuildTargetsMap() {
         ApiFunctionBuilder builder;
         request_to_executor_ = {
-            { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
             { "/api/test", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetTestJson)).GetProduct() },
         };
     }
@@ -40,20 +38,6 @@ namespace http_handler {
         std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
-
-    void ApiHandler::ApiRegister(RequestNSender rns) {
-        std::string body = rns.request.body();
-        std::optional<user_data::RegistrationData> pd = serializer_->DeserializeRegData(std::move(body));
-        if(pd.has_value()) {
-            bool success = players_->RegisterPlayer(std::move(pd->login), std::move(pd->password));
-            if(success){
-                return SendSuccess(rns);
-            }
-            return SendLoginTaken(rns);
-        }
-        return SendWrongBodyData(rns);
-    }
-
 
     void ApiHandler::SendSuccess(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;

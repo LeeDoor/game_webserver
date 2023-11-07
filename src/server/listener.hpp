@@ -6,8 +6,7 @@ namespace http_server {
     class Listener : public std::enable_shared_from_this<Listener> {
     public:
         Listener(net::io_context& ioc, const tcp::endpoint& endpoint, 
-            std::shared_ptr<serializer::ISerializer> serializer,
-            std::shared_ptr<user_data::Players> players);
+            std::shared_ptr<serializer::ISerializer> serializer);
 
         void Run();
     private:
@@ -20,6 +19,5 @@ namespace http_server {
         net::io_context& ioc_;
         tcp::acceptor acceptor_;
         std::shared_ptr<serializer::ISerializer> serializer_;
-        std::shared_ptr<user_data::Players> players_;
     };
 }
