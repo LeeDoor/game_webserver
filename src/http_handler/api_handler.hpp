@@ -2,13 +2,14 @@
 #include "api_function_builder.hpp"
 #include "i_serializer.hpp"
 #include "response_builder.hpp"
+#include "handler_parameters.hpp"
 #include <map>
 
 namespace http_handler {
     using namespace serializer;
     class ApiHandler :  public std::enable_shared_from_this<ApiHandler> {
     public:
-        ApiHandler(std::shared_ptr<ISerializer> serializer);
+        ApiHandler(HandlerParameters handler_parameters);
         void Init();
         
         void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);

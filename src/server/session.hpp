@@ -9,9 +9,9 @@ namespace http_server {
     class Session : public std::enable_shared_from_this<Session> {
     public:
         explicit Session(tcp::socket &&socket, 
-            std::shared_ptr<serializer::ISerializer> serializer) :
+            http_handler::HandlerParameters handler_parameters) :
             stream_(std::move(socket)), 
-            request_handler_(serializer) {
+            request_handler_(handler_parameters) {
         }
 
         Session(const Session &) = delete;

@@ -33,14 +33,14 @@ int Initializer::StartServer() {
     unsigned num_threads = std::thread::hardware_concurrency(); // number of threads
 
     net::io_context ioc (static_cast<int>(num_threads)); // core io functionality for socket users
-    //boost::asio::ip::tcp::acceptor acceptor (net::make_strand(ioc), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT));
 
     const auto address = net::ip::make_address("127.0.0.1");
     constexpr net::ip::port_type port = PORT;
 
-    std::shared_ptr<serializer::ISerializer> serializer = std::make_shared<serializer::JSONSerializer>();
+    http_handler::HandlerParameters handler_parameters;
+    handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
 
-    http_server::ServeHttp(ioc, {address, port}, serializer);
+    http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });

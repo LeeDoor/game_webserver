@@ -5,8 +5,8 @@
             
 
 namespace http_handler {
-    ApiHandler::ApiHandler(std::shared_ptr<ISerializer> serializer) 
-        : serializer_(serializer){ }
+    ApiHandler::ApiHandler(HandlerParameters handler_parameters) 
+        : serializer_(handler_parameters.serializer){ }
     void ApiHandler::Init(){
         BuildTargetsMap();
     }

@@ -17,6 +17,7 @@ add_library(${LIBRARY_NAME}
         api_function.cpp
         api_function.hpp
         response_builder.hpp
+        handler_parameters.hpp
 )
 
 #including and linking dependencies

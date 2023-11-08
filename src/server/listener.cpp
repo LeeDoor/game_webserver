@@ -2,16 +2,18 @@
 
 namespace http_server {
     Listener::Listener(net::io_context& ioc, const tcp::endpoint& endpoint, 
-            std::shared_ptr<serializer::ISerializer> serializer) :
-            ioc_(ioc), acceptor_(net::make_strand(ioc)), serializer_(serializer) {
+            http_handler::HandlerParameters handler_parameters) :
+            ioc_(ioc), acceptor_(net::make_strand(ioc)), handler_parameters_(handler_parameters) {
         acceptor_.open(endpoint.protocol());
         acceptor_.set_option(net::socket_base::reuse_address(true));
         acceptor_.bind(endpoint);
         acceptor_.listen(net::socket_base::max_listen_connections);
     }
+
     void Listener::Run() {
         DoAccept();
     }
+
     void Listener::DoAccept() {
         acceptor_.async_accept(
                 net::make_strand(ioc_),
@@ -29,6 +31,6 @@ namespace http_server {
     }
 
     void Listener::AsyncRunSession(tcp::socket&& socket) {
-        std::make_shared<Session> (std::move(socket), serializer_)->Run();
+        std::make_shared<Session> (std::move(socket), handler_parameters_)->Run();
     }
 }

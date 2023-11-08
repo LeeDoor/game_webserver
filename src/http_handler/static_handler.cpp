@@ -1,13 +1,10 @@
-//
-// Created by leedoor on 22.08.23.
-//
-
 #include "static_handler.hpp"
 #include "response_builder.hpp"
 #include <iostream>
+
 namespace http_handler {
-    StaticHandler::StaticHandler(std::shared_ptr<ISerializer> serializer){
-        serializer_ = serializer;
+    StaticHandler::StaticHandler(HandlerParameters handler_parameters){
+        serializer_ = handler_parameters.serializer;
     }
 
     void StaticHandler::HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender) {

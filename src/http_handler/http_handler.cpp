@@ -1,9 +1,9 @@
 #include "http_handler.hpp"
 
 namespace http_handler{
-    HttpHandler::HttpHandler(std::shared_ptr<ISerializer> serializer) 
-        : serializer_(serializer), static_handler_(serializer){
-            api_handler_ = std::make_shared<ApiHandler>(serializer);
+    HttpHandler::HttpHandler(HandlerParameters handler_parameters) 
+        : static_handler_(handler_parameters){
+            api_handler_ = std::make_shared<ApiHandler>(handler_parameters);
             api_handler_->Init();
         }
 

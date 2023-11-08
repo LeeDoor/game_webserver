@@ -3,13 +3,14 @@
 #include <memory>
 #include "http_types.hpp"
 #include "i_serializer.hpp"
+#include "handler_parameters.hpp"
 
 namespace http_handler {
     using namespace serializer;
 
     class StaticHandler {
     public:
-        StaticHandler(std::shared_ptr<ISerializer> serializer);
+        StaticHandler(HandlerParameters handler_parameters);
 
         void HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender);
     private:
