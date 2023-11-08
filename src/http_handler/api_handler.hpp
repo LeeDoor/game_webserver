@@ -6,7 +6,6 @@
 #include <map>
 
 namespace http_handler {
-    using namespace serializer;
     class ApiHandler :  public std::enable_shared_from_this<ApiHandler> {
     public:
         ApiHandler(HandlerParameters handler_parameters);
@@ -19,7 +18,8 @@ namespace http_handler {
 
         //api functions
         void ApiGetTestJson(RequestNSender rns);
-        
+        void ApiRegister(RequestNSender rns);
+
         //api requests
         void SendSuccess(RequestNSender rns);
         
@@ -32,7 +32,8 @@ namespace http_handler {
         void SendUndefinedError(const ApiFunctionExecutor& executor, RequestNSender rns);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
-        std::shared_ptr<ISerializer> serializer_;
+        serializer::ISerializer::Ptr serializer_;
+        database_manager::IUserDataManager::Ptr uds_;
     };
 
 } // http_handler

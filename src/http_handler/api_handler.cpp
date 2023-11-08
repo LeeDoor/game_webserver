@@ -6,7 +6,7 @@
 
 namespace http_handler {
     ApiHandler::ApiHandler(HandlerParameters handler_parameters) 
-        : serializer_(handler_parameters.serializer){ }
+        : serializer_(handler_parameters.serializer), uds_(handler_parameters.user_data_manager){ }
     void ApiHandler::Init(){
         BuildTargetsMap();
     }
@@ -30,6 +30,7 @@ namespace http_handler {
         ApiFunctionBuilder builder;
         request_to_executor_ = {
             { "/api/test", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetTestJson)).GetProduct() },
+            { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
         };
     }
 
@@ -37,6 +38,21 @@ namespace http_handler {
         ResponseBuilder<http::string_body> builder;
         std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
+    }
+    
+    void ApiHandler::ApiRegister(RequestNSender rns) {
+        ResponseBuilder<http::string_body> builder;
+        std::optional<database_manager::RegistrationData> ud;
+        ud = serializer_->DeserializeUserData(rns.request.body());
+        if(!ud.has_value()) {
+            return SendWrongBodyData(rns);
+        }
+        boost::uuids::uuid uuid = uds_->GenerateUuid(); 
+        bool add_line_res = uds_->AddLine({uuid, std::move(ud->login), std::move(ud->password)});
+        if(!add_line_res){
+            return SendLoginTaken(rns);
+        }
+        return SendSuccess(rns);
     }
 
     void ApiHandler::SendSuccess(RequestNSender rns) {

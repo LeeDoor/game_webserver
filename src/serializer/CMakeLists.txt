@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(DEPENDENCIES )
+set(DEPENDENCIES database_manager)
 set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -7,6 +7,8 @@ add_library(${LIBRARY_NAME}
     i_serializer.hpp
     json_serializer.cpp
     json_serializer.hpp
+    type_serializer.cpp
+    type_serializer.hpp
 )
 
 #including and linking dependencies

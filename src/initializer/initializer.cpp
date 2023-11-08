@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <iostream>
 #include "json_serializer.hpp"
+#include "user_data_postgres.hpp"
 
 #define PORT 9999
 
@@ -39,6 +40,7 @@ int Initializer::StartServer() {
 
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
+    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>();
 
     http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{
