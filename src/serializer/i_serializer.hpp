@@ -15,9 +15,10 @@ namespace serializer{
         virtual std::string SerializeEmpty() = 0;
         virtual std::string SerializeError(std::string&& error_name, std::string&& desc) = 0;
         virtual std::string SerializeMap(std::map<std::string, std::string>&& map) = 0;
+        virtual std::string SerializeRegData(const dm::RegistrationData& rd) = 0;
 
         //deserialize
-        virtual std::optional<dm::RegistrationData> DeserializeUserData(const std::string& json) = 0;
+        virtual std::optional<dm::RegistrationData> DeserializeRegData(const std::string& json) = 0;
 
     };
 }

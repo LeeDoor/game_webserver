@@ -2,6 +2,7 @@
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
 #define EMPTY_JSON "{}"
+#include <iostream>
 
 namespace serializer{
     std::string JSONSerializer::SerializeEmpty() {
@@ -20,14 +21,20 @@ namespace serializer{
         }
         return obj.dump();
     } 
+    std::string JSONSerializer::SerializeRegData(const dm::RegistrationData& rd) {
+        nlohmann::json json = rd;
+        return json.dump();
+    }
 
-     std::optional<dm::RegistrationData> JSONSerializer::DeserializeUserData(const std::string& json_str) {
+    std::optional<dm::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
         dm::RegistrationData rd;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             rd = j.template get<dm::RegistrationData>();
         }
-        catch(...){
+        catch(std::exception ex){
+            std::cout << ex.what() << std::endl;
+            std::cout << json_str << std::endl;
             return std::nullopt;
         }
         return rd;

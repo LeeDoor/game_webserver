@@ -43,7 +43,7 @@ namespace http_handler {
     void ApiHandler::ApiRegister(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::optional<database_manager::RegistrationData> ud;
-        ud = serializer_->DeserializeUserData(rns.request.body());
+        ud = serializer_->DeserializeRegData(rns.request.body());
         if(!ud.has_value()) {
             return SendWrongBodyData(rns);
         }
