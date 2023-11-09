@@ -11,11 +11,11 @@ sudo apt install cmake
 to build this application i created special shell script build.sh
 ```
 git clone https://github.com/LeeDoor/hex_chess_backend
-cd hex_chess_backend
-./build.sh
-./build/bin/hex_chess
+cd hex_chess_backend/scripts
+./build_no_tests.sh
+./run_app.sh
 ```
-port is 8080 by default
+port is 999 by default
 
 # uml diagrams
 while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)
@@ -28,5 +28,3 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [server](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md)
 * [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
 * [serializer(JSON)](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md)
-
-enjoy 
