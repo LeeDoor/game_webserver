@@ -8,7 +8,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 #options
-option(BUILD_TESTS "build with tests" OFF)
+option(BUILD_TESTS "build with tests" ON)
 add_subdirectory(src)
 if(BUILD_TESTS)
     add_subdirectory(tests)

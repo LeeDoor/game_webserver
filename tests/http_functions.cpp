@@ -55,3 +55,17 @@ void CheckStringResponse(const http::response<http::string_body>& response,
         }
     }
 }
+
+http::response<http::string_body> GetResponseToRequest(bool is_head, http::request<http::string_body>& request, tcp::socket& socket) {
+    REQUIRE_NOTHROW(http::write(socket, request));
+    beast::flat_buffer buffer;
+    http::response<http::string_body> response;
+    if(!is_head){
+        REQUIRE_NOTHROW(http::read(socket, buffer, response));
+        return response;
+    }
+    http::response_parser<http::string_body> parser;
+    REQUIRE_NOTHROW(http::read_header(socket, buffer, parser));
+    response = parser.get();
+    return response;
+}

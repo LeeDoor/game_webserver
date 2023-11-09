@@ -92,7 +92,8 @@ namespace http_handler {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_method", "method not allowed");
         const std::vector<http::verb>& methods = executor.GetApiFunction().GetAllowedMethods();
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::method_not_allowed).Allow(methods).GetProduct());
+        bool can_head = std::find(methods.begin(), methods.end(), http::verb::head) != methods.end();
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method(), can_head).Status(status::method_not_allowed).Allow(methods).GetProduct());
     }
     void ApiHandler::SendUndefinedError(const ApiFunctionExecutor& executor, RequestNSender rns){
         ResponseBuilder<http::string_body> builder;

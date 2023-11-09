@@ -20,3 +20,5 @@ void CheckStringResponse(const http::response<http::string_body>& response,
                         std::string&& body, 
                         std::string&& content_type, 
                         std::vector<std::string>&& allow_expected);
+
+http::response<http::string_body> GetResponseToRequest(bool is_head, http::request<http::string_body>& request, tcp::socket& socket);

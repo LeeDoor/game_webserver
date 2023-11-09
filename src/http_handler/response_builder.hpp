@@ -7,20 +7,20 @@ namespace http_handler{
     public:
         //ONLY IF BodyType IS http::string_body
         //sets body string to given
-        ResponseBuilder& BodyText(std::string&& body, http::verb method) {
+        ResponseBuilder& BodyText(std::string&& body, http::verb method, bool can_head = true) {
             response_.content_length(body.size());
-            if(method != http::verb::head)
+            if(method != http::verb::head || !can_head)
                 response_.body() = std::move(body);
             response_.set(http::field::content_type, TEXT_JSON); 
             return *this;
         }
         //ONLY IF BodyType IS http::file_body
         //sets body file to given in path
-        ResponseBuilder& File(const fs::path& path, http::verb method) {
+        ResponseBuilder& File(const fs::path& path, http::verb method, bool can_head = true) {
             http::file_body::value_type file;
             beast::error_code ec;
             file.open(path.c_str(), beast::file_mode::read, ec);
-            if(method != http::verb::head)
+            if(method != http::verb::head || !can_head)
                 response_.body() = std::move(file);
             std::string extension = extensions[path.string().substr(1 + path.string().rfind("."))];
             response_.set(http::field::content_type, extension);
