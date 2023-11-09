@@ -21,16 +21,16 @@ namespace serializer{
         }
         return obj.dump();
     } 
-    std::string JSONSerializer::SerializeRegData(const dm::RegistrationData& rd) {
+    std::string JSONSerializer::SerializeRegData(const hh::RegistrationData& rd) {
         nlohmann::json json = rd;
         return json.dump();
     }
 
-    std::optional<dm::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
-        dm::RegistrationData rd;
+    std::optional<hh::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
+        hh::RegistrationData rd;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            rd = j.template get<dm::RegistrationData>();
+            rd = j.template get<hh::RegistrationData>();
         }
         catch(std::exception ex){
             std::cout << ex.what() << std::endl;

@@ -8,7 +8,7 @@
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
-namespace dm = database_manager;
+namespace hh = http_handler;
 using tcp = net::ip::tcp;
 
 

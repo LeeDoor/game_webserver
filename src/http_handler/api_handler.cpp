@@ -42,13 +42,16 @@ namespace http_handler {
     
     void ApiHandler::ApiRegister(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
-        std::optional<database_manager::RegistrationData> ud;
-        ud = serializer_->DeserializeRegData(rns.request.body());
-        if(!ud.has_value()) {
+        std::optional<http_handler::RegistrationData> rd;
+        rd = serializer_->DeserializeRegData(rns.request.body());
+        if(!rd.has_value()) {
             return SendWrongBodyData(rns);
         }
+        if(!ValidateRegData(*rd)){
+            return SendWrongLoginOrPassword(rns);
+        }
         boost::uuids::uuid uuid = uds_->GenerateUuid(); 
-        bool add_line_res = uds_->AddLine({uuid, std::move(ud->login), std::move(ud->password)});
+        bool add_line_res = uds_->AddLine({uuid, std::move(rd->login), std::move(rd->password)});
         if(!add_line_res){
             return SendLoginTaken(rns);
         }
@@ -70,6 +73,11 @@ namespace http_handler {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("login_taken", "login is already taken");
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::conflict).GetProduct());
+    }
+    void ApiHandler::SendWrongLoginOrPassword(RequestNSender rns){
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)");
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
     
         

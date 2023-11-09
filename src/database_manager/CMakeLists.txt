@@ -8,6 +8,7 @@ add_library(${LIBRARY_NAME}
     user_data_postgres.hpp
     user_data.hpp
     registration_data.hpp
+    registration_data.cpp
 )
 
 #including and linking dependencies

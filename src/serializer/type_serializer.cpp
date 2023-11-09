@@ -1,6 +1,6 @@
 #include "type_serializer.hpp"
 
-namespace database_manager {
+namespace http_handler {
     void to_json(json& j, const RegistrationData& rd) {
         j = json{{"login", rd.login}, {"password", rd.password}};
     }

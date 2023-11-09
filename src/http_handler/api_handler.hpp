@@ -26,6 +26,7 @@ namespace http_handler {
         void SendWrongApiFunction(RequestNSender rns);
         void SendWrongBodyData(RequestNSender rns);
         void SendLoginTaken(RequestNSender rns);
+        void SendWrongLoginOrPassword(RequestNSender rns);
 
         void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
         void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);
