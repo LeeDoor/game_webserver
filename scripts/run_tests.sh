@@ -1,2 +1,6 @@
+
 cd ../cmake-build-debug/bin
-./tests $1 
+./executable & 
+FOO_PID=$!
+./tests $1
+kill $FOO_PID 
