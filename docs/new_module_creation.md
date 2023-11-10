@@ -10,13 +10,13 @@ flowchart
     initializer --"starts server"--> server
     server --"passes request handling to"--> http_handler
     http_handler --"uses serializer to send and get requests with JSON"--> serializer
-    http_handler --"uses user_data to communicate with db"--> user_data
+    http_handler --"uses database_manager to get information from db and set it to db"--> database_manager
 
     click initializer "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/initializer.md"
     click server "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md"
     click http_handler "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md"
     click serializer "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md"
-    click user_data "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/user_data.md"
+    click database_manager "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/database_manager.md"
 ```
 
 each node is clickable to read more info about module.
