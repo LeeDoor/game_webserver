@@ -29,11 +29,5 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
 * [serializer(JSON)](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md)
 
-# testing
-i am testing my application using **[Catch2](https://github.com/catchorg/Catch2)** framework. all test source files are being built in one single executable. if you want to launch only one concrete test, you can use flags which catch2 gives to you. for example, if you want to test only api-oriented tests, you should go to *scripts* folder, build app with tests and launch them:
-```
-./build_with_tests.sh
-./run_tests.sh [api]
-```
-run_tests.sh script takes parameters and passes it to executable. also run_tests.sh launches application before tests and kills it after, so if you dont want to kill application by yourself, **dont Ctrl+C** while tests are running. 
-more info about Catch2 command line flags see [here](https://github.com/catchorg/Catch2/blob/devel/docs/command-line.md)
+how to write tests, naming rules etc. [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/tests.md)
+
