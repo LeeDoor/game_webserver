@@ -8,14 +8,14 @@ to run server on your machine, you need to have conan(1.60) and cmake installed 
 pip install conan==1.*
 sudo apt install cmake
 ```
-to build this application i created special shell script build.sh
+to build application there are several useful scripts in special folder. for example you can build_with_tests.sh or build_no_tests.sh:
 ```
 git clone https://github.com/LeeDoor/hex_chess_backend
-cd hex_chess_backend
-./build.sh
-./build/bin/hex_chess
+cd hex_chess_backend/scripts
+./build_no_tests.sh
+./run_app.sh
 ```
-port is 8080 by default
+port is 9999 by default
 
 # uml diagrams
 while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)
@@ -28,6 +28,9 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [server](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md)
 * [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
 * [serializer(JSON)](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md)
+<<<<<<< HEAD
 * [database_manager](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/database_manager.md)
 
 enjoy 
+=======
+>>>>>>> 58364fbf94d70d96a2091b3e43031662fdd0931e
