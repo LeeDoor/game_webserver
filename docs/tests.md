@@ -5,16 +5,7 @@ cd scripts
 ./build_with_tests.sh
 ./run_tests.sh [api]
 ```
-run_tests.sh script takes parameters and passes it to catch2's executable. also run_tests.sh launches application before tests and kills it after, so if you dont want to kill application by yourself, **dont Ctrl+C** while tests are running. 
-if it happened, please write next commands:
-```
-$ ps
-    PID TTY          TIME CMD
-   3896 pts/0    00:00:00 bash
-   XXXX pts/0    00:00:00 executable
-   9199 pts/0    00:00:00 ps
-$ kill XXXX
-```
-**ps** will print all running processes with process id (PID). find process with name **executable** and write **kill** command with executable's PID as a parameter.
+run_tests.sh script takes parameters and passes it to catch2's executable. also run_tests.sh launches application before tests and kills it after even if you press Ctrl+C. 
+eter.
 
 more info about Catch2 command line flags see [here](https://github.com/catchorg/Catch2/blob/devel/docs/command-line.md)
