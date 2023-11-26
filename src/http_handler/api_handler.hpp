@@ -19,14 +19,17 @@ namespace http_handler {
         //api functions
         void ApiGetTestJson(RequestNSender rns);
         void ApiRegister(RequestNSender rns);
+        void ApiLogin(RequestNSender rns);
 
         //api requests
         void SendSuccess(RequestNSender rns);
+        void SendToken(RequestNSender rns, database_manager::Token& token);
         
         void SendWrongApiFunction(RequestNSender rns);
         void SendWrongBodyData(RequestNSender rns);
         void SendLoginTaken(RequestNSender rns);
         void SendWrongLoginOrPassword(RequestNSender rns);
+        void SendNoSuchUser(RequestNSender rns);
 
         void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
         void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);
@@ -35,6 +38,7 @@ namespace http_handler {
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         database_manager::IUserDataManager::Ptr uds_;
+        database_manager::TokenToUuid::Ptr ttu_;
     };
 
 } // http_handler

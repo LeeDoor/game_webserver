@@ -6,7 +6,9 @@
 
 namespace http_handler {
     ApiHandler::ApiHandler(HandlerParameters handler_parameters) 
-        : serializer_(handler_parameters.serializer), uds_(handler_parameters.user_data_manager){ }
+        :   serializer_(handler_parameters.serializer), 
+            uds_(handler_parameters.user_data_manager),
+            ttu_(handler_parameters.token_to_uuid){}
     void ApiHandler::Init(){
         BuildTargetsMap();
     }
@@ -31,6 +33,7 @@ namespace http_handler {
         request_to_executor_ = {
             { "/api/test", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetTestJson)).GetProduct() },
             { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
+            { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
         };
     }
 
@@ -39,10 +42,9 @@ namespace http_handler {
         std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
-    
     void ApiHandler::ApiRegister(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
-        std::optional<http_handler::RegistrationData> rd;
+        std::optional<RegistrationData> rd;
         rd = serializer_->DeserializeRegData(rns.request.body());
         if(!rd.has_value()) {
             return SendWrongBodyData(rns);
@@ -57,10 +59,34 @@ namespace http_handler {
         }
         return SendSuccess(rns);
     }
+    void ApiHandler::ApiLogin(RequestNSender rns) {
+        ResponseBuilder<http::string_body> builder;
+        std::optional<RegistrationData> rd;
+        rd = serializer_->DeserializeRegData(rns.request.body());
+        if(!rd.has_value()) {
+            return SendWrongBodyData(rns);
+        }
+        if(!ValidateRegData(*rd)){
+            return SendWrongLoginOrPassword(rns);
+        }
+        std::optional<database_manager::UserData> ud;
+        ud = uds_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
+        if(!ud){
+            return SendNoSuchUser(rns);
+        }
+        database_manager::Token token = ttu_->GenerateToken();
+        ttu_->AddTokenToUuid(token, ud->uuid);
+        return SendToken(rns, token);
+    }
 
     void ApiHandler::SendSuccess(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeEmpty();
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
+    }
+    void ApiHandler::SendToken(RequestNSender rns, database_manager::Token& token){
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeMap({{"token", token}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
     
@@ -77,6 +103,11 @@ namespace http_handler {
     void ApiHandler::SendWrongLoginOrPassword(RequestNSender rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)");
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+    }
+    void ApiHandler::SendNoSuchUser(RequestNSender rns){
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("no_such_user", "no user with this login or password");
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
     
