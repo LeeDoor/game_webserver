@@ -1,6 +1,8 @@
 add_executable(tests 
-    http_functions.hpp 
-    http_functions.cpp 
+    api_functions.cpp
+    api_functions.hpp
+    socket_functions.hpp 
+    socket_functions.cpp 
     test_api_test.cpp 
     test_jsonserializer.cpp
     test_api_register.cpp

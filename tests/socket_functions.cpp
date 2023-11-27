@@ -1,4 +1,6 @@
-#include "http_functions.hpp"
+#include "socket_functions.hpp"
+#include <boost/algorithm/string/classification.hpp> // for boost::is_any_of
+#include <boost/algorithm/string/split.hpp> // boost::split
 
 void ConnectSocket(net::io_context& ioc, tcp::socket& socket){
     tcp::resolver resolver(ioc); 
