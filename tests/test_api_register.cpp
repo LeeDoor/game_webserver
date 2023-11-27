@@ -8,7 +8,6 @@ TEST_CASE("server register players", "[api][register]") {
     tcp::socket socket{ioc};
 
     ConnectSocket(ioc, socket);
-    REQUIRE(socket.is_open());
 
     std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
     std::string LOGIN_TAKEN = serializer->SerializeError("login_taken", "login is already taken");

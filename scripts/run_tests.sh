@@ -8,5 +8,5 @@ trap cleanup SIGINT # for cleanup
 cd ../cmake-build-debug/bin
 ./executable & 
 FOO_PID=$!
-./tests $@
+./tests $@ 
 kill $FOO_PID 

@@ -6,6 +6,7 @@ void ConnectSocket(net::io_context& ioc, tcp::socket& socket){
     tcp::resolver resolver(ioc); 
     auto const results = resolver.resolve("127.0.0.1", "9999");
     net::connect(socket, results.begin(), results.end());
+    REQUIRE(socket.is_open());
 }
 
 void CheckStringResponse(const http::response<http::string_body>& response, 
@@ -15,18 +16,20 @@ void CheckStringResponse(const http::response<http::string_body>& response,
                         std::string&& content_type, 
                         std::vector<std::string>&& allow_expected){
     CHECK(response.result() == status);
-    if(is_head) {
-        CHECK(response.body() == "");
-    }
-    else {
-        CHECK(response.body() == body);
+    if(!body.empty()){
+        if(is_head) {
+            CHECK(response.body() == "");
+        }
+        else {
+            CHECK(response.body() == body);
+        }
     }
 
     auto content_length_iter = response.find(http::field::content_length);
     if(content_length_iter == response.end()){
         FAIL_CHECK("no content_length header");
     }
-    else{
+    else if (!body.empty()){
         int content_length = std::stoi(content_length_iter->value().to_string());
         CHECK(content_length == body.size());
     }

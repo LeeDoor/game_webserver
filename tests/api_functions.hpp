@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include "user_data.hpp"
+#include "token.hpp"
 #include "json_serializer.hpp"
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -9,12 +10,20 @@ namespace net = boost::asio;
 using tcp = net::ip::tcp;
 namespace hh = http_handler;
 using namespace serializer;
+using namespace token_manager;
 
-#define REGISTER_API "/api/register"
-#define VALID_PASS "01Veterduet2000"
+#define LOGIN_API       "/api/login"
+#define REGISTER_API    "/api/register"
+
+#define VALID_PASS      "01Veterduet2000"
+
+struct LoginData{
+    Token token;
+    std::string login;
+};
 
 http::response<http::string_body> Register(tcp::socket& socket, const std::string& login, const std::string& password, ISerializer::Ptr serializer);
 std::string RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
 
-http::response<http::string_body> Login(tcp::socket&, std::string& login, std::string& password);
-database_manager::UserData LoginSuccess(tcp::socket&);
+http::response<http::string_body> Login(tcp::socket&, const std::string& login, const std::string& password, ISerializer::Ptr serializer);
+LoginData LoginSuccess(tcp::socket&, const std::string& nn, ISerializer::Ptr serializer);
