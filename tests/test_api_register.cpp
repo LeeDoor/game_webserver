@@ -23,24 +23,26 @@ TEST_CASE("server register players", "[api][register]") {
             CheckStringResponse(response, false, http::status::conflict, std::move(LOGIN_TAKEN), "application/json", {});
         }
     }
-    SECTION ("request with incorrect login"){
-        http::response<http::string_body> response = Register(socket, "", VALID_PASS, serializer);
-        std::string required_error;
-        CheckStringResponse(response, false, http::status::bad_request, std::move(WRONG_LOGIN_OR_PASSWORD), "application/json", {});
-    }
-    SECTION ("request with too short password with digit"){
+    SECTION ("request with incorrect login or password"){
+        std::string login, password;
+        SECTION ("request with incorrect login"){
+            login = "";
+            password = VALID_PASS;
+        }
+        SECTION ("request with too short password with digit"){
+            login = "incorrect_password_test_1";
+            password = "pswd1";
+        }
+        SECTION ("request with normal sized password without digits"){
+            login = "incorrect_password_test_2";
+            password = "normalsized_password_no_digits";
+        }
+        SECTION ("request with short password without literals"){
+            login = "incorrect_password_test_3";
+            password = "123";
+        }
         http::response<http::string_body> response;
-        response = Register(socket, "incorrect_password_test_1", "pswd1", serializer);
-        CheckStringResponse(response, false, http::status::bad_request, std::move(WRONG_LOGIN_OR_PASSWORD), "application/json", {});
-    }
-    SECTION ("request with normal sized password without digits"){
-        http::response<http::string_body> response;
-        response = Register(socket, "incorrect_password_test_2", "normalsized_password_no_digits", serializer);
-        CheckStringResponse(response, false, http::status::bad_request, std::move(WRONG_LOGIN_OR_PASSWORD), "application/json", {});
-    }
-    SECTION ("request with short password without literals"){
-        http::response<http::string_body> response;
-        response = Register(socket, "incorrect_password_test_3", "123", serializer);
+        response = Register(socket, login, password, serializer);
         CheckStringResponse(response, false, http::status::bad_request, std::move(WRONG_LOGIN_OR_PASSWORD), "application/json", {});
     }
     SECTION ("request with incorrect method must fail"){
@@ -54,8 +56,6 @@ TEST_CASE("server register players", "[api][register]") {
             http::response<http::string_body> response = GetResponseToRequest(false, req, socket);
             CheckStringResponse(response, false, http::status::method_not_allowed, std::move(METHOD_NOT_ALLOWED), "application/json", {"post"});
         }
-        
     }
-
     socket.close();
 }
