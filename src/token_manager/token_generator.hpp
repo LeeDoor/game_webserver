@@ -2,7 +2,7 @@
 #include <random>
 #include "token.hpp"
 
-namespace database_manager{
+namespace token_manager{
     class TokenGenerator {
     public:
         Token GenerateToken();

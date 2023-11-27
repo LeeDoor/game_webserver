@@ -2,7 +2,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace database_manager{
+namespace token_manager{
     Token TokenGenerator::GenerateToken(){
         std::stringstream ss;
         uint64_t key1 = generator1_();

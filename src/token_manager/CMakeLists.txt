@@ -1,14 +1,13 @@
 #initializer's dependencies
-set(DEPENDENCIES )
-set(LIBRARY_NAME database_manager)
+set(DEPENDENCIES)
+set(LIBRARY_NAME token_manager)
 #creating library
 add_library(${LIBRARY_NAME}
-    i_user_data_manager.hpp
-    user_data_postgres.cpp
-    user_data_postgres.hpp
-    user_data.hpp
-    registration_data.hpp
-    registration_data.cpp
+    token_to_uuid.cpp
+    token_to_uuid.hpp
+    token_generator.hpp
+    token_generator.cpp
+    token.hpp
 )
 
 #including and linking dependencies

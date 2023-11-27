@@ -1,6 +1,6 @@
 #include "token_to_uuid.hpp"
 
-namespace database_manager{
+namespace token_manager{
     Token TokenToUuid::GenerateToken() {
         TokenGenerator tg;
         Token t;

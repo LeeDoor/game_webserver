@@ -74,7 +74,7 @@ namespace http_handler {
         if(!ud){
             return SendNoSuchUser(rns);
         }
-        database_manager::Token token = ttu_->GenerateToken();
+        token_manager::Token token = ttu_->GenerateToken();
         ttu_->AddTokenToUuid(token, ud->uuid);
         return SendToken(rns, token);
     }
@@ -84,7 +84,7 @@ namespace http_handler {
         std::string body = serializer_->SerializeEmpty();
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
-    void ApiHandler::SendToken(RequestNSender rns, database_manager::Token& token){
+    void ApiHandler::SendToken(RequestNSender rns, token_manager::Token& token){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeMap({{"token", token}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());

@@ -41,7 +41,7 @@ int Initializer::StartServer() {
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
     handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>();
-    handler_parameters.token_to_uuid = std::make_shared<database_manager::TokenToUuid>();
+    handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
 
     http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{

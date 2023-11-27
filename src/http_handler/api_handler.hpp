@@ -23,7 +23,7 @@ namespace http_handler {
 
         //api requests
         void SendSuccess(RequestNSender rns);
-        void SendToken(RequestNSender rns, database_manager::Token& token);
+        void SendToken(RequestNSender rns, token_manager::Token& token);
         
         void SendWrongApiFunction(RequestNSender rns);
         void SendWrongBodyData(RequestNSender rns);
@@ -38,7 +38,7 @@ namespace http_handler {
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         database_manager::IUserDataManager::Ptr uds_;
-        database_manager::TokenToUuid::Ptr ttu_;
+        token_manager::TokenToUuid::Ptr ttu_;
     };
 
 } // http_handler

@@ -1,5 +1,5 @@
 #pragma once
 #include <string>
-namespace database_manager{
+namespace token_manager{
     using Token = std::string;
 }

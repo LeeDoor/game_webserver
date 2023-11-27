@@ -8,7 +8,7 @@ namespace http_handler{
     struct HandlerParameters{
         serializer::ISerializer::Ptr serializer;
         database_manager::IUserDataManager::Ptr user_data_manager;
-        database_manager::TokenToUuid::Ptr token_to_uuid;
+        token_manager::TokenToUuid::Ptr token_to_uuid;
     };
 
 }
