@@ -16,7 +16,7 @@ void from_json(const json& j, Error& p) {
     j.at("error_name").get_to(p.error_name);
     j.at("description").get_to(p.description);
 }
-void compare_errors(const Error& given, const Error& expected){
+void CompareErrors(const Error& given, const Error& expected){
     if(given.error_name != expected.error_name){
         FAIL_CHECK("error_name is wrong. given: " << given.error_name
                          << " expected: " << expected.error_name);
@@ -39,22 +39,22 @@ TEST_CASE("SerializeError", "[jsonserializer]") {
 
     REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("error name 1", "description 1")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
-    compare_errors(given, {"error name 1", "description 1"});
+    CompareErrors(given, {"error name 1", "description 1"});
 
     REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("", "description 1")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
-    compare_errors(given, {"", "description 1"});
+    CompareErrors(given, {"", "description 1"});
 
     REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("error name 1", "")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
-    compare_errors(given, {"error name 1", ""});
+    CompareErrors(given, {"error name 1", ""});
 
     REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("", "")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
-    compare_errors(given, {"", ""});
+    CompareErrors(given, {"", ""});
 }
 
-TEST_CASE("SerializeMap", "[jsonserializer]") {
+TEST_CASE("SerializeMap & DeserializeMap", "[jsonserializer]") {
     using StringMap = std::map<std::string, std::string>;
     
     JSONSerializer serializer;
@@ -62,13 +62,28 @@ TEST_CASE("SerializeMap", "[jsonserializer]") {
     StringMap given;
     json j;
 
-    map = {{"first", "second"}, {"third", "fourth"}};
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
-    REQUIRE_NOTHROW(given = j.template get<StringMap>());
-    CHECK(map == given);
+    SECTION("SerializeMap"){
+        map = {{"first", "second"}, {"third", "fourth"}};
+        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(given = j.template get<StringMap>());
+        CHECK(map == given);
 
-    map = {{"", ""}};
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
-    REQUIRE_NOTHROW(given = j.template get<StringMap>());
-    CHECK(map == given);
+        map = {{"", ""}};
+        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(given = j.template get<StringMap>());
+        CHECK(map == given);
+    }
+    SECTION("DeserializeMap"){
+        map = {{"biber", "dolik"}, {"dodster", "pizza"}};
+        for(auto pair : map){
+            j[pair.first] = pair.second;
+        }
+        auto is_given = serializer.DeserializeMap(j.dump());
+        REQUIRE(is_given);
+        given = *is_given;
+        for(auto pair : given){
+            REQUIRE(map.contains(pair.first));
+            CHECK(pair.second == map.at(pair.first));
+        }
+    }
 }

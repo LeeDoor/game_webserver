@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <vector>
 #include <optional>
 #include <memory>
 #include "registration_data.hpp"
@@ -19,6 +20,7 @@ namespace serializer{
 
         //deserialize
         virtual std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) = 0;
+        virtual std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) = 0;
 
     };
 }

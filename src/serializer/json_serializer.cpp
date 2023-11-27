@@ -39,4 +39,20 @@ namespace serializer{
         }
         return rd;
     }
+
+    std::optional<std::map<std::string, std::string>> JSONSerializer::DeserializeMap(const std::string& json_str) {
+        std::map<std::string, std::string> map;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            for(auto pair : j.items()){
+                map[pair.key()] = pair.value();
+            }
+        }
+        catch(std::exception ex){
+            std::cout << ex.what() << std::endl
+                    << json_str << std::endl;
+            return std::nullopt;
+        }
+        return map;
+    }
 }
