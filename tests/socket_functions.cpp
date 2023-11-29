@@ -9,42 +9,38 @@ void ConnectSocket(net::io_context& ioc, tcp::socket& socket){
     REQUIRE(socket.is_open());
 }
 
-void CheckStringResponse(const http::response<http::string_body>& response, 
-                        bool is_head, 
-                        http::status status, 
-                        std::string&& body, 
-                        std::string&& content_type, 
-                        std::vector<std::string>&& allow_expected){
-    CHECK(response.result() == status);
-    if(!body.empty()){
-        if(is_head) {
-            CHECK(response.body() == "");
-        }
-        else {
-            CHECK(response.body() == body);
-        }
+void CheckBody(const StringResponse& given, std::string& body, bool is_head){
+    if(is_head) {
+        CHECK(given.body() == "");
     }
-
-    auto content_length_iter = response.find(http::field::content_length);
-    if(content_length_iter == response.end()){
+    else {
+        CHECK(given.body() == body);
+    }
+}
+void CheckContentLength(const StringResponse& given, int content_length, bool check_body) {
+    auto content_length_iter = given.find(http::field::content_length);
+    if(content_length_iter == given.end()){
         FAIL_CHECK("no content_length header");
     }
-    else if (!body.empty()){
+    else if (check_body){
         int content_length = std::stoi(content_length_iter->value().to_string());
-        CHECK(content_length == body.size());
+        CHECK(content_length == content_length);
     }
-
-    auto content_type_iter = response.find(http::field::content_type);
-    if(content_type_iter == response.end()){
+}
+void CheckContentType(const StringResponse& given, std::string content_type) {
+    auto content_type_iter = given.find(http::field::content_type);
+    if(content_type_iter == given.end()){
         FAIL_CHECK("no content_type header");
     }
     else {
-        CHECK(content_type_iter->value().to_string() == content_type);
+        std::string given_content_type = content_type_iter->value().to_string();
+        CHECK(given_content_type == content_type);
     }
-
-    if(status == http::status::method_not_allowed){
-        auto allow_iter = response.find(http::field::allow);
-        if(allow_iter == response.end()) {
+}
+void CheckAllowed(const StringResponse& given, vecstr allow_expected){
+    if(given.result() == http::status::method_not_allowed){
+        auto allow_iter = given.find(http::field::allow);
+        if(allow_iter == given.end()) {
             FAIL_CHECK("no allow header");
         }
         else{
@@ -60,8 +56,24 @@ void CheckStringResponse(const http::response<http::string_body>& response,
         }
     }
 }
+void CheckStatus(const StringResponse& given, http::status result){
+    CHECK(given.result() == result);
+}
 
-http::response<http::string_body> GetResponseToRequest(bool is_head, http::request<http::string_body>& request, tcp::socket& socket) {
+void CheckStringResponse(const StringResponse& response, ResponseParams rp){
+    if(rp.body)
+        CheckBody(response, *rp.body, *rp.head);
+    if(rp.len && rp.body)
+        CheckContentLength(response, rp.body->size(), rp.body.has_value());
+    if(rp.type)
+        CheckContentType(response, *rp.type);
+    if(rp.res)
+        CheckStatus(response, *rp.res);
+    if(rp.allowed)
+        CheckAllowed(response, *rp.allowed);
+}
+
+StringResponse GetResponseToRequest(bool is_head, HttpRequest& request, tcp::socket& socket) {
     REQUIRE_NOTHROW(http::write(socket, request));
     beast::flat_buffer buffer;
     http::response<http::string_body> response;

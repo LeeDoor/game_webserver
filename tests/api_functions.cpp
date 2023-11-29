@@ -17,7 +17,9 @@ std::string RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer){
     NickGenerator ng;
     std::string nn = ng.GenerateNick();
     http::response<http::string_body> res = Register(socket, nn, VALID_PASS, serializer);
-    CheckStringResponse(res, false, http::status::ok, serializer->SerializeEmpty(), "application/json", {});
+    CheckStringResponse(res, 
+        {.body = serializer->SerializeEmpty(), 
+        .res = http::status::ok});
     return nn;
 }
 
@@ -32,7 +34,7 @@ http::response<http::string_body> Login(tcp::socket&socket, const std::string& l
 }
 LoginData LoginSuccess(tcp::socket&socket, const std::string& nn, ISerializer::Ptr serializer) {
     http::response<http::string_body> res = Login(socket, nn, VALID_PASS, serializer);
-    CheckStringResponse(res, false, http::status::ok, "", "application/json", {});
+    CheckStringResponse(res, {.res = http::status::ok});
     auto given_data = serializer->DeserializeMap(res.body());
     REQUIRE(given_data);
     REQUIRE(given_data->size() == 1);

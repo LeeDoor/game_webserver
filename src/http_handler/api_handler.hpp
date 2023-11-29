@@ -17,7 +17,6 @@ namespace http_handler {
         void BuildTargetsMap();
 
         //api functions
-        void ApiGetTestJson(RequestNSender rns);
         void ApiRegister(RequestNSender rns);
         void ApiLogin(RequestNSender rns);
 

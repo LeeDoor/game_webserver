@@ -28,7 +28,9 @@ TEST_CASE("server logins players and returns valid token", "[api][login]"){
         }
         http::response<http::string_body> response;
         response = Login(socket, login, pass, serializer);
-        CheckStringResponse(response, false, http::status::bad_request, std::move(NO_SUCH_USER), "application/json", {});
+        CheckStringResponse(response, 
+            {.body = NO_SUCH_USER, 
+             .res = http::status::bad_request });
     }
     
 

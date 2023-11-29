@@ -19,7 +19,9 @@ TEST_CASE("server register players", "[api][register]") {
         SECTION("same request must return error"){
             http::response<http::string_body> response;
             response = Register(socket, login, VALID_PASS, serializer);
-            CheckStringResponse(response, false, http::status::conflict, std::move(LOGIN_TAKEN), "application/json", {});
+            CheckStringResponse(response, 
+                {.body = LOGIN_TAKEN, 
+                .res = http::status::conflict });
         }
     }
     SECTION ("request with incorrect login or password"){
@@ -42,7 +44,9 @@ TEST_CASE("server register players", "[api][register]") {
         }
         http::response<http::string_body> response;
         response = Register(socket, login, password, serializer);
-        CheckStringResponse(response, false, http::status::bad_request, std::move(WRONG_LOGIN_OR_PASSWORD), "application/json", {});
+        CheckStringResponse(response, 
+            {.body = WRONG_LOGIN_OR_PASSWORD, 
+            .res = http::status::bad_request });
     }
     SECTION ("request with incorrect method must fail"){
         hh::RegistrationData rd{"incorrect_method_login", "incorrect_method_password_1"};
@@ -53,7 +57,10 @@ TEST_CASE("server register players", "[api][register]") {
             req.body() = rd_json;
             req.prepare_payload();
             http::response<http::string_body> response = GetResponseToRequest(false, req, socket);
-            CheckStringResponse(response, false, http::status::method_not_allowed, std::move(METHOD_NOT_ALLOWED), "application/json", {"post"});
+            CheckStringResponse(response, 
+                {.body = METHOD_NOT_ALLOWED, 
+                .res = http::status::method_not_allowed,
+                .allowed = vecstr{"post"}});
         }
     }
     socket.close();

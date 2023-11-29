@@ -5,7 +5,6 @@ add_executable(tests
     socket_functions.cpp 
 
     test_jsonserializer.cpp
-    test_api_test.cpp 
     test_api_register.cpp
     test_api_login.cpp
 )

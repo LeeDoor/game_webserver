@@ -31,17 +31,11 @@ namespace http_handler {
     void ApiHandler::BuildTargetsMap() {
         ApiFunctionBuilder builder;
         request_to_executor_ = {
-            { "/api/test", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetTestJson)).GetProduct() },
             { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
             { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
         };
     }
 
-    void ApiHandler::ApiGetTestJson(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body =  serializer_->SerializeMap({{"SASI", "LALKA"}, {"LOL", "KEK"}});
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
-    }
     void ApiHandler::ApiRegister(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
         std::optional<RegistrationData> rd;
