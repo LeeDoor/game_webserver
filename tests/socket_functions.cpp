@@ -62,7 +62,7 @@ void CheckStatus(const StringResponse& given, http::status result){
 
 void CheckStringResponse(const StringResponse& response, ResponseParams rp){
     if(rp.body)
-        CheckBody(response, *rp.body, *rp.head);
+        CheckBody(response, *rp.body, rp.head);
     if(rp.len){
         if(rp.body)
             rp.len = rp.body->size();
