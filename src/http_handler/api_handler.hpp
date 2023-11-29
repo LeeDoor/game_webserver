@@ -17,6 +17,9 @@ namespace http_handler {
         void BuildTargetsMap();
         void ApiRegister(RequestNSender rns);
         void ApiLogin(RequestNSender rns);
+        void ApiGetProfileData(RequestNSender rns);
+
+        std::optional<tokenm::Token> GetTokenFromHeader(const std::string& header);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;

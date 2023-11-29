@@ -20,7 +20,8 @@ add_library(${LIBRARY_NAME}
         handler_parameters.hpp
         send_manager.hpp
         send_manager.cpp
-)
+        public_user_data.hpp
+    )
 
 #including and linking dependencies
 target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES})

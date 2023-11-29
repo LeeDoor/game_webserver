@@ -25,6 +25,10 @@ namespace serializer{
         nlohmann::json json = rd;
         return json.dump();
     }
+    std::string JSONSerializer::SerializePublicUserData(const hh::PublicUserData& pud) {
+        nlohmann::json json = pud;
+        return json.dump();
+    }
 
     std::optional<hh::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
         hh::RegistrationData rd;
@@ -39,7 +43,6 @@ namespace serializer{
         }
         return rd;
     }
-
     std::optional<std::map<std::string, std::string>> JSONSerializer::DeserializeMap(const std::string& json_str) {
         std::map<std::string, std::string> map;
         try{

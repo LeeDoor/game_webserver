@@ -16,6 +16,11 @@ namespace http_handler{
         std::string body = serializer_->SerializeMap({{"token", token}});
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
     }
+    void SendManager::SendUserData(RequestNSender rns, const PublicUserData& puser_data)  {
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializePublicUserData(puser_data);
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::ok).GetProduct());
+    }
 
     void SendManager::SendWrongApiFunction(RequestNSender rns) {
         ResponseBuilder<http::string_body> builder;
@@ -41,6 +46,21 @@ namespace http_handler{
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("no_such_user", "no user with this login or password");
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+    }
+    void SendManager::SendUnauthorized(RequestNSender rns) {
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("unathorized", "request must be authorized");
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
+    }
+    void SendManager::SendInvalidToken(RequestNSender rns) {
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("invalid_token", "request authorization is invalid");
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
+    }
+    void SendManager::SendTokenToRemovedPerson(RequestNSender rns) {
+        ResponseBuilder<http::string_body> builder;
+        std::string body = serializer_->SerializeError("person_removed", "person with this token is unavailable (prob. removed)");
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
     }
 
         

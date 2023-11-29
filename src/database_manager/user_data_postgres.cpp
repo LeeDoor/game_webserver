@@ -5,7 +5,7 @@ namespace database_manager{
     ids::uuid UserDataPostgres::GenerateUuid() {
         return ids::random_generator()();
     }
-    bool UserDataPostgres::AddLine(UserData&& user_data) {
+    bool UserDataPostgres::AddLine(const UserData& user_data) {
         if(std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
             return ud.login == user_data.login;
         }) != user_data_.end()){
@@ -14,7 +14,7 @@ namespace database_manager{
         user_data_.push_back(std::move(user_data));
         return true;
     }
-    std::optional<UserData> UserDataPostgres::GetByUuid(ids::uuid&& uuid) {
+    std::optional<UserData> UserDataPostgres::GetByUuid(const ids::uuid& uuid) {
         auto iter = std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
             return ud.uuid == uuid;
         });
@@ -22,7 +22,7 @@ namespace database_manager{
             return std::nullopt;
         return *iter;
     }
-    std::optional<UserData> UserDataPostgres::GetByLoginPassword(std::string&& login, std::string&& password) {
+    std::optional<UserData> UserDataPostgres::GetByLoginPassword(const std::string& login, const std::string& password) {
         auto iter = std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
             return ud.login == login && ud.password == password;
         });
