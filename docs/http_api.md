@@ -15,7 +15,7 @@ to get main index.html file it is not required to write file name. these two lin
 
 all non-ok responses have same body type. for example:
 
-```
+```js
 {
     "error_name": "object_is_not_found",
     "description": "object that you are trying to access is not found"
@@ -40,7 +40,7 @@ all non-ok responses have same body type. for example:
 - password size more or equal to **6**. must contain at least 1 digit
 
 **responses**
-* 200 OK
+* `200 OK`\
     registration is ok, user added
 
     *response body:*
@@ -48,14 +48,14 @@ all non-ok responses have same body type. for example:
     {}
     ```
     
-* 400 bad_request
+* `400 bad_request`\
     body data is wrong or login and password are invalid
 
     **error_name meanings**
     - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
     - **body_data_error**: body data is incorrect (watch example above)
 
-* 409 conflict
+* `409 conflict`\
     there is already a user with given login
 
     **error_name meanings**
@@ -78,7 +78,7 @@ all non-ok responses have same body type. for example:
 ```
 
 **responses**
-* 200 OK
+* `200 OK`\
     login is successful, token returned
     
     *response body"*
@@ -91,7 +91,7 @@ all non-ok responses have same body type. for example:
     - login size more or equal to **3**
     - password size more or equal to **6**. must contain at least 1 digit
 
-* 400 bad_request
+* `400 bad_request`\
     body data is wrong or login and password doesnt match to any registered user
 
     **error_name meanings**
@@ -110,7 +110,7 @@ all non-ok responses have same body type. for example:
 */api/profile*
 
 **responses**
-* 200 OK
+* `200 OK`\
     authorization is correct, send profile data in response
     
     *response body"*
@@ -121,7 +121,7 @@ all non-ok responses have same body type. for example:
     }
     ```
 
-* 401 unauthorized
+* `401 unauthorized`\
     no authorization header, invalid token or person with this token is removed
 
     **error_name meanings**
