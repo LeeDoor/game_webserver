@@ -15,10 +15,10 @@ TEST_CASE("server register players", "[api][register]") {
     std::string METHOD_NOT_ALLOWED = serializer->SerializeError("wrong_method", "method not allowed");
     
     SECTION("correct json request must add user only once with given login") {
-        std::string login = RegisterSuccess(socket, serializer);
+        hh::RegistrationData rd = RegisterSuccess(socket, serializer);
         SECTION("same request must return error"){
             http::response<http::string_body> response;
-            response = Register(socket, login, VALID_PASS, serializer);
+            response = Register(socket, rd.login, VALID_PASS, serializer);
             CheckStringResponse(response, 
                 {.body = LOGIN_TAKEN, 
                 .res = http::status::conflict });

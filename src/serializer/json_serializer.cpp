@@ -30,6 +30,19 @@ namespace serializer{
         return json.dump();
     }
 
+    std::optional<hh::PublicUserData> JSONSerializer::DeserializePublicUserData(const std::string& json_str) {
+        hh::PublicUserData pud;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            pud = j.template get<hh::PublicUserData>();
+        }
+        catch(std::exception ex){
+            std::cout << ex.what() << std::endl;
+            std::cout << json_str << std::endl;
+            return std::nullopt;
+        }
+        return pud;
+    }
     std::optional<hh::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
         hh::RegistrationData rd;
         try{

@@ -10,6 +10,7 @@ namespace serializer{
         std::string SerializeRegData(const hh::RegistrationData& rd) override;
         std::string SerializePublicUserData(const hh::PublicUserData& pud) override;
 
+        std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) override;
         std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) override;
         std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) override;
     };

@@ -3,6 +3,7 @@
 #include "nick_generator.hpp"
 #include "registration_data.hpp"
 #include "json_serializer.hpp"
+#include <sstream>
 
 http::response<http::string_body> Register(tcp::socket& socket, const std::string& login, const std::string& password, ISerializer::Ptr serializer){
     hh::RegistrationData rd{login, password};
@@ -13,14 +14,14 @@ http::response<http::string_body> Register(tcp::socket& socket, const std::strin
 
     return GetResponseToRequest(false, req, socket);
 }
-std::string RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer){
+hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer){
     NickGenerator ng;
     std::string nn = ng.GenerateNick();
     http::response<http::string_body> res = Register(socket, nn, VALID_PASS, serializer);
     CheckStringResponse(res, 
         {.body = serializer->SerializeEmpty(), 
         .res = http::status::ok});
-    return nn;
+    return {.login=nn, .password=VALID_PASS};
 }
 
 http::response<http::string_body> Login(tcp::socket&socket, const std::string& login, const std::string& password, ISerializer::Ptr serializer) {
@@ -41,4 +42,24 @@ LoginData LoginSuccess(tcp::socket&socket, const std::string& nn, ISerializer::P
     REQUIRE(given_data->contains("token"));
     Token token = given_data->at("token");
     return {token, nn};
+}
+
+http::response<http::string_body> Profile(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer){
+    http::request<http::string_body> request{http::verb::get, PROFILE_API, 11};;
+
+    std::stringstream ss;
+    ss << "Bearer " << token;
+    request.set(http::field::authorization, ss.str());
+
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
+    http::response<http::string_body> response = Profile(socket, token, serializer);
+    CheckStringResponse(response, 
+        {.res = http::status::ok});
+
+    auto is_pud = serializer->DeserializePublicUserData(response.body());
+    REQUIRE(is_pud);
+    return *is_pud;
 }

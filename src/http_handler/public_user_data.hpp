@@ -5,6 +5,7 @@
 namespace http_handler{
 
     struct PublicUserData{
+        PublicUserData() = default;
         PublicUserData(dm::UserData ud){
             login = ud.login;
             password = ud.password;
