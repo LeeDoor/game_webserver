@@ -13,12 +13,21 @@ this module contains a bunch of files to handle each http request. this module i
 * **ResponseMaker** - bunch of functions for preparing http responses. moved this to separate cpp because it takes a lot of lines to form it up each time i need it
 
 all handlers have [ISerializer](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md) object. this object can serialize/deserialize data to string and vice versa. made it with interface because i may want to change format from JSON to XML or smth in future.
+
+## ownership
+handlers contain objects to handle requests.
+* **serializer** - serializes and deserializes response and request bodies
+* **send_manager** - all api send functions moved here to avoid overwhelming api_handler class
+* **user_data_manager** - [database manager class](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/database_manager.md)
+* **token_to_uuid** - token manager class. contains map to get uuid of player by token see [more](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/token_manager.md)
+
 ## graph
 whole class system looks like this: 
 ```mermaid
 ---
 title: namespace http_handler
 ---
+
 classDiagram
     class HttpHandler {
         +operator() (http_request&&, sender&&)
@@ -36,12 +45,13 @@ classDiagram
         -BuildTargetsMap()
 
         -ApiFunctionMethod(RequestNSender)
-        -ApiResponseSender( StrResponseSender& )
-        -HandleApiError(ApiStatus, ApiFunctionExecutor&, StrResponseSender& )
-        -SendInFunctionError(ApiFunctionExecutor&, StrResponseSender&)
 
-        -ISerializer
-        -Players
+        -GetTokenFromHeader(header) token 
+
+        -serializer
+        -send_manager
+        -user_data_manager
+        -token_to_uuid
     }
 
     class StaticHandler {
@@ -52,7 +62,6 @@ classDiagram
         -IsSubdirectory(path, root): bool
 
         -ISerializer
-        
     }
 
     class ApiFunction {
@@ -88,14 +97,12 @@ classDiagram
         -response_: http::response < template_body_type >
     }
 
-    class JsonHandler 
     ApiHandler --> ResponseBuilder : uses
     StaticHandler --> ResponseBuilder : uses
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
-    JsonHandler <.. ApiHandler : depends
-    JsonHandler <.. StaticHandler :depends
     ApiHandler ..> ApiFunctionExecutor : contains map of
     ApiHandler --> ApiFunctionBuilder : uses
     ApiFunctionExecutor ..> ApiFunction : contains & calls
+
 ```
