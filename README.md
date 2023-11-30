@@ -28,6 +28,9 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [server](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md)
 * [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md)
 * [serializer(JSON)](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md)
+* [database_manager](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/database_manager.md)
+* [token_manager](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/token_manager.md)
+* [API](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_api.md)
 
 how to write tests, naming rules etc. [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/tests.md)
 
