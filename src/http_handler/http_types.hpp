@@ -2,18 +2,11 @@
 #include <boost/beast.hpp>
 #include <filesystem>
 
-namespace token_manager {}
-namespace database_manager {}
-
 namespace fs = std::filesystem;
 namespace net = boost::asio;
 namespace sys = boost::system;
 namespace beast = boost::beast;
 namespace http = beast::http;
-namespace tokenm = token_manager;
-namespace dm = database_manager;
-
-using namespace std::literals;
 
 using tcp = net::ip::tcp;
 using status = http::status;

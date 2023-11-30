@@ -10,3 +10,4 @@ namespace database_manager{
         std::string password;
     };
 }
+namespace dm = database_manager;
