@@ -1,5 +1,10 @@
 #include "send_manager.hpp"
 
+#define SEND_ERROR(ERROR_NAME, DESC, STATUS) \
+        ResponseBuilder<http::string_body> builder;\
+        std::string body = serializer_->SerializeError(ERROR_NAME, DESC);\
+        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(STATUS).GetProduct());
+
 namespace http_handler{
 
     SendManager::SendManager(serializer::ISerializer::Ptr ser){
@@ -23,44 +28,28 @@ namespace http_handler{
     }
 
     void SendManager::SendWrongApiFunction(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("api_error", "wrong api function");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+        SEND_ERROR("api_error", "wrong api function", status::bad_request)
     }
     void SendManager::SendWrongBodyData(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("body_data_error", "wrong body data");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+        SEND_ERROR("body_data_error", "wrong body data", status::bad_request)
     }
     void SendManager::SendLoginTaken(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("login_taken", "login is already taken");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::conflict).GetProduct());
+        SEND_ERROR("login_taken", "login is already taken", status::conflict)
     }
     void SendManager::SendWrongLoginOrPassword(RequestNSender rns){
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+        SEND_ERROR("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)", status::bad_request)
     }
     void SendManager::SendNoSuchUser(RequestNSender rns){
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("no_such_user", "no user with this login or password");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
+        SEND_ERROR("no_such_user", "no user with this login or password", status::bad_request)
     }
     void SendManager::SendUnauthorized(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("unathorized", "request must be authorized");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
+        SEND_ERROR("unathorized", "request must be authorized", status::unauthorized)
     }
     void SendManager::SendInvalidToken(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("invalid_token", "request authorization is invalid");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
+        SEND_ERROR("invalid_token", "request authorization is invalid", status::unauthorized)
     }
     void SendManager::SendTokenToRemovedPerson(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("person_removed", "person with this token is unavailable (prob. removed)");
-        rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(status::unauthorized).GetProduct());
+        SEND_ERROR("person_removed", "person with this token is unavailable (prob. removed)", status::unauthorized)
     }
 
         
