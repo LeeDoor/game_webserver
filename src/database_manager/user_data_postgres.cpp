@@ -1,6 +1,6 @@
 #include "user_data_postgres.hpp"
 #include "postgres_data_conversion.hpp"
-#include <iostream>
+
 namespace database_manager{    
     UserDataPostgres::UserDataPostgres() : pool_(CONNECTION_CAPACITY){}
 
@@ -30,7 +30,7 @@ namespace database_manager{
             return ud;
         } 
         catch (const std::exception& e) {
-            std::cout << "AAAAAA" << e.what() << std::endl;
+            std::cout << ex.what() << std::endl;
             return std::nullopt;
         }
         
@@ -46,7 +46,7 @@ namespace database_manager{
             return ud;
         } 
         catch (const std::exception& e) {
-            std::cout << "AAggegAAAA" << e.what() << std::endl;
+            std::cout << ex.what() << std::endl;
             return std::nullopt;
         }
     }
