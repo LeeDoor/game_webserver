@@ -7,10 +7,13 @@ add_library(${LIBRARY_NAME}
     user_data_postgres.cpp
     user_data_postgres.hpp
     user_data.hpp
+    postgres_connection_pool.hpp
+    postgres_connection_pool.cpp
+    postgres_data_conversion.hpp
 )
 
 #including and linking dependencies
-target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES})
+target_link_libraries(${LIBRARY_NAME}  ${DEPENDENCIES} ${CONAN_LIBS})
 foreach (dir IN ITEMS ${DEPENDENCIES})
     target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
 endforeach ()

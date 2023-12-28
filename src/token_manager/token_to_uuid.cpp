@@ -9,13 +9,13 @@ namespace token_manager{
 
         return std::move(t);
     }
-    std::optional<boost::uuids::uuid> TokenToUuid::GetUuidByToken(const Token& token) {
+    std::optional<std::string> TokenToUuid::GetUuidByToken(const Token& token) {
         if(map.contains(token)){
             return map.at(token);
         }
         return std::nullopt;
     }
-    void TokenToUuid::AddTokenToUuid(const Token& token, boost::uuids::uuid& uuid) {
+    void TokenToUuid::AddTokenToUuid(const Token& token, std::string& uuid) {
         if(map.contains(token)) map.erase(token);
         map[token] = uuid;
     }

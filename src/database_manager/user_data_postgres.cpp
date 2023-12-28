@@ -1,34 +1,54 @@
 #include "user_data_postgres.hpp"
-#include <boost/uuid/uuid_generators.hpp>
-
+#include "postgres_data_conversion.hpp"
+#include <iostream>
 namespace database_manager{    
-    ids::uuid UserDataPostgres::GenerateUuid() {
-        return ids::random_generator()();
-    }
-    bool UserDataPostgres::AddLine(const UserData& user_data) {
-        if(std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
-            return ud.login == user_data.login;
-        }) != user_data_.end()){
-            return false;
+    UserDataPostgres::UserDataPostgres() : pool_(CONNECTION_CAPACITY){}
+
+    bool UserDataPostgres::AddLine(UserData& user_data) {
+        try{
+            ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
+            pqxx::work trans(*cw);
+            pqxx::row uuid_pqxx = trans.exec1("SELECT gen_random_uuid();");
+            user_data.uuid = uuid_pqxx[0].as<std::string>();
+            trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", user_data.uuid, user_data.login, user_data.password);
+            trans.commit();
+            return true;
         }
-        user_data_.push_back(std::move(user_data));
-        return true;
+        catch(std::exception& ex){
+            std::cout << ex.what() << std::endl;
+        }
+        return false;
     }
-    std::optional<UserData> UserDataPostgres::GetByUuid(const ids::uuid& uuid) {
-        auto iter = std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
-            return ud.uuid == uuid;
-        });
-        if (iter == user_data_.end())
+    std::optional<UserData> UserDataPostgres::GetByUuid(const std::string& uuid) {
+        ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
+        pqxx::read_transaction trans(*cw);
+
+        try {
+            pqxx::row res = 
+                trans.exec_params1("SELECT * FROM users WHERE id=$1;", uuid);
+            UserData ud = from_result(res);
+            return ud;
+        } 
+        catch (const std::exception& e) {
+            std::cout << "AAAAAA" << e.what() << std::endl;
             return std::nullopt;
-        return *iter;
+        }
+        
     }
     std::optional<UserData> UserDataPostgres::GetByLoginPassword(const std::string& login, const std::string& password) {
-        auto iter = std::find_if(user_data_.begin(), user_data_.end(), [&](UserData& ud){
-            return ud.login == login && ud.password == password;
-        });
-        if (iter == user_data_.end())
+        ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
+        pqxx::read_transaction trans(*cw);
+
+        try {
+            pqxx::row res = 
+                trans.exec_params1("SELECT * FROM users WHERE login=$1 AND password=$2;", login, password);
+            UserData ud = from_result(res);
+            return ud;
+        } 
+        catch (const std::exception& e) {
+            std::cout << "AAggegAAAA" << e.what() << std::endl;
             return std::nullopt;
-        return *iter;
+        }
     }
 
 }

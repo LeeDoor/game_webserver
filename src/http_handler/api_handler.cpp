@@ -48,8 +48,8 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        boost::uuids::uuid uuid = uds_->GenerateUuid(); 
-        bool add_line_res = uds_->AddLine({uuid, std::move(rd->login), std::move(rd->password)});
+        database_manager::UserData ud {"", std::move(rd->login), std::move(rd->password)};
+        bool add_line_res = uds_->AddLine(ud);
         if(!add_line_res){
             return responser_.SendLoginTaken(rns);
         }
@@ -84,7 +84,7 @@ namespace http_handler {
         if(!token)
             return responser_.SendInvalidToken(rns);
 
-        std::optional<boost::uuids::uuid> uuid = ttu_->GetUuidByToken(*token);
+        std::optional<std::string> uuid = ttu_->GetUuidByToken(*token);
         if(!uuid)
             return responser_.SendInvalidToken(rns);
 

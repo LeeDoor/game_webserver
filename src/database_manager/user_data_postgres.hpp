@@ -1,16 +1,20 @@
 #pragma once
 #include "i_user_data_manager.hpp"
 #include <vector>
+#include "postgres_connection_pool.hpp"
+
+#define CONNECTION_CAPACITY 80
 
 namespace database_manager{
     class UserDataPostgres : public IUserDataManager {
     public:
-        ids::uuid GenerateUuid() override;
-        bool AddLine(const UserData& user_data) override;
-        std::optional<UserData> GetByUuid(const ids::uuid& uuid) override;
+        UserDataPostgres();
+
+        bool AddLine(UserData& user_data) override;
+        std::optional<UserData> GetByUuid(const std::string& uuid) override;
         std::optional<UserData> GetByLoginPassword(const std::string& login, const std::string& password) override;
 
     private:
-        std::vector<UserData> user_data_;
+        ConnectionPool pool_;
     };
 }
