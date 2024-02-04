@@ -24,6 +24,7 @@ function showCustomPopup(text, color) {
         newPopup.remove();
     }, 3000); 
 }
+
 document.getElementById('registerButton').addEventListener('click', function(event) {
     const regLogin = document.getElementById('regLogin').value;
     const regPass = document.getElementById('regPass').value;
@@ -61,9 +62,15 @@ document.getElementById('logButton').addEventListener('click', function(event) {
             showCustomPopup("login successful as " + data.login, "#00FF00"); 
             document.getElementById('loginText').textContent = data.login;
             localStorage.setItem('login', data.login);
+            localStorage.setItem('password', data.password);
+            return response.json();
         } else {
             showCustomPopup("login failed. check your data and try again", "#FF0000"); 
+            throw new Error('login failed');
         }
+    }).then(json=>{
+        console.log(json.token);
+        localStorage.setItem('token', json.token);
     });
 });
 
