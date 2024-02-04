@@ -25,6 +25,49 @@ function showCustomPopup(text, color) {
     }, 3000); 
 }
 
+function verifyToken(){
+    let res = false; // true if login is valid
+    fetch('http://localhost:9999/api/profile', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization':'Bearer' + localStorage.getItem('token')
+        }
+    }).then(response=>{
+        if (!response.ok){
+            res = false;
+            throw new Error('token expired');
+        }
+        else{
+            res = true;
+        }
+    }).catch(reason=>res = false);
+    if(res) return true;
+    const data = {
+        login: localStorage.getItem('login'),
+        password: localStorage.getItem('password')
+    };
+    fetch('http://localhost:9999/api/login', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response=>{
+        if (!response.ok){
+            res = false;
+            throw new Error('login data wrong');
+        }
+        else{
+            res = true;
+            return response.json();
+        }
+    }).then(json=>localStorage.setItem('token', json.token)
+    ).catch(reason=>res = false);
+    return res;
+
+}
+
 document.getElementById('registerButton').addEventListener('click', function(event) {
     const regLogin = document.getElementById('regLogin').value;
     const regPass = document.getElementById('regPass').value;

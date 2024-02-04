@@ -18,6 +18,7 @@ namespace http_handler {
         void ApiRegister(RequestNSender rns);
         void ApiLogin(RequestNSender rns);
         void ApiGetProfileData(RequestNSender rns);
+        void ApiEnqueue(RequestNSender rns);
 
         std::optional<tokenm::Token> GetTokenFromHeader(const std::string& header);
 

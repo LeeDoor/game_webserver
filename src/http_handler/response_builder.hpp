@@ -2,7 +2,7 @@
 #include "http_types.hpp"
 
 namespace http_handler{
-    template<typename BodyType>
+template<typename BodyType>
     class ResponseBuilder{
     public:
         //ONLY IF BodyType IS http::string_body
@@ -48,6 +48,8 @@ namespace http_handler{
         }
         //sets content_length and returns response object
         http::response<BodyType> GetProduct(){
+            response_.set(http::field::access_control_allow_origin, "*");
+            response_.set(http::field::access_control_allow_headers, "Content-Type, Authorization");
             return std::move(response_);
         }
     private:

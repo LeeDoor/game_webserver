@@ -47,11 +47,11 @@ namespace http_handler {
             { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
             { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
             { "/api/profile", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetProfileData)).GetProduct() },
+            { "/api/enqueue", builder.Post().ExecFunc(BIND(&ApiHandler::ApiEnqueue)).GetProduct() },
         };
     }
 
     void ApiHandler::ApiRegister(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
         std::optional<RegistrationData> rd;
         rd = serializer_->DeserializeRegData(rns.request.body());
         if(!rd.has_value()) {
@@ -68,7 +68,6 @@ namespace http_handler {
         return responser_.SendSuccess(rns);
     }
     void ApiHandler::ApiLogin(RequestNSender rns) {
-        ResponseBuilder<http::string_body> builder;
         std::optional<RegistrationData> rd;
         rd = serializer_->DeserializeRegData(rns.request.body());
         if(!rd.has_value()) {
@@ -87,7 +86,6 @@ namespace http_handler {
         return responser_.SendToken(rns, token);
     }
     void ApiHandler::ApiGetProfileData(RequestNSender rns){
-        ResponseBuilder<http::string_body> builder;
         auto auth_iter = rns.request.find(http::field::authorization);
         if (auth_iter == rns.request.end())
             return responser_.SendUnauthorized(rns);
@@ -105,6 +103,9 @@ namespace http_handler {
             return responser_.SendTokenToRemovedPerson(rns);
             
         return responser_.SendUserData(rns, *user_data);
+    }
+    void ApiHandler::ApiEnqueue(RequestNSender rns){ 
+        
     }
 
     std::optional<tokenm::Token> ApiHandler::GetTokenFromHeader(const std::string& header){
