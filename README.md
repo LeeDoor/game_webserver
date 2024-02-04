@@ -2,7 +2,7 @@
 backend part of pet-project Hexagonal Chess written on C++.
 
 # build and run
-to run server on your machine, you need to have conan(1.60) and cmake installed (also compilers etc).
+to run server on your machine, you need to have conan 1.60 (**conan 2.0 and newer wouldn't fit**) and cmake installed (also compilers etc).
 
 ```
 pip install conan==1.*
@@ -33,4 +33,3 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [API](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_api.md)
 
 how to write tests, naming rules etc. [here](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/tests.md)
-

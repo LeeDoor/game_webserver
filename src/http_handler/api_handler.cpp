@@ -17,6 +17,18 @@ namespace http_handler {
     void ApiHandler::HandleApiFunction(HttpRequest&& request, ResponseSender&& sender){
         std::string function = static_cast<std::string>(request.target());
         RequestNSender rns {request, sender};
+        std::cout << function << std::endl;
+        if(request.method() == http::verb::options){
+            ResponseBuilder<http::string_body> builder;
+            http::response<http::string_body> product = 
+                builder.Allow({http::verb::get, http::verb::head, http::verb::post})
+                .Status(status::ok)
+                .GetProduct();
+            product.set(http::field::access_control_allow_origin, "*");
+            product.set(http::field::access_control_allow_headers, "Content-Type, Authorization");
+            rns.sender.string(std::move(product));
+            return;
+        }
         if(request_to_executor_.contains(function)) {
             ApiFunctionExecutor& executor = request_to_executor_.at(function);
             ApiStatus result = executor.Execute(rns);

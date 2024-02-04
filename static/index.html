@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <style>
-        .flower {
-            width: 100px;
-            height: 100px;
-            background-color: #ff69b4; /* Pink color */
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .stem {
-            width: 10px;
-            height: 100px;
-            background-color: #228B22; /* Green color */
-            position: absolute;
-            bottom: 0;
-            left: 45px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration and Login</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <div class="flower">
-        <div class="stem"></div>
+    <div class="container">
+        <input type="text" id="logLogin" name="logLogin" placeholder="Enter username">
+        <br>
+        <input type="password" id="logPass" name="logPass" placeholder="Enter password">
+        <br>
+        <button id="logButton">Login</button>
+        <br>
+        <input type="text" id="regLogin" name="regLogin" placeholder="Create username">
+        <br>
+        <input type="password" id="regPass" name="regPass" placeholder="Create password">
+        <br>
+        <button id="registerButton">Register</button>
+        <br>
+        <a href="opponent_search.html"><button id="playButton">PLAY</button></a>
     </div>
+    <div id="loginText" class="loginText"></div>
+    <script src="index.js"></script>
 </body>
 </html>

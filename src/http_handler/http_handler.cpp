@@ -1,5 +1,5 @@
 #include "http_handler.hpp"
-
+#include <iostream>
 namespace http_handler{
     HttpHandler::HttpHandler(HandlerParameters handler_parameters) 
         : static_handler_(handler_parameters){

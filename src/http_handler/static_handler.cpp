@@ -8,7 +8,7 @@ namespace http_handler {
     }
 
     void StaticHandler::HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender) {
-        std::string path_str = static_cast<std::string>(request.target());
+        std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
         fs::path path = root.concat(path_str);
         RequestNSender rns{request,sender};
         if(!IsSubdirectory(std::move(path), std::move(root))) {
