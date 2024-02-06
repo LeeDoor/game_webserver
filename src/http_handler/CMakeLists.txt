@@ -23,6 +23,8 @@ add_library(${LIBRARY_NAME}
     public_user_data.hpp
     registration_data.hpp
     registration_data.cpp
+    get_token_from_header.hpp
+    get_token_from_header.cpp
 )
 
 #including and linking dependencies

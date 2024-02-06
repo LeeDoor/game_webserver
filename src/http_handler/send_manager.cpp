@@ -58,11 +58,18 @@ namespace http_handler{
         case ApiStatus::WrongMethod:
             SendWrongMethod(executor, rns);
             break;
+        case ApiStatus::Unauthorized:
+            SendUnauthorized(rns);
+            break;
+        case ApiStatus::InvalidToken:
+            SendInvalidToken(rns);
+            break;
         default:
             SendUndefinedError(executor, rns);
             break;
         }
     }
+    
     void SendManager::SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_method", "method not allowed");

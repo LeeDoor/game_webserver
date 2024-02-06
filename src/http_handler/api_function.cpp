@@ -11,7 +11,6 @@ namespace http_handler {
     const AllowedMethods& ApiFunction::GetAllowedMethods() const{
         return allowed_methods_;
     }
-
     void ApiFunction::operator()(RequestNSender rns) {
         executor_function_(rns);
     }

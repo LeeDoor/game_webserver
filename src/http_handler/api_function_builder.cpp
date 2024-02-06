@@ -21,8 +21,12 @@ namespace http_handler{
         executor_function_ = std::move(function);
         return *this;
     }
+    ApiFunctionBuilder& ApiFunctionBuilder::NeedAuthor(token_manager::TokenToUuid::Ptr ttu){
+        ttu_ = ttu;
+        return *this;
+    }
     ApiFunctionExecutor ApiFunctionBuilder::GetProduct() {
         //creating api function executor 
-        return {{std::move(executor_function_), std::move(allowed_methods_)}};
+        return {{std::move(executor_function_), std::move(allowed_methods_)}, ttu_};
     }
 }

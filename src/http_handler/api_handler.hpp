@@ -20,8 +20,6 @@ namespace http_handler {
         void ApiGetProfileData(RequestNSender rns);
         void ApiEnqueue(RequestNSender rns);
 
-        std::optional<tokenm::Token> GetTokenFromHeader(const std::string& header);
-
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         SendManager responser_;

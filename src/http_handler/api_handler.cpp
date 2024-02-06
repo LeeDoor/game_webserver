@@ -1,4 +1,5 @@
 #include "api_handler.hpp"
+#include "get_token_from_header.hpp"
 #include <iostream>
 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1)
@@ -46,7 +47,7 @@ namespace http_handler {
         request_to_executor_ = {
             { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
             { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
-            { "/api/profile", builder.GetHead().ExecFunc(BIND(&ApiHandler::ApiGetProfileData)).GetProduct() },
+            { "/api/profile", builder.NeedAuthor(ttu_).GetHead().ExecFunc(BIND(&ApiHandler::ApiGetProfileData)).GetProduct() },
             { "/api/enqueue", builder.Post().ExecFunc(BIND(&ApiHandler::ApiEnqueue)).GetProduct() },
         };
     }
@@ -87,17 +88,8 @@ namespace http_handler {
     }
     void ApiHandler::ApiGetProfileData(RequestNSender rns){
         auto auth_iter = rns.request.find(http::field::authorization);
-        if (auth_iter == rns.request.end())
-            return responser_.SendUnauthorized(rns);
-
         std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
-        if(!token)
-            return responser_.SendInvalidToken(rns);
-
         std::optional<std::string> uuid = ttu_->GetUuidByToken(*token);
-        if(!uuid)
-            return responser_.SendInvalidToken(rns);
-
         auto user_data = uds_->GetByUuid(*uuid);
         if(!user_data)
             return responser_.SendTokenToRemovedPerson(rns);
@@ -106,15 +98,6 @@ namespace http_handler {
     }
     void ApiHandler::ApiEnqueue(RequestNSender rns){ 
         
-    }
-
-    std::optional<tokenm::Token> ApiHandler::GetTokenFromHeader(const std::string& header){
-        if(header.substr(0, 7) == "Bearer "){
-            tokenm::Token token = header.substr(7);
-            if(token.size() == 32)
-                return token;
-        }
-        return std::nullopt;
     }
     
 } // http_handler

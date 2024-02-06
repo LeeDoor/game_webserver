@@ -11,7 +11,6 @@ namespace http_handler {
         ApiFunction(ExecutorFunction&& executor_function, AllowedMethods&& allowed_methods);
 
         const AllowedMethods& GetAllowedMethods() const;
-
         void operator()(RequestNSender rns);
 
     private:

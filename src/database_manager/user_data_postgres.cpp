@@ -11,6 +11,7 @@ namespace database_manager{
             pqxx::work trans(*cw);
             pqxx::row uuid_pqxx = trans.exec1("SELECT gen_random_uuid();");
             user_data.uuid = uuid_pqxx[0].as<std::string>();
+            std::cout << user_data.login.size() << " " << user_data.password.size() << std::endl;
             trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", user_data.uuid, user_data.login, user_data.password);
             trans.commit();
             return true;
