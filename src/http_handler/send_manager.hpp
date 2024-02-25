@@ -23,6 +23,7 @@ namespace http_handler{
         void SendUnauthorized(RequestNSender rns);
         void SendInvalidToken(RequestNSender rns);
         void SendTokenToRemovedPerson(RequestNSender rns);
+        void SendCantEnqueue(RequestNSender rns);
 
         void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
         void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);

@@ -42,6 +42,7 @@ int Initializer::StartServer() {
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
     handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>();
     handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
+    handler_parameters.mm_queue = std::make_shared<matchmaking_system::MMQueue>();
 
     http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{

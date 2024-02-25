@@ -20,11 +20,14 @@ namespace http_handler {
         void ApiGetProfileData(RequestNSender rns);
         void ApiEnqueue(RequestNSender rns);
 
+        tokenm::Token SenderAuthentication(const HttpRequest& request);
+
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         SendManager responser_;
         database_manager::IUserDataManager::Ptr uds_;
         token_manager::TokenToUuid::Ptr ttu_;
+        matchmaking_system::MMQueue::Ptr mm_queue_;
     };
 
 } // http_handler

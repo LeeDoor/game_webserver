@@ -10,6 +10,7 @@ namespace http_handler {
         :   serializer_(handler_parameters.serializer), 
             responser_(handler_parameters.serializer), 
             uds_(handler_parameters.user_data_manager),
+            mm_queue_(handler_parameters.mm_queue),
             ttu_(handler_parameters.token_to_uuid){}
     void ApiHandler::Init(){
         BuildTargetsMap();
@@ -39,7 +40,6 @@ namespace http_handler {
         else{
             responser_.SendWrongApiFunction(rns);
         }
-
     }
 
     void ApiHandler::BuildTargetsMap() {
@@ -48,7 +48,7 @@ namespace http_handler {
             { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
             { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
             { "/api/profile", builder.NeedAuthor(ttu_).GetHead().ExecFunc(BIND(&ApiHandler::ApiGetProfileData)).GetProduct() },
-            { "/api/enqueue", builder.Post().ExecFunc(BIND(&ApiHandler::ApiEnqueue)).GetProduct() },
+            { "/api/enqueue", builder.NeedAuthor(ttu_).Post().ExecFunc(BIND(&ApiHandler::ApiEnqueue)).GetProduct() },
         };
     }
 
@@ -87,9 +87,8 @@ namespace http_handler {
         return responser_.SendToken(rns, token);
     }
     void ApiHandler::ApiGetProfileData(RequestNSender rns){
-        auto auth_iter = rns.request.find(http::field::authorization);
-        std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
-        std::optional<std::string> uuid = ttu_->GetUuidByToken(*token);
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = ttu_->GetUuidByToken(token);
         auto user_data = uds_->GetByUuid(*uuid);
         if(!user_data)
             return responser_.SendTokenToRemovedPerson(rns);
@@ -97,7 +96,19 @@ namespace http_handler {
         return responser_.SendUserData(rns, *user_data);
     }
     void ApiHandler::ApiEnqueue(RequestNSender rns){ 
-        
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = ttu_->GetUuidByToken(token);
+        bool res = mm_queue_->EnqueuePlayer(*uuid);
+        if (res){
+            return responser_.SendSuccess(rns);
+        }
+        return responser_.SendCantEnqueue(rns);
+    }
+
+    tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {
+        auto auth_iter = request.find(http::field::authorization);
+        std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
+        return *token;
     }
     
 } // http_handler

@@ -51,6 +51,9 @@ namespace http_handler{
     void SendManager::SendTokenToRemovedPerson(RequestNSender rns) {
         SEND_ERROR("person_removed", "person with this token is unavailable (prob. removed)", status::unauthorized)
     }
+    void SendManager::SendCantEnqueue(RequestNSender rns) {
+        SEND_ERROR("enqueue_error", "error happened while enqueuing player", status::ok)
+    }
 
         
     void SendManager::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns) {
