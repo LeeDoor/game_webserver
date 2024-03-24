@@ -13,7 +13,7 @@ namespace game_manager{
         bool CreateSession(const std::string& player1, const std::string& player2);
 
         //ingame api
-        void Ping(const std::string& player_id, const SessionId& session_id); // placeholder
+        bool Ping(const std::string& player_id, const SessionId& session_id); // placeholder
     private:
         SessionId GenerateSessionId();
 

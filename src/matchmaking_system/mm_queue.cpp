@@ -5,12 +5,17 @@ namespace matchmaking_system{
     MMQueue::MMQueue(game_manager::GameManager::Ptr gm) : gm_(gm){}
     
     bool MMQueue::EnqueuePlayer(const Uuid& uuid) {
+        if (std::find(queue_.begin(), queue_.end(), uuid) != queue_.end())
+            return false;
         queue_.emplace_back(uuid);
 
         QueueUpdate();
         return true;
     }
     bool MMQueue::DequeuePlayer(const Uuid& uuid) {
+        if (std::find(queue_.begin(), queue_.end(), uuid) == queue_.end()){
+            return false;
+        }
         queue_.erase(std::remove(queue_.begin(), queue_.end(), uuid), queue_.end());
         return true;
     }

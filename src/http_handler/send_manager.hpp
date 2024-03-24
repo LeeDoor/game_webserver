@@ -11,6 +11,8 @@ namespace http_handler{
     public:
         SendManager(serializer::ISerializer::Ptr ser);
 
+        void Send(RequestNSender rns, status stat, std::string body);
+
         void SendSuccess(RequestNSender rns);
         void SendToken(RequestNSender rns, token_manager::Token& token);
         void SendUserData(RequestNSender rns, const PublicUserData& user_data);

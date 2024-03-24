@@ -1,7 +1,7 @@
 #include "session.hpp"
 
 namespace game_manager{
-    void Session::Ping(const std::string& player_id){
-
+    bool Session::Ping(const std::string& player_id){
+        return true;
     }
 }

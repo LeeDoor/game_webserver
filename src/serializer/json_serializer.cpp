@@ -38,7 +38,6 @@ namespace serializer{
         }
         catch(std::exception ex){
             std::cout << ex.what() << std::endl;
-            std::cout << json_str << std::endl;
             return std::nullopt;
         }
         return pud;
@@ -51,7 +50,6 @@ namespace serializer{
         }
         catch(std::exception ex){
             std::cout << ex.what() << std::endl;
-            std::cout << json_str << std::endl;
             return std::nullopt;
         }
         return rd;
@@ -65,8 +63,7 @@ namespace serializer{
             }
         }
         catch(std::exception ex){
-            std::cout << ex.what() << std::endl
-                    << json_str << std::endl;
+            std::cout << ex.what() << std::endl;
             return std::nullopt;
         }
         return map;
