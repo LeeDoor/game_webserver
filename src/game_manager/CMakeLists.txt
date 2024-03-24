@@ -7,6 +7,7 @@ add_library(${LIBRARY_NAME}
     game_manager.hpp
     session.hpp
     session.cpp
+    session_id_generator.hpp
 )
 
 #including and linking dependencies

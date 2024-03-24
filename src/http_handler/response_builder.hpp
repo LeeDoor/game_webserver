@@ -49,7 +49,7 @@ template<typename BodyType>
         //sets content_length and returns response object
         http::response<BodyType> GetProduct(){
             response_.set(http::field::access_control_allow_origin, "*");
-            response_.set(http::field::access_control_allow_headers, "Content-Type, Authorization");
+            response_.set(http::field::access_control_allow_headers, "*");
             return std::move(response_);
         }
     private:

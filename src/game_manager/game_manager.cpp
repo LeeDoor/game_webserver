@@ -1,5 +1,5 @@
 #include "game_manager.hpp"
-
+#include "session_id_generator.hpp"
 namespace game_manager{
     bool GameManager::CreateSession(const std::string& player1, const std::string& player2){
         SessionId si = GenerateSessionId();
@@ -16,7 +16,8 @@ namespace game_manager{
     }
 
     GameManager::SessionId GameManager::GenerateSessionId(){
-        return "123123123";
+        SessionIdGenerator sig;
+        return sig.Generate();
     }
 }
 
