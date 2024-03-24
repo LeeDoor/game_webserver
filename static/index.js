@@ -31,7 +31,7 @@ function verifyToken(){
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization':'Bearer' + localStorage.getItem('token')
+            'Authorization':'Bearer ' + localStorage.getItem('token')
         }
     }).then(response=>{
         if (!response.ok){
@@ -117,6 +117,16 @@ document.getElementById('logButton').addEventListener('click', function(event) {
     });
 });
 
+document.getElementById('playButton').addEventListener('click', async function(event) {
+    await fetch('http://localhost:9999/api/enqueue', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization':'Bearer ' + localStorage.getItem('token')
+        },
+    });
+    window.location.href = "http://localhost:9999/opponent_search.html";
+});
 document.addEventListener("DOMContentLoaded", function() {
     var lt = document.getElementById('loginText');
     if (lt){
