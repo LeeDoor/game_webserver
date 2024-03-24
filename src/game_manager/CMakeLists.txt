@@ -1,10 +1,12 @@
 #initializer's dependencies
-set(DEPENDENCIES game_manager)
-set(LIBRARY_NAME matchmaking_system)
+set(DEPENDENCIES )
+set(LIBRARY_NAME game_manager)
 #creating library
 add_library(${LIBRARY_NAME}
-    mm_queue.cpp
-    mm_queue.hpp
+    game_manager.cpp
+    game_manager.hpp
+    session.hpp
+    session.cpp
 )
 
 #including and linking dependencies

@@ -22,11 +22,9 @@ void RunWorkers(unsigned num_threads, const Fn& fn) {
     fn();
 }
 
-
 int Initializer::Init(int argc, char **argv) {
     return StartServer();
 }
-
 
 int Initializer::StartServer() {
     namespace net = boost::asio;
@@ -42,7 +40,9 @@ int Initializer::StartServer() {
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
     handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>();
     handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
-    handler_parameters.mm_queue = std::make_shared<matchmaking_system::MMQueue>();
+    handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
+    handler_parameters.mm_queue = 
+        std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);
 
     http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{

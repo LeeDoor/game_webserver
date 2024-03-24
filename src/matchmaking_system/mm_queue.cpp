@@ -2,6 +2,7 @@
 #include <iostream>
 
 namespace matchmaking_system{
+    MMQueue::MMQueue(game_manager::GameManager::Ptr gm) : gm_(gm){}
     
     bool MMQueue::EnqueuePlayer(const Uuid& uuid) {
         queue_.emplace_back(uuid);
@@ -16,10 +17,15 @@ namespace matchmaking_system{
 
     void MMQueue::QueueUpdate() {
         if (queue_.size() >= 2){
-            std::cout << queue_.back() << ' ';
+            queue_update_mutex_.lock();
+
+            Uuid p1 = queue_.back();
             queue_.pop_back();
-            std::cout << "is fighting " << queue_.back() << std::endl;
+            Uuid p2 = queue_.back();
             queue_.pop_back();
+            gm_->CreateSession(p1, p2);
+
+            queue_update_mutex_.unlock();
         }
     }
 }
