@@ -3,7 +3,19 @@
 #include <iostream>
 
 namespace database_manager{    
-    UserDataPostgres::UserDataPostgres(bool is_test) : pool_(CONNECTION_CAPACITY, is_test){}
+    UserDataPostgres::UserDataPostgres(bool is_test) : pool_(CONNECTION_CAPACITY, is_test){
+        if(is_test){
+            try{
+                ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
+                pqxx::work trans(*cw);
+                trans.exec("DELETE FROM users;");
+                trans.commit();
+            }
+            catch(std::exception& ex){
+                std::cout << ex.what() << std::endl;
+            }
+        }
+    }
 
     bool UserDataPostgres::AddLine(UserData& user_data) {
         try{
@@ -46,7 +58,7 @@ namespace database_manager{
             UserData ud = from_result(res);
             return ud;
         } 
-        catch (const std::exception& ex) {
+        catch (const std::exception& ex) {  
             std::cout << ex.what() << std::endl;
             return std::nullopt;
         }
