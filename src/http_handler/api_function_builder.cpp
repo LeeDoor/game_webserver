@@ -6,7 +6,7 @@
 
 namespace http_handler{
     ApiFunctionBuilder& ApiFunctionBuilder::Methods(AllowedMethods&& allowed_methods) {
-        allowed_methods = std::move(allowed_methods);
+        allowed_methods_ = std::move(allowed_methods);
         return *this;
     }
     ApiFunctionBuilder& ApiFunctionBuilder::GetHead() {

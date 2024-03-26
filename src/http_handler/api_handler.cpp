@@ -1,10 +1,10 @@
 #include "api_handler.hpp"
 #include "get_token_from_header.hpp"
 #include <iostream>
+#include <fstream>
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1)
-            
-
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1)    
+#define STREAM_POS(stream_name) std::to_string(static_cast<long long>(stream_name.tellg()))
 namespace http_handler {
     ApiHandler::ApiHandler(HandlerParameters handler_parameters) 
         :   serializer_(handler_parameters.serializer), 
@@ -43,13 +43,52 @@ namespace http_handler {
     }
 
     void ApiHandler::BuildTargetsMap() {
-        ApiFunctionBuilder builder;
-        request_to_executor_ = {
-            { "/api/register", builder.Post().ExecFunc(BIND(&ApiHandler::ApiRegister)).GetProduct() },
-            { "/api/login", builder.Post().ExecFunc(BIND(&ApiHandler::ApiLogin)).GetProduct() },
-            { "/api/profile", builder.NeedAuthor(ttu_).GetHead().ExecFunc(BIND(&ApiHandler::ApiGetProfileData)).GetProduct() },
-            { "/api/enqueue", builder.NeedAuthor(ttu_).Post().ExecFunc(BIND(&ApiHandler::ApiEnqueue)).GetProduct() },
+        std::map<std::string, ExecutorFunction> executors{
+            { "ApiGetProfileData", BIND(&ApiHandler::ApiGetProfileData) },
         };
+
+        std::ifstream is;
+        is.open("API_functions.txt");
+        std::string target, function, param;
+        std::vector<http::verb> verbs_vec;
+        ApiFunctionBuilder builder;
+        
+        try{
+            std::getline(is, target); // reading api target
+            if (target.empty()) throw std::logic_error(STREAM_POS(is));
+
+            std::getline(is, param); // reading methods
+            std::stringstream verbs(param);
+            if (verbs.eof()) throw std::logic_error(STREAM_POS(is));
+            while (verbs >> param)
+                verbs_vec.push_back(http::string_to_verb(param));
+            if (std::find(verbs_vec.begin(), verbs_vec.end(), http::verb::unknown) != verbs_vec.end()) 
+                throw std::logic_error(STREAM_POS(is));
+            builder.Methods(std::move(verbs_vec));
+
+            std::getline(is, function);
+            if (!executors.contains(function)) throw std::logic_error(STREAM_POS(is));
+            builder.ExecFunc(std::move(executors[function]));  
+
+            std::getline(is, param);
+            while (!param.empty()){
+                if (param == "Authorization required")
+                    builder.NeedAuthor(ttu_);
+                else if (param == "Debug method")
+                    std::cout << "Debug method NOT IMPLEMENTED" << std::endl;
+                else
+                    throw std::logic_error(STREAM_POS(is));
+                if(std::getline(is, param).eof()) break;
+            }
+            request_to_executor_.emplace(target, builder.GetProduct());
+        }
+        catch(std::exception ex){
+            std::cout << "Unable to read API_functions.txt. file position: " << ex.what() << std::endl;
+            is.close();
+            throw std::logic_error("Unable to read API_functions.txt");
+        }
+        is.close();
+
     }
 
     void ApiHandler::ApiRegister(RequestNSender rns) {

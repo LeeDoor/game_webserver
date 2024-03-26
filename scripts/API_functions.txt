@@ -1,0 +1,4 @@
+/api/profile
+GET HEAD
+ApiGetProfileData
+Authorization required
