@@ -1,0 +1,18 @@
+/api/profile
+GET HEAD
+ApiGetProfileData
+Authorization required
+
+/api/register
+POST
+ApiRegister
+
+/api/login
+POST
+ApiLogin
+
+/api/enqueue
+POST
+ApiEnqueue
+Authorization required
+ABOBA

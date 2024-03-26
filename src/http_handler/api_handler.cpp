@@ -13,7 +13,7 @@ namespace http_handler {
             mm_queue_(handler_parameters.mm_queue),
             ttu_(handler_parameters.token_to_uuid){}
     void ApiHandler::Init(){
-        BuildTargetsMap();
+        ApiFunctionsParse();
     }
 
     void ApiHandler::HandleApiFunction(HttpRequest&& request, ResponseSender&& sender){
@@ -42,16 +42,24 @@ namespace http_handler {
         }
     }
 
-    void ApiHandler::BuildTargetsMap() {
+    void ApiHandler::ApiFunctionsParse () {
         std::map<std::string, ExecutorFunction> executors{
-            { "ApiGetProfileData", BIND(&ApiHandler::ApiGetProfileData) },
+            { "ApiGetProfileData",  BIND(&ApiHandler::ApiGetProfileData) },
+            { "ApiRegister",        BIND(&ApiHandler::ApiRegister) },
+            { "ApiLogin",           BIND(&ApiHandler::ApiLogin) },
+            { "ApiEnqueue",         BIND(&ApiHandler::ApiEnqueue) },
         };
 
         std::ifstream is;
         is.open("API_functions.txt");
+        ApiFunctionBuilder builder;
+        while (ApiFunctionParse(executors, is, builder));
+        is.close();
+
+    }
+    bool ApiHandler::ApiFunctionParse(std::map<std::string, ExecutorFunction>& executors, std::ifstream& is, ApiFunctionBuilder& builder) {
         std::string target, function, param, cur_pos;
         std::vector<http::verb> verbs_vec;
-        ApiFunctionBuilder builder;
         try{
             cur_pos = STREAM_POS(is);
             std::getline(is, target); // reading api target
@@ -82,23 +90,21 @@ namespace http_handler {
                     std::cout << "Debug method NOT IMPLEMENTED" << std::endl;
                 else
                     throw std::logic_error(cur_pos);
-                
-                if(std::getline(is, param).eof()) break;
+                if (is.eof()) return false;
+                std::getline(is, param).eof();
                 cur_pos = STREAM_POS(is);
             }
             request_to_executor_.emplace(target, builder.GetProduct());
         }
         catch(std::exception& ex){
-            std::cout << "Unable to read API_functions.txt. file position: " << ex.what() << std::endl;
             int pos = std::atoi(ex.what());
             is.seekg(pos);
             std::getline(is, param);
-            std::cout << "defect line: " << param << std::endl;
+            std::cout << "Unable to read API_functions.txt. defect line: " << param << std::endl;
             is.close();
             throw std::logic_error("Unable to read API_functions.txt");
         }
-        is.close();
-
+        return true;
     }
 
     void ApiHandler::ApiRegister(RequestNSender rns) {

@@ -1,4 +1,0 @@
-/api/profile
-GET HEADWS
-ApiGetProfileData
-Authorization required

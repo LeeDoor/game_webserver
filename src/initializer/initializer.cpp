@@ -55,7 +55,6 @@ int Initializer::StartServer(Args args) {
 
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
-    std::cout << args.test << std::endl;
     handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test);
     handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();

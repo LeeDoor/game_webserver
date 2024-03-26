@@ -1,13 +1,9 @@
+cd ..
 
-#cleanup() { # we need to kill executable if tests are terminated
-#    kill $FOO_PID 
-#}
-
-#trap cleanup SIGINT # for cleanup 
-
-cd ../cmake-build-debug/bin
-./executable & 
+./copy_executables.sh
+./application &
 FOO_PID=$!
 sleep 1
-./tests $@ 
-kill $FOO_PID 
+./test_application $@
+kill $FOO_PID
+./remove_executables.sh

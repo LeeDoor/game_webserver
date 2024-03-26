@@ -14,7 +14,8 @@ namespace http_handler {
         void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);
 
     private:
-        void BuildTargetsMap();
+        void ApiFunctionsParse();
+        bool ApiFunctionParse(std::map<std::string, ExecutorFunction>& executors, std::ifstream& is, ApiFunctionBuilder& afb);
         void ApiRegister(RequestNSender rns);
         void ApiLogin(RequestNSender rns);
         void ApiGetProfileData(RequestNSender rns);

@@ -27,6 +27,10 @@ namespace http_handler{
     }
     ApiFunctionExecutor ApiFunctionBuilder::GetProduct() {
         //creating api function executor 
-        return {{std::move(executor_function_), std::move(allowed_methods_)}, ttu_};
+        ApiFunctionExecutor afe = {{std::move(executor_function_), std::move(allowed_methods_)}, ttu_};
+        ttu_ = std::nullopt;
+        allowed_methods_.clear();
+        executor_function_ = {};
+        return afe;
     }
 }

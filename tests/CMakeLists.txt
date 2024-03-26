@@ -1,4 +1,4 @@
-add_executable(tests 
+add_executable(test_application 
     api_functions.cpp
     api_functions.hpp
     socket_functions.hpp 
@@ -9,5 +9,5 @@ add_executable(tests
     test_api_login.cpp
     test_api_profile.cpp
 )
-target_include_directories(tests PRIVATE ../src/serializer ../src/token_manager)
-target_link_libraries(tests ${CONAN_LIBS_CATCH2} ${CONAN_LIBS_BOOST} serializer)
+target_include_directories(test_application PRIVATE ../src/serializer ../src/token_manager)
+target_link_libraries(test_application ${CONAN_LIBS_CATCH2} ${CONAN_LIBS_BOOST} serializer)
