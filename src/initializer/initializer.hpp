@@ -5,7 +5,12 @@ class Initializer {
 public:
     int Init(int argc, char** argv);
 private:
-    int StartServer();
+    struct Args {
+        bool test;
+    };
+
+    int StartServer(Args args);
+    Args ParseParameters(int argc, char** argv);
 };
 
 }

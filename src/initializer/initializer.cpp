@@ -3,6 +3,7 @@
 #include <thread>
 #include <vector>
 #include <boost/asio.hpp>
+#include <boost/program_options.hpp>
 #include <iostream>
 #include "json_serializer.hpp"
 #include "user_data_postgres.hpp"
@@ -22,11 +23,27 @@ void RunWorkers(unsigned num_threads, const Fn& fn) {
     fn();
 }
 
-int Initializer::Init(int argc, char **argv) {
-    return StartServer();
+Initializer::Args Initializer::ParseParameters(int argc, char** argv){
+    namespace po = boost::program_options;
+    using namespace std::literals; 
+
+    po::options_description desc{"All options"s};
+    Args args;
+    desc.add_options()
+        ("test", "test launch to use test bd");
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+    args.test = vm.count("test");
+    return args;
 }
 
-int Initializer::StartServer() {
+int Initializer::Init(int argc, char **argv) {
+    Args args = ParseParameters(argc, argv);
+    return StartServer(args);
+}
+
+int Initializer::StartServer(Args args) {
     namespace net = boost::asio;
 
     unsigned num_threads = std::thread::hardware_concurrency(); // number of threads
@@ -38,7 +55,8 @@ int Initializer::StartServer() {
 
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
-    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>();
+    std::cout << args.test << std::endl;
+    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test);
     handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
     handler_parameters.mm_queue = 

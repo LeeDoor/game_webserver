@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace database_manager{    
-    UserDataPostgres::UserDataPostgres() : pool_(CONNECTION_CAPACITY){}
+    UserDataPostgres::UserDataPostgres(bool is_test) : pool_(CONNECTION_CAPACITY, is_test){}
 
     bool UserDataPostgres::AddLine(UserData& user_data) {
         try{

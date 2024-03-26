@@ -1,1 +1,1 @@
-../cmake-build-debug/bin/executable
+../cmake-build-debug/bin/executable $@

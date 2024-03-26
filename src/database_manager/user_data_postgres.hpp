@@ -8,7 +8,7 @@
 namespace database_manager{
     class UserDataPostgres : public IUserDataManager {
     public:
-        UserDataPostgres();
+        UserDataPostgres(bool is_test);
 
         bool AddLine(UserData& user_data) override;
         std::optional<UserData> GetByUuid(const std::string& uuid) override;

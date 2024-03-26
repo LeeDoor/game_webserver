@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#include <random>
+#include <iomanip>
+
 namespace game_manager{
     class SessionIdGenerator {
 public:
