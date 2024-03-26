@@ -1,4 +1,4 @@
 /api/profile
-GET HEAD
+GET HEADWS
 ApiGetProfileData
 Authorization required

@@ -49,27 +49,31 @@ namespace http_handler {
 
         std::ifstream is;
         is.open("API_functions.txt");
-        std::string target, function, param;
+        std::string target, function, param, cur_pos;
         std::vector<http::verb> verbs_vec;
         ApiFunctionBuilder builder;
-        
         try{
+            cur_pos = STREAM_POS(is);
             std::getline(is, target); // reading api target
-            if (target.empty()) throw std::logic_error(STREAM_POS(is));
+            if (target.empty()) throw std::logic_error(cur_pos);
 
+            cur_pos = STREAM_POS(is);
             std::getline(is, param); // reading methods
             std::stringstream verbs(param);
-            if (verbs.eof()) throw std::logic_error(STREAM_POS(is));
+            if (verbs.eof()) throw std::logic_error(cur_pos);
             while (verbs >> param)
                 verbs_vec.push_back(http::string_to_verb(param));
             if (std::find(verbs_vec.begin(), verbs_vec.end(), http::verb::unknown) != verbs_vec.end()) 
-                throw std::logic_error(STREAM_POS(is));
+                throw std::logic_error(cur_pos);
+            
             builder.Methods(std::move(verbs_vec));
 
+            cur_pos = STREAM_POS(is);
             std::getline(is, function);
-            if (!executors.contains(function)) throw std::logic_error(STREAM_POS(is));
+            if (!executors.contains(function)) throw std::logic_error(cur_pos);
             builder.ExecFunc(std::move(executors[function]));  
 
+            cur_pos = STREAM_POS(is);
             std::getline(is, param);
             while (!param.empty()){
                 if (param == "Authorization required")
@@ -77,13 +81,19 @@ namespace http_handler {
                 else if (param == "Debug method")
                     std::cout << "Debug method NOT IMPLEMENTED" << std::endl;
                 else
-                    throw std::logic_error(STREAM_POS(is));
+                    throw std::logic_error(cur_pos);
+                
                 if(std::getline(is, param).eof()) break;
+                cur_pos = STREAM_POS(is);
             }
             request_to_executor_.emplace(target, builder.GetProduct());
         }
-        catch(std::exception ex){
+        catch(std::exception& ex){
             std::cout << "Unable to read API_functions.txt. file position: " << ex.what() << std::endl;
+            int pos = std::atoi(ex.what());
+            is.seekg(pos);
+            std::getline(is, param);
+            std::cout << "defect line: " << param << std::endl;
             is.close();
             throw std::logic_error("Unable to read API_functions.txt");
         }
