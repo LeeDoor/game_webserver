@@ -23,13 +23,13 @@ while reading docs you can see beatiful diagrams and schemas. framework called [
 # documentation
 NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
 as i write my code i also try to documentate it. here is the list of readmes for each module:
-* [new module creation](new_module_creation.md)
-* [initializer](nitializer.md)
-* [server](server.md)
-* [http_handler](http_handler.md)
-* [serializer(JSON)](serializer.md)
-* [database_manager](database_manager.md)
-* [token_manager](token_manager.md)
-* [API](http_api.md)
+* [new module creation](docs/new_module_creation.md)
+* [initializer](docs/intializer.md)
+* [server](docs/server.md)
+* [http_handler](docs/http_handler.md)
+* [serializer(JSON)](docs/serializer.md)
+* [database_manager](docs/database_manager.md)
+* [token_manager](docs/token_manager.md)
+* [API](docs/http_api.md)
 
 how to write tests, naming rules etc. [here](tests.md)
