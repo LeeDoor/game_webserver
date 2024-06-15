@@ -36,7 +36,7 @@ classDiagram
 ## actions
 here is the sequence of operations which each class preparing:
 * **listener** class waits for request and passses handling to **session** class
-* **session** reads data from user, handles it and sends back response from server
+* **session** reads data from user, handles it with [http_handler](http_handler.md) and sends back response from server
 ```mermaid
 ---
 title: http server call sequence
@@ -60,5 +60,3 @@ flowchart TB
         OnWrite --socket is up and running--> Read
     end
 ```
-
-to handle request server appeals to [http_handler](https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md) module

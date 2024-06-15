@@ -1,4 +1,4 @@
-# [initializer](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/database_manager)
+# [database_manager](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/database_manager)
 ## what is it for?
 this module gives api for communicating with database. it contains multithread-safe connection pool and high-level classes for http_hanlder  
 

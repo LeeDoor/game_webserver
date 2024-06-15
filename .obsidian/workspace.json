@@ -1,0 +1,181 @@
+{
+  "main": {
+    "id": "01662d94debc1435",
+    "type": "split",
+    "children": [
+      {
+        "id": "56a1d6275be52ec8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7012c5fae0d42a70",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Obsidian Vault/main.canvas",
+                "viewState": {
+                  "x": 50,
+                  "y": 604,
+                  "zoom": -0.9179814242573618
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "6b3af54667a95089",
+    "type": "split",
+    "children": [
+      {
+        "id": "6733b8e0693bafcb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "876969b817a40eea",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "cb7fea61e0d757da",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "9bc519bea25a08e1",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c3f2e23eedba831d",
+    "type": "split",
+    "children": [
+      {
+        "id": "8e2901cdfcda0c02",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3fc9af829da2236a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Obsidian Vault/main.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "2cba330e3f38132c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Obsidian Vault/main.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "479f92aded9bbbc5",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "95c22e1f08acc7f5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Obsidian Vault/main.canvas"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "7012c5fae0d42a70",
+  "lastOpenFiles": [
+    "docs/game_manager.md",
+    "Obsidian Vault/main.canvas",
+    "docs/server.md",
+    "docs/matchmaking_system.md",
+    "2024-06-15.md",
+    "Obsidian Vault/database table users with user info.md",
+    "Obsidian Vault/templates/doc template.md",
+    "docs/serializer.md",
+    "README.md",
+    "docs/database_manager.md",
+    "docs/http_handler.md",
+    "docs/token_manager.md",
+    "docs/initializer.md",
+    "().md",
+    "docs/http_api.md",
+    "docs/new_module_creation.md",
+    "Obsidian Vault/templates",
+    "docs/tests.md",
+    "Untitled.canvas",
+    "Untitled.md",
+    "database_.md",
+    "Three laws of motion.md",
+    "scripts/Untitled.canvas",
+    "Obsidian Vault/images/PostgreSQL-Logo.wine.png",
+    "Obsidian Vault/images",
+    "Obsidian Vault/Initializer.md"
+  ]
+}
