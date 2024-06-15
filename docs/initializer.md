@@ -5,7 +5,7 @@ this module has one src and one header file. its only task is to launch server i
 ## Init function
 init function parses parameters from argument line and starts server
 ## StartServer function
-initializes handler_parameters, runs [[server.md|http_server::ServeHttp]] on multiple threads
+initializes handler_parameters, runs [server](server.md) on multiple threads
 
 ## RunWorkers function
 starts some **Fn** function *n* times, where *n* is number of possible threads.
