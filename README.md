@@ -24,7 +24,7 @@ while reading docs you can see beatiful diagrams and schemas. framework called [
 NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
 as i write my code i also try to documentate it. here is the list of readmes for each module:
 * [new module creation](docs/new_module_creation.md)
-* [initializer](docs/intializer.md)
+* [initializer](docs/initializer.md)
 * [server](docs/server.md)
 * [http_handler](docs/http_handler.md)
 * [serializer(JSON)](docs/serializer.md)
@@ -32,4 +32,4 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [token_manager](docs/token_manager.md)
 * [API](docs/http_api.md)
 
-how to write tests, naming rules etc. [here](tests.md)
+how to write tests, naming rules etc. [here](docs/tests.md)
