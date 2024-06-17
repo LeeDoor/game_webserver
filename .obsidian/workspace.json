@@ -4,18 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "56a1d6275be52ec8",
+        "id": "07b79b4d0303d203",
         "type": "tabs",
         "children": [
           {
-            "id": "7012c5fae0d42a70",
+            "id": "6e14b7d70011dfb9",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "README.md",
-                "mode": "source",
-                "source": false
+                "file": "Obsidian Vault/main.canvas",
+                "viewState": {
+                  "x": -850.5654834307938,
+                  "y": 923.2787157377963,
+                  "zoom": -1.2000000000000002
+                }
               }
             }
           }
@@ -48,7 +51,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#TODO",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -85,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "Obsidian Vault/main.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
+                "file": "Obsidian Vault/main.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md"
+                "file": "Obsidian Vault/main.canvas"
               }
             }
           }
@@ -146,26 +149,29 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7012c5fae0d42a70",
+  "active": "6e14b7d70011dfb9",
   "lastOpenFiles": [
-    "docs/initializer.md",
-    "README.md",
-    "docs/new_module_creation.md",
+    "free-user-icon-3296-thumb.png",
     "Obsidian Vault/main.canvas",
-    "docs/game_manager.md",
+    "png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png",
+    "docs/initializer.md",
     "docs/server.md",
+    "Obsidian Vault/images/user-icon-256x256-1n54kpt1.png",
     "docs/matchmaking_system.md",
+    "docs/game_manager.md",
+    "docs/tests.md",
+    "README.md",
+    "docs/http_handler.md",
+    "docs/new_module_creation.md",
     "2024-06-15.md",
     "Obsidian Vault/database table users with user info.md",
     "Obsidian Vault/templates/doc template.md",
     "docs/serializer.md",
     "docs/database_manager.md",
-    "docs/http_handler.md",
     "docs/token_manager.md",
     "().md",
     "docs/http_api.md",
     "Obsidian Vault/templates",
-    "docs/tests.md",
     "Untitled.canvas",
     "Untitled.md",
     "database_.md",
