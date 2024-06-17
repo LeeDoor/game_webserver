@@ -11,6 +11,7 @@
 #define PORT 9999
 
 namespace initializer {
+
 template <typename Fn>
 void RunWorkers(unsigned num_threads, const Fn& fn) {
     num_threads = std::max(1u, num_threads);
@@ -30,11 +31,15 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     po::options_description desc{"All options"s};
     Args args;
     desc.add_options()
-        ("test", "test launch to use test bd");
+        ("test", "test launch to use test bd")
+        ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
     args.test = vm.count("test");
+    if(!vm.contains("static_path")){
+        throw std::runtime_error("static path is not specified");
+    }
     return args;
 }
 
@@ -61,7 +66,9 @@ int Initializer::StartServer(Args args) {
     handler_parameters.mm_queue = 
         std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);
 
-    http_server::ServeHttp(ioc, {address, port}, handler_parameters);
+    std::shared_ptr<std::string> static_path = 
+        std::make_shared<std::string>(args.static_path);
+    http_server::ServeHttp(ioc, {address, port}, handler_parameters, static_path);
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });

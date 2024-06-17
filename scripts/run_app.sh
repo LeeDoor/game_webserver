@@ -6,5 +6,5 @@ trap cleanup SIGINT
 
 cd ..
 ./copy_executables.sh
-./application $@ 
+./application $@ --static_path /home/leedor/Documents/hex_chess_backend/static/
 ./remove_executables.sh # remove executables if program terminated by itself

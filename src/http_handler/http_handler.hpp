@@ -7,7 +7,7 @@ namespace http_handler {
     using namespace serializer;
     class HttpHandler {
     public:
-        HttpHandler(HandlerParameters handler_parameters);
+        HttpHandler(HandlerParameters handler_parameters, std::shared_ptr<std::string> static_path);
 
         void operator()(HttpRequest&& request, ResponseSender&& sender);
     private:
@@ -16,6 +16,8 @@ namespace http_handler {
 
         StaticHandler static_handler_;
         std::shared_ptr<ApiHandler> api_handler_;
+
+        std::shared_ptr<std::string> static_path_;
     };
 
 }
