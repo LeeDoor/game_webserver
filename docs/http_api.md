@@ -147,9 +147,41 @@ debug api is required to get data from app structures. to execute them you need 
 
 ## User API
 ### register
+**action diagram**
+```mermaid
+---
 
+title: api registger diagram
+
+---
+
+  
+
+sequenceDiagram
+actor User
+
+ApiHandler->>Serializer: deserialize body data
+
+Serializer->>ApiHandler: returns login and password from body
+
+  
+
+ApiHandler->>ApiHandler: checks validness of data
+
+ApiHandler->>UserDataManager: adds user to database
+
+UserDataManager->>ApiHandler: returns error code
+
+  
+
+
+ApiHandler->>User: send registration state
+```
 **request target**
 */api/register*
+
+**function description**
+by given login and password in body, creates account. data stored in db, you cant register with same login more than once. after registration you need to login to play the game and use other features. 
 
 **request body example**
 ```js
@@ -185,8 +217,46 @@ debug api is required to get data from app structures. to execute them you need 
     - **login_taken**: login already taken
 
 ### login
+**action diagram**
+```mermaid
+---
+
+title: api login diagram
+
+---
+
+  
+
+sequenceDiagram
+actor User
+
+ApiHandler->>Serializer: deserialize body data
+
+Serializer->>ApiHandler: returns login and password from body
+
+  
+
+ApiHandler->>ApiHandler: checks validness of data
+
+ApiHandler->>UserDataManager: searches for a user with such login and password
+
+UserDataManager->>ApiHandler: returns user or error code
+
+ApiHandler->>TokenManager: creates session with current user
+
+TokenManager->>ApiHandler: returns token of user's session
+
+  
+
+
+ApiHandler->>User: send login state and token
+```
+
 **request target**
 */api/login*
+
+**function description**
+by given login and password in body, logins to get authorization token, which is required to play. only registered user can login.
 
 **body example**
 ```js
@@ -219,11 +289,45 @@ debug api is required to get data from app structures. to execute them you need 
     - **no_such_user**: no user found with given login and password
 
 ### profile
+<span style="color:#87ff8b"><b>requires authorization</b></span>
 
-**requires authorization**
+**action diagram**
+```mermaid
+---
+
+title: api profile diagram
+
+---
+
+  
+
+sequenceDiagram
+
+actor User
+
+ApiHandler->>ApiHandler: gets Authorization token
+
+  
+
+ApiHandler->>TokenManager: gets user's uuid by token
+
+TokenManager->>ApiHandler: user's uuid
+
+  
+
+ApiHandler->>UserDataManager: gets user by uuid
+
+UserDataManager->>ApiHandler: returns user or error code
+
+ApiHandler->>User: send user data
+```
+
 
 **request target**
 */api/profile*
+
+**function description**
+requires authorization token. by this token gets profile information from db.
 
 **responses**
 * `200 OK`\
