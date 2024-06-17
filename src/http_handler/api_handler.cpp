@@ -90,7 +90,10 @@ namespace http_handler {
                     std::cout << "Debug method NOT IMPLEMENTED" << std::endl;
                 else
                     throw std::logic_error(cur_pos);
-                if (is.eof()) return false;
+                if (is.eof()) {
+                request_to_executor_.emplace(target, builder.GetProduct());
+                    return false;
+                }
                 std::getline(is, param).eof();
                 cur_pos = STREAM_POS(is);
             }
