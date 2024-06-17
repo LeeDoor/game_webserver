@@ -1,22 +1,25 @@
-<span style="color:#87ff8b"><b>requires authorization</b></span> ?????
 
-**action diagram**
+---
+### API enter_name
+#### <span style="color:#87ff8b"><b>requires authorization</b></span> ?????
+
+#### **action diagram**
 ```mermaid
 
 ```
-**request target**  
+#### **request target**  
 _ _
 
-**function description**
+#### **function description**
 
 
-**request body example**
+#### **request body example**
 
 ```js
 
 ```
 
-**responses**
+#### **responses**
 
 * `200 OK`  
 _response body example:_

@@ -25,12 +25,12 @@ all non-ok responses have same body type. for example:
 
 debug api is required to get data from app structures. to execute them you need to send admin login and password.
 
-### player_tokens
+### API player_tokens
 
-**request target**
+#### **request target**
 */api/debug/player_tokens*
 
-**request body example**
+#### **request body example**
 ```js
     {
         "login": "admin2009",
@@ -38,7 +38,7 @@ debug api is required to get data from app structures. to execute them you need 
     }
 ```
 
-**responses**
+#### **responses**
 * `200 OK`\
     tokens sent successfully
 
@@ -54,12 +54,13 @@ debug api is required to get data from app structures. to execute them you need 
 * `401 unauthorized`\
     admin login or password are invalid.
 
-### user_data
+---
+### API user_data
 
-**request target**
+#### **request target**
 */api/debug/user_data*
 
-**request body example**
+#### **request body example**
 ```js
     {
         "login": "admin2009",
@@ -67,7 +68,7 @@ debug api is required to get data from app structures. to execute them you need 
     }
 ```
 
-**responses**
+#### **responses**
 * `200 OK`\
     user_data sent successfully
 
@@ -83,12 +84,13 @@ debug api is required to get data from app structures. to execute them you need 
 * `401 unauthorized`\
     admin login or password are invalid.
 
-### matchmaking_queue
+---
+### API matchmaking_queue
 
-**request target**
+#### **request target**
 */api/debug/matchmaking_queue*
 
-**request body example**
+#### **request body example**
 ```js
     {
         "login": "admin2009",
@@ -96,7 +98,7 @@ debug api is required to get data from app structures. to execute them you need 
     }
 ```
 
-**responses**
+#### **responses**
 * `200 OK`\
     matchmaking queue sent successfully
 
@@ -113,12 +115,13 @@ debug api is required to get data from app structures. to execute them you need 
     admin login or password are invalid.
 
 
-### sessions_list
+---
+### API sessions_list
 
-**request target**
+#### **request target**
 */api/debug/sessions_list*
 
-**request body example**
+#### **request body example**
 ```js
     {
         "login": "admin2009",
@@ -126,7 +129,7 @@ debug api is required to get data from app structures. to execute them you need 
     }
 ```
 
-**responses**
+#### **responses**
 * `200 OK`\
     sessions list sent successfully
 
@@ -143,11 +146,9 @@ debug api is required to get data from app structures. to execute them you need 
 * `401 unauthorized`\
     admin login or password are invalid.
 
-
-
 ## User API
-### register
-**action diagram**
+### API register
+#### **action diagram**
 ```mermaid
 ---
 
@@ -177,24 +178,24 @@ UserDataManager->>ApiHandler: returns error code
 
 ApiHandler->>User: send registration state
 ```
-**request target**
+#### **request target**
 */api/register*
 
-**function description**
+#### **function description**
 by given login and password in body, creates account. data stored in db, you cant register with same login more than once. after registration you need to login to play the game and use other features. 
 
-**request body example**
+#### **request body example**
 ```js
     {
         "login": "very_login",
         "password": "abcde12345"
     }
 ```
-**login and password criteria**
+#### **login and password criteria**
 - login size more or equal to **3**
 - password size more or equal to **6**. must contain at least 1 digit
 
-**responses**
+#### **responses**
 * `200 OK`\
     registration is ok, user added
 
@@ -216,8 +217,9 @@ by given login and password in body, creates account. data stored in db, you can
     **error_name meanings**
     - **login_taken**: login already taken
 
-### login
-**action diagram**
+---
+### API login
+#### **action diagram**
 ```mermaid
 ---
 
@@ -252,13 +254,13 @@ TokenManager->>ApiHandler: returns token of user's session
 ApiHandler->>User: send login state and token
 ```
 
-**request target**
+#### **request target**
 */api/login*
 
-**function description**
+#### **function description**
 by given login and password in body, logins to get authorization token, which is required to play. only registered user can login.
 
-**body example**
+#### **body example**
 ```js
     {
         "login": "very_login",
@@ -266,7 +268,7 @@ by given login and password in body, logins to get authorization token, which is
     }
 ```
 
-**responses**
+#### **responses**
 * `200 OK`\
     login is successful, token returned
     
@@ -287,11 +289,11 @@ by given login and password in body, logins to get authorization token, which is
     - **body_data_error**: body data is incorrect (watch example above)
     - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
     - **no_such_user**: no user found with given login and password
+---
+### API profile
+#### <span style="color:#87ff8b"><b>requires authorization</b></span>
 
-### profile
-<span style="color:#87ff8b"><b>requires authorization</b></span>
-
-**action diagram**
+#### **action diagram**
 ```mermaid
 ---
 
@@ -323,13 +325,13 @@ ApiHandler->>User: send user data
 ```
 
 
-**request target**
+#### **request target**
 */api/profile*
 
-**function description**
+#### **function description**
 requires authorization token. by this token gets profile information from db.
 
-**responses**
+#### **responses**
 * `200 OK`\
     authorization is correct, send profile data in response
     
