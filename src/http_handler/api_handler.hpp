@@ -26,7 +26,7 @@ namespace http_handler {
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         SendManager responser_;
-        database_manager::IUserDataManager::Ptr uds_;
+        database_manager::IUserDataManager::Ptr udm_;
         token_manager::TokenToUuid::Ptr ttu_;
         matchmaking_system::MMQueue::Ptr mm_queue_;
     };

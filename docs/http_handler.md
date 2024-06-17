@@ -51,7 +51,7 @@ classDiagram
   -request_to_executor_      
         -serializer
         -send_manager(responser_)
-        -user_data_manager(uds_)
+        -user_data_manager(udm_)
         -token_to_uuid (ttu_)
         -matchmaking_queue(mm_queue_)
     }
