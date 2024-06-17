@@ -16,7 +16,7 @@ namespace http_handler{
         }
         else{
             static_handler_.HandleFile(std::move(request),
-                fs::path("/home/leedoor/Documents/hex_chess_backend/static"), 
+                fs::path("/home/leedor/Documents/hex_chess_backend/static"), 
                 std::move(sender));
         }
     }

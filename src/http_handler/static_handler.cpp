@@ -11,6 +11,7 @@ namespace http_handler {
         std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
         fs::path path = root.concat(path_str);
         RequestNSender rns{request,sender};
+        std::cout << path << std::endl;
         if(!IsSubdirectory(std::move(path), std::move(root))) {
             std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
            " but boost beast not allowing sockets send this kind of targets\n";

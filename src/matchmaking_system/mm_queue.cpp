@@ -1,5 +1,6 @@
 #include "mm_queue.hpp"
 #include <iostream>
+#include <algorithm>
 
 namespace matchmaking_system{
     MMQueue::MMQueue(game_manager::GameManager::Ptr gm) : gm_(gm){}

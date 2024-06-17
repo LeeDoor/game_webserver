@@ -1,4 +1,5 @@
 #include "registration_data.hpp"
+#include <algorithm>
 
 namespace http_handler{
     bool ValidateRegData(const RegistrationData& rd) {
