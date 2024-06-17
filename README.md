@@ -31,5 +31,6 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [database_manager](docs/database_manager.md)
 * [token_manager](docs/token_manager.md)
 * [API](docs/http_api.md)
+* [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)
 
 how to write tests, naming rules etc. [here](docs/tests.md)
