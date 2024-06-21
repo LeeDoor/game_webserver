@@ -25,6 +25,10 @@ all non-ok responses have same body type. for example:
 
 debug api is required to get data from app structures. to execute them you need to send admin login and password.
 
+example: #TODO 
+```js
+```
+
 ### API player_tokens
 
 #### **request target**
@@ -351,3 +355,56 @@ requires authorization token. by this token gets profile information from db.
     - **invalid_token**: request authorization is invalid (token in Authorization header has wrong format)
     - **person_removed**: person with this token is unavailable (probably removed)
 
+---
+### API enqueue
+#### <span style="color:#87ff8b"><b>requires authorization</b></span>
+
+#### **action diagram**
+```mermaid
+---
+
+title: api profile diagram
+
+---
+
+  
+
+sequenceDiagram
+
+actor User
+
+ApiHandler->>ApiHandler: gets Authorization token
+
+  
+
+ApiHandler->>TokenManager: gets user's uuid by token
+
+TokenManager->>ApiHandler: user's uuid
+
+  
+
+ApiHandler->>MMQueue: tries to enqueue player
+
+MMQueue->>ApiHandler: returns enqueuing status
+
+ApiHandler->>User: send enqueue status
+```
+#### **request target**  
+_/api/enqueue_
+
+#### **function description**
+to start a game, you need to add yourself to the queue. you will be added to queue to search for an opponent by this api function execution. #TODO what is going to be when opponent found
+
+#### **request body example**
+body must be empty
+
+#### **responses**
+* `200 OK`  
+*response body:*
+    ```js
+    {}
+    ```
+    
+* `200 OK`  
+**error_name meanings**
+    - **enqueue_error**: error happened while enqueuing player (already in queue or wrong token)

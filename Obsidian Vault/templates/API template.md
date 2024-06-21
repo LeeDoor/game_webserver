@@ -22,7 +22,9 @@ _ _
 #### **responses**
 
 * `200 OK`  
-_response body example:_
+*response body:*
     ```js
     ```
 * ``
+**error_name meanings**
+    - ** **: 1

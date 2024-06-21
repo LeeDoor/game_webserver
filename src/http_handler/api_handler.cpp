@@ -61,7 +61,7 @@ namespace http_handler {
         std::string target, function, param, cur_pos;
         std::vector<http::verb> verbs_vec;
         try{
-            cur_pos = STREAM_POS(is);
+            cur_pos = STREAM_POS(is); // method to track logic error if it is
             std::getline(is, target); // reading api target
             if (target.empty()) throw std::logic_error(cur_pos);
 
@@ -69,7 +69,7 @@ namespace http_handler {
             std::getline(is, param); // reading methods
             std::stringstream verbs(param);
             if (verbs.eof()) throw std::logic_error(cur_pos);
-            while (verbs >> param)
+            while (verbs >> param) // reading allowed (verbs)
                 verbs_vec.push_back(http::string_to_verb(param));
             if (std::find(verbs_vec.begin(), verbs_vec.end(), http::verb::unknown) != verbs_vec.end()) 
                 throw std::logic_error(cur_pos);
