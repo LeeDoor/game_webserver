@@ -1,10 +1,13 @@
 #include <algorithm>
 #include "api_function_executor.hpp"
 #include "get_token_from_header.hpp"
+#include "registration_data.hpp"
 
 namespace http_handler {
-    ApiFunctionExecutor::ApiFunctionExecutor(ApiFunctionParams&& api_function_params, std::optional<token_manager::TokenToUuid::Ptr> ttu):
-         api_function_ (std::move(api_function_params)), ttu_(ttu){}
+    ApiFunctionExecutor::ApiFunctionExecutor(ApiFunctionParams&& api_function_params, 
+        std::optional<token_manager::TokenToUuid::Ptr> ttu,
+        serializer::ISerializer::Ptr serializer):
+        api_function_ (std::move(api_function_params)), ttu_(ttu), serializer_(serializer){}
 
     ApiStatus ApiFunctionExecutor::Execute(RequestNSender rns) {
         if(!MatchMethod(rns.request.method())){
@@ -15,6 +18,9 @@ namespace http_handler {
             if(author_result != ApiStatus::Ok){
                 return author_result;
             }
+        }
+        if (api_function_.IsDebug() && !MatchAdmin(rns.request)){
+            return ApiStatus::AdminUnrecognized;
         }
         api_function_(rns);
         return ApiStatus::Ok;
@@ -35,11 +41,17 @@ namespace http_handler {
         std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
         if(!token)
             return ApiStatus::InvalidToken;
-
         std::optional<std::string> uuid = ttu_.value()->GetUuidByToken(*token);
         if(!uuid)
             return ApiStatus::InvalidToken;
         return ApiStatus::Ok;
+    }
+    bool ApiFunctionExecutor::MatchAdmin(const HttpRequest& request) {
+        std::optional<RegistrationData> rd = 
+            serializer_->DeserializeRegData(request.body());
+        if (!rd.has_value())
+            return false;
+        return rd->login == "leedoor" && rd->password == "123qwe123";
     }
 
 } // http_handler

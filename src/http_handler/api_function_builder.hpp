@@ -5,6 +5,8 @@
 namespace http_handler {
     class ApiFunctionBuilder {
     public:
+        ApiFunctionBuilder(serializer::ISerializer::Ptr serializer_);
+
         //sets alllowed methods to given array
         ApiFunctionBuilder& Methods(AllowedMethods&& allowed_methods);
         //sets allowed methods to get and head
@@ -24,8 +26,10 @@ namespace http_handler {
         AllowedMethods allowed_methods_;
         ExecutorFunction executor_function_;
         bool is_debug_ = false;
+
         //std::nullopt if authorization is not required
         std::optional<token_manager::TokenToUuid::Ptr> ttu_ = std::nullopt;
+        serializer::ISerializer::Ptr serializer_;
     };
 
 }

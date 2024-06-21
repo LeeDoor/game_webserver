@@ -52,7 +52,7 @@ namespace http_handler {
 
         std::ifstream is;
         is.open("API_functions.txt");
-        ApiFunctionBuilder builder;
+        ApiFunctionBuilder builder(serializer_);
         while (ApiFunctionParse(executors, is, builder));
         is.close();
 
