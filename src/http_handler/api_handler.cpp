@@ -79,19 +79,20 @@ namespace http_handler {
             cur_pos = STREAM_POS(is);
             std::getline(is, function);
             if (!executors.contains(function)) throw std::logic_error(cur_pos);
+            // reading method name from file and mapping it with C++ function
             builder.ExecFunc(std::move(executors[function]));  
 
             cur_pos = STREAM_POS(is);
-            std::getline(is, param);
+            std::getline(is, param); // reading custom parameters about function
             while (!param.empty()){
                 if (param == "Authorization required")
                     builder.NeedAuthor(ttu_);
                 else if (param == "Debug method")
-                    std::cout << "Debug method NOT IMPLEMENTED" << std::endl;
+                    builder.ForDebug();
                 else
                     throw std::logic_error(cur_pos);
                 if (is.eof()) {
-                request_to_executor_.emplace(target, builder.GetProduct());
+                    request_to_executor_.emplace(target, builder.GetProduct());
                     return false;
                 }
                 std::getline(is, param).eof();

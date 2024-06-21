@@ -3,8 +3,8 @@
 #include "get_token_from_header.hpp"
 
 namespace http_handler {
-    ApiFunctionExecutor::ApiFunctionExecutor(ApiFunction&& api_function, std::optional<token_manager::TokenToUuid::Ptr> ttu):
-         api_function_ (std::move(api_function)), ttu_(ttu){}
+    ApiFunctionExecutor::ApiFunctionExecutor(ApiFunctionParams&& api_function_params, std::optional<token_manager::TokenToUuid::Ptr> ttu):
+         api_function_ (std::move(api_function_params)), ttu_(ttu){}
 
     ApiStatus ApiFunctionExecutor::Execute(RequestNSender rns) {
         if(!MatchMethod(rns.request.method())){

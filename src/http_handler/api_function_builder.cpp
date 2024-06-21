@@ -1,7 +1,3 @@
-//
-// Created by leedoor on 22.08.23.
-//
-
 #include "api_function_builder.hpp"
 
 namespace http_handler{
@@ -25,12 +21,25 @@ namespace http_handler{
         ttu_ = ttu;
         return *this;
     }
+    ApiFunctionBuilder& ApiFunctionBuilder::ForDebug(){
+        is_debug_ = true;
+        return *this;
+    }
     ApiFunctionExecutor ApiFunctionBuilder::GetProduct() {
         //creating api function executor 
-        ApiFunctionExecutor afe = {{std::move(executor_function_), std::move(allowed_methods_)}, ttu_};
+        ApiFunctionExecutor afe = 
+        {
+            {
+                std::move(executor_function_), 
+                std::move(allowed_methods_),
+                is_debug_
+            }, 
+            ttu_
+        };
         ttu_ = std::nullopt;
         allowed_methods_.clear();
         executor_function_ = {};
+        is_debug_ = false;
         return afe;
     }
 }

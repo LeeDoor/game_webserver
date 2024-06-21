@@ -15,12 +15,15 @@ namespace http_handler {
         ApiFunctionBuilder& ExecFunc(ExecutorFunction&& function);
         //sets authorization requirement
         ApiFunctionBuilder& NeedAuthor(token_manager::TokenToUuid::Ptr ttu);
+        //defines if function is for debugging
+        ApiFunctionBuilder& ForDebug();
         //makes and returns product
         ApiFunctionExecutor GetProduct();
 
     private:
         AllowedMethods allowed_methods_;
         ExecutorFunction executor_function_;
+        bool is_debug_ = false;
         //std::nullopt if authorization is not required
         std::optional<token_manager::TokenToUuid::Ptr> ttu_ = std::nullopt;
     };

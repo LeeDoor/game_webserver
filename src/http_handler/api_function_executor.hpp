@@ -13,7 +13,7 @@ namespace http_handler {
 
     class ApiFunctionExecutor {
     public:
-        ApiFunctionExecutor(ApiFunction&& api_function, std::optional<token_manager::TokenToUuid::Ptr> ttu);
+        ApiFunctionExecutor(ApiFunctionParams&& api_function_params, std::optional<token_manager::TokenToUuid::Ptr> ttu);
 
         ApiStatus Execute(RequestNSender rns);
         const ApiFunction& GetApiFunction() const;

@@ -66,15 +66,26 @@ classDiagram
         -ISerializer
     }
 
+	class ApiFunctionParams{
+		+allowed_methods: vector of methods
+        +executor: Function param: request, sender_func
+        +is_debug
+	}
+
     class ApiFunction {
         -allowed_methods: vector of methods
         -executor: Function param: request, sender_func
-    }
+	    +is_debug
+	}
 
     class ApiFunctionExecutor {
         +execute(http_request, sender_func)
-        -MatchMethod() bool
+        +GetApiFunction(): apiFunction
+        -MatchMethod(method) bool
+        -MatchAuthorization(request)
+        
         -api_function : ApiFunction
+        -token_to_uuid: TokenToUuid?
     }
 
     class ApiFunctionBuilder {
@@ -82,10 +93,14 @@ classDiagram
         +ExecFunc(function)
         +GetHead()
         +Post()
+        +NeedAuthor(ttu)
+        +ForDebug()
         +GetProduct() ApiFunctionExeuctor
 
         -allowed_methods: vector < methods >
         -execution_function: function
+        -is_debug: bool
+        -token_to_uuid: TokenToUuid?
     }
 
     class ResponseBuilder {
@@ -106,5 +121,6 @@ classDiagram
     ApiHandler ..> ApiFunctionExecutor : contains map of
     ApiHandler --> ApiFunctionBuilder : uses
     ApiFunctionExecutor ..> ApiFunction : contains & calls
+    ApiFunction --> ApiFunctionParams : uses
 
 ```

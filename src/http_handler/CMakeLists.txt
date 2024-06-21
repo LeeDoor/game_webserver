@@ -31,6 +31,7 @@ add_library(${LIBRARY_NAME}
     registration_data.cpp
     get_token_from_header.hpp
     get_token_from_header.cpp
+    api_function_params.hpp
 )
 
 #including and linking dependencies
