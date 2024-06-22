@@ -20,3 +20,8 @@ Authorization required
 GET HEAD
 ApiGetPlayerTokens
 Debug method
+
+/api/debug/user_data
+GET HEAD
+ApiGetUserData
+Debug method

@@ -18,6 +18,10 @@ namespace http_handler {
 
     void ApiHandler::HandleApiFunction(HttpRequest&& request, ResponseSender&& sender){
         std::string function = static_cast<std::string>(request.target());
+        // removing url parameters
+        std::string::size_type pos = function.find('?');
+        function = function.substr(0, pos);
+
         RequestNSender rns {request, sender};
         std::cout << function << std::endl;
         if(request.method() == http::verb::options){
@@ -49,6 +53,7 @@ namespace http_handler {
             { "ApiLogin",           BIND(&ApiHandler::ApiLogin) },
             { "ApiEnqueue",         BIND(&ApiHandler::ApiEnqueue) },
             { "ApiGetPlayerTokens", BIND(&ApiHandler::ApiGetPlayerTokens) },
+            { "ApiGetUserData",     BIND(&ApiHandler::ApiGetUserData) },
         };
 
         std::ifstream is;
@@ -171,10 +176,36 @@ namespace http_handler {
         return responser_.Send(rns, http::status::ok, ttu_string);
     }
 
+    void ApiHandler::ApiGetUserData(RequestNSender rns) {
+        std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
+        return;
+    }
+
     tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {
         auto auth_iter = request.find(http::field::authorization);
         std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
         return *token;
+    }
+
+    std::map<std::string, std::string> ApiHandler::ParseUrlParameters(const HttpRequest& request){
+        std::map<std::string, std::string> res;
+        std::string function = request.target().to_string();
+        std::string::size_type pos = function.find('?');
+        if (pos == std::string::npos)
+            return res;
+        std::string params = function.substr(pos + 1);
+        pos = params.find('&');
+        std::string pair_s;
+        do {
+            pair_s = params.substr(0, pos);
+            params.erase(0, pos + 1);
+            res.insert(ParseUrlPair(std::move(pair_s)));
+        } while ((pos = params.find('&')) != std::string::npos);
+        res.insert(ParseUrlPair(std::move(params)));
+        return res;
+    }
+    std::pair<std::string, std::string> ApiHandler::ParseUrlPair(std::string&& pair) {
+        return {pair.substr(0, pair.find('=')), pair.substr(pair.find('=') + 1)};
     }
     
 } // http_handler

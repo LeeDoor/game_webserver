@@ -26,9 +26,14 @@ namespace http_handler {
 
         // api debug functions
         void ApiGetPlayerTokens(RequestNSender rns);
+        void ApiGetUserData(RequestNSender rns);
 
         // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);
+
+        // get url parameters
+        std::map<std::string, std::string> ParseUrlParameters(const HttpRequest& request);
+        std::pair<std::string, std::string> ParseUrlPair(std::string&& pair);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
