@@ -17,15 +17,14 @@ void CheckBody(const StringResponse& given, std::string& body, bool is_head){
         CHECK(given.body() == body);
     }
 }
-void CheckContentLength(const StringResponse& given, int content_length, bool check_body) {
+void CheckContentLength(const StringResponse& given, int content_length) {
     auto content_length_iter = given.find(http::field::content_length);
     if(content_length_iter == given.end()){
         FAIL_CHECK("no content_length header");
+        return;
     }
-    else if (check_body){
-        int content_length = std::stoi(content_length_iter->value().to_string());
-        CHECK(content_length == content_length);
-    }
+    int given_content_length = std::stoi(content_length_iter->value().to_string());
+    CHECK(given_content_length == content_length);
 }
 void CheckContentType(const StringResponse& given, std::string content_type) {
     auto content_type_iter = given.find(http::field::content_type);
@@ -63,13 +62,13 @@ void CheckStatus(const StringResponse& given, http::status result){
 void CheckStringResponse(const StringResponse& response, ResponseParams rp){
     if(rp.body)
         CheckBody(response, *rp.body, rp.head);
-    if(rp.len){
-        if(rp.body)
-            rp.len = rp.body->size();
-        CheckContentLength(response, *rp.len, rp.body.has_value());
-    }
-    if(rp.type)
-        CheckContentType(response, *rp.type);
+    if(rp.body)
+        rp.len = rp.body->size();
+    else
+        rp.len = response.body().size();
+    CheckContentLength(response, rp.len);
+    
+    CheckContentType(response, rp.type);
     if(rp.res)
         CheckStatus(response, *rp.res);
     if(rp.allowed)

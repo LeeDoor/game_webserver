@@ -16,6 +16,7 @@ using namespace token_manager;
 #define LOGIN_API       "/api/login"
 #define REGISTER_API    "/api/register"
 #define PROFILE_API     "/api/profile"
+#define PLAYER_TOKENS_API     "/api/debug/player_tokens"
 
 #define VALID_PASS      "01Veterduet2000"
 
@@ -32,3 +33,5 @@ LoginData LoginSuccess(tcp::socket&, const std::string& nn, ISerializer::Ptr ser
 
 http::response<http::string_body> Profile(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+
+std::map<std::string, std::string> PlayerTokens(tcp::socket&, ISerializer::Ptr serializer);

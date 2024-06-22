@@ -24,10 +24,10 @@ namespace serializer{
         virtual std::string SerializePublicUserData(const hh::PublicUserData& pud) = 0;
         virtual std::string SerializeTokenToUuid(const std::map<tm::Token, std::string>& ttu) = 0;
 
-        //deserialize
-        virtual std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) = 0;
-        virtual std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) = 0;
+        //deserialize        
         virtual std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) = 0;
 
+        virtual std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) = 0;
+        virtual std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) = 0;
     };
 }

@@ -27,10 +27,10 @@ struct ResponseParams{
     //is head or not. head check depends on body == std::optional
     bool head             = false;
     //type of response
-    opt<std::string> type = "application/json";
+    std::string type      = "application/json";
     //content_length. if body != std::optional, len = body.size()
     //overwise len keeps its value
-    opt<int> len          = 0;
+    int len               = 0;
     //result enum of response
     opt<http::status> res = std::nullopt;
     //allowed methods if response is method_not_allowed
