@@ -15,3 +15,8 @@ ApiLogin
 POST
 ApiEnqueue
 Authorization required
+
+/api/debug/player_tokens
+GET HEAD
+ApiGetPlayerTokens
+Debug method

@@ -25,12 +25,17 @@ all non-ok responses have same body type. for example:
 
 debug api is required to get data from app structures. to execute them you need to send admin login and password.
 
-example: #TODO 
+example:
 ```js
+{ 
+	"login": "very_login", 
+	"password": "abcde12345" 
+}
 ```
 
 ### API player_tokens
-
+#### **description**
+debug function for getting users' authentication tokens and uuids.
 #### **request target**
 */api/debug/player_tokens*
 
@@ -60,7 +65,8 @@ example: #TODO
 
 ---
 ### API user_data
-
+#### **description**
+debug function for getting users' profile info like login and password.
 #### **request target**
 */api/debug/user_data*
 
@@ -90,7 +96,8 @@ example: #TODO
 
 ---
 ### API matchmaking_queue
-
+#### **description**
+debug function for getting queue of users' uuids
 #### **request target**
 */api/debug/matchmaking_queue*
 
@@ -121,7 +128,8 @@ example: #TODO
 
 ---
 ### API sessions_list
-
+#### **description**
+debug function for getting list of sessions with playing users.
 #### **request target**
 */api/debug/sessions_list*
 

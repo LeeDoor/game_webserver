@@ -29,6 +29,16 @@ namespace serializer{
         nlohmann::json json = pud;
         return json.dump();
     }
+    std::string JSONSerializer::SerializeTokenToUuid(const std::map<tm::Token,std::string>& ttu) {
+        if(ttu.empty()){
+            return SerializeEmpty();
+        }
+        nlohmann::json obj;
+        for (const auto& pair : ttu) {
+            obj[pair.first] = pair.second;
+        }
+        return obj.dump();
+    }
 
     std::optional<hh::PublicUserData> JSONSerializer::DeserializePublicUserData(const std::string& json_str) {
         hh::PublicUserData pud;

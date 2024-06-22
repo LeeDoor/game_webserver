@@ -3,7 +3,8 @@
 namespace http_handler {
     ApiFunction::ApiFunction(ApiFunctionParams&& params):
         executor_function_(std::move(params.executor_function)),
-        allowed_methods_(std::move(params.allowed_methods)){}
+        allowed_methods_(std::move(params.allowed_methods)),
+        is_debug_(params.is_debug){}
 
     const AllowedMethods& ApiFunction::GetAllowedMethods() const{
         return allowed_methods_;

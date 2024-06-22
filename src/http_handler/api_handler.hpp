@@ -14,13 +14,20 @@ namespace http_handler {
         void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);
 
     private:
+        // generate api function set from file
         void ApiFunctionsParse();
         bool ApiFunctionParse(std::map<std::string, ExecutorFunction>& executors, std::ifstream& is, ApiFunctionBuilder& afb);
+        
+        // api functions
         void ApiRegister(RequestNSender rns);
         void ApiLogin(RequestNSender rns);
         void ApiGetProfileData(RequestNSender rns);
         void ApiEnqueue(RequestNSender rns);
 
+        // api debug functions
+        void ApiGetPlayerTokens(RequestNSender rns);
+
+        // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);
 
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;

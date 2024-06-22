@@ -5,19 +5,22 @@ namespace token_manager{
         TokenGenerator tg;
         Token t;
         do t = std::move(tg.GenerateToken());
-        while (map.contains(t));
+        while (map_.contains(t));
 
         return std::move(t);
     }
     std::optional<std::string> TokenToUuid::GetUuidByToken(const Token& token) {
-        if(map.contains(token)){
-            return map.at(token);
+        if(map_.contains(token)){
+            return map_.at(token);
         }
         return std::nullopt;
     }
     void TokenToUuid::AddTokenToUuid(const Token& token, std::string& uuid) {
-        if(map.contains(token)) map.erase(token);
-        map[token] = uuid;
+        if(map_.contains(token)) map_.erase(token);
+        map_[token] = uuid;
     }
     
+    const std::map<Token, std::string>& TokenToUuid::GetValue() const {
+        return map_;
+    }           
 }

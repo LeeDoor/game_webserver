@@ -44,6 +44,9 @@ namespace http_handler{
     void SendManager::SendInvalidToken(RequestNSender rns) {
         Send(rns, status::unauthorized, serializer_->SerializeError("invalid_token", "request authorization is invalid"));
     }
+    void SendManager::SendAdminUnrecognized(RequestNSender rns){
+        Send(rns, status::unauthorized, serializer_->SerializeError("invalid_admin", "the administrator password is missing or incorrect"));
+    }
     void SendManager::SendTokenToRemovedPerson(RequestNSender rns) {
         Send(rns, status::unauthorized, serializer_->SerializeError("person_removed", "person with this token is unavailable (prob. removed)"));
     }
@@ -62,6 +65,9 @@ namespace http_handler{
             break;
         case ApiStatus::InvalidToken:
             SendInvalidToken(rns);
+            break;
+        case ApiStatus::AdminUnrecognized:
+            SendAdminUnrecognized(rns);
             break;
         default:
             SendUndefinedError(executor, rns);

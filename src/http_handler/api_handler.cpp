@@ -48,6 +48,7 @@ namespace http_handler {
             { "ApiRegister",        BIND(&ApiHandler::ApiRegister) },
             { "ApiLogin",           BIND(&ApiHandler::ApiLogin) },
             { "ApiEnqueue",         BIND(&ApiHandler::ApiEnqueue) },
+            { "ApiGetPlayerTokens", BIND(&ApiHandler::ApiGetPlayerTokens) },
         };
 
         std::ifstream is;
@@ -162,6 +163,12 @@ namespace http_handler {
             return responser_.SendSuccess(rns);
         }
         return responser_.SendCantEnqueue(rns);
+    }
+
+    void ApiHandler::ApiGetPlayerTokens(RequestNSender rns){
+        const std::map<token_manager::Token, std::string>& map = ttu_->GetValue();
+        std::string ttu_string = serializer_->SerializeTokenToUuid(map);
+        return responser_.Send(rns, http::status::ok, ttu_string);
     }
 
     tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {

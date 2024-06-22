@@ -24,6 +24,7 @@ namespace http_handler{
         void SendNoSuchUser(RequestNSender rns);
         void SendUnauthorized(RequestNSender rns);
         void SendInvalidToken(RequestNSender rns);
+        void SendAdminUnrecognized(RequestNSender rns);
         void SendTokenToRemovedPerson(RequestNSender rns);
         void SendCantEnqueue(RequestNSender rns);
 
