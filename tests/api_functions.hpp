@@ -34,4 +34,5 @@ LoginData LoginSuccess(tcp::socket&, const std::string& nn, ISerializer::Ptr ser
 http::response<http::string_body> Profile(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
-std::map<std::string, std::string> PlayerTokens(tcp::socket&, ISerializer::Ptr serializer);
+StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const std::string& login, const std::string& password);
+std::map<std::string, std::string> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);

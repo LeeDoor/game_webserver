@@ -65,15 +65,19 @@ hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISeri
 }
 
 
-std::map<std::string, std::string> PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer) {
-    http::request<http::string_body> req{http::verb::get, PLAYER_TOKENS_API, 11};;
-
-    req.body() = "{\"login\":\"leedoor\", \"password\":\"123qwe123\"}";
-    req.prepare_payload();
-
-    auto response = GetResponseToRequest(false, req, socket);
+std::map<std::string, std::string> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
+    StringResponse response = PlayerTokens(socket, serializer, "leedoor", "123qwe123");
     CheckStringResponse(response, {.res=http::status::ok});
     auto given_map = serializer->DeserializeMap(response.body());
     REQUIRE(given_map.has_value());
     return *given_map;
+}
+
+StringResponse PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer, const std::string& login, const std::string& password){
+    http::request<http::string_body> req{http::verb::get, PLAYER_TOKENS_API, 11};;
+
+    req.body() = serializer->SerializeRegData({login, password});
+    req.prepare_payload();
+
+    return GetResponseToRequest(false, req, socket);
 }
