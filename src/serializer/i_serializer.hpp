@@ -11,6 +11,7 @@
 namespace serializer{
     namespace hh = http_handler;
     namespace tm = token_manager;
+    namespace dm = database_manager;
     class ISerializer {
     public:
         using Ptr = std::shared_ptr<ISerializer>;
@@ -22,6 +23,7 @@ namespace serializer{
         
         virtual std::string SerializeRegData(const hh::RegistrationData& rd) = 0;
         virtual std::string SerializePublicUserData(const hh::PublicUserData& pud) = 0;
+        virtual std::string SerializeUserData(const dm::UserData& ud) = 0;
         virtual std::string SerializeTokenToUuid(const std::map<tm::Token, std::string>& ttu) = 0;
 
         //deserialize        

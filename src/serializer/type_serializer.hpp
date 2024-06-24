@@ -10,3 +10,8 @@ namespace http_handler {
     void to_json(json& j, const PublicUserData& rd);
     void from_json(const json& j, PublicUserData& rd);
 } 
+
+namespace database_manager {
+    void to_json(json& j, const UserData& rd);
+    void from_json(const json& j, UserData& rd);
+}

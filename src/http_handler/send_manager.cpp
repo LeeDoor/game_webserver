@@ -22,6 +22,9 @@ namespace http_handler{
     void SendManager::SendUserData(RequestNSender rns, const PublicUserData& puser_data)  {
         Send(rns, status::ok, serializer_->SerializePublicUserData(puser_data));
     }
+    void SendManager::SendHiddenUserData(RequestNSender rns, const dm::UserData& user_data) {
+        Send(rns, status::ok, serializer_->SerializeUserData(user_data));
+    }
 
     void SendManager::SendWrongApiFunction(RequestNSender rns) {
         Send(rns, status::bad_request, serializer_->SerializeError("api_error", "wrong api function"));
@@ -54,7 +57,10 @@ namespace http_handler{
         Send(rns, status::ok, serializer_->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)"));
     }
 
-        
+    void SendManager::SendWrongUrlParameters(RequestNSender rns){
+        Send(rns, status::unprocessable_entity, serializer_->SerializeError("url_parameters_error", "this api function requires url parameters"));
+    }
+
     void SendManager::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns) {
         switch(status) {
         case ApiStatus::WrongMethod:

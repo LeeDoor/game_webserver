@@ -9,6 +9,7 @@ namespace serializer{
         std::string SerializeMap(std::map<std::string, std::string>&& map) override; 
         
         std::string SerializeRegData(const hh::RegistrationData& rd) override;
+        std::string SerializeUserData(const dm::UserData& ud) override;
         std::string SerializePublicUserData(const hh::PublicUserData& pud) override;
         std::string SerializeTokenToUuid(const std::map<tm::Token,std::string>& ttu) override;
 

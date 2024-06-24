@@ -16,6 +16,7 @@ namespace http_handler{
         void SendSuccess(RequestNSender rns);
         void SendToken(RequestNSender rns, token_manager::Token& token);
         void SendUserData(RequestNSender rns, const PublicUserData& user_data);
+        void SendHiddenUserData(RequestNSender rns, const dm::UserData& user_data);
         
         void SendWrongApiFunction(RequestNSender rns);
         void SendWrongBodyData(RequestNSender rns);
@@ -27,6 +28,8 @@ namespace http_handler{
         void SendAdminUnrecognized(RequestNSender rns);
         void SendTokenToRemovedPerson(RequestNSender rns);
         void SendCantEnqueue(RequestNSender rns);
+
+        void SendWrongUrlParameters(RequestNSender rns);
 
         void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
         void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);

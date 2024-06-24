@@ -178,7 +178,22 @@ namespace http_handler {
 
     void ApiHandler::ApiGetUserData(RequestNSender rns) {
         std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
-        return;
+        if ((map.contains("login") && map.contains("password") || map.contains("uuid")))
+            return responser_.SendWrongUrlParameters(rns);
+        if (map.contains("uuid")){
+            std::optional<dm::UserData> ud = udm_->GetByUuid(map["uuid"]);
+            if (!ud.has_value())
+                return responser_.Send(rns, status::not_found, 
+                    serializer_->SerializeError(
+                        "user_not_found", "no user with provided uuid found"));
+            return responser_.SendHiddenUserData(rns, *ud);
+        }
+        std::optional<dm::UserData> ud = udm_->GetByLoginPassword(map["login"], map["password"]);
+        if (!ud.has_value())
+            return responser_.Send(rns, status::not_found, 
+                serializer_->SerializeError(
+                    "user_not_found", "no user with provided login and password found"));
+        return responser_.SendHiddenUserData(rns, *ud);
     }
 
     tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {
