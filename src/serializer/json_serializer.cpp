@@ -56,6 +56,18 @@ namespace serializer{
         }
         return pud;
     }
+    std::optional<dm::UserData> JSONSerializer::DeserializeUserData(const std::string& json_str) {
+        dm::UserData ud;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            ud = j.template get<dm::UserData>();
+        }
+        catch(std::exception ex){
+            std::cout << ex.what() << std::endl;
+            return std::nullopt;
+        }
+        return ud;
+    }
     std::optional<hh::RegistrationData> JSONSerializer::DeserializeRegData(const std::string& json_str) {
         hh::RegistrationData rd;
         try{

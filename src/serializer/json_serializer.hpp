@@ -14,6 +14,7 @@ namespace serializer{
         std::string SerializeTokenToUuid(const std::map<tm::Token,std::string>& ttu) override;
 
         std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) override;
+        std::optional<dm::UserData> DeserializeUserData(const std::string& json_str) override;
         std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) override;
         std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) override;
     };

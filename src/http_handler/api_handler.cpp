@@ -23,7 +23,6 @@ namespace http_handler {
         function = function.substr(0, pos);
 
         RequestNSender rns {request, sender};
-        std::cout << function << std::endl;
         if(request.method() == http::verb::options){
             ResponseBuilder<http::string_body> builder;
             http::response<http::string_body> product = 
@@ -178,7 +177,7 @@ namespace http_handler {
 
     void ApiHandler::ApiGetUserData(RequestNSender rns) {
         std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
-        if ((map.contains("login") && map.contains("password") || map.contains("uuid")))
+        if (!(map.contains("login") && map.contains("password") || map.contains("uuid")))
             return responser_.SendWrongUrlParameters(rns);
         if (map.contains("uuid")){
             std::optional<dm::UserData> ud = udm_->GetByUuid(map["uuid"]);

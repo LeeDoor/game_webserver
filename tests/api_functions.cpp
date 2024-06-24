@@ -5,6 +5,19 @@
 #include "json_serializer.hpp"
 #include <sstream>
 
+std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& params) {
+    if (params.empty())
+        return url;
+    std::stringstream ss;
+    ss << url << '?';
+    for (auto it = params.begin(); it != params.end(); ++it) {
+        if (it != params.begin())
+            ss << '&';
+        ss << it->first << '=' << it->second;
+    }
+    return ss.str();
+}
+
 http::response<http::string_body> Register(tcp::socket& socket, const std::string& login, const std::string& password, ISerializer::Ptr serializer){
     hh::RegistrationData rd{login, password};
     std::string rd_json = serializer->SerializeRegData(rd);
@@ -66,7 +79,7 @@ hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISeri
 
 
 std::map<std::string, std::string> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
-    StringResponse response = PlayerTokens(socket, serializer, "leedoor", "123qwe123");
+    StringResponse response = PlayerTokens(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
     CheckStringResponse(response, {.res=http::status::ok});
     auto given_map = serializer->DeserializeMap(response.body());
     REQUIRE(given_map.has_value());
@@ -80,4 +93,51 @@ StringResponse PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer, co
     req.prepare_payload();
 
     return GetResponseToRequest(false, req, socket);
+}
+
+StringResponse UserData(
+    tcp::socket& socket, 
+    ISerializer::Ptr serializer, 
+    const std::string& Admlogin, 
+    const std::string& Admpassword,
+    const std::string& Usrlogin, 
+    const std::string& Usrpassword) {
+
+    std::string target = SetUrlParameters(USER_DATA_API, {{"login", Usrlogin}, {"password", Usrpassword}});
+    http::request<http::string_body> req{http::verb::get, target, 11};;
+    req.body() = serializer->SerializeRegData({Admlogin, Admpassword});
+    req.prepare_payload();
+
+    return GetResponseToRequest(false, req, socket);
+}
+StringResponse UserData(
+    tcp::socket& socket, 
+    ISerializer::Ptr serializer, 
+    const std::string& Admlogin, 
+    const std::string& Admpassword,
+    const std::string& Usruuid) {
+    
+    std::string target = SetUrlParameters(USER_DATA_API, {{"uuid", Usruuid}});
+    http::request<http::string_body> req{http::verb::get, target, 11};
+    req.body() = serializer->SerializeRegData({Admlogin, Admpassword});
+    req.prepare_payload();
+    
+    return GetResponseToRequest(false, req, socket);
+}
+dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const std::string& Usrlogin, const std::string& Usrpassword) {
+    StringResponse response = UserData(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, Usrlogin, Usrpassword);
+    CheckStringResponse(response, {.res=http::status::ok});
+    auto given_user_data = serializer->DeserializeUserData(response.body());
+    REQUIRE(given_user_data.has_value());
+    CHECK(given_user_data->login == Usrlogin);
+    CHECK(given_user_data->password == Usrpassword);
+    return *given_user_data;
+}
+dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const std::string& uuid) {
+    StringResponse response = UserData(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, uuid);
+    CheckStringResponse(response, {.res=http::status::ok});
+    auto given_user_data = serializer->DeserializeUserData(response.body());
+    REQUIRE(given_user_data.has_value());
+    CHECK(given_user_data->uuid == uuid);
+    return *given_user_data;
 }

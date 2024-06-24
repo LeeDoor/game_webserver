@@ -31,5 +31,6 @@ namespace serializer{
 
         virtual std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) = 0;
         virtual std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) = 0;
+        virtual std::optional<dm::UserData> DeserializeUserData(const std::string& json) = 0;
     };
 }

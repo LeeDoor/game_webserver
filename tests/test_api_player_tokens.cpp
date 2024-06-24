@@ -16,6 +16,7 @@ TEST_CASE ("player_tokens", "[api][debug][player_tokens]"){
     SECTION ("server returns valid map when authorized"){
     	StringMap sm_given = PlayerTokensSuccess(socket, serializer);
     	// dont check emptyness. other test metods call login functions so map can be filled
+    	// all tests run with catch2's preferable order and probably async.
     }
     SECTION ("checking logged users in map"){
     	StringMap sm_given = PlayerTokensSuccess(socket, serializer);
