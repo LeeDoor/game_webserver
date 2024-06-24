@@ -125,8 +125,7 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        database_manager::UserData ud {"", std::move(rd->login), std::move(rd->password)};
-        bool add_line_res = udm_->AddLine(ud);
+        bool add_line_res = udm_->AddLine(*rd);
         if(!add_line_res){
             return responser_.SendLoginTaken(rns);
         }
@@ -170,7 +169,7 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiGetPlayerTokens(RequestNSender rns){
-        const std::map<token_manager::Token, std::string>& map = ttu_->GetValue();
+        const std::map<token_manager::Token, dm::Uuid>& map = ttu_->GetValue();
         std::string ttu_string = serializer_->SerializeTokenToUuid(map);
         return responser_.Send(rns, http::status::ok, ttu_string);
     }

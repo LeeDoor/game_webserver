@@ -1,10 +1,11 @@
 #pragma once
 #include <random>
 #include <iomanip>
+#include "user_data.hpp"
 
 class NickGenerator {
 public:
-    std::string GenerateNick(){
+    dm::Login GenerateNick(){
         std::stringstream ss;
         uint64_t key1 = generator1_();
         ss << std::hex << std::setw(10) << std::setfill('0') << key1;

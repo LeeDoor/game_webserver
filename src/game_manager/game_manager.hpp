@@ -10,10 +10,10 @@ namespace game_manager{
         using SessionId = std::string;
         using Ptr = std::shared_ptr<GameManager>;
         
-        bool CreateSession(const std::string& player1, const std::string& player2);
+        bool CreateSession(const dm::Uuid& player1, const dm::Uuid& player2);
 
         //ingame api
-        bool Ping(const std::string& player_id, const SessionId& session_id); // placeholder
+        bool Ping(const dm::Uuid& player_id, const SessionId& session_id); // placeholder
     private:
         SessionId GenerateSessionId();
 

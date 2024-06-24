@@ -5,10 +5,10 @@ namespace http_handler{
     bool ValidateRegData(const RegistrationData& rd) {
         return ValidateLogin(rd.login) && ValidatePassword(rd.password);
     }
-    bool ValidateLogin(const std::string& login) {
+    bool ValidateLogin(const dm::Login& login) {
         return login.size() >= 3;
     }
-    bool ValidatePassword(const std::string& password) {
+    bool ValidatePassword(const dm::Password& password) {
         return password.size() >= 6 && std::count_if(password.begin(), password.end(), [&](char s){return s >='0'&&s<='9';}) >= 1;
     }
 }

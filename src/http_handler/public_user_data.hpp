@@ -10,8 +10,8 @@ namespace http_handler{
             login = ud.login;
             password = ud.password;
         }
-        std::string login;
-        std::string password;
+        dm::Login login;
+        dm::Password password;
     };
 
 }

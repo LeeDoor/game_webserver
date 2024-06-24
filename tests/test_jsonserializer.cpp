@@ -195,7 +195,7 @@ TEST_CASE("SerializePublicUserData & DeserializePublicUserData", "[jsonserialize
 }
 
 TEST_CASE("SerializeTokenToUuid", "[jsonserializer]"){
-    using StringMap = std::map<token_manager::Token, std::string>;
+    using StringMap = std::map<token_manager::Token, dm::Uuid>;
     
     JSONSerializer serializer;
     StringMap map;

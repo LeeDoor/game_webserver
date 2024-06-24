@@ -33,7 +33,7 @@ namespace serializer{
         nlohmann::json json = ud;
         return json.dump();
     }
-    std::string JSONSerializer::SerializeTokenToUuid(const std::map<tm::Token,std::string>& ttu) {
+    std::string JSONSerializer::SerializeTokenToUuid(const std::map<tm::Token,dm::Uuid>& ttu) {
         if(ttu.empty()){
             return SerializeEmpty();
         }

@@ -5,7 +5,7 @@
 namespace matchmaking_system{
     MMQueue::MMQueue(game_manager::GameManager::Ptr gm) : gm_(gm){}
     
-    bool MMQueue::EnqueuePlayer(const Uuid& uuid) {
+    bool MMQueue::EnqueuePlayer(const dm::Uuid& uuid) {
         if (std::find(queue_.begin(), queue_.end(), uuid) != queue_.end())
             return false;
         queue_.emplace_back(uuid);
@@ -13,7 +13,7 @@ namespace matchmaking_system{
         QueueUpdate();
         return true;
     }
-    bool MMQueue::DequeuePlayer(const Uuid& uuid) {
+    bool MMQueue::DequeuePlayer(const dm::Uuid& uuid) {
         if (std::find(queue_.begin(), queue_.end(), uuid) == queue_.end()){
             return false;
         }
@@ -25,13 +25,17 @@ namespace matchmaking_system{
         if (queue_.size() >= 2){
             queue_update_mutex_.lock();
 
-            Uuid p1 = queue_.back();
+            dm::Uuid p1 = queue_.back();
             queue_.pop_back();
-            Uuid p2 = queue_.back();
+            dm::Uuid p2 = queue_.back();
             queue_.pop_back();
             gm_->CreateSession(p1, p2);
 
             queue_update_mutex_.unlock();
         }
     }
+
+    const std::vector<dm::Uuid>& MMQueue::GetQueue() const {
+        return queue_;
+    } 
 }

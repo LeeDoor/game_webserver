@@ -4,6 +4,7 @@
 #include <optional>
 #include <memory>
 #include "token_generator.hpp"
+#include "user_data.hpp"
 
 namespace token_manager{
     class TokenToUuid {
@@ -11,12 +12,12 @@ namespace token_manager{
         using Ptr = std::shared_ptr<TokenToUuid>; 
 
         Token GenerateToken();
-        std::optional<std::string> GetUuidByToken(const Token& token);
-        void AddTokenToUuid(const Token& token, std::string& uuid);
+        std::optional<dm::Uuid> GetUuidByToken(const Token& token);
+        void AddTokenToUuid(const Token& token, const dm::Uuid& uuid);
 
         // for debug admin api functions only
-        const std::map<Token, std::string>& GetValue() const;
+        const std::map<Token, dm::Uuid>& GetValue() const;
     private:
-        std::map<Token, std::string> map_;
+        std::map<Token, dm::Uuid> map_;
     };
 }

@@ -41,7 +41,7 @@ namespace http_handler {
         std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
         if(!token)
             return ApiStatus::InvalidToken;
-        std::optional<std::string> uuid = ttu_.value()->GetUuidByToken(*token);
+        std::optional<dm::Uuid> uuid = ttu_.value()->GetUuidByToken(*token);
         if(!uuid)
             return ApiStatus::InvalidToken;
         return ApiStatus::Ok;

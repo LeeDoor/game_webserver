@@ -5,9 +5,9 @@
 namespace database_manager {
     static UserData from_result(const pqxx::row& row) {
         database_manager::UserData instance;
-        instance.uuid = row.at("id").as<std::string>();
-        instance.login = row.at("login").as<std::string>();
-        instance.password = row.at("password").as<std::string>();
+        instance.uuid = row.at("id").as<Uuid>();
+        instance.login = row.at("login").as<Login>();
+        instance.password = row.at("password").as<Password>();
         return instance;
     }
 }

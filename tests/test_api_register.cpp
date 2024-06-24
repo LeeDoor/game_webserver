@@ -25,7 +25,8 @@ TEST_CASE("server register players", "[api][register]") {
         }
     }
     SECTION ("request with incorrect login or password"){
-        std::string login, password;
+        dm::Login login;
+        dm::Password password;
         SECTION ("request with incorrect login"){
             login = "";
             password = VALID_PASS;

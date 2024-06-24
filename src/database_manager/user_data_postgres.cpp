@@ -17,13 +17,12 @@ namespace database_manager{
         }
     }
 
-    bool UserDataPostgres::AddLine(UserData& user_data) {
+    bool UserDataPostgres::AddLine(hh::RegistrationData& rd) {
         try{
             ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
             pqxx::work trans(*cw);
             pqxx::row uuid_pqxx = trans.exec1("SELECT gen_random_uuid();");
-            user_data.uuid = uuid_pqxx[0].as<std::string>();
-            trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", user_data.uuid, user_data.login, user_data.password);
+            trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", uuid_pqxx[0].as<Uuid>(), rd.login, rd.password);
             trans.commit();
             return true;
         }
@@ -32,7 +31,7 @@ namespace database_manager{
         }
         return false;
     }
-    std::optional<UserData> UserDataPostgres::GetByUuid(const std::string& uuid) {
+    std::optional<UserData> UserDataPostgres::GetByUuid(const Uuid& uuid) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 
@@ -48,7 +47,7 @@ namespace database_manager{
         }
         
     }
-    std::optional<UserData> UserDataPostgres::GetByLoginPassword(const std::string& login, const std::string& password) {
+    std::optional<UserData> UserDataPostgres::GetByLoginPassword(const Login& login, const Password& password) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 

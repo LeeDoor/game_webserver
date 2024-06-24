@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(DEPENDENCIES)
+set(DEPENDENCIES database_manager)
 set(LIBRARY_NAME token_manager)
 #creating library
 add_library(${LIBRARY_NAME}

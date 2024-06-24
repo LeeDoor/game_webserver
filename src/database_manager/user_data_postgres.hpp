@@ -10,9 +10,9 @@ namespace database_manager{
     public:
         UserDataPostgres(bool is_test);
 
-        bool AddLine(UserData& user_data) override;
-        std::optional<UserData> GetByUuid(const std::string& uuid) override;
-        std::optional<UserData> GetByLoginPassword(const std::string& login, const std::string& password) override;
+        bool AddLine(hh::RegistrationData& rd) override;
+        std::optional<UserData> GetByUuid(const Uuid& uuid) override;
+        std::optional<UserData> GetByLoginPassword(const Login& login, const Password& password) override;
 
     private:
         ConnectionPool pool_;

@@ -29,37 +29,37 @@ namespace dm = database_manager;
 
 struct LoginData{
     Token token;
-    std::string login;
+    dm::Login login;
 };
 
 // **Success functions does not require checking for validness of the answer and possibility to call.
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
 
-http::response<http::string_body> Register(tcp::socket& socket, const std::string& login, const std::string& password, ISerializer::Ptr serializer);
+http::response<http::string_body> Register(tcp::socket& socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
 hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
 
-http::response<http::string_body> Login(tcp::socket&, const std::string& login, const std::string& password, ISerializer::Ptr serializer);
-LoginData LoginSuccess(tcp::socket&, const std::string& nn, ISerializer::Ptr serializer);
+http::response<http::string_body> Login(tcp::socket&, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
+LoginData LoginSuccess(tcp::socket&, const dm::Login& login, ISerializer::Ptr serializer);
 
 http::response<http::string_body> Profile(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
-StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const std::string& login, const std::string& password);
-std::map<std::string, std::string> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
+StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);
+std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
 
 StringResponse UserData(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
-    const std::string& Usrlogin, 
-    const std::string& Usrpassword);
+    const dm::Login& Usrlogin, 
+    const dm::Password& Usrpassword);
 StringResponse UserData(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
-    const std::string& Usruuid);
-dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const std::string& Usrlogin, const std::string& Usrpassword);
-dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const std::string& uuid);
+    const dm::Uuid& Usruuid);
+dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword);
+dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Uuid& uuid);
