@@ -177,7 +177,7 @@ namespace http_handler {
 
     void ApiHandler::ApiGetUserData(RequestNSender rns) {
         std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
-        if (!(map.contains("login") && map.contains("password") || map.contains("uuid")))
+        if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
             return responser_.SendWrongUrlParameters(rns);
         if (map.contains("uuid")){
             std::optional<dm::UserData> ud = udm_->GetByUuid(map["uuid"]);
@@ -219,6 +219,9 @@ namespace http_handler {
         return res;
     }
     std::pair<std::string, std::string> ApiHandler::ParseUrlPair(std::string&& pair) {
+        // if line does not have equality sign (e.g. "/api/function?parameter1&parameter2")
+        // then these parameters are being parsed as 
+        // {"parameter1":"parameter1", "parameter2":"parameter2"}
         return {pair.substr(0, pair.find('=')), pair.substr(pair.find('=') + 1)};
     }
     

@@ -21,6 +21,8 @@ namespace dm = database_manager;
 #define USER_DATA_API       "/api/debug/user_data"
 
 #define VALID_PASS      "01Veterduet2000"
+#define INVALID_PASS    "qweqwe"
+#define INVALID_LOGIN   "unexistinglogin"
 
 #define ADMIN_LOGIN "leedoor"
 #define ADMIN_PASSWORD "123qwe123"
