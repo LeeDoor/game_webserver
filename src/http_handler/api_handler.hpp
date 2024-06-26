@@ -27,6 +27,7 @@ namespace http_handler {
         // api debug functions
         void ApiGetPlayerTokens(RequestNSender rns);
         void ApiGetUserData(RequestNSender rns);
+        void ApiGetMMQueue(RequestNSender rns);
 
         // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);

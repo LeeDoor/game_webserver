@@ -25,3 +25,8 @@ Debug method
 GET HEAD
 ApiGetUserData
 Debug method
+
+/api/debug/matchmaking_queue
+GET HEAD
+ApiGetMMQueue
+Debug method

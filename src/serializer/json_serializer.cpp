@@ -43,6 +43,13 @@ namespace serializer{
         }
         return obj.dump();
     }
+    std::string JSONSerializer::SerializeUuids(const std::vector<dm::Uuid>& v) {
+        if(v.empty()){
+            return SerializeEmpty();
+        }
+        nlohmann::json obj(v);
+        return obj.dump();
+    }
 
     std::optional<hh::PublicUserData> JSONSerializer::DeserializePublicUserData(const std::string& json_str) {
         hh::PublicUserData pud;
@@ -93,5 +100,17 @@ namespace serializer{
             return std::nullopt;
         }
         return map;
+    }
+    std::optional<std::vector<dm::Uuid>> JSONSerializer::DeserializeUuids(const std::string& json_str) {
+        std::vector<dm::Uuid> res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            j.get_to(res);
+        }
+        catch(std::exception ex){
+            std::cout << ex.what() << std::endl;
+            return std::nullopt;
+        }
+        return res;
     }
 }

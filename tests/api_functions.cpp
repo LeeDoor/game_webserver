@@ -87,7 +87,7 @@ std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::
 }
 
 StringResponse PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password){
-    http::request<http::string_body> req{http::verb::get, PLAYER_TOKENS_API, 11};;
+    http::request<http::string_body> req{http::verb::get, PLAYER_TOKENS_API, 11};
 
     req.body() = serializer->SerializeRegData({login, password});
     req.prepare_payload();
@@ -140,4 +140,20 @@ dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, c
     REQUIRE(given_user_data.has_value());
     CHECK(given_user_data->uuid == uuid);
     return *given_user_data;
+}
+
+StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password){
+    http::request<http::string_body> req{http::verb::get, MM_QUEUE_API, 11};
+
+    req.body() = serializer->SerializeRegData({login, password});
+    req.prepare_payload();
+
+    return GetResponseToRequest(false, req, socket);
+}
+std::vector<dm::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer){
+    StringResponse response = MMQueueSuccess(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
+    CheckStringResponse(response, {.res=http::status::ok});
+    auto given_vector = serializer->DeserializeUuids(response.body());
+    REQUIRE(given_vector.has_value());
+    return *given_vector;
 }

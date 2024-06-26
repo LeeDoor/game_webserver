@@ -19,6 +19,7 @@ namespace dm = database_manager;
 #define PROFILE_API         "/api/profile"
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
+#define MM_QUEUE_API       "/api/debug/matchmaking_queue"
 
 #define VALID_PASS      "01Veterduet2000"
 #define INVALID_PASS    "qweqwe"
@@ -63,3 +64,6 @@ StringResponse UserData(
     const dm::Uuid& Usruuid);
 dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword);
 dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Uuid& uuid);
+
+StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password);
+std::vector<dm::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer);

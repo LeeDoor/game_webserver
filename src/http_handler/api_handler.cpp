@@ -53,6 +53,7 @@ namespace http_handler {
             { "ApiEnqueue",         BIND(&ApiHandler::ApiEnqueue) },
             { "ApiGetPlayerTokens", BIND(&ApiHandler::ApiGetPlayerTokens) },
             { "ApiGetUserData",     BIND(&ApiHandler::ApiGetUserData) },
+            { "ApiGetMMQueue",      BIND(&ApiHandler::ApiGetMMQueue) },
         };
 
         std::ifstream is;
@@ -192,6 +193,12 @@ namespace http_handler {
                 serializer_->SerializeError(
                     "user_not_found", "no user with provided login and password found"));
         return responser_.SendHiddenUserData(rns, *ud);
+    }
+
+    void ApiHandler::ApiGetMMQueue(RequestNSender rns) {
+        const std::vector<dm::Uuid>& queue = mm_queue_->GetQueue();
+        std::string queue_string = serializer_->SerializeUuids(queue);
+        return responser_.Send(rns, status::ok, queue_string);
     }
 
     tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {
