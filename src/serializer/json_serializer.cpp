@@ -44,9 +44,6 @@ namespace serializer{
         return obj.dump();
     }
     std::string JSONSerializer::SerializeUuids(const std::vector<dm::Uuid>& v) {
-        if(v.empty()){
-            return SerializeEmpty();
-        }
         nlohmann::json obj(v);
         return obj.dump();
     }
@@ -105,6 +102,7 @@ namespace serializer{
         std::vector<dm::Uuid> res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
+            std::cout << "CURRENT UUID VECTOR AS JSON IS " << json_str << std::endl;
             j.get_to(res);
         }
         catch(std::exception ex){

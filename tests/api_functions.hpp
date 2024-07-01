@@ -17,9 +17,10 @@ namespace dm = database_manager;
 #define LOGIN_API           "/api/login"
 #define REGISTER_API        "/api/register"
 #define PROFILE_API         "/api/profile"
+#define ENQUEUE_API         "/api/enqueue"
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
-#define MM_QUEUE_API       "/api/debug/matchmaking_queue"
+#define MM_QUEUE_API        "/api/debug/matchmaking_queue"
 
 #define VALID_PASS      "01Veterduet2000"
 #define INVALID_PASS    "qweqwe"
@@ -36,6 +37,7 @@ struct LoginData{
 // **Success functions does not require checking for validness of the answer and possibility to call.
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
+void SetAuthorizationHeader(http::request<http::string_body>& request, const std::string& token);
 
 http::response<http::string_body> Register(tcp::socket& socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
 hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
@@ -43,8 +45,13 @@ hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr seria
 http::response<http::string_body> Login(tcp::socket&, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
 LoginData LoginSuccess(tcp::socket&, const dm::Login& login, ISerializer::Ptr serializer);
 
-http::response<http::string_body> Profile(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+http::response<http::string_body> Profile(tcp::socket&, const Token& token);
 hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+
+http::response<http::string_body> Enqueue(tcp::socket&, const Token& token);
+bool EnqueueSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+
+/// DEBUG METHODS ///
 
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);

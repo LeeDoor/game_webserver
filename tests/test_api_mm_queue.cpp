@@ -4,23 +4,18 @@
 #include "user_data.hpp"
 using namespace serializer;
 
-TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue"){
+TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
     ConnectSocket(ioc, socket);
     std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
     std::string UNAUTHORIZED = serializer->SerializeError("invalid_admin", "the administrator password is missing or incorrect");
+    std::string ENQUEUE_ERROR = serializer->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)");
 
     using Uuids = std::vector<dm::Uuid>;
     SECTION("valid_response"){
     	Uuids given = MMQueueSuccess(socket, serializer);
     	// dont check emptyness. other test metods call login functions so queue can be filled
-    }
-
-    SECTION("enqueued_users_in_queue") {
-    	hh::RegistrationData rd = RegisterSuccess(socket, serializer);
-    	LoginData ld = LoginSuccess(socket, serializer);
-    	
     }
 
     SECTION("admin_verification"){

@@ -9,8 +9,11 @@ add_executable(test_application
     test_api_register.cpp
     test_api_login.cpp
     test_api_profile.cpp
+    test_api_enqueue.cpp
+
     test_api_player_tokens.cpp
     test_api_user_data.cpp
+    test_api_mm_queue.cpp
 )
 target_include_directories(test_application PRIVATE 
     ../src/serializer 

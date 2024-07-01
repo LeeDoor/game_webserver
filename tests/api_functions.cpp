@@ -17,6 +17,11 @@ std::string SetUrlParameters(const std::string& url, const std::map<std::string,
     }
     return ss.str();
 }
+void SetAuthorizationHeader(http::request<http::string_body>& request, const std::string& token){
+    std::stringstream ss;
+    ss << "Bearer " << token;
+    request.set(http::field::authorization, ss.str());
+}
 
 http::response<http::string_body> Register(tcp::socket& socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer){
     hh::RegistrationData rd{login, password};
@@ -57,18 +62,15 @@ LoginData LoginSuccess(tcp::socket&socket, const dm::Login& login, ISerializer::
     return {token, login};
 }
 
-http::response<http::string_body> Profile(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer){
-    http::request<http::string_body> request{http::verb::get, PROFILE_API, 11};;
+http::response<http::string_body> Profile(tcp::socket& socket, const Token& token){
+    http::request<http::string_body> request{http::verb::get, PROFILE_API, 11};
 
-    std::stringstream ss;
-    ss << "Bearer " << token;
-    request.set(http::field::authorization, ss.str());
-
+    SetAuthorizationHeader(request, token);
     auto response = GetResponseToRequest(false, request, socket);
     return response;
 }
 hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
-    http::response<http::string_body> response = Profile(socket, token, serializer);
+    http::response<http::string_body> response = Profile(socket, token);
     CheckStringResponse(response, 
         {.res = http::status::ok});
 
@@ -77,6 +79,20 @@ hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISeri
     return *is_pud;
 }
 
+http::response<http::string_body> Enqueue(tcp::socket& socket, const Token& token){
+    http::request<http::string_body> request{http::verb::post, ENQUEUE_API, 11};
+
+    SetAuthorizationHeader(request, token);
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+bool EnqueueSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer){
+    http::response<http::string_body> response = Enqueue(socket, token);
+    CheckStringResponse(response, 
+        {.body = serializer->SerializeEmpty(),
+        .res = http::status::ok});
+    return response.body() == serializer->SerializeEmpty();
+}
 
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
     StringResponse response = PlayerTokens(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
@@ -142,7 +158,7 @@ dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, c
     return *given_user_data;
 }
 
-StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password){
+StringResponse MMQueue(tcp::socket& socket, ISerializer::Ptr serializer, std::string login, std::string password){
     http::request<http::string_body> req{http::verb::get, MM_QUEUE_API, 11};
 
     req.body() = serializer->SerializeRegData({login, password});
@@ -150,10 +166,11 @@ StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string lo
 
     return GetResponseToRequest(false, req, socket);
 }
-std::vector<dm::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer){
-    StringResponse response = MMQueueSuccess(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
+std::vector<dm::Uuid> MMQueueSuccess(tcp::socket& socket, ISerializer::Ptr serializer){
+    StringResponse response = MMQueue(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
     CheckStringResponse(response, {.res=http::status::ok});
     auto given_vector = serializer->DeserializeUuids(response.body());
+    INFO(response.body());
     REQUIRE(given_vector.has_value());
     return *given_vector;
 }
