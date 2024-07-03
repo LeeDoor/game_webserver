@@ -5,14 +5,15 @@
 namespace http_handler {
     StaticHandler::StaticHandler(HandlerParameters handler_parameters){
         serializer_ = handler_parameters.serializer;
+        static_path_ = fs::weakly_canonical(handler_parameters.static_path);
     }
 
-    void StaticHandler::HandleFile(HttpRequest&& request, fs::path&& root, ResponseSender&& sender) {
+    void StaticHandler::HandleFile(HttpRequest&& request, ResponseSender&& sender) {
         std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
-        fs::path path = root.concat(path_str);
+        fs::path path = static_path_.concat(path_str);
         RequestNSender rns{request,sender};
         std::cout << path << std::endl;
-        if(!IsSubdirectory(std::move(path), std::move(root))) {
+        if(!IsSubdirectory(std::move(path))) {
             std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
            " but boost beast not allowing sockets send this kind of targets\n";
             return SendNoAccessError(rns);
@@ -39,14 +40,13 @@ namespace http_handler {
     }
 
 
-    bool StaticHandler::IsSubdirectory(fs::path&& path, fs::path&& base) {
+    bool StaticHandler::IsSubdirectory(fs::path&& path) {
         path = fs::weakly_canonical(path);
-        base = fs::weakly_canonical(base);
-        for (auto b = base.begin(), p = path.begin(); b != base.end(); ++b, ++p) {
+        for (auto b = static_path_.begin(), p = path.begin(); b != static_path_.end(); ++b, ++p) {
             if (p == path.end() || *p != *b) {
                 return false;
             }
         }
         return true;
     }
-} // http_handler
+}// http_handler

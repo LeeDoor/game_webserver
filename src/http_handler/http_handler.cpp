@@ -1,8 +1,8 @@
 #include "http_handler.hpp"
 #include <iostream>
 namespace http_handler{
-    HttpHandler::HttpHandler(HandlerParameters handler_parameters, std::shared_ptr<std::string> static_path) 
-        : static_handler_(handler_parameters), static_path_(static_path){
+    HttpHandler::HttpHandler(HandlerParameters handler_parameters) 
+        : static_handler_(handler_parameters){
             api_handler_ = std::make_shared<ApiHandler>(handler_parameters);
             api_handler_->Init();
         }
@@ -16,7 +16,6 @@ namespace http_handler{
         }
         else{
             static_handler_.HandleFile(std::move(request),
-                fs::path(*static_path_), 
                 std::move(sender));
         }
     }

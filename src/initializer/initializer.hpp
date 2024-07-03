@@ -12,7 +12,7 @@ private:
         std::string db_login;
         std::string db_password;
         std::string static_path;
-        std::string API_functions_path;
+        std::string api_path;
     };
 
     int StartServer(Args args);

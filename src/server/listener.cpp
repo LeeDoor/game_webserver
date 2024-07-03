@@ -2,11 +2,9 @@
 
 namespace http_server {
     Listener::Listener(net::io_context& ioc, const tcp::endpoint& endpoint, 
-            http_handler::HandlerParameters handler_parameters,
-            std::shared_ptr<std::string> static_path) :
+            http_handler::HandlerParameters handler_parameters) :
             ioc_(ioc), acceptor_(net::make_strand(ioc)), 
-            handler_parameters_(handler_parameters),
-            static_path_(static_path) {
+            handler_parameters_(handler_parameters) {
         acceptor_.open(endpoint.protocol());
         acceptor_.set_option(net::socket_base::reuse_address(true));
         acceptor_.bind(endpoint);
@@ -34,6 +32,6 @@ namespace http_server {
     }
 
     void Listener::AsyncRunSession(tcp::socket&& socket) {
-        std::make_shared<Session> (std::move(socket), handler_parameters_, static_path_)->Run();
+        std::make_shared<Session> (std::move(socket), handler_parameters_)->Run();
     }
 }

@@ -6,8 +6,7 @@ namespace http_server {
     class Listener : public std::enable_shared_from_this<Listener> {
     public:
         Listener(net::io_context& ioc, const tcp::endpoint& endpoint, 
-                http_handler::HandlerParameters handler_parameters,
-                std::shared_ptr<std::string> static_path_);
+                http_handler::HandlerParameters handler_parameters);
 
         void Run();
     private:
@@ -20,6 +19,5 @@ namespace http_server {
         net::io_context& ioc_;
         tcp::acceptor acceptor_;
         http_handler::HandlerParameters handler_parameters_;
-        std::shared_ptr<std::string> static_path_;
     };
 }

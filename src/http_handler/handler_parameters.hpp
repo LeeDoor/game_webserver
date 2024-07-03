@@ -13,6 +13,9 @@ namespace http_handler{
         token_manager::TokenToUuid::Ptr token_to_uuid;
         matchmaking_system::MMQueue::Ptr mm_queue;
         game_manager::GameManager::Ptr game_manager;
+
+        fs::path static_path;
+        std::string api_path;
     };
 
 }

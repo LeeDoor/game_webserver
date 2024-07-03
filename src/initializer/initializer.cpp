@@ -33,12 +33,16 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     desc.add_options()
         ("test", "test launch to use test bd")
         ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library");
+        ("api_path", po::value(&args.api_path)->value_name("dir"), "set path to api functions definitions");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
     args.test = vm.count("test");
     if(!vm.contains("static_path")){
         throw std::runtime_error("static path is not specified");
+    }
+    if(!vm.contains("api_path")){
+        throw std::runtime_error("api path is not specified");
     }
     return args;
 }
@@ -65,10 +69,10 @@ int Initializer::StartServer(Args args) {
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
     handler_parameters.mm_queue = 
         std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);
+    handler_parameters.static_path = args.static_path;
+    handler_parameters.api_path = std::move(args.api_path);
 
-    std::shared_ptr<std::string> static_path = 
-        std::make_shared<std::string>(args.static_path);
-    http_server::ServeHttp(ioc, {address, port}, handler_parameters, static_path);
+    http_server::ServeHttp(ioc, {address, port}, handler_parameters);
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });
