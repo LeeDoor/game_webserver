@@ -36,12 +36,13 @@ namespace http_handler {
         std::map<std::string, std::string> ParseUrlParameters(const HttpRequest& request);
         std::pair<std::string, std::string> ParseUrlPair(std::string&& pair);
 
+        SendManager responser_;
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
-        SendManager responser_;
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::TokenToUuid::Ptr ttu_;
         matchmaking_system::MMQueue::Ptr mm_queue_;
+        std::string api_path_;
     };
 
 } // http_handler

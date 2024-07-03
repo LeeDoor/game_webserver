@@ -1,7 +1,7 @@
 cd ..
 
 ./copy_executables.sh
-./application --test --static_path /home/leedor/Documents/hex_chess_backend/static/ & 
+./application --test --static_path static --api_path API_functions.txt & 
 FOO_PID=$!
 sleep 1
 ./test_application $@

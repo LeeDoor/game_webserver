@@ -11,7 +11,9 @@ namespace http_handler {
             responser_(handler_parameters.serializer), 
             udm_(handler_parameters.user_data_manager),
             mm_queue_(handler_parameters.mm_queue),
-            ttu_(handler_parameters.token_to_uuid){}
+            ttu_(handler_parameters.token_to_uuid),
+            api_path_(handler_parameters.api_path){}
+
     void ApiHandler::Init(){
         ApiFunctionsParse();
     }
@@ -57,7 +59,7 @@ namespace http_handler {
         };
 
         std::ifstream is;
-        is.open("API_functions.txt");
+        is.open(api_path_);
         ApiFunctionBuilder builder(serializer_);
         while (ApiFunctionParse(executors, is, builder));
         is.close();

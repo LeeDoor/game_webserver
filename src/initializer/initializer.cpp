@@ -32,8 +32,8 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     Args args;
     desc.add_options()
         ("test", "test launch to use test bd")
-        ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library");
-        ("api_path", po::value(&args.api_path)->value_name("dir"), "set path to api functions definitions");
+        ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library")
+        ("api_path", po::value(&args.api_path)->value_name("file"), "set path to api functions definitions");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
