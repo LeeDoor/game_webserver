@@ -42,11 +42,11 @@ namespace database_manager{
             PoolType* pool_;
         };
 
-        ConnectionPool(size_t capacity, bool is_test);
+        ConnectionPool(size_t capacity, bool is_test, std::string&& bd_credentials);
         ConnectionWrapper GetConnection();
     private:
         void ReturnConnection(ConnectionPtr&& conn);
-        ConnectionPtr ConnectionFactory(bool is_test);
+        ConnectionPtr ConnectionFactory(const std::string& bd_credentials);
 
         std::mutex mutex_;
         std::condition_variable cond_var_;

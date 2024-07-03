@@ -3,7 +3,8 @@
 #include <iostream>
 
 namespace database_manager{    
-    UserDataPostgres::UserDataPostgres(bool is_test) : pool_(CONNECTION_CAPACITY, is_test){
+    UserDataPostgres::UserDataPostgres(bool is_test, std::string&& bd_credentials) 
+    : pool_(CONNECTION_CAPACITY, is_test, std::move(bd_credentials)){
         if(is_test){
             try{
                 ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();

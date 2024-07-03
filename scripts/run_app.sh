@@ -6,5 +6,5 @@ trap cleanup SIGINT
 
 cd ..
 ./copy_executables.sh
-./application $@ --static_path static --api_path API_functions.txt
+./application $@ --static_path static --api_path API_functions.txt --bd_credentials "postgres:1234"
 ./remove_executables.sh # remove executables if program terminated by itself
