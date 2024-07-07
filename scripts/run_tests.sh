@@ -5,6 +5,5 @@ cd ..
 FOO_PID=$!
 sleep 1
 ./test_application $@
-sleep 1
 kill $FOO_PID
 ./remove_executables.sh

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "json_serializer.hpp"
 #include "user_data_postgres.hpp"
+#include "token_manager_redis.hpp"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
@@ -80,7 +81,7 @@ int Initializer::StartServer(Args args) {
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
     handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test, std::move(args.bd_credentials));
-    handler_parameters.token_to_uuid = std::make_shared<token_manager::TokenToUuid>();
+    handler_parameters.token_manager = std::make_shared<token_manager::TokenManagerRedis>();
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
     handler_parameters.mm_queue = 
         std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);

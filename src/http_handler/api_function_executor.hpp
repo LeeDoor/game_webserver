@@ -1,7 +1,7 @@
 #pragma once
 #include "api_function.hpp"
 #include <optional>
-#include "token_to_uuid.hpp"
+#include "i_token_manager.hpp"
 #include "i_serializer.hpp"
 
 namespace http_handler {
@@ -16,7 +16,7 @@ namespace http_handler {
     class ApiFunctionExecutor {
     public:
         ApiFunctionExecutor(ApiFunctionParams&& api_function_params, 
-            std::optional<token_manager::TokenToUuid::Ptr> ttu,
+            std::optional<token_manager::ITokenManager::Ptr> tm,
             serializer::ISerializer::Ptr serializer_);
 
         ApiStatus Execute(RequestNSender rns);
@@ -27,7 +27,7 @@ namespace http_handler {
         bool MatchAdmin(const HttpRequest& request);
 
         ApiFunction api_function_;
-        std::optional<token_manager::TokenToUuid::Ptr> ttu_;
+        std::optional<token_manager::ITokenManager::Ptr> tm_;
         serializer::ISerializer::Ptr serializer_;
     };
 

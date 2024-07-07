@@ -40,7 +40,7 @@ namespace http_handler {
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
         database_manager::IUserDataManager::Ptr udm_;
-        token_manager::TokenToUuid::Ptr ttu_;
+        token_manager::ITokenManager::Ptr tm_;
         matchmaking_system::MMQueue::Ptr mm_queue_;
         std::string api_path_;
     };

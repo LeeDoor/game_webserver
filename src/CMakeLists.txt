@@ -9,8 +9,6 @@ set (DEPENDENCIES
     game_manager 
     serializer
 )
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})
     add_subdirectory(${dir})

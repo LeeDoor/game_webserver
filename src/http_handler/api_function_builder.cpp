@@ -20,8 +20,8 @@ namespace http_handler{
         executor_function_ = std::move(function);
         return *this;
     }
-    ApiFunctionBuilder& ApiFunctionBuilder::NeedAuthor(token_manager::TokenToUuid::Ptr ttu){
-        ttu_ = ttu;
+    ApiFunctionBuilder& ApiFunctionBuilder::NeedAuthor(token_manager::ITokenManager::Ptr tm){
+        tm_ = tm;
         return *this;
     }
     ApiFunctionBuilder& ApiFunctionBuilder::ForDebug(){
@@ -37,10 +37,10 @@ namespace http_handler{
                 std::move(allowed_methods_),
                 is_debug_
             }, 
-            ttu_,
+            tm_,
             serializer_
         };
-        ttu_ = std::nullopt;
+        tm_ = std::nullopt;
         allowed_methods_.clear();
         executor_function_ = {};
         is_debug_ = false;

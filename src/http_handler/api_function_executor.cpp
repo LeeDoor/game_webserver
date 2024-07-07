@@ -5,15 +5,15 @@
 
 namespace http_handler {
     ApiFunctionExecutor::ApiFunctionExecutor(ApiFunctionParams&& api_function_params, 
-        std::optional<token_manager::TokenToUuid::Ptr> ttu,
+        std::optional<token_manager::ITokenManager::Ptr> tm,
         serializer::ISerializer::Ptr serializer):
-        api_function_ (std::move(api_function_params)), ttu_(ttu), serializer_(serializer){}
+        api_function_ (std::move(api_function_params)), tm_(tm), serializer_(serializer){}
 
     ApiStatus ApiFunctionExecutor::Execute(RequestNSender rns) {
         if(!MatchMethod(rns.request.method())){
             return ApiStatus::WrongMethod;
         }
-        if(ttu_.has_value()){
+        if(tm_.has_value()){
             ApiStatus author_result = MatchAuthorization(rns.request);
             if(author_result != ApiStatus::Ok){
                 return author_result;
@@ -41,7 +41,7 @@ namespace http_handler {
         std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
         if(!token)
             return ApiStatus::InvalidToken;
-        std::optional<dm::Uuid> uuid = ttu_.value()->GetUuidByToken(*token);
+        std::optional<dm::Uuid> uuid = tm_.value()->GetUuidByToken(*token);
         if(!uuid)
             return ApiStatus::InvalidToken;
         return ApiStatus::Ok;

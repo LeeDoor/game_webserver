@@ -16,7 +16,7 @@ namespace http_handler {
         //sets execution function to given
         ApiFunctionBuilder& ExecFunc(ExecutorFunction&& function);
         //sets authorization requirement
-        ApiFunctionBuilder& NeedAuthor(token_manager::TokenToUuid::Ptr ttu);
+        ApiFunctionBuilder& NeedAuthor(token_manager::ITokenManager::Ptr tm);
         //defines if function is for debugging
         ApiFunctionBuilder& ForDebug();
         //makes and returns product
@@ -28,7 +28,7 @@ namespace http_handler {
         bool is_debug_ = false;
 
         //std::nullopt if authorization is not required
-        std::optional<token_manager::TokenToUuid::Ptr> ttu_ = std::nullopt;
+        std::optional<token_manager::ITokenManager::Ptr> tm_ = std::nullopt;
         serializer::ISerializer::Ptr serializer_;
     };
 

@@ -1,1 +1,0 @@
-![[PostgreSQL-Logo.wine.png]]

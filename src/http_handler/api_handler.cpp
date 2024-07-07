@@ -11,7 +11,7 @@ namespace http_handler {
             responser_(handler_parameters.serializer), 
             udm_(handler_parameters.user_data_manager),
             mm_queue_(handler_parameters.mm_queue),
-            ttu_(handler_parameters.token_to_uuid),
+            tm_(handler_parameters.token_manager),
             api_path_(handler_parameters.api_path){}
 
     void ApiHandler::Init(){
@@ -94,7 +94,7 @@ namespace http_handler {
             std::getline(is, param); // reading custom parameters about function
             while (!param.empty()){
                 if (param == "Authorization required")
-                    builder.NeedAuthor(ttu_);
+                    builder.NeedAuthor(tm_);
                 else if (param == "Debug method")
                     builder.ForDebug();
                 else
@@ -148,13 +148,13 @@ namespace http_handler {
         if(!ud){
             return responser_.SendNoSuchUser(rns);
         }
-        tokenm::Token token = ttu_->GenerateToken();
-        ttu_->AddTokenToUuid(token, ud->uuid);
+        tokenm::Token token = tm_->GenerateToken();
+        tm_->AddTokenToUuid(token, ud->uuid);
         return responser_.SendToken(rns, token);
     }
     void ApiHandler::ApiGetProfileData(RequestNSender rns){
         auto token = SenderAuthentication(rns.request);
-        auto uuid = ttu_->GetUuidByToken(token);
+        auto uuid = tm_->GetUuidByToken(token);
         auto user_data = udm_->GetByUuid(*uuid);
         if(!user_data)
             return responser_.SendTokenToRemovedPerson(rns);
@@ -163,7 +163,7 @@ namespace http_handler {
     }
     void ApiHandler::ApiEnqueue(RequestNSender rns){ 
         auto token = SenderAuthentication(rns.request);
-        auto uuid = ttu_->GetUuidByToken(token);
+        auto uuid = tm_->GetUuidByToken(token);
         bool res = mm_queue_->EnqueuePlayer(*uuid);
         if (res){
             return responser_.SendSuccess(rns);
@@ -172,9 +172,9 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiGetPlayerTokens(RequestNSender rns){
-        const std::map<token_manager::Token, dm::Uuid>& map = ttu_->GetValue();
-        std::string ttu_string = serializer_->SerializeTokenToUuid(map);
-        return responser_.Send(rns, http::status::ok, ttu_string);
+        std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
+        std::string tm_string = serializer_->SerializeTokenToUuid(map);
+        return responser_.Send(rns, http::status::ok, tm_string);
     }
 
     void ApiHandler::ApiGetUserData(RequestNSender rns) {

@@ -3,8 +3,9 @@ set(DEPENDENCIES database_manager)
 set(LIBRARY_NAME token_manager)
 #creating library
 add_library(${LIBRARY_NAME}
-    token_to_uuid.cpp
-    token_to_uuid.hpp
+    i_token_manager.hpp
+    token_manager_redis.hpp
+    token_manager_redis.cpp
     token_generator.hpp
     token_generator.cpp
     token.hpp
