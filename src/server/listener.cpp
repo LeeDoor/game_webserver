@@ -1,4 +1,5 @@
 #include "listener.hpp"
+#include "spdlog/spdlog.h"
 
 namespace http_server {
     Listener::Listener(net::io_context& ioc, const tcp::endpoint& endpoint, 
@@ -32,6 +33,7 @@ namespace http_server {
     }
 
     void Listener::AsyncRunSession(tcp::socket&& socket) {
+        spdlog::info("session opened");
         std::make_shared<Session> (std::move(socket), handler_parameters_)->Run();
     }
 }

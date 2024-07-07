@@ -1,6 +1,6 @@
 #include "user_data_postgres.hpp"
 #include "postgres_data_conversion.hpp"
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 namespace database_manager{    
     UserDataPostgres::UserDataPostgres(bool is_test, std::string&& bd_credentials) 
@@ -13,7 +13,7 @@ namespace database_manager{
                 trans.commit();
             }
             catch(std::exception& ex){
-                std::cout << ex.what() << std::endl;
+                spdlog::error("test database clearance terminated with {}", ex.what());
             }
         }
     }
@@ -28,7 +28,7 @@ namespace database_manager{
             return true;
         }
         catch(std::exception& ex){
-            std::cout << ex.what() << std::endl;
+            spdlog::error("database AddLine function terminated with {}", ex.what());
         }
         return false;
     }
@@ -43,7 +43,7 @@ namespace database_manager{
             return ud;
         } 
         catch (const std::exception& ex) {
-            std::cout << ex.what() << std::endl;
+            spdlog::error("database GetByUuid function terminated with {}", ex.what());
             return std::nullopt;
         }
         
@@ -59,7 +59,7 @@ namespace database_manager{
             return ud;
         } 
         catch (const std::exception& ex) {  
-            std::cout << ex.what() << std::endl;
+            spdlog::error("database GetByLoginPassword function terminated with {}", ex.what());
             return std::nullopt;
         }
     }

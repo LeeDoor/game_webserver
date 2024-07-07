@@ -1,7 +1,6 @@
 #pragma once
 #include "static_handler.hpp"
 #include "api_handler.hpp"
-#include <iostream>
 
 namespace http_handler {
     using namespace serializer;

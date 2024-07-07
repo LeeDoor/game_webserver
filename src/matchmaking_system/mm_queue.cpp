@@ -1,5 +1,4 @@
 #include "mm_queue.hpp"
-#include <iostream>
 #include <algorithm>
 
 namespace matchmaking_system{

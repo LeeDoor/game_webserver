@@ -1,6 +1,6 @@
 #include "api_handler.hpp"
 #include "get_token_from_header.hpp"
-#include <iostream>
+#include "spdlog/spdlog.h"
 #include <fstream>
 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1)    
@@ -112,7 +112,7 @@ namespace http_handler {
             int pos = std::atoi(ex.what());
             is.seekg(pos);
             std::getline(is, param);
-            std::cout << "Unable to read API_functions.txt. defect line: " << param << std::endl;
+            spdlog::critical("Unable to read API_functions.txt. defect line: ", param);  
             is.close();
             throw std::logic_error("Unable to read API_functions.txt");
         }

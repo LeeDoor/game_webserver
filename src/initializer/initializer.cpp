@@ -7,6 +7,8 @@
 #include <iostream>
 #include "json_serializer.hpp"
 #include "user_data_postgres.hpp"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 #define PORT 9999
 
@@ -52,6 +54,15 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
 }
 
 int Initializer::Init(int argc, char **argv) {
+    try 
+    {
+        auto new_logger = spdlog::basic_logger_mt("new_default_logger", "logs/new-default-log.txt");
+        spdlog::set_default_logger(new_logger);    }
+    catch (const spdlog::spdlog_ex &ex)
+    {
+        std::cout << "Log init failed: " << ex.what() << std::endl;
+    }
+    spdlog::flush_every(std::chrono::seconds(1));
     Args args = ParseParameters(argc, argv);
     return StartServer(args);
 }

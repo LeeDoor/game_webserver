@@ -1,8 +1,8 @@
 #include "json_serializer.hpp"
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
+//#include "spdlog/spdlog.h"
 #define EMPTY_JSON "{}"
-#include <iostream>
 
 namespace serializer{
     std::string JSONSerializer::SerializeEmpty() {
@@ -55,7 +55,7 @@ namespace serializer{
             pud = j.template get<hh::PublicUserData>();
         }
         catch(std::exception ex){
-            std::cout << ex.what() << std::endl;
+            //spdlog::error("json DeserializePublicUserData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return pud;
@@ -67,7 +67,7 @@ namespace serializer{
             ud = j.template get<dm::UserData>();
         }
         catch(std::exception ex){
-            std::cout << ex.what() << std::endl;
+            //spdlog::error("json DeserializeUserData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return ud;
@@ -79,7 +79,7 @@ namespace serializer{
             rd = j.template get<hh::RegistrationData>();
         }
         catch(std::exception ex){
-            std::cout << ex.what() << std::endl;
+            //spdlog::error("json DeserializeRegData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return rd;
@@ -93,7 +93,7 @@ namespace serializer{
             }
         }
         catch(std::exception ex){
-            std::cout << ex.what() << std::endl;
+            //spdlog::error("json DeserializeMap function terminated with {}", ex.what());
             return std::nullopt;
         }
         return map;
@@ -102,11 +102,10 @@ namespace serializer{
         std::vector<dm::Uuid> res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            std::cout << "CURRENT UUID VECTOR AS JSON IS " << json_str << std::endl;
             j.get_to(res);
         }
-        catch(std::exception ex){
-            std::cout << ex.what() << std::endl;
+        catch(std::exception& ex){
+            //spdlog::error("json DeserializeUuids function terminated with {}", ex.what());
             return std::nullopt;
         }
         return res;

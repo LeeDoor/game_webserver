@@ -1,5 +1,6 @@
 #include "type_serializer.hpp"
 
+#include "spdlog/spdlog.h"
 namespace http_handler {
     void to_json(json& j, const RegistrationData& rd) {
         j = json{{"login", rd.login}, {"password", rd.password}};

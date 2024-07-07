@@ -1,5 +1,5 @@
 #include "send_manager.hpp"
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 namespace http_handler{
 
@@ -9,7 +9,7 @@ namespace http_handler{
     
     void SendManager::Send(RequestNSender rns, status stat, std::string body) {
         ResponseBuilder<http::string_body> builder;
-        std::cout << "SENT [" << stat << "]: " << body << std::endl; 
+        spdlog::info("SENT [{}]: {}", static_cast<int>(stat), body);  
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(stat).GetProduct());
     }
     

@@ -1,3 +1,6 @@
+#list with all libraries
+set (DEPENDENCIES http_handler database_manager token_manager matchmaking_system game_manager serializer)
+
 add_executable(test_application 
     api_functions.cpp
     api_functions.hpp
@@ -15,9 +18,10 @@ add_executable(test_application
     test_api_user_data.cpp
     test_api_mm_queue.cpp
 )
-target_include_directories(test_application PRIVATE 
-    ../src/serializer 
-    ../src/token_manager 
-    ../src/http_handler
-)
-target_link_libraries(test_application ${CONAN_LIBS_CATCH2} ${CONAN_LIBS_BOOST} serializer)
+
+
+#including and linking dependencies
+target_link_libraries(test_application ${CONAN_LIBS_CATCH2} ${DEPENDENCIES})
+foreach (dir IN ITEMS ${DEPENDENCIES})
+    target_include_directories(test_application PRIVATE "../src/${dir}")
+endforeach ()

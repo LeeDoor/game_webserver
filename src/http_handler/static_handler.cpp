@@ -1,6 +1,6 @@
 #include "static_handler.hpp"
 #include "response_builder.hpp"
-#include <iostream>
+#include "spdlog/spdlog.h"
 
 namespace http_handler {
     StaticHandler::StaticHandler(HandlerParameters handler_parameters){
@@ -10,12 +10,11 @@ namespace http_handler {
 
     void StaticHandler::HandleFile(HttpRequest&& request, ResponseSender&& sender) {
         std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
-        fs::path path = static_path_.concat(path_str);
+        fs::path path = static_path_;
+        path.concat(path_str);
         RequestNSender rns{request,sender};
-        std::cout << path << std::endl;
         if(!IsSubdirectory(std::move(path))) {
-            std::cout << "should be called when user writes root like 0.0.0.0:port/../../../forbidden_folder/passwords.txt"
-           " but boost beast not allowing sockets send this kind of targets\n";
+            spdlog::info("not a subdirectory");
             return SendNoAccessError(rns);
         }
         if(!fs::exists(path) || fs::is_directory(path)) {

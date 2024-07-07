@@ -1,6 +1,16 @@
 #list with all libraries
-set (DEPENDENCIES serializer initializer server http_handler database_manager token_manager matchmaking_system game_manager)
-
+set (DEPENDENCIES 
+    initializer 
+    server 
+    http_handler 
+    database_manager 
+    token_manager 
+    matchmaking_system 
+    game_manager 
+    serializer
+)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})
     add_subdirectory(${dir})
