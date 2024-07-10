@@ -37,7 +37,8 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
         ("test", "test launch to use test bd")
         ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library")
         ("api_path", po::value(&args.api_path)->value_name("file"), "set path to api functions definitions")
-        ("bd_credentials", po::value(&args.bd_credentials)->value_name("string"), "set bd login and password like that: \"login:password\"");
+        ("postgres_credentials", po::value(&args.postgres_credentials)->value_name("string"), "set bd postgres login and password like that: \"login:password\"")
+        ("redis_credentials", po::value(&args.redis_credentials)->value_name("string"), "set bd redis password");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -48,8 +49,11 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     if(!vm.contains("api_path")){
         throw std::runtime_error("api path is not specified");
     }
-    if(!vm.contains("bd_credentials")){
-        throw std::runtime_error("bd credentials is not specified");
+    if(!vm.contains("postgres_credentials")){
+        throw std::runtime_error("postgres_credentials is not specified");
+    }
+    if(!vm.contains("redis_credentials")){
+        throw std::runtime_error("redis_credentials is not specified");
     }
     return args;
 }
@@ -76,12 +80,19 @@ int Initializer::StartServer(Args args) {
     net::io_context ioc (static_cast<int>(num_threads)); // core io functionality for socket users
 
     const auto address = net::ip::make_address("127.0.0.1");
-    constexpr net::ip::port_type port = PORT;
+    constexpr net::ip::port_type port = PORT;    
 
+    /// REDIS ///
+    sw::redis::ConnectionOptions co;
+    co.host = "127.0.0.1";  
+    co.password = args.redis_credentials;
+    std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
+
+    /// HANDLER ///
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
-    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test, std::move(args.bd_credentials));
-    handler_parameters.token_manager = std::make_shared<token_manager::TokenManagerRedis>();
+    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test, std::move(args.postgres_credentials));
+    handler_parameters.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
     handler_parameters.mm_queue = 
         std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);

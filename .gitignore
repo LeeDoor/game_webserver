@@ -4,3 +4,4 @@ cmake-build-debug/
 .vscode/
 .obsidian/
 logs/
+dump.rdb

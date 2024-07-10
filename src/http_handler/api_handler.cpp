@@ -149,7 +149,9 @@ namespace http_handler {
             return responser_.SendNoSuchUser(rns);
         }
         tokenm::Token token = tm_->GenerateToken();
-        tm_->AddTokenToUuid(token, ud->uuid);
+        bool res = tm_->AddTokenToUuid(token, ud->uuid);
+        if (!res)
+            return responser_.SendCantLogin(rns);
         return responser_.SendToken(rns, token);
     }
     void ApiHandler::ApiGetProfileData(RequestNSender rns){

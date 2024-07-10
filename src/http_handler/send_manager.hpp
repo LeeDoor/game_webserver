@@ -28,6 +28,7 @@ namespace http_handler{
         void SendAdminUnrecognized(RequestNSender rns);
         void SendTokenToRemovedPerson(RequestNSender rns);
         void SendCantEnqueue(RequestNSender rns);
+        void SendCantLogin(RequestNSender rns);
 
         void SendWrongUrlParameters(RequestNSender rns);
 

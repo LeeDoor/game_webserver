@@ -56,6 +56,9 @@ namespace http_handler{
     void SendManager::SendCantEnqueue(RequestNSender rns) {
         Send(rns, status::ok, serializer_->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)"));
     }
+    void SendManager::SendCantLogin(RequestNSender rns){
+        Send(rns, status::service_unavailable, serializer_->SerializeError("login_error", "unable to add token to database."));
+    }
 
     void SendManager::SendWrongUrlParameters(RequestNSender rns){
         Send(rns, status::unprocessable_entity, serializer_->SerializeError("url_parameters_error", "this api function requires url parameters"));

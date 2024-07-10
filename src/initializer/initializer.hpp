@@ -13,7 +13,8 @@ private:
         std::string db_password;
         std::string static_path;
         std::string api_path;
-        std::string bd_credentials;
+        std::string postgres_credentials;
+        std::string redis_credentials;
     };
 
     int StartServer(Args args);
