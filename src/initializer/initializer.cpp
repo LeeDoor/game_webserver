@@ -8,6 +8,7 @@
 #include "json_serializer.hpp"
 #include "user_data_postgres.hpp"
 #include "token_manager_redis.hpp"
+#include "queue_manager_redis.hpp"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
@@ -89,17 +90,17 @@ int Initializer::StartServer(Args args) {
     std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
 
     /// HANDLER ///
-    http_handler::HandlerParameters handler_parameters;
-    handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
-    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
-    handler_parameters.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
-    handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
-    handler_parameters.mm_queue = 
-        std::make_shared<matchmaking_system::MMQueue>(handler_parameters.game_manager);
-    handler_parameters.static_path = args.static_path;
-    handler_parameters.api_path = std::move(args.api_path);
+    http_handler::HandlerParameters hp;
+    hp.serializer = std::make_shared<serializer::JSONSerializer>();
+    hp.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
+    hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
+    hp.game_manager = std::make_shared<game_manager::GameManager>();
+    hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", redis_ptr);
+    hp.matchmaking_ballancer = std::make_shared<matchmaking_system::MatchmakingBallancer>(hp.queue_manager);
+    hp.static_path = args.static_path;
+    hp.api_path = std::move(args.api_path);
 
-    http_server::ServeHttp(ioc, {address, port}, handler_parameters);
+    http_server::ServeHttp(ioc, {address, port}, hp);
     RunWorkers(num_threads, [&ioc]{
         ioc.run();
     });

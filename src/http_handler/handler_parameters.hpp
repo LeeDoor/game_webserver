@@ -2,7 +2,8 @@
 #include "i_serializer.hpp"
 #include "i_user_data_manager.hpp"
 #include "i_token_manager.hpp"
-#include "mm_queue.hpp"
+#include "matchmaking_ballancer.hpp"
+#include "i_queue_manager.hpp"
 #include "game_manager.hpp"
 #include <memory>
 
@@ -11,7 +12,8 @@ namespace http_handler{
         serializer::ISerializer::Ptr serializer;
         database_manager::IUserDataManager::Ptr user_data_manager;
         token_manager::ITokenManager::Ptr token_manager;
-        matchmaking_system::MMQueue::Ptr mm_queue;
+        matchmaking_system::IQueueManager::Ptr queue_manager;
+        matchmaking_system::MatchmakingBallancer::Ptr matchmaking_ballancer;
         game_manager::GameManager::Ptr game_manager;
 
         fs::path static_path;

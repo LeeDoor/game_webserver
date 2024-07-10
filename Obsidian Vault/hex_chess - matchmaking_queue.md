@@ -1,0 +1,1 @@
+![[redis-logo.svg]]

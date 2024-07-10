@@ -10,7 +10,8 @@ namespace http_handler {
         :   serializer_(handler_parameters.serializer), 
             responser_(handler_parameters.serializer), 
             udm_(handler_parameters.user_data_manager),
-            mm_queue_(handler_parameters.mm_queue),
+            iqm_(handler_parameters.queue_manager),
+            mb_(handler_parameters.matchmaking_ballancer),
             tm_(handler_parameters.token_manager),
             api_path_(handler_parameters.api_path){}
 
@@ -166,11 +167,12 @@ namespace http_handler {
     void ApiHandler::ApiEnqueue(RequestNSender rns){ 
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        bool res = mm_queue_->EnqueuePlayer(*uuid);
-        if (res){
-            return responser_.SendSuccess(rns);
-        }
-        return responser_.SendCantEnqueue(rns);
+        bool res = iqm_->EnqueuePlayer(*uuid);
+        if (!res)
+            return responser_.SendCantEnqueue(rns);
+        
+        mb_->Ballance();
+        return responser_.SendSuccess(rns);
     }
 
     void ApiHandler::ApiGetPlayerTokens(RequestNSender rns){
@@ -200,7 +202,7 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiGetMMQueue(RequestNSender rns) {
-        const std::vector<dm::Uuid>& queue = mm_queue_->GetQueue();
+        const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
         std::string queue_string = serializer_->SerializeUuids(queue);
         return responser_.Send(rns, status::ok, queue_string);
     }

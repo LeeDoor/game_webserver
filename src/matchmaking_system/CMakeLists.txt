@@ -3,8 +3,11 @@ set(DEPENDENCIES game_manager)
 set(LIBRARY_NAME matchmaking_system)
 #creating library
 add_library(${LIBRARY_NAME}
-    mm_queue.cpp
-    mm_queue.hpp
+    i_queue_manager.hpp
+    queue_manager_redis.hpp
+    queue_manager_redis.cpp
+    matchmaking_ballancer.hpp
+    matchmaking_ballancer.cpp
 )
 
 #including and linking dependencies
