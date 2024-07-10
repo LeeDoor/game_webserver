@@ -1,22 +1,28 @@
 # what is module
-project consists of several modules which a tied up with each other. whole bunch of modules presented here:
+project consists of several modules which a tied up with each other. whole bunch of modules presented here: #TODO to supplement the documentation as the project grows.
 
 ```mermaid
 ---
 title: module relations
 ---
+flowchart LR
+initializer --"starts server"--> server
+server --"passes request handling to"--> http_handler
+http_handler --"uses serializer to send and get requests with JSON"--> serializer
+http_handler --"uses database_manager to get information from db and set it to db"--> database_manager
+http_handler --"manages linkage between token and it's user"--> token_manager
+http_handler --"manages player's queue to play the game and balancing them"-->matchmaking_system
+http_handler --"uses api for managing game process"-->game_manager
+matchmaking_system --"creates match with balancer_picked players"-->game_manager
 
-flowchart 
-    initializer --"starts server"--> server
-    server --"passes request handling to"--> http_handler
-    http_handler --"uses serializer to send and get requests with JSON"--> serializer
-    http_handler --"uses database_manager to get information from db and set it to db"--> database_manager
-
-    click initializer "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/initializer.md"
-    click server "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/server.md"
-    click http_handler "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/http_handler.md"
-    click serializer "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/serializer.md"
-    click database_manager "https://github.com/LeeDoor/hex_chess_backend/blob/main/docs/database_manager.md"
+click initializer "initializer.md"
+click server "server.md"
+click http_handler "http_handler.md"
+click serializer "serializer.md"
+click database_manager "database_manager.md"
+click token_manager "token_manager.md"
+click matchmaking_system "matchmaking_system.md"
+click game_manager "game_manager.md"
 ```
 
 each node is clickable to read more info about module.

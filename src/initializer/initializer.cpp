@@ -53,9 +53,6 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     if(!vm.contains("postgres_credentials")){
         throw std::runtime_error("postgres_credentials is not specified");
     }
-    if(!vm.contains("redis_credentials")){
-        throw std::runtime_error("redis_credentials is not specified");
-    }
     return args;
 }
 
