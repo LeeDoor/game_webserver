@@ -95,8 +95,8 @@ int Initializer::StartServer(Args args) {
     hp.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     hp.game_manager = std::make_shared<game_manager::GameManager>();
-    hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", redis_ptr);
-    hp.matchmaking_ballancer = std::make_shared<matchmaking_system::MatchmakingBallancer>(hp.queue_manager);
+    hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
+    hp.matchmaking_ballancer = std::make_shared<matchmaking_system::MatchmakingBallancer>(hp.queue_manager, hp.game_manager);
     hp.static_path = args.static_path;
     hp.api_path = std::move(args.api_path);
 
@@ -107,4 +107,4 @@ int Initializer::StartServer(Args args) {
     return 0;
 }
 
-}
+}//redis-cli -a "V9uqkv5cVJBO9mNfxJOtn3u8UmbfE4IoJ4hde1dn0JJsmih38F"
