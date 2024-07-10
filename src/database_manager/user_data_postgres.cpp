@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 
 namespace database_manager{    
-    UserDataPostgres::UserDataPostgres(bool is_test, std::string&& bd_credentials) 
+    UserDataManagerPostgres::UserDataManagerPostgres(bool is_test, std::string&& bd_credentials) 
     : pool_(CONNECTION_CAPACITY, is_test, std::move(bd_credentials)){
         if(is_test){
             try{
@@ -18,7 +18,7 @@ namespace database_manager{
         }
     }
 
-    bool UserDataPostgres::AddLine(hh::RegistrationData& rd) {
+    bool UserDataManagerPostgres::AddLine(hh::RegistrationData& rd) {
         try{
             ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
             pqxx::work trans(*cw);
@@ -32,7 +32,7 @@ namespace database_manager{
         }
         return false;
     }
-    std::optional<UserData> UserDataPostgres::GetByUuid(const Uuid& uuid) {
+    std::optional<UserData> UserDataManagerPostgres::GetByUuid(const Uuid& uuid) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 
@@ -48,7 +48,7 @@ namespace database_manager{
         }
         
     }
-    std::optional<UserData> UserDataPostgres::GetByLoginPassword(const Login& login, const Password& password) {
+    std::optional<UserData> UserDataManagerPostgres::GetByLoginPassword(const Login& login, const Password& password) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 

@@ -91,7 +91,7 @@ int Initializer::StartServer(Args args) {
     /// HANDLER ///
     http_handler::HandlerParameters handler_parameters;
     handler_parameters.serializer = std::make_shared<serializer::JSONSerializer>();
-    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataPostgres>(args.test, std::move(args.postgres_credentials));
+    handler_parameters.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
     handler_parameters.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     handler_parameters.game_manager = std::make_shared<game_manager::GameManager>();
     handler_parameters.mm_queue = 

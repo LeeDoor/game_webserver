@@ -6,9 +6,9 @@
 #define CONNECTION_CAPACITY 80
 
 namespace database_manager{
-    class UserDataPostgres : public IUserDataManager {
+    class UserDataManagerPostgres : public IUserDataManager {
     public:
-        UserDataPostgres(bool is_test, std::string&& bd_credentials);
+        UserDataManagerPostgres(bool is_test, std::string&& bd_credentials);
 
         bool AddLine(hh::RegistrationData& rd) override;
         std::optional<UserData> GetByUuid(const Uuid& uuid) override;
