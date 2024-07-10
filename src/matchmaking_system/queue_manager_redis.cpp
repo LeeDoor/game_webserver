@@ -5,20 +5,29 @@ namespace matchmaking_system{
     :   redis_data_name_(redis_data_name),
         redis_(redis){}
 
-    //adds player to queue
-    //returns: true - success; false - player already in queue
     bool QueueManagerRedis::EnqueuePlayer(const dm::Uuid& uuid) {
-        return false;
+        long long res;
+        res = redis_->lpush(redis_data_name_, uuid);
+        return res == 1;
     }
-    //dequeues player from queue
-    //returns: true - success; false - no player in queue
     bool QueueManagerRedis::DequeuePlayer(const dm::Uuid& uuid) {
-        return false;
+        long long res;
+        res = redis_->lrem(redis_data_name_, 0, uuid);
+        return res > 0;
     }
-
-    // start and end are indices of first and last parsing objects
-    // -1 is last, -2 is penultimate etc.
+    std::optional<std::string> QueueManagerRedis::PopPlayer() {
+        sw::redis::OptionalString os;
+        os = redis_->rpop(redis_data_name_);
+        if (os)
+            return *os;
+        return std::nullopt;
+    }
+    long long QueueManagerRedis::GetLength()  {
+        return redis_->llen(redis_data_name_);
+    }
     std::vector<dm::Uuid> QueueManagerRedis::GetQueue(int start, int end) {
-        return {};
+        std::vector<std::string> strs;
+        redis_->lrange(redis_data_name_, start, end, std::back_inserter(strs));
+        return strs;
     }
 }
