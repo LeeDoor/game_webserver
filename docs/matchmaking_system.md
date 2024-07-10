@@ -4,7 +4,7 @@ this module communicates with redis to contain queue of players to join match, d
 ##  classes
 * **IQueueManager** - interface provides all options that database communicator should have. using this class, [api handler](http_handler.md) and matchmaking_balancer interacts with the queue.
 * **QueueManagerRedis** - child of **IQueueManager**. provides realization for that interface for redis database.
-* **MatchmakingBallancer** - class for balancing players in queue and creating matches for them.
+* **MatchmakingBalancer** - class for balancing players in queue and creating matches for them.
 ## graph
 ```mermaid
 ---
@@ -20,10 +20,10 @@ classDiagram
 	}
 	class QueueManagerRedis{
 	}
-	class MatchmakingBallancer{
+	class MatchmakingBalancer{
 		Ballance()
 	}
 	QueueManagerRedis --|> IQueueManager
-	MatchmakingBallancer --> IQueueManager
+	MatchmakingBalancer --> IQueueManager
 
 ```

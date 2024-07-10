@@ -6,8 +6,8 @@ add_library(${LIBRARY_NAME}
     i_queue_manager.hpp
     queue_manager_redis.hpp
     queue_manager_redis.cpp
-    matchmaking_ballancer.hpp
-    matchmaking_ballancer.cpp
+    matchmaking_balancer.hpp
+    matchmaking_balancer.cpp
 )
 
 #including and linking dependencies

@@ -96,7 +96,7 @@ int Initializer::StartServer(Args args) {
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     hp.game_manager = std::make_shared<game_manager::GameManager>();
     hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
-    hp.matchmaking_ballancer = std::make_shared<matchmaking_system::MatchmakingBallancer>(hp.queue_manager, hp.game_manager);
+    hp.matchmaking_balancer = std::make_shared<matchmaking_system::MatchmakingBalancer>(hp.queue_manager, hp.game_manager);
     hp.static_path = args.static_path;
     hp.api_path = std::move(args.api_path);
 

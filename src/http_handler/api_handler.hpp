@@ -42,7 +42,7 @@ namespace http_handler {
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::ITokenManager::Ptr tm_;
         matchmaking_system::IQueueManager::Ptr iqm_;
-        matchmaking_system::MatchmakingBallancer::Ptr mb_;
+        matchmaking_system::MatchmakingBalancer::Ptr mb_;
         std::string api_path_;
     };
 

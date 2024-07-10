@@ -3,10 +3,10 @@
 #include "game_manager.hpp"
 
 namespace matchmaking_system {
-    class MatchmakingBallancer{
+    class MatchmakingBalancer{
     public:
-        using Ptr = std::shared_ptr<MatchmakingBallancer>;
-        MatchmakingBallancer(IQueueManager::Ptr iqm, game_manager::GameManager::Ptr gm);
+        using Ptr = std::shared_ptr<MatchmakingBalancer>;
+        MatchmakingBalancer(IQueueManager::Ptr iqm, game_manager::GameManager::Ptr gm);
 
         bool Ballance();
     private:

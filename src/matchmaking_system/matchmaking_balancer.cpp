@@ -1,11 +1,11 @@
-#include "matchmaking_ballancer.hpp"
+#include "matchmaking_balancer.hpp"
 #include "spdlog/spdlog.h"
 
 namespace matchmaking_system{
 
-    MatchmakingBallancer::MatchmakingBallancer(IQueueManager::Ptr iqm,  game_manager::GameManager::Ptr gm) 
+    MatchmakingBalancer::MatchmakingBalancer(IQueueManager::Ptr iqm,  game_manager::GameManager::Ptr gm) 
         : iqm_(iqm), gm_(gm){}
-    bool MatchmakingBallancer::Ballance() {
+    bool MatchmakingBalancer::Ballance() {
         long long queue_length = iqm_->GetLength();
         if (queue_length < 2)
             return true;
@@ -13,7 +13,7 @@ namespace matchmaking_system{
         first = iqm_->PopPlayer();
         second = iqm_->PopPlayer();
         if (!first.has_value() || !second.has_value()){
-            spdlog::error("MatchmakingBallancer::Ballance popping 2 players error");
+            spdlog::error("MatchmakingBalancer::Ballance popping 2 players error");
             return false;  
         }
         gm_->CreateSession(*first, *second);

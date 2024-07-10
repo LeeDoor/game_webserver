@@ -11,7 +11,7 @@ namespace http_handler {
             responser_(handler_parameters.serializer), 
             udm_(handler_parameters.user_data_manager),
             iqm_(handler_parameters.queue_manager),
-            mb_(handler_parameters.matchmaking_ballancer),
+            mb_(handler_parameters.matchmaking_balancer),
             tm_(handler_parameters.token_manager),
             api_path_(handler_parameters.api_path){}
 
