@@ -3,15 +3,14 @@
 		{"id":"4e2bba45f07a2e18","type":"group","x":-2820,"y":382,"width":1530,"height":558,"label":"server"},
 		{"id":"a8848563ccbfe4bf","type":"group","x":-280,"y":1300,"width":880,"height":360,"label":"game_manager"},
 		{"id":"d5366eb0f67298d0","type":"group","x":-1100,"y":440,"width":500,"height":460,"label":"http_handler"},
-		{"id":"abef8981aa9b25c6","type":"group","x":-280,"y":60,"width":740,"height":287,"label":"database_manager"},
 		{"id":"6220afa9f3638e43","type":"group","x":-280,"y":1000,"width":760,"height":240,"label":"matchmaking_system"},
+		{"id":"abef8981aa9b25c6","type":"group","x":-280,"y":60,"width":740,"height":240,"label":"database_manager"},
 		{"id":"2f4f0042ef3c00b2","type":"group","x":-276,"y":440,"width":756,"height":140,"label":"token_manager"},
 		{"id":"685325bc76fe94f3","type":"text","text":"##### thread","x":-3080,"y":485,"width":160,"height":50,"color":"2"},
 		{"id":"8bee5497850959a2","type":"text","text":"##### thread","x":-3080,"y":555,"width":160,"height":50,"color":"2"},
 		{"id":"e8870d74599ebddf","type":"text","text":"##### thread","x":-3080,"y":628,"width":160,"height":50,"color":"2"},
 		{"id":"6475a3f1c8ef9a8b","type":"text","text":"##### thread","x":-3080,"y":699,"width":160,"height":50,"color":"2"},
 		{"id":"220d8bb1bebb7202","type":"text","text":"## [[initializer]]","x":-3440,"y":580,"width":250,"height":60,"color":"4"},
-		{"id":"71cb63b99b3d6154","type":"text","text":"**UserData**","x":-204,"y":265,"width":160,"height":57,"color":"1"},
 		{"id":"700ecd2106d4baf4","type":"file","file":"Obsidian Vault/hex_chess - user_data.md","x":640,"y":-119,"width":333,"height":458,"color":"5"},
 		{"id":"592f274ac285fef2","type":"text","text":"reading request","x":-1840,"y":580,"width":250,"height":50,"color":"3"},
 		{"id":"46c4045cf96da0e4","type":"text","text":"## ServeHttp","x":-2800,"y":580,"width":250,"height":60,"color":"4"},
@@ -40,13 +39,14 @@
 		{"id":"ba21bd40e816ad6a","type":"text","text":"Session #2","x":330,"y":1500,"width":250,"height":60,"color":"6"},
 		{"id":"64e0e6a13bb775c3","type":"text","text":"Session #3","x":330,"y":1580,"width":250,"height":60,"color":"6"},
 		{"id":"8692af2c7ac57ed2","type":"text","text":"Session #1","x":330,"y":1420,"width":250,"height":60,"color":"6"},
-		{"id":"5bcca4b0834d4cb5","type":"file","file":"Obsidian Vault/hex_chess - matchmaking_queue.md","x":640,"y":821,"width":333,"height":446,"color":"1"},
-		{"id":"e87c1136e0df0bee","type":"text","text":"### list","x":860,"y":1217,"width":113,"height":50,"color":"2"},
+		{"id":"5bcca4b0834d4cb5","type":"file","file":"Obsidian Vault/hex_chess - matchmaking_queue.md","x":640,"y":821,"width":333,"height":499,"color":"1"},
 		{"id":"a7741dc184c2176b","type":"text","text":"**UserDataManagerPostgres**","x":67,"y":215,"width":346,"height":50,"color":"1"},
-		{"id":"b9af18c0dd8141c0","type":"text","text":"*<\\<interface>>*\n**IUserDataManager**","x":-106,"y":68,"width":272,"height":85,"color":"4"}
+		{"id":"b9af18c0dd8141c0","type":"text","text":"*<\\<interface>>*\n**IUserDataManager**","x":-106,"y":68,"width":272,"height":85,"color":"4"},
+		{"id":"71cb63b99b3d6154","type":"text","text":"**UserData**","x":-266,"y":215,"width":160,"height":50,"color":"1"},
+		{"id":"e87c1136e0df0bee","type":"text","text":"### list (with service set)","x":740,"y":1223,"width":233,"height":97,"color":"2"}
 	],
 	"edges":[
-		{"id":"f465689602a5233e","fromNode":"b9af18c0dd8141c0","fromSide":"bottom","toNode":"71cb63b99b3d6154","toSide":"top","label":"uses"},
+		{"id":"f465689602a5233e","fromNode":"b9af18c0dd8141c0","fromSide":"left","toNode":"71cb63b99b3d6154","toSide":"top","label":"uses"},
 		{"id":"59d286670030319b","fromNode":"ac4b9d7d2aa9615d","fromSide":"right","toNode":"abef8981aa9b25c6","toSide":"left"},
 		{"id":"b6efa5275c616be2","fromNode":"487eb7cb904b9408","fromSide":"right","toNode":"2f4f0042ef3c00b2","toSide":"left"},
 		{"id":"b5416c1538164a1b","fromNode":"465f7a95df221b5b","fromSide":"right","toNode":"6220afa9f3638e43","toSide":"left"},
@@ -77,6 +77,6 @@
 		{"id":"50b1d75cd3a0311d","fromNode":"f3bf4ec2b868b389","fromSide":"right","toNode":"5bcca4b0834d4cb5","toSide":"left"},
 		{"id":"066629c2765bd01c","fromNode":"a84e38e67a6b264b","fromSide":"left","toNode":"959cc3b990c142a7","toSide":"left"},
 		{"id":"7a0624cdd9a26cf4","fromNode":"a84e38e67a6b264b","fromSide":"right","toNode":"f3bf4ec2b868b389","toSide":"bottom"},
-		{"id":"a6460cc27237eced","fromNode":"a7741dc184c2176b","fromSide":"top","toNode":"b9af18c0dd8141c0","toSide":"right"}
+		{"id":"a6460cc27237eced","fromNode":"a7741dc184c2176b","fromSide":"top","toNode":"b9af18c0dd8141c0","toSide":"right","label":"inherits"}
 	]
 }

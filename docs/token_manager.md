@@ -3,9 +3,34 @@ application uses authorization system. when player logins by passing login and p
 ```
 Authorization: Bearer {token}
 ```
-token_manager module contains map from token to player's uuid. with this module handler can get concrete player's uuid.
+token_manager module communicates with redis database to keep link between token and user's login.
 
 ## classes
 * **token** - not a class or struct, just string called *Token*
-* **token_generator** - class generates token with 32 hexadecimal numbers
-* **token_to_uuid** - class that contains map from token to player's uuid
+* **TokenGenerator** - class generates token with 32 hexadecimal numbers
+* **ITokenManager** - interface for token manager. interface used for more easy and smooth migration between db if needed.
+*  **TokenManagerRedis** - child of *i_token_manager*. implements all features for *redis* bd.
+
+## graph
+```mermaid
+---
+title: namespace token_manager
+---
+
+classDiagram
+	class ITokenManager{
+		+GenerateToken()
+		+GetUuidByToken(token) uuid?
+		+GetValue() Map Token->Uuid
+	}
+	class TokenManagerRedis{
+	}
+	class Token{
+		+GenerateToken()
+	}
+	class TokenGenerator{
+	}
+	ITokenManager --> Token
+	TokenManagerRedis --|> ITokenManager
+	TokenManagerRedis --> TokenGenerator
+```

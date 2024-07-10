@@ -20,7 +20,7 @@ namespace matchmaking_system{
 
         // pops player from queue and returns it.
         // std::nullopt if queue is empty
-        virtual std::optional<std::string> PopPlayer() = 0;
+        virtual std::optional<dm::Uuid> PopPlayer() = 0;
 
         // returns size of queue
         virtual long long GetLength() = 0;

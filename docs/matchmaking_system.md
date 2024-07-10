@@ -1,60 +1,29 @@
 # [matchmaking_system](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/matchmaking_system)
 ## what is it for
-this module contains queue of players to join match, determines the pairs of players to play together and passes players to the next module [[game_manager]] to create game.
+this module communicates with redis to contain queue of players to join match, determines the pairs of players to play together and passes players to the next module [[game_manager]] to create game.
 ##  classes
-* **MMQueue** - contains a queue of players. using this class, [api handler](http_handler.md) interacts with the queue.
-## actions
-```mermaid
----
-
-title: match making queue workflow
-
----
-
-flowchart TB
-
-ApiHandler --"enqueue player"-->Enqueue
-
-ApiHandler --"dequeue player"-->Dequeue
-
-subgraph MMQueue
-
-Dequeue --"Update"-->QueueUpdate
-
-Enqueue --"Update"-->QueueUpdate
-
-end
-
-subgraph game manager
-
-QueueUpdate --"picks two players"--> CreateSession
-
-end
-```
-
+* **IQueueManager** - interface provides all options that database communicator should have. using this class, [api handler](http_handler.md) and matchmaking_balancer interacts with the queue.
+* **QueueManagerRedis** - child of **IQueueManager**. provides realization for that interface for redis database.
+* **MatchmakingBallancer** - class for balancing players in queue and creating matches for them.
 ## graph
 ```mermaid
 ---
-
 title: matchmaking_system classes
-
 ---
-
-  
-
 classDiagram
+	class IQueueManager {
+		EnqueuePlayer(uuid) bool
+		DequeuePlayer(uuid) bool
+		PopPlayer() string
+		GetLength() long long
+		GetQueue(start, end) Uuids
+	}
+	class QueueManagerRedis{
+	}
+	class MatchmakingBallancer{
+		Ballance()
+	}
+	QueueManagerRedis --|> IQueueManager
+	MatchmakingBallancer --> IQueueManager
 
-class MMQueue {
-
-+EnqueuePlayer(uuid) bool
-
-+DequeuePlayer(uuid) bool
-
--QueueUpdate()
-
--queue : vector<uuid>
-
--game_manager : Ptr
-
-}
 ```
