@@ -10,7 +10,7 @@
 #include "token_manager_redis.hpp"
 #include "queue_manager_redis.hpp"
 #include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 
 #define PORT 9999
 
@@ -57,9 +57,10 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
 }
 
 int Initializer::Init(int argc, char **argv) {
-    try 
-    {
-        auto new_logger = spdlog::basic_logger_mt("new_default_logger", "logs/new-default-log.txt");
+    try {
+        auto max_size = 1024*1024*5;
+        auto max_files = 3;
+        auto new_logger = spdlog::rotating_logger_mt("logs", "logs/logs.txt", max_size, max_files);
         spdlog::set_default_logger(new_logger);    }
     catch (const spdlog::spdlog_ex &ex)
     {
