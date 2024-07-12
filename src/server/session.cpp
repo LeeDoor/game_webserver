@@ -1,9 +1,6 @@
 #include "listener.hpp"
 #include "http_server.hpp"
 
-using namespace std::literals;
-#define CONNECTION_EXPIRY_TIME 3s
-
 namespace http_server {
     std::shared_ptr<Session> Session::GetSharedThis() {
         return shared_from_this();
@@ -15,7 +12,7 @@ namespace http_server {
 
     void Session::Read() {
         request_ = {};
-        stream_.expires_after(CONNECTION_EXPIRY_TIME);
+        stream_.expires_after(expiry_time_);
         http::async_read(stream_, buffer_, request_,
                          beast::bind_front_handler(&Session::OnRead, GetSharedThis()));
     }

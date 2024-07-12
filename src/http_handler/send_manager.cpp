@@ -9,7 +9,7 @@ namespace http_handler{
     
     void SendManager::Send(RequestNSender rns, status stat, std::string body) {
         ResponseBuilder<http::string_body> builder;
-        spdlog::info("SENT [{}]: {}", static_cast<int>(stat), body);  
+        spdlog::info("SENT [{}]", static_cast<int>(stat));  
         rns.sender.string(builder.BodyText(std::move(body), rns.request.method()).Status(stat).GetProduct());
     }
     

@@ -32,6 +32,8 @@ add_library(${LIBRARY_NAME}
     get_token_from_header.hpp
     get_token_from_header.cpp
     api_function_params.hpp
+    game_handler.hpp
+    game_handler.cpp
 )
 
 #including and linking dependencies

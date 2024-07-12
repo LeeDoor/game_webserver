@@ -10,9 +10,11 @@ namespace http_handler {
 
     class StaticHandler {
     public:
+        using Ptr = std::shared_ptr<StaticHandler>;
+
         StaticHandler(HandlerParameters handler_parameters);
 
-        void HandleFile(HttpRequest&& request, ResponseSender&& sender);
+        void Handle(HttpRequest&& request, ResponseSender&& sender);
     private:
         void SendFile(fs::path&& path, RequestNSender rns);
         void SendWrongPathError(RequestNSender rns);    

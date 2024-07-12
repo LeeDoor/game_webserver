@@ -19,7 +19,7 @@ namespace http_handler {
         ApiFunctionsParse();
     }
 
-    void ApiHandler::HandleApiFunction(HttpRequest&& request, ResponseSender&& sender){
+    void ApiHandler::Handle(HttpRequest&& request, ResponseSender&& sender){
         std::string function = static_cast<std::string>(request.target());
         // removing url parameters
         std::string::size_type pos = function.find('?');

@@ -8,7 +8,7 @@ namespace http_handler {
         static_path_ = fs::weakly_canonical(handler_parameters.static_path);
     }
 
-    void StaticHandler::HandleFile(HttpRequest&& request, ResponseSender&& sender) {
+    void StaticHandler::Handle(HttpRequest&& request, ResponseSender&& sender) {
         std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
         fs::path path = static_path_;
         path.concat(path_str);

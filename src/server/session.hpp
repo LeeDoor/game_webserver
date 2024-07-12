@@ -4,6 +4,7 @@
 #include <memory>
 #include "http_handler.hpp"
 #include "i_serializer.hpp"
+using namespace std::literals;
 
 namespace http_server {
     class Session : public std::enable_shared_from_this<Session> {
@@ -49,6 +50,8 @@ namespace http_server {
         beast::tcp_stream stream_;
 
         http_handler::HttpHandler request_handler_;
+
+        std::chrono::seconds expiry_time_ = 30s;
     };
 
 }

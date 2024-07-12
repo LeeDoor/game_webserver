@@ -9,9 +9,11 @@
 namespace http_handler {
     class ApiHandler :  public std::enable_shared_from_this<ApiHandler> {
     public:
+        using Ptr = std::shared_ptr<ApiHandler>;
+
         ApiHandler(HandlerParameters handler_parameters);
         void Init();
-        void HandleApiFunction(HttpRequest&& request, ResponseSender&& sender);
+        void Handle(HttpRequest&& request, ResponseSender&& sender);
 
     private:
         // generate api function set from file
