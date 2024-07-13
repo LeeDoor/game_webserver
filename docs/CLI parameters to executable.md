@@ -11,15 +11,6 @@ this flag specifies directory with static files. static files are files containi
 ```bash
 ./application --static_path static/
 ```
----
-### CLI api_path
-#### **description**
-declares where is [API_functions.txt](API_functions_txt.md) is.  
-#### **example**
-***application*** is an executable for main program. also add other necessary flags.
-```bash
-./application --api_path API_functions.txt
-```
 
 ---
 ### CLI postgres_credentials

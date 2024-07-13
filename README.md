@@ -34,6 +34,5 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [game_manager](docs/game_manager.md)
 * [API](docs/http_api.md)
 * [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)
-* [API_functions.txt](docs/API_functions_txt.md)
 
 how to write tests, naming rules etc. [here](docs/tests.md)

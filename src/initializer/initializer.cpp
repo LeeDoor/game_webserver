@@ -37,7 +37,6 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     desc.add_options()
         ("test", "test launch to use test bd")
         ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library")
-        ("api_path", po::value(&args.api_path)->value_name("file"), "set path to api functions definitions")
         ("postgres_credentials", po::value(&args.postgres_credentials)->value_name("string"), "set bd postgres login and password like that: \"login:password\"")
         ("redis_credentials", po::value(&args.redis_credentials)->value_name("string"), "set bd redis password");
     po::variables_map vm;
@@ -46,9 +45,6 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     args.test = vm.count("test");
     if(!vm.contains("static_path")){
         throw std::runtime_error("static path is not specified");
-    }
-    if(!vm.contains("api_path")){
-        throw std::runtime_error("api path is not specified");
     }
     if(!vm.contains("postgres_credentials")){
         throw std::runtime_error("postgres_credentials is not specified");
@@ -96,7 +92,6 @@ int Initializer::StartServer(Args args) {
     hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
     hp.matchmaking_balancer = std::make_shared<matchmaking_system::MatchmakingBalancer>(hp.queue_manager, hp.game_manager);
     hp.static_path = args.static_path;
-    hp.api_path = std::move(args.api_path);
 
     http_server::ServeHttp(ioc, {address, port}, hp);
     RunWorkers(num_threads, [&ioc]{

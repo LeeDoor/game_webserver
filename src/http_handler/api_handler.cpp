@@ -13,8 +13,7 @@ namespace http_handler {
             udm_(handler_parameters.user_data_manager),
             iqm_(handler_parameters.queue_manager),
             mb_(handler_parameters.matchmaking_balancer),
-            tm_(handler_parameters.token_manager),
-            api_path_(handler_parameters.api_path){}
+            tm_(handler_parameters.token_manager){}
 
     void ApiHandler::Init(){
         ApiFunctionsParse();

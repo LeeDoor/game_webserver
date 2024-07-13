@@ -17,7 +17,6 @@ namespace http_handler{
         game_manager::GameManager::Ptr game_manager;
 
         fs::path static_path;
-        std::string api_path;
     };
 
 }

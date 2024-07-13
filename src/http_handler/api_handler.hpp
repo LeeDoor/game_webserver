@@ -43,7 +43,6 @@ namespace http_handler {
         token_manager::ITokenManager::Ptr tm_;
         matchmaking_system::IQueueManager::Ptr iqm_;
         matchmaking_system::MatchmakingBalancer::Ptr mb_;
-        std::string api_path_;
     };
 
 } // http_handler
