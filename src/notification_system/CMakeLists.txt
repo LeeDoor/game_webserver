@@ -1,14 +1,10 @@
 #initializer's dependencies
-set(DEPENDENCIES http_handler notification_system)
-set(LIBRARY_NAME server)
+set(DEPENDENCIES server)
+set(LIBRARY_NAME notification_system)
 #creating library
 add_library(${LIBRARY_NAME}
-    http_server.hpp
-    session.hpp
-    listener.hpp
-    http_server.cpp
-    session.cpp
-    listener.cpp
+    network_notifier.hpp
+    network_notifier.cpp
 )
 
 #including and linking dependencies

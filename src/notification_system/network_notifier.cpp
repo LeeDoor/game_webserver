@@ -12,9 +12,12 @@ namespace http_server{
         return !sessions_.contains(uuid);
     }
 
-    void NetworkNotifier::Send(const dm::Uuid& uuid, StringResponse&& response) {
+    bool NetworkNotifier::Send(const dm::Uuid& uuid, StringResponse&& response) {
         std::shared_ptr<Session> session;
-        session = sessions_[uuid];
-        session->WriteOnce(std::move(response));
+        if(sessions_.contains(uuid)){
+            sessions_[uuid]->WriteOnce(std::move(response));
+            return true;
+        }
+        return false;
     }
 }

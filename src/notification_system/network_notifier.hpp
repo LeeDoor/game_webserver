@@ -14,7 +14,7 @@ namespace http_server{
         bool Subscribe(const dm::Uuid& uuid, std::shared_ptr<Session> session);
         bool Unsubscribe(const dm::Uuid& uuid);
 
-        void Send(const dm::Uuid& uuid, StringResponse&& response);
+        bool Send(const dm::Uuid& uuid, StringResponse&& response);
     private:
         std::map<dm::Uuid, std::shared_ptr<Session>> sessions_;
     };

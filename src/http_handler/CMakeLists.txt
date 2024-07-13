@@ -5,7 +5,6 @@ set(DEPENDENCIES
     token_manager 
     matchmaking_system
     game_manager
-    server
 )
 set(LIBRARY_NAME http_handler)
 #creating library

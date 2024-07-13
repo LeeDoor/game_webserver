@@ -8,6 +8,7 @@ set (DEPENDENCIES
     matchmaking_system 
     game_manager 
     serializer
+    notification_system
 )
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})
