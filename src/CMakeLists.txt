@@ -5,7 +5,7 @@ set (DEPENDENCIES
     http_handler 
     database_manager 
     token_manager 
-    matchmaking_system 
+    queue_manager 
     game_manager 
     serializer
     notification_system

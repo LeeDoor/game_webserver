@@ -12,8 +12,8 @@ namespace http_handler{
         serializer::ISerializer::Ptr serializer;
         database_manager::IUserDataManager::Ptr user_data_manager;
         token_manager::ITokenManager::Ptr token_manager;
-        matchmaking_system::IQueueManager::Ptr queue_manager;
-        matchmaking_system::MatchmakingBalancer::Ptr matchmaking_balancer;
+        game_manager::IQueueManager::Ptr queue_manager;
+        game_manager::MatchmakingBalancer::Ptr matchmaking_balancer;
         game_manager::GameManager::Ptr game_manager;
 
         fs::path static_path;

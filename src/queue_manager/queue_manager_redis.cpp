@@ -1,6 +1,6 @@
 #include "queue_manager_redis.hpp"
 
-namespace matchmaking_system{
+namespace game_manager{
     QueueManagerRedis::QueueManagerRedis(std::string&& redis_data_name, std::string&& redis_set_name, RedisPtr redis)
     :   redis_queue_name_(redis_data_name),
         redis_set_name_(redis_set_name),
@@ -12,6 +12,7 @@ namespace matchmaking_system{
             return false;
         redis_->lpush(redis_queue_name_, uuid);
         redis_->sadd(redis_set_name_, uuid);
+        Notify(EventType::OnEnqueue);
         return true;
     }
     bool QueueManagerRedis::DequeuePlayer(const dm::Uuid& uuid) {
@@ -33,5 +34,13 @@ namespace matchmaking_system{
         std::vector<std::string> strs;
         redis_->lrange(redis_queue_name_, start, end, std::back_inserter(strs));
         return strs;
+    }
+    void QueueManagerRedis::OnEnqueueSubscribe(IObserver::Ptr observer) {
+        observers_.push_back(observer);
+    }
+    void QueueManagerRedis::Notify(EventType type) {
+        for(auto it = observers_.begin(); it != observers_.end(); ++it){
+            (*it)->Notify(type);
+        }
     }
 }

@@ -41,8 +41,7 @@ namespace http_handler {
         serializer::ISerializer::Ptr serializer_;
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::ITokenManager::Ptr tm_;
-        matchmaking_system::IQueueManager::Ptr iqm_;
-        matchmaking_system::MatchmakingBalancer::Ptr mb_;
+        game_manager::IQueueManager::Ptr iqm_;
     };
 
 } // http_handler

@@ -3,7 +3,7 @@ set(DEPENDENCIES
     serializer 
     database_manager
     token_manager 
-    matchmaking_system
+    queue_manager
     game_manager
 )
 set(LIBRARY_NAME http_handler)

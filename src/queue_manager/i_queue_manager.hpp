@@ -6,9 +6,17 @@
 #include "game_manager.hpp"
 #include "user_data_types.hpp"
 
-namespace matchmaking_system{
+namespace game_manager{
     class IQueueManager{
     public:
+        enum EventType {
+            OnEnqueue
+        };
+        class IObserver{
+        public:
+            using Ptr = std::shared_ptr<IObserver>;
+            virtual void Notify(EventType type) = 0;
+        };
         using Ptr = std::shared_ptr<IQueueManager>;
         
         //adds player to queue
@@ -28,5 +36,9 @@ namespace matchmaking_system{
         // start and end are indices of first and last parsing objects
         // -1 is last, -2 is penultimate etc.
         virtual std::vector<dm::Uuid> GetQueue(int start = 0, int end = -1) = 0;
+
+        virtual void OnEnqueueSubscribe(IObserver::Ptr observer) = 0;
+    protected:
+        virtual void Notify(EventType type) = 0;
     };
 }

@@ -8,6 +8,8 @@ add_library(${LIBRARY_NAME}
     session.hpp
     session.cpp
     session_id_generator.hpp
+    matchmaking_balancer.hpp
+    matchmaking_balancer.cpp
 )
 
 #including and linking dependencies

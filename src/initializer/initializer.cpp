@@ -89,9 +89,11 @@ int Initializer::StartServer(Args args) {
     hp.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     hp.game_manager = std::make_shared<game_manager::GameManager>();
-    hp.queue_manager = std::make_shared<matchmaking_system::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
-    hp.matchmaking_balancer = std::make_shared<matchmaking_system::MatchmakingBalancer>(hp.queue_manager, hp.game_manager);
+    hp.queue_manager = std::make_shared<game_manager::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
     hp.static_path = args.static_path;
+
+    hp.queue_manager->OnEnqueueSubscribe
+        (std::make_shared<game_manager::MatchmakingBalancer>(hp.queue_manager, hp.game_manager));
 
     http_server::ServeHttp(ioc, {address, port}, hp);
     RunWorkers(num_threads, [&ioc]{

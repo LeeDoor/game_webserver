@@ -1,7 +1,7 @@
 #include "matchmaking_balancer.hpp"
 #include "spdlog/spdlog.h"
 
-namespace matchmaking_system{
+namespace game_manager{
 
     MatchmakingBalancer::MatchmakingBalancer(IQueueManager::Ptr iqm,  game_manager::GameManager::Ptr gm) 
         : iqm_(iqm), gm_(gm){}
@@ -18,5 +18,12 @@ namespace matchmaking_system{
         }
         gm_->CreateSession(*first, *second);
         return true;
+    }
+    void MatchmakingBalancer::Notify(IQueueManager::EventType event_type) {
+        switch (event_type){
+        case IQueueManager::EventType::OnEnqueue:
+            Ballance();
+            break;
+        }
     }
 }
