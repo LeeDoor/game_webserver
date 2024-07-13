@@ -11,30 +11,30 @@ namespace http_handler{
     public:
         SendManager(serializer::ISerializer::Ptr ser);
 
-        void Send(RequestNSender rns, status stat, std::string body);
+        void Send(SessionData rns, status stat, std::string body);
 
-        void SendSuccess(RequestNSender rns);
-        void SendToken(RequestNSender rns, token_manager::Token& token);
-        void SendUserData(RequestNSender rns, const PublicUserData& user_data);
-        void SendHiddenUserData(RequestNSender rns, const dm::UserData& user_data);
+        void SendSuccess(SessionData rns);
+        void SendToken(SessionData rns, token_manager::Token& token);
+        void SendUserData(SessionData rns, const PublicUserData& user_data);
+        void SendHiddenUserData(SessionData rns, const dm::UserData& user_data);
         
-        void SendWrongApiFunction(RequestNSender rns);
-        void SendWrongBodyData(RequestNSender rns);
-        void SendLoginTaken(RequestNSender rns);
-        void SendWrongLoginOrPassword(RequestNSender rns);
-        void SendNoSuchUser(RequestNSender rns);
-        void SendUnauthorized(RequestNSender rns);
-        void SendInvalidToken(RequestNSender rns);
-        void SendAdminUnrecognized(RequestNSender rns);
-        void SendTokenToRemovedPerson(RequestNSender rns);
-        void SendCantEnqueue(RequestNSender rns);
-        void SendCantLogin(RequestNSender rns);
+        void SendWrongApiFunction(SessionData rns);
+        void SendWrongBodyData(SessionData rns);
+        void SendLoginTaken(SessionData rns);
+        void SendWrongLoginOrPassword(SessionData rns);
+        void SendNoSuchUser(SessionData rns);
+        void SendUnauthorized(SessionData rns);
+        void SendInvalidToken(SessionData rns);
+        void SendAdminUnrecognized(SessionData rns);
+        void SendTokenToRemovedPerson(SessionData rns);
+        void SendCantEnqueue(SessionData rns);
+        void SendCantLogin(SessionData rns);
 
-        void SendWrongUrlParameters(RequestNSender rns);
+        void SendWrongUrlParameters(SessionData rns);
 
-        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, RequestNSender rns);
-        void SendWrongMethod(const ApiFunctionExecutor& executor, RequestNSender rns);
-        void SendUndefinedError(const ApiFunctionExecutor& executor, RequestNSender rns);
+        void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, SessionData rns);
+        void SendWrongMethod(const ApiFunctionExecutor& executor, SessionData rns);
+        void SendUndefinedError(const ApiFunctionExecutor& executor, SessionData rns);
 
     private:
         serializer::ISerializer::Ptr serializer_;

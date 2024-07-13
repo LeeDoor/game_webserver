@@ -19,7 +19,7 @@ namespace http_handler {
             std::optional<token_manager::ITokenManager::Ptr> tm,
             serializer::ISerializer::Ptr serializer_);
 
-        ApiStatus Execute(RequestNSender rns);
+        ApiStatus Execute(SessionData rns);
         const ApiFunction& GetApiFunction() const;
     private:
         bool MatchMethod(const http::verb& verb);

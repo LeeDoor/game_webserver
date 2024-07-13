@@ -12,22 +12,22 @@ namespace http_handler {
 
         ApiHandler(HandlerParameters handler_parameters);
         void Init();
-        void Handle(HttpRequest&& request, ResponseSender&& sender);
+        void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
 
     private:
         // generate api function set from file
         void ApiFunctionsParse();
         
         // api functions
-        void ApiRegister(RequestNSender rns);
-        void ApiLogin(RequestNSender rns);
-        void ApiGetProfileData(RequestNSender rns);
-        void ApiEnqueue(RequestNSender rns);
+        void ApiRegister(SessionData rns);
+        void ApiLogin(SessionData rns);
+        void ApiGetProfileData(SessionData rns);
+        void ApiEnqueue(SessionData rns);
 
         // api debug functions
-        void ApiGetPlayerTokens(RequestNSender rns);
-        void ApiGetUserData(RequestNSender rns);
-        void ApiGetMMQueue(RequestNSender rns);
+        void ApiGetPlayerTokens(SessionData rns);
+        void ApiGetUserData(SessionData rns);
+        void ApiGetMMQueue(SessionData rns);
 
         // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);

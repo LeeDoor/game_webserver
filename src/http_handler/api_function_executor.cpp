@@ -9,7 +9,7 @@ namespace http_handler {
         serializer::ISerializer::Ptr serializer):
         api_function_ (std::move(api_function_params)), tm_(tm), serializer_(serializer){}
 
-    ApiStatus ApiFunctionExecutor::Execute(RequestNSender rns) {
+    ApiStatus ApiFunctionExecutor::Execute(SessionData rns) {
         if(!MatchMethod(rns.request.method())){
             return ApiStatus::WrongMethod;
         }

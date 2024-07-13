@@ -3,6 +3,7 @@
 #include "api_function_director.hpp"
 #include "spdlog/spdlog.h"
 #include <fstream>
+
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
 
 #define STREAM_POS(stream_name) std::to_string(static_cast<long long>(stream_name.tellg()))
@@ -19,13 +20,13 @@ namespace http_handler {
         ApiFunctionsParse();
     }
 
-    void ApiHandler::Handle(HttpRequest&& request, ResponseSender&& sender){
+    void ApiHandler::Handle(HttpRequest&& request, SessionFunctions&& session_functions){
         std::string function = static_cast<std::string>(request.target());
         // removing url parameters
         std::string::size_type pos = function.find('?');
         function = function.substr(0, pos);
 
-        RequestNSender rns {request, sender};
+        SessionData rns {request, session_functions};
         if(request.method() == http::verb::options){
             ResponseBuilder<http::string_body> builder;
             http::response<http::string_body> product = 
@@ -34,7 +35,7 @@ namespace http_handler {
                 .GetProduct();
             product.set(http::field::access_control_allow_origin, "*");
             product.set(http::field::access_control_allow_headers, "Content-Type, Authorization");
-            rns.sender.string(std::move(product));
+            rns.session_functions.send_string(std::move(product));
             return;
         }
         if(request_to_executor_.contains(function)) {
@@ -62,7 +63,7 @@ namespace http_handler {
         };
     }
 
-    void ApiHandler::ApiRegister(RequestNSender rns) {
+    void ApiHandler::ApiRegister(SessionData rns) {
         std::optional<RegistrationData> rd;
         rd = serializer_->DeserializeRegData(rns.request.body());
         if(!rd.has_value()) {
@@ -77,7 +78,7 @@ namespace http_handler {
         }
         return responser_.SendSuccess(rns);
     }
-    void ApiHandler::ApiLogin(RequestNSender rns) {
+    void ApiHandler::ApiLogin(SessionData rns) {
         std::optional<RegistrationData> rd;
         rd = serializer_->DeserializeRegData(rns.request.body());
         if(!rd.has_value()) {
@@ -97,7 +98,7 @@ namespace http_handler {
             return responser_.SendCantLogin(rns);
         return responser_.SendToken(rns, token);
     }
-    void ApiHandler::ApiGetProfileData(RequestNSender rns){
+    void ApiHandler::ApiGetProfileData(SessionData rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         auto user_data = udm_->GetByUuid(*uuid);
@@ -106,7 +107,7 @@ namespace http_handler {
             
         return responser_.SendUserData(rns, *user_data);
     }
-    void ApiHandler::ApiEnqueue(RequestNSender rns){ 
+    void ApiHandler::ApiEnqueue(SessionData rns){ 
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         bool res = iqm_->EnqueuePlayer(*uuid);
@@ -117,13 +118,13 @@ namespace http_handler {
         return responser_.SendSuccess(rns);
     }
 
-    void ApiHandler::ApiGetPlayerTokens(RequestNSender rns){
+    void ApiHandler::ApiGetPlayerTokens(SessionData rns){
         std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
         std::string tm_string = serializer_->SerializeTokenToUuid(map);
         return responser_.Send(rns, http::status::ok, tm_string);
     }
 
-    void ApiHandler::ApiGetUserData(RequestNSender rns) {
+    void ApiHandler::ApiGetUserData(SessionData rns) {
         std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
         if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
             return responser_.SendWrongUrlParameters(rns);
@@ -143,7 +144,7 @@ namespace http_handler {
         return responser_.SendHiddenUserData(rns, *ud);
     }
 
-    void ApiHandler::ApiGetMMQueue(RequestNSender rns) {
+    void ApiHandler::ApiGetMMQueue(SessionData rns) {
         const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
         std::string queue_string = serializer_->SerializeUuids(queue);
         return responser_.Send(rns, status::ok, queue_string);

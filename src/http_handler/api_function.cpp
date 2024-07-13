@@ -12,7 +12,7 @@ namespace http_handler {
     bool ApiFunction::IsDebug() const {
         return is_debug_;
     }
-    void ApiFunction::operator()(RequestNSender rns) {
+    void ApiFunction::operator()(SessionData rns) {
         executor_function_(rns);
     }
 } // http_handler

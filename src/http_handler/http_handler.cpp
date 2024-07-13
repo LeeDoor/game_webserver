@@ -7,19 +7,19 @@ namespace http_handler{
             static_handler_ = std::make_shared<StaticHandler>(handler_parameters);
         }
 
-    void HttpHandler::operator()(HttpRequest &&request, ResponseSender&& sender) {
-        HandleRequest(std::move(request), std::move(sender));
+    void HttpHandler::operator()(HttpRequest &&request, SessionFunctions&& session_functions) {
+        HandleRequest(std::move(request), std::move(session_functions));
     }
-    void HttpHandler::HandleRequest(HttpRequest&& request, ResponseSender&& sender) {
+    void HttpHandler::HandleRequest(HttpRequest&& request, SessionFunctions&& session_functions) {
         switch (DeclareRequestType(request)){
             case RequestType::Game:
-                game_handler_->Handle(std::move(request), std::move(sender));
+                game_handler_->Handle(std::move(request), std::move(session_functions));
                 break;
             case RequestType::Api:
-                api_handler_->Handle(std::move(request), std::move(sender));
+                api_handler_->Handle(std::move(request), std::move(session_functions));
                 break;
             case RequestType::Static:
-                static_handler_->Handle(std::move(request), std::move(sender));
+                static_handler_->Handle(std::move(request), std::move(session_functions));
                 break;
         }
     }

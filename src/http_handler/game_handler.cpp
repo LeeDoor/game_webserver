@@ -4,7 +4,7 @@ namespace http_handler{
     GameHandler::GameHandler(HandlerParameters handler_parameters)
         {}
 
-    void GameHandler::Handle(HttpRequest&& request, ResponseSender&& sender){
+    void GameHandler::Handle(HttpRequest&& request, SessionFunctions&& session_functions){
         
     }
 }

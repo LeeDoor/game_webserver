@@ -14,11 +14,11 @@ namespace http_handler {
 
         StaticHandler(HandlerParameters handler_parameters);
 
-        void Handle(HttpRequest&& request, ResponseSender&& sender);
+        void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
     private:
-        void SendFile(fs::path&& path, RequestNSender rns);
-        void SendWrongPathError(RequestNSender rns);    
-        void SendNoAccessError(RequestNSender rns);
+        void SendFile(fs::path&& path, SessionData rns);
+        void SendWrongPathError(SessionData rns);    
+        void SendNoAccessError(SessionData rns);
 
         bool IsSubdirectory(fs::path&& path);
 

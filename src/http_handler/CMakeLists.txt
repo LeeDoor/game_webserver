@@ -5,6 +5,7 @@ set(DEPENDENCIES
     token_manager 
     matchmaking_system
     game_manager
+    server
 )
 set(LIBRARY_NAME http_handler)
 #creating library
@@ -36,7 +37,6 @@ add_library(${LIBRARY_NAME}
     api_function_params.hpp
     game_handler.hpp
     game_handler.cpp
-
 )
 
 #including and linking dependencies

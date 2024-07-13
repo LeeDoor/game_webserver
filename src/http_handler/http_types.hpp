@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/beast.hpp>
 #include <filesystem>
-
+#include "user_data.hpp"
 namespace fs = std::filesystem;
 namespace net = boost::asio;
 namespace sys = boost::system;
@@ -15,14 +15,18 @@ typedef http::response <http::string_body> StringResponse;
 typedef http::response <http::file_body> FileResponse;
 typedef std::function<void(StringResponse&&)> StrResponseSender;
 typedef std::function<void(FileResponse&&)> FileResponseSender;
+typedef std::function<void(const dm::Uuid&)> SubNotification;
+typedef std::function<void(const dm::Uuid&)> UnsubNotification;
 
 namespace http_handler{
-    struct ResponseSender{
-        StrResponseSender string;
-        FileResponseSender file;
+    struct SessionFunctions{
+        StrResponseSender send_string;
+        FileResponseSender send_file;
+        SubNotification subcsribe;
+        UnsubNotification unsubcsribe;
     }; 
-    struct RequestNSender{
+    struct SessionData{
         const HttpRequest& request;
-        const ResponseSender& sender;
+        const SessionFunctions& session_functions;
     };
 }

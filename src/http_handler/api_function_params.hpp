@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 namespace http_handler{
-	typedef std::function<void(RequestNSender)> ExecutorFunction;
+	typedef std::function<void(SessionData)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
 
     struct ApiFunctionParams {

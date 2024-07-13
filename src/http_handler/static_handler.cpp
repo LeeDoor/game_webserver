@@ -8,11 +8,12 @@ namespace http_handler {
         static_path_ = fs::weakly_canonical(handler_parameters.static_path);
     }
 
-    void StaticHandler::Handle(HttpRequest&& request, ResponseSender&& sender) {
-        std::string path_str = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
+    void StaticHandler::Handle(HttpRequest&& request, SessionFunctions&& session_functions) {
+        std::string path_str 
+            = static_cast<std::string>(request.target().substr(0, request.target().find('?')));
         fs::path path = static_path_;
         path.concat(path_str);
-        RequestNSender rns{request,sender};
+        SessionData rns{request,session_functions};
         if(!IsSubdirectory(std::move(path))) {
             spdlog::info("not a subdirectory");
             return SendNoAccessError(rns);
@@ -23,19 +24,19 @@ namespace http_handler {
         return SendFile(std::move(path), rns);
     }
 
-    void StaticHandler::SendFile(fs::path&& path, RequestNSender rns){
+    void StaticHandler::SendFile(fs::path&& path, SessionData rns){
         ResponseBuilder<http::file_body> builder;
-        rns.sender.file(std::move(builder.File(path, rns.request.method()).Status(status::ok).GetProduct()));
+        rns.session_functions.send_file(std::move(builder.File(path, rns.request.method()).Status(status::ok).GetProduct()));
     }
-    void StaticHandler::SendWrongPathError(RequestNSender rns){
+    void StaticHandler::SendWrongPathError(SessionData rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
-        rns.sender.string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
+        rns.session_functions.send_string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
     }
-    void StaticHandler::SendNoAccessError(RequestNSender rns){
+    void StaticHandler::SendNoAccessError(SessionData rns){
         ResponseBuilder<http::string_body> builder;
         std::string body = serializer_->SerializeError("no_acess", "path is out of root");
-        rns.sender.string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
+        rns.session_functions.send_string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
     }
 
 

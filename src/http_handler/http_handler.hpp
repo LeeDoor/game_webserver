@@ -9,9 +9,9 @@ namespace http_handler {
     public:
         HttpHandler(HandlerParameters handler_parameters);
 
-        void operator()(HttpRequest&& request, ResponseSender&& sender);
+        void operator()(HttpRequest&& request, SessionFunctions&& session_functions);
     private:
-        void HandleRequest(HttpRequest&& request, ResponseSender&& sender);
+        void HandleRequest(HttpRequest&& request, SessionFunctions&& session_functions);
 
         enum RequestType{
             Static,

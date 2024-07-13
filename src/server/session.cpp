@@ -10,11 +10,23 @@ namespace http_server {
         net::dispatch(stream_.get_executor(), beast::bind_front_handler(&Session::Read, GetSharedThis()));
     }
 
+    void Session::WriteOnce(StringResponse &&response){
+        auto safe_response = std::make_shared<StringResponse>(std::move(response));
+        auto self = GetSharedThis();
+
+        http::async_write(stream_, *safe_response,
+            [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
+                if(ec) {
+                    return ReportError(ec, "writeOnce");
+                }
+            });
+    }
+
     void Session::Read() {
         request_ = {};
         stream_.expires_after(expiry_time_);
         http::async_read(stream_, buffer_, request_,
-                         beast::bind_front_handler(&Session::OnRead, GetSharedThis()));
+            beast::bind_front_handler(&Session::OnRead, GetSharedThis()));
     }
 
     void Session::OnRead(beast::error_code ec, std::size_t byets_read) {
@@ -34,7 +46,21 @@ namespace http_server {
         auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
             self->Write(std::move(response));
         };
-        request_handler_(std::move(request), {strHandler, fileHandler});
+        auto subNotif = 
+        [self = this->shared_from_this(), notifier = this->notifier_](const dm::Uuid& uuid){
+            notifier->Subscribe(uuid, self);
+        };
+        auto unsubNotif = 
+        [self = this->shared_from_this(), notifier = this->notifier_](const dm::Uuid& uuid){
+            notifier->Unsubscribe(uuid);
+        };
+        http_handler::SessionFunctions sf {
+            strHandler, 
+            fileHandler,
+            subNotif,
+            unsubNotif
+        };
+        request_handler_(std::move(request), std::move(sf));
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {

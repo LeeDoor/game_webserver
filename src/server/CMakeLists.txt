@@ -3,12 +3,14 @@ set(DEPENDENCIES http_handler)
 set(LIBRARY_NAME server)
 #creating library
 add_library(${LIBRARY_NAME}
-        http_server.hpp
-        session.hpp
-        listener.hpp
-        http_server.cpp
-        session.cpp
-        listener.cpp
+    http_server.hpp
+    session.hpp
+    listener.hpp
+    http_server.cpp
+    session.cpp
+    listener.cpp
+    network_notifier.hpp
+    network_notifier.cpp
 )
 
 #including and linking dependencies
