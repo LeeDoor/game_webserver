@@ -18,6 +18,8 @@ add_library(${LIBRARY_NAME}
     static_handler.hpp
     api_function_executor.cpp
     api_function_executor.hpp
+    api_function_director.hpp
+    api_function_director.cpp
     api_function_builder.cpp
     api_function_builder.hpp
     api_function.cpp
@@ -34,6 +36,7 @@ add_library(${LIBRARY_NAME}
     api_function_params.hpp
     game_handler.hpp
     game_handler.cpp
+
 )
 
 #including and linking dependencies

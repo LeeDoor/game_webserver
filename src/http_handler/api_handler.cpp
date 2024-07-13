@@ -1,9 +1,10 @@
 #include "api_handler.hpp"
 #include "get_token_from_header.hpp"
+#include "api_function_director.hpp"
 #include "spdlog/spdlog.h"
 #include <fstream>
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1)    
 #define STREAM_POS(stream_name) std::to_string(static_cast<long long>(stream_name.tellg()))
 namespace http_handler {
     ApiHandler::ApiHandler(HandlerParameters handler_parameters) 
@@ -49,75 +50,17 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiFunctionsParse () {
-        std::map<std::string, ExecutorFunction> executors{
-            { "ApiGetProfileData",  BIND(&ApiHandler::ApiGetProfileData) },
-            { "ApiRegister",        BIND(&ApiHandler::ApiRegister) },
-            { "ApiLogin",           BIND(&ApiHandler::ApiLogin) },
-            { "ApiEnqueue",         BIND(&ApiHandler::ApiEnqueue) },
-            { "ApiGetPlayerTokens", BIND(&ApiHandler::ApiGetPlayerTokens) },
-            { "ApiGetUserData",     BIND(&ApiHandler::ApiGetUserData) },
-            { "ApiGetMMQueue",      BIND(&ApiHandler::ApiGetMMQueue) },
+        ApiFunctionDirector afd(serializer_, tm_);
+        for (int i = 0; i < 1000000; ++i);
+        request_to_executor_ = {
+            {"/api/register", afd.GetRegister(BIND(&ApiHandler::ApiRegister))},
+            {"/api/login", afd.GetLogin(BIND(&ApiHandler::ApiLogin))},
+            {"/api/profile", afd.GetProfile(BIND(&ApiHandler::ApiGetProfileData))},
+            {"/api/enqueue", afd.GetEnqueue(BIND(&ApiHandler::ApiEnqueue))},
+            {"/api/debug/player_tokens", afd.GetPlayerTokens(BIND(&ApiHandler::ApiGetPlayerTokens))},
+            {"/api/debug/user_data", afd.GetUserData(BIND(&ApiHandler::ApiGetUserData))},
+            {"/api/debug/matchmaking_queue", afd.GetMatchmakingQueue(BIND(&ApiHandler::ApiGetMMQueue))},
         };
-
-        std::ifstream is;
-        is.open(api_path_);
-        ApiFunctionBuilder builder(serializer_);
-        while (ApiFunctionParse(executors, is, builder));
-        is.close();
-
-    }
-    bool ApiHandler::ApiFunctionParse(std::map<std::string, ExecutorFunction>& executors, std::ifstream& is, ApiFunctionBuilder& builder) {
-        std::string target, function, param, cur_pos;
-        std::vector<http::verb> verbs_vec;
-        try{
-            cur_pos = STREAM_POS(is); // method to track logic error if it is
-            std::getline(is, target); // reading api target
-            if (target.empty()) throw std::logic_error(cur_pos);
-
-            cur_pos = STREAM_POS(is);
-            std::getline(is, param); // reading methods
-            std::stringstream verbs(param);
-            if (verbs.eof()) throw std::logic_error(cur_pos);
-            while (verbs >> param) // reading allowed (verbs)
-                verbs_vec.push_back(http::string_to_verb(param));
-            if (std::find(verbs_vec.begin(), verbs_vec.end(), http::verb::unknown) != verbs_vec.end()) 
-                throw std::logic_error(cur_pos);
-            
-            builder.Methods(std::move(verbs_vec));
-
-            cur_pos = STREAM_POS(is);
-            std::getline(is, function);
-            if (!executors.contains(function)) throw std::logic_error(cur_pos);
-            // reading method name from file and mapping it with C++ function
-            builder.ExecFunc(std::move(executors[function]));  
-
-            cur_pos = STREAM_POS(is);
-            std::getline(is, param); // reading custom parameters about function
-            while (!param.empty()){
-                if (param == "Authorization required")
-                    builder.NeedAuthor(tm_);
-                else if (param == "Debug method")
-                    builder.ForDebug();
-                else
-                    throw std::logic_error(cur_pos);
-                if (is.eof()) {
-                    request_to_executor_.emplace(target, builder.GetProduct());
-                    return false;
-                }
-                std::getline(is, param).eof();
-                cur_pos = STREAM_POS(is);
-            }
-            request_to_executor_.emplace(target, builder.GetProduct());
-        }
-        catch(std::exception& ex){
-            int pos = std::atoi(ex.what());
-            is.seekg(pos);
-            std::getline(is, param);
-            spdlog::critical("Unable to read API_functions.txt. defect line: ", param);  
-            is.close();
-            throw std::logic_error("Unable to read API_functions.txt");
-        }
-        return true;
     }
 
     void ApiHandler::ApiRegister(RequestNSender rns) {

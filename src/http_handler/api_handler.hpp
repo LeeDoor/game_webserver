@@ -1,5 +1,4 @@
 #pragma once
-#include "api_function_builder.hpp"
 #include "i_serializer.hpp"
 #include "response_builder.hpp"
 #include "send_manager.hpp"
@@ -18,7 +17,6 @@ namespace http_handler {
     private:
         // generate api function set from file
         void ApiFunctionsParse();
-        bool ApiFunctionParse(std::map<std::string, ExecutorFunction>& executors, std::ifstream& is, ApiFunctionBuilder& afb);
         
         // api functions
         void ApiRegister(RequestNSender rns);
