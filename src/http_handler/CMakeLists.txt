@@ -38,6 +38,8 @@ add_library(${LIBRARY_NAME}
     game_handler.cpp
     general_handler.hpp
     general_handler.cpp
+    debug_handler.cpp
+    debug_handler.cpp
 )
 
 #including and linking dependencies

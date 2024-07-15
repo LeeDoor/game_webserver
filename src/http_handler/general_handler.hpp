@@ -17,12 +17,6 @@ namespace http_handler {
         void ApiRegister(SessionData rns);
         void ApiLogin(SessionData rns);
         void ApiGetProfileData(SessionData rns);
-
-        // api debug functions
-        void ApiGetPlayerTokens(SessionData rns);
-        void ApiGetUserData(SessionData rns);
-        void ApiGetMMQueue(SessionData rns);
-
         
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::ITokenManager::Ptr tm_;

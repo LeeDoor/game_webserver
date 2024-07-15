@@ -14,7 +14,8 @@ namespace http_handler {
         enum RequestType{
             Static,
             General,
-            Game
+            Game,
+            Debug
         };
         RequestType DeclareRequestType(const HttpRequest& request);
 

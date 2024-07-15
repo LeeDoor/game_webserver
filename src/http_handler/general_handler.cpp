@@ -23,9 +23,6 @@ namespace http_handler {
             {"/api/register", afd.GetRegister(BIND(&GeneralHandler::ApiRegister))},
             {"/api/login", afd.GetLogin(BIND(&GeneralHandler::ApiLogin))},
             {"/api/profile", afd.GetProfile(BIND(&GeneralHandler::ApiGetProfileData))},
-            {"/api/debug/player_tokens", afd.GetPlayerTokens(BIND(&GeneralHandler::ApiGetPlayerTokens))},
-            {"/api/debug/user_data", afd.GetUserData(BIND(&GeneralHandler::ApiGetUserData))},
-            {"/api/debug/matchmaking_queue", afd.GetMatchmakingQueue(BIND(&GeneralHandler::ApiGetMMQueue))},
         };
     }
 
@@ -74,37 +71,7 @@ namespace http_handler {
         return responser_.SendUserData(rns, *user_data);
     }
 
-    void GeneralHandler::ApiGetPlayerTokens(SessionData rns){
-        std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
-        std::string tm_string = serializer_->SerializeTokenToUuid(map);
-        return responser_.Send(rns, http::status::ok, tm_string);
-    }
-
-    void GeneralHandler::ApiGetUserData(SessionData rns) {
-        std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
-        if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
-            return responser_.SendWrongUrlParameters(rns);
-        if (map.contains("uuid")){
-            std::optional<dm::UserData> ud = udm_->GetByUuid(map["uuid"]);
-            if (!ud.has_value())
-                return responser_.Send(rns, status::not_found, 
-                    serializer_->SerializeError(
-                        "user_not_found", "no user with provided uuid found"));
-            return responser_.SendHiddenUserData(rns, *ud);
-        }
-        std::optional<dm::UserData> ud = udm_->GetByLoginPassword(map["login"], map["password"]);
-        if (!ud.has_value())
-            return responser_.Send(rns, status::not_found, 
-                serializer_->SerializeError(
-                    "user_not_found", "no user with provided login and password found"));
-        return responser_.SendHiddenUserData(rns, *ud);
-    }
-
-    void GeneralHandler::ApiGetMMQueue(SessionData rns) {
-        /*const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
-        std::string queue_string = serializer_->SerializeUuids(queue);
-        return responser_.Send(rns, status::ok, queue_string);*/
-    }
+    
 
    
     
