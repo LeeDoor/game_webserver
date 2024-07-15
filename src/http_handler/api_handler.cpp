@@ -12,7 +12,6 @@ namespace http_handler {
         :   serializer_(handler_parameters.serializer), 
             responser_(handler_parameters.serializer), 
             udm_(handler_parameters.user_data_manager),
-            iqm_(handler_parameters.queue_manager),
             tm_(handler_parameters.token_manager){}
 
     void ApiHandler::Init(){
@@ -50,12 +49,10 @@ namespace http_handler {
 
     void ApiHandler::ApiFunctionsParse () {
         ApiFunctionDirector afd(serializer_, tm_);
-        for (int i = 0; i < 1000000; ++i);
         request_to_executor_ = {
             {"/api/register", afd.GetRegister(BIND(&ApiHandler::ApiRegister))},
             {"/api/login", afd.GetLogin(BIND(&ApiHandler::ApiLogin))},
             {"/api/profile", afd.GetProfile(BIND(&ApiHandler::ApiGetProfileData))},
-            {"/api/enqueue", afd.GetEnqueue(BIND(&ApiHandler::ApiEnqueue))},
             {"/api/debug/player_tokens", afd.GetPlayerTokens(BIND(&ApiHandler::ApiGetPlayerTokens))},
             {"/api/debug/user_data", afd.GetUserData(BIND(&ApiHandler::ApiGetUserData))},
             {"/api/debug/matchmaking_queue", afd.GetMatchmakingQueue(BIND(&ApiHandler::ApiGetMMQueue))},
@@ -106,14 +103,6 @@ namespace http_handler {
             
         return responser_.SendUserData(rns, *user_data);
     }
-    void ApiHandler::ApiEnqueue(SessionData rns){ 
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
-        bool res = iqm_->EnqueuePlayer(*uuid);
-        if (!res)
-            return responser_.SendCantEnqueue(rns);
-        return responser_.SendSuccess(rns);
-    }
 
     void ApiHandler::ApiGetPlayerTokens(SessionData rns){
         std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
@@ -142,9 +131,9 @@ namespace http_handler {
     }
 
     void ApiHandler::ApiGetMMQueue(SessionData rns) {
-        const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
+        /*const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
         std::string queue_string = serializer_->SerializeUuids(queue);
-        return responser_.Send(rns, status::ok, queue_string);
+        return responser_.Send(rns, status::ok, queue_string);*/
     }
 
     tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {

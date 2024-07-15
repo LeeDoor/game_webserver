@@ -1,6 +1,5 @@
 #pragma once
 #include "i_serializer.hpp"
-#include "response_builder.hpp"
 #include "send_manager.hpp"
 #include "handler_parameters.hpp"
 #include <map>
@@ -22,7 +21,6 @@ namespace http_handler {
         void ApiRegister(SessionData rns);
         void ApiLogin(SessionData rns);
         void ApiGetProfileData(SessionData rns);
-        void ApiEnqueue(SessionData rns);
 
         // api debug functions
         void ApiGetPlayerTokens(SessionData rns);
@@ -42,7 +40,6 @@ namespace http_handler {
         
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::ITokenManager::Ptr tm_;
-        game_manager::IQueueManager::Ptr iqm_;
     };
 
 } // http_handler

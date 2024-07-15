@@ -364,7 +364,7 @@ requires authorization token. by this token gets profile information from db.
     - **person_removed**: person with this token is unavailable (probably removed)
 
 ---
-### API enqueue
+### API game/enqueue
 #### <span style="color:#87ff8b"><b>requires authorization</b></span>
 
 #### **action diagram**
@@ -398,7 +398,7 @@ MMQueue->>ApiHandler: returns enqueuing status
 ApiHandler->>User: send enqueue status
 ```
 #### **request target**  
-_/api/enqueue_
+_/api/game/enqueue_
 
 #### **function description**
 to start a game, you need to add yourself to the queue. you will be added to queue to search for an opponent by this api function execution. #TODO what is going to be when opponent found
@@ -416,3 +416,6 @@ body must be empty
 * `200 OK`  
 **error_name meanings**
     - **enqueue_error**: error happened while enqueuing player (already in queue or wrong token)
+
+
+---
