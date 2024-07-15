@@ -17,7 +17,9 @@ namespace dm = database_manager;
 #define LOGIN_API           "/api/login"
 #define REGISTER_API        "/api/register"
 #define PROFILE_API         "/api/profile"
-#define ENQUEUE_API         "/api/enqueue"
+
+#define ENQUEUE_API         "/api/game/enqueue"
+
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
 #define MM_QUEUE_API        "/api/debug/matchmaking_queue"

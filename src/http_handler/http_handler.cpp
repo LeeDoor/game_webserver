@@ -1,31 +1,24 @@
 #include "http_handler.hpp"
+#include "general_handler.hpp"
+#include "static_handler.hpp"
+#include "game_handler.hpp"
 namespace http_handler{
     HttpHandler::HttpHandler(HandlerParameters handler_parameters) {
-            general_handler_ = std::make_shared<GeneralHandler>(handler_parameters);
-            general_handler_->Init();
-
-            static_handler_ = std::make_shared<StaticHandler>(handler_parameters);
-            static_handler_->Init();
-
-            game_handler_ = std::make_shared<GameHandler>(handler_parameters);
-            game_handler_->Init();
-        }
+        type_to_handler_ = {
+            {RequestType::General, std::make_shared<GeneralHandler>(handler_parameters)},
+            {RequestType::Game, std::make_shared<GameHandler>(handler_parameters)},
+            {RequestType::Static, std::make_shared<StaticHandler>(handler_parameters)},
+        };
+        std::for_each(type_to_handler_.begin(), type_to_handler_.end(), 
+            [](std::pair<RequestType, ApiHandler::Ptr> it){it.second->Init();});
+    }
 
     void HttpHandler::operator()(HttpRequest &&request, SessionFunctions&& session_functions) {
         HandleRequest(std::move(request), std::move(session_functions));
     }
     void HttpHandler::HandleRequest(HttpRequest&& request, SessionFunctions&& session_functions) {
-        switch (DeclareRequestType(request)){
-            case RequestType::Game:
-                game_handler_->Handle(std::move(request), std::move(session_functions));
-                break;
-            case RequestType::Api:
-                general_handler_->Handle(std::move(request), std::move(session_functions));
-                break;
-            case RequestType::Static:
-                static_handler_->Handle(std::move(request), std::move(session_functions));
-                break;
-        }
+        RequestType type = DeclareRequestType(request);
+        type_to_handler_[type]->Handle(std::move(request), std::move(session_functions));
     }
 
     HttpHandler::RequestType HttpHandler::DeclareRequestType(const HttpRequest& request){
@@ -33,7 +26,7 @@ namespace http_handler{
             if(request.target().starts_with("/api/game/")){
                 return RequestType::Game;
             }
-            return RequestType::Api;
+            return RequestType::General;
         }
         return RequestType::Static;
     }

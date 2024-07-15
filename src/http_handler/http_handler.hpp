@@ -1,7 +1,6 @@
 #pragma once
 #include "static_handler.hpp"
-#include "general_handler.hpp"
-#include "game_handler.hpp"
+#include "api_handler.hpp"
 
 namespace http_handler {
     class HttpHandler {
@@ -14,14 +13,12 @@ namespace http_handler {
 
         enum RequestType{
             Static,
-            Api,
+            General,
             Game
         };
         RequestType DeclareRequestType(const HttpRequest& request);
 
-        StaticHandler::Ptr static_handler_;
-        ApiHandler::Ptr general_handler_;
-        GameHandler::Ptr game_handler_;
+        std::map<RequestType, ApiHandler::Ptr> type_to_handler_;
     };
 
 }
