@@ -3,8 +3,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include "game_manager.hpp"
-#include "user_data_types.hpp"
+#include "user_data.hpp"
 
 namespace game_manager{
     class IQueueManager{

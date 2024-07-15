@@ -37,8 +37,9 @@ namespace http_handler {
         std::pair<std::string, std::string> ParseUrlPair(std::string&& pair);
 
         SendManager responser_;
-        std::map<std::string, ApiFunctionExecutor> request_to_executor_;
         serializer::ISerializer::Ptr serializer_;
+        std::map<std::string, ApiFunctionExecutor> request_to_executor_;
+        
         database_manager::IUserDataManager::Ptr udm_;
         token_manager::ITokenManager::Ptr tm_;
         game_manager::IQueueManager::Ptr iqm_;

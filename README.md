@@ -30,7 +30,7 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [serializer(JSON)](docs/serializer.md)
 * [database_manager](docs/database_manager.md)
 * [token_manager](docs/token_manager.md)
-* [matchmaking_system](docs/matchmaking_system.md)
+* [queue_manager](queue_manager.md)
 * [game_manager](docs/game_manager.md)
 * [API](docs/http_api.md)
 * [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)

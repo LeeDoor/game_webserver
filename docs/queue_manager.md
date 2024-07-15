@@ -1,4 +1,4 @@
-# [matchmaking_system](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/matchmaking_system)
+# [queue_manager](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/queue_manager)
 ## what is it for
 this module communicates with redis to contain queue of players to join match, determines the pairs of players to play together and passes players to the next module [[game_manager]] to create game.
 ##  classes

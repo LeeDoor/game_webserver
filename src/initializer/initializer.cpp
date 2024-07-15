@@ -9,6 +9,7 @@
 #include "user_data_postgres.hpp"
 #include "token_manager_redis.hpp"
 #include "queue_manager_redis.hpp"
+#include "matchmaking_balancer.hpp"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 

@@ -1,9 +1,15 @@
 #include "game_manager.hpp"
 #include "session_id_generator.hpp"
+#include "network_notifier.hpp"
+#include "response_builder.hpp"
+
 namespace game_manager{
+
     bool GameManager::CreateSession(const dm::Uuid& player1, const dm::Uuid& player2){
         SessionId si = GenerateSessionId();
         sessions_[si]; // create new session
+        http_handler::ResponseBuilder<http::string_body> rb;
+        notif::NetworkNotifier::GetInstance()->Send(player1, rb.BodyText("NIGGERS", http::verb::get).GetProduct());
         return sessions_.contains(si);
     }
 

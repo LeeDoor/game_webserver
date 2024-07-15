@@ -4,7 +4,6 @@
 #include <memory>
 #include "http_handler.hpp"
 #include "i_serializer.hpp"
-#include "network_notifier.hpp"
 
 using namespace std::literals;
 
@@ -15,8 +14,8 @@ namespace http_server {
 
         explicit Session(tcp::socket &&socket, 
             http_handler::HandlerParameters handler_parameters) :
-            stream_(std::move(socket)), 
             request_handler_(handler_parameters) {
+            stream_ = std::make_shared<beast::tcp_stream>(std::move(socket));
         }
 
         Session(const Session &) = delete;
@@ -26,8 +25,6 @@ namespace http_server {
         void Run();
 
         std::shared_ptr<Session> GetSharedThis();
-
-        void WriteOnce(StringResponse &&response);
     private:
         template<typename ResponseBodyType>
         void Write(http::response<ResponseBodyType> &&response) {
@@ -35,7 +32,7 @@ namespace http_server {
             auto safe_response = std::make_shared<resp_ptr>(std::forward<resp_ptr>(response));
             auto self = GetSharedThis();
 
-            http::async_write(stream_, *safe_response,
+            http::async_write(*stream_, *safe_response,
                 [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
                     self->OnWrite(safe_response->need_eof(), ec, bytes_written);
                 });
@@ -53,10 +50,9 @@ namespace http_server {
 
         beast::flat_buffer buffer_;
         HttpRequest request_;
-        beast::tcp_stream stream_;
+        std::shared_ptr<beast::tcp_stream> stream_;
 
         http_handler::HttpHandler request_handler_;
-        NetworkNotifier::Ptr notifier_;
 
         std::chrono::seconds expiry_time_ = 30s;
     };

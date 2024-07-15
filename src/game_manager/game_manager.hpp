@@ -9,7 +9,7 @@ namespace game_manager{
     public:
         using SessionId = std::string;
         using Ptr = std::shared_ptr<GameManager>;
-        
+
         bool CreateSession(const dm::Uuid& player1, const dm::Uuid& player2);
 
         //ingame api

@@ -20,7 +20,7 @@ handlers contain objects to handle requests.
 * **send_manager** - all api send functions moved here to avoid overwhelming api_handler class
 * **user_data_manager** - [database manager class](database_manager.md)
 * [**token_to_uuid**](token_manager.md) - contains map to get uuid of player by token
-* [**matchmaking_queue**](matchmaking_system.md) - class to move players to matchmaking queue.
+* [**matchmaking_queue**](queue_manager.md) - class to move players to matchmaking queue.
 ## graph
 whole class system looks like this: 
 ```mermaid

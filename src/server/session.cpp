@@ -1,5 +1,6 @@
 #include "listener.hpp"
 #include "http_server.hpp"
+#include "network_notifier.hpp"
 
 namespace http_server {
     std::shared_ptr<Session> Session::GetSharedThis() {
@@ -7,25 +8,13 @@ namespace http_server {
     }
 
     void Session::Run() {
-        net::dispatch(stream_.get_executor(), beast::bind_front_handler(&Session::Read, GetSharedThis()));
-    }
-
-    void Session::WriteOnce(StringResponse &&response){
-        auto safe_response = std::make_shared<StringResponse>(std::move(response));
-        auto self = GetSharedThis();
-
-        http::async_write(stream_, *safe_response,
-            [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
-                if(ec) {
-                    return ReportError(ec, "writeOnce");
-                }
-            });
+        net::dispatch(stream_->get_executor(), beast::bind_front_handler(&Session::Read, GetSharedThis()));
     }
 
     void Session::Read() {
         request_ = {};
-        stream_.expires_after(expiry_time_);
-        http::async_read(stream_, buffer_, request_,
+        stream_->expires_after(expiry_time_);
+        http::async_read(*stream_, buffer_, request_,
             beast::bind_front_handler(&Session::OnRead, GetSharedThis()));
     }
 
@@ -47,11 +36,11 @@ namespace http_server {
             self->Write(std::move(response));
         };
         auto subNotif = 
-        [self = this->shared_from_this(), notifier = this->notifier_](const dm::Uuid& uuid){
-            notifier->Subscribe(uuid, self);
+        [self = this->shared_from_this(), stream = this->stream_, notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
+            notifier->Subscribe(uuid, stream);
         };
         auto unsubNotif = 
-        [self = this->shared_from_this(), notifier = this->notifier_](const dm::Uuid& uuid){
+        [self = this->shared_from_this(), notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
             notifier->Unsubscribe(uuid);
         };
         http_handler::SessionFunctions sf {
@@ -73,7 +62,7 @@ namespace http_server {
         Read();
     }
     void Session::Close() {
-        stream_.socket().close();
+        stream_->socket().close();
         
     }
 }
