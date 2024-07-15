@@ -1,0 +1,111 @@
+#include "general_handler.hpp"
+#include "get_token_from_header.hpp"
+#include "api_function_director.hpp"
+#include "spdlog/spdlog.h"
+#include <fstream>
+
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
+
+#define STREAM_POS(stream_name) std::to_string(static_cast<long long>(stream_name.tellg()))
+namespace http_handler {
+    GeneralHandler::GeneralHandler(HandlerParameters handler_parameters) 
+        :   ApiHandler(handler_parameters),
+            udm_(handler_parameters.user_data_manager),
+            tm_(handler_parameters.token_manager){}
+
+    void GeneralHandler::Init(){
+        ApiFunctionsParse();
+    }
+
+    void GeneralHandler::ApiFunctionsParse () {
+        ApiFunctionDirector afd(serializer_, tm_);
+        request_to_executor_ = {
+            {"/api/register", afd.GetRegister(BIND(&GeneralHandler::ApiRegister))},
+            {"/api/login", afd.GetLogin(BIND(&GeneralHandler::ApiLogin))},
+            {"/api/profile", afd.GetProfile(BIND(&GeneralHandler::ApiGetProfileData))},
+            {"/api/debug/player_tokens", afd.GetPlayerTokens(BIND(&GeneralHandler::ApiGetPlayerTokens))},
+            {"/api/debug/user_data", afd.GetUserData(BIND(&GeneralHandler::ApiGetUserData))},
+            {"/api/debug/matchmaking_queue", afd.GetMatchmakingQueue(BIND(&GeneralHandler::ApiGetMMQueue))},
+        };
+    }
+
+    void GeneralHandler::ApiRegister(SessionData rns) {
+        std::optional<RegistrationData> rd;
+        rd = serializer_->DeserializeRegData(rns.request.body());
+        if(!rd.has_value()) {
+            return responser_.SendWrongBodyData(rns);
+        }
+        if(!ValidateRegData(*rd)){
+            return responser_.SendWrongLoginOrPassword(rns);
+        }
+        bool add_line_res = udm_->AddLine(*rd);
+        if(!add_line_res){
+            return responser_.SendLoginTaken(rns);
+        }
+        return responser_.SendSuccess(rns);
+    }
+    void GeneralHandler::ApiLogin(SessionData rns) {
+        std::optional<RegistrationData> rd;
+        rd = serializer_->DeserializeRegData(rns.request.body());
+        if(!rd.has_value()) {
+            return responser_.SendWrongBodyData(rns);
+        }
+        if(!ValidateRegData(*rd)){
+            return responser_.SendWrongLoginOrPassword(rns);
+        }
+        std::optional<dm::UserData> ud;
+        ud = udm_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
+        if(!ud){
+            return responser_.SendNoSuchUser(rns);
+        }
+        tokenm::Token token = tm_->GenerateToken();
+        bool res = tm_->AddTokenToUuid(token, ud->uuid);
+        if (!res)
+            return responser_.SendCantLogin(rns);
+        return responser_.SendToken(rns, token);
+    }
+    void GeneralHandler::ApiGetProfileData(SessionData rns){
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = tm_->GetUuidByToken(token);
+        auto user_data = udm_->GetByUuid(*uuid);
+        if(!user_data)
+            return responser_.SendTokenToRemovedPerson(rns);
+            
+        return responser_.SendUserData(rns, *user_data);
+    }
+
+    void GeneralHandler::ApiGetPlayerTokens(SessionData rns){
+        std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
+        std::string tm_string = serializer_->SerializeTokenToUuid(map);
+        return responser_.Send(rns, http::status::ok, tm_string);
+    }
+
+    void GeneralHandler::ApiGetUserData(SessionData rns) {
+        std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
+        if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
+            return responser_.SendWrongUrlParameters(rns);
+        if (map.contains("uuid")){
+            std::optional<dm::UserData> ud = udm_->GetByUuid(map["uuid"]);
+            if (!ud.has_value())
+                return responser_.Send(rns, status::not_found, 
+                    serializer_->SerializeError(
+                        "user_not_found", "no user with provided uuid found"));
+            return responser_.SendHiddenUserData(rns, *ud);
+        }
+        std::optional<dm::UserData> ud = udm_->GetByLoginPassword(map["login"], map["password"]);
+        if (!ud.has_value())
+            return responser_.Send(rns, status::not_found, 
+                serializer_->SerializeError(
+                    "user_not_found", "no user with provided login and password found"));
+        return responser_.SendHiddenUserData(rns, *ud);
+    }
+
+    void GeneralHandler::ApiGetMMQueue(SessionData rns) {
+        /*const std::vector<dm::Uuid>& queue = iqm_->GetQueue();
+        std::string queue_string = serializer_->SerializeUuids(queue);
+        return responser_.Send(rns, status::ok, queue_string);*/
+    }
+
+   
+    
+} // http_handler

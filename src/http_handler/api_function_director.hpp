@@ -1,6 +1,5 @@
 #pragma once
 #include "api_function_builder.hpp"
-#include "api_handler.hpp"
 #include "i_token_manager.hpp"
 #include <vector>
 
@@ -20,7 +19,6 @@ namespace http_handler {
 
     private:
         ApiFunctionBuilder afb_;
-        ApiHandler::Ptr api_handler_;
         token_manager::ITokenManager::Ptr tm_;
     };
 

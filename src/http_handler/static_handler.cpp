@@ -3,10 +3,12 @@
 #include "spdlog/spdlog.h"
 
 namespace http_handler {
-    StaticHandler::StaticHandler(HandlerParameters handler_parameters){
-        serializer_ = handler_parameters.serializer;
+    StaticHandler::StaticHandler(HandlerParameters handler_parameters)
+    : ApiHandler(handler_parameters){
         static_path_ = fs::weakly_canonical(handler_parameters.static_path);
     }
+
+    void StaticHandler::Init(){}
 
     void StaticHandler::Handle(HttpRequest&& request, SessionFunctions&& session_functions) {
         std::string path_str 

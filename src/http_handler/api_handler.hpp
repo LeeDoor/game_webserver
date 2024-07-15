@@ -3,30 +3,16 @@
 #include "send_manager.hpp"
 #include "handler_parameters.hpp"
 #include <map>
-
-namespace http_handler {
-    class ApiHandler :  public std::enable_shared_from_this<ApiHandler> {
+namespace http_handler{
+    class ApiHandler {
     public:
         using Ptr = std::shared_ptr<ApiHandler>;
 
         ApiHandler(HandlerParameters handler_parameters);
-        void Init();
+
+        virtual void Init() = 0;
         void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
-
-    private:
-        // generate api function set from file
-        void ApiFunctionsParse();
-        
-        // api functions
-        void ApiRegister(SessionData rns);
-        void ApiLogin(SessionData rns);
-        void ApiGetProfileData(SessionData rns);
-
-        // api debug functions
-        void ApiGetPlayerTokens(SessionData rns);
-        void ApiGetUserData(SessionData rns);
-        void ApiGetMMQueue(SessionData rns);
-
+    protected:
         // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);
 
@@ -37,10 +23,6 @@ namespace http_handler {
         SendManager responser_;
         serializer::ISerializer::Ptr serializer_;
         std::map<std::string, ApiFunctionExecutor> request_to_executor_;
-        
-        database_manager::IUserDataManager::Ptr udm_;
-        token_manager::ITokenManager::Ptr tm_;
+
     };
-
-} // http_handler
-
+}

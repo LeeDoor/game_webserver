@@ -36,6 +36,8 @@ add_library(${LIBRARY_NAME}
     api_function_params.hpp
     game_handler.hpp
     game_handler.cpp
+    general_handler.hpp
+    general_handler.cpp
 )
 
 #including and linking dependencies
