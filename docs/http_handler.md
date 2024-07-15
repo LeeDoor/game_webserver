@@ -5,22 +5,28 @@ this module contains a bunch of files to handle each http request. this module i
 * **HttpHandler** - connecting point with this module. its *operator()* handles passed HTTP reuqest and responses it, sending data to **one** of passed send functions (one for string response, other for file response). inside contains two separated handlers for API requests and static file requests
 * **Static Handler** - handles requests for static files, like html pages and javascript scripts. it also requires sender for string because if request is wrong, it will send string error text in JSON format.
 * **Api Handler** - handles api requests. in project there will be a bunch of api entry points, so i created a class system to handle them more comfortable. each API entry point is presented with map, where key is HTTP target, like */api/send/privet/* and value is **ApiFunctionExecutor** object. each **ApiFunctionExecutor** object is created with special builder **ApiFunctionBuilder**.
+* **Game Handler** - handles api requests directed to the game e.g. make a move, give up, offer a draw. game apis are */api/game/some_function*
 * **ApiFunctionBuilder** - creates **ApiFunctionExecutor** objects with required:
     1. allowed methods
-    2. LIST WILL BE FINISHED AS PROJECT PROGRESS MOVE ON
+    2. execution function
+    3. needs authorization or not
+    4. is debug method
+    5. #TODO finish the list
 * **ApiFunctionExecutor** - launches execution of **ApiFunction**. in fact, this class is a wrapper over the **ApiFunction**, since first it runs all the verification functions to correlate the request data and the allowed data (for example, so that the request method is correct) and only then **ApiFunction** is executed.
-* **ApiFunction** - contains data built by **ApiFunctionBuilder**. it is just a function of api method.
+* **ApiFunction** - contains data built by  **ApiFunctionBuilder**. it is just a function of api method.
+* **ApiFunctionDirector** - handles **ApiFunctionBuilder** to create functions and not overwhelm \*_handler's code(at the cost of overwhelming the schema and the number of files).
 * **ResponseMaker** - bunch of functions for preparing http responses. moved this to separate cpp because it takes a lot of lines to form it up each time i need it
 
 all handlers have [ISerializer](serializer.md) object. this object can serialize/deserialize data to string and vice versa. made it with interface because i may want to change format from JSON to XML or smth in future.
 
 ## ownership
 handlers contain objects to handle requests.
-* **[serializer](serializer.md)** - serializes and deserializes response and request bodies
 * **send_manager** - all api send functions moved here to avoid overwhelming api_handler class
+* **[serializer](serializer.md)** - serializes and deserializes response and request bodies
 * **user_data_manager** - [database manager class](database_manager.md)
-* [**token_to_uuid**](token_manager.md) - contains map to get uuid of player by token
-* [**matchmaking_queue**](queue_manager.md) - class to move players to matchmaking queue.
+* [**token_manager**](token_manager.md) - contains map to get uuid of player by token
+* [**queue_manager**](queue_manager.md) - class to communicate with queue.
+* [**game_manager**](game_manager.md) - class to balance players in queue, put them into the game and make in-game moves.
 ## graph
 whole class system looks like this: 
 ```mermaid
@@ -114,12 +120,18 @@ classDiagram
         -response_: http::response < template_body_type >
     }
 
+    class ApiFunctionDirector {
+		GetSomeApiFunction(ExecutorFunction&&) ApiFunctionExecutor
+    }
+
     ApiHandler --> ResponseBuilder : uses
     StaticHandler --> ResponseBuilder : uses
     HttpHandler ..> ApiHandler : contains
     HttpHandler ..> StaticHandler : contains
     ApiHandler ..> ApiFunctionExecutor : contains map of
-    ApiHandler --> ApiFunctionBuilder : uses
+    ApiHandler --> ApiFunctionDirector : uses
+    ApiFunctionDirector --> ApiFunctionBuilder : uses
+    ApiFunctionBuilder --> ApiFunctionExecutor : creates
     ApiFunctionExecutor ..> ApiFunction : contains & calls
     ApiFunction --> ApiFunctionParams : uses
 

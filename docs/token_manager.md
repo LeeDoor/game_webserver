@@ -26,11 +26,12 @@ classDiagram
 	class TokenManagerRedis{
 	}
 	class Token{
-		+GenerateToken()
 	}
 	class TokenGenerator{
+		+GenerateToken()
 	}
 	ITokenManager --> Token
 	TokenManagerRedis --|> ITokenManager
 	TokenManagerRedis --> TokenGenerator
+	TokenGenerator -->Token: generates
 ```
