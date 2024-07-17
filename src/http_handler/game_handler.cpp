@@ -1,7 +1,7 @@
 #include "game_handler.hpp"
 #include "api_function_director.hpp"
 #include "spdlog/spdlog.h"
-
+ 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
 
 namespace http_handler{

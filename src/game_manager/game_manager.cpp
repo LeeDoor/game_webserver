@@ -9,7 +9,7 @@ namespace game_manager{
         SessionId si = GenerateSessionId();
         sessions_[si]; // create new session
         http_handler::ResponseBuilder<http::string_body> rb;
-        notif::NetworkNotifier::GetInstance()->Send(player1, rb.BodyText("NIGGERS", http::verb::get).GetProduct());
+        notif::NetworkNotifier::GetInstance()->Notify(player1);
         return sessions_.contains(si);
     }
 

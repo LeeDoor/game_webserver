@@ -70,9 +70,5 @@ namespace http_handler {
             
         return responser_.SendUserData(rns, *user_data);
     }
-
-    
-
-   
     
 } // http_handler

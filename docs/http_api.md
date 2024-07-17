@@ -364,6 +364,7 @@ requires authorization token. by this token gets profile information from db.
     - **person_removed**: person with this token is unavailable (probably removed)
 
 ---
+## Game API
 ### API game/enqueue
 #### <span style="color:#87ff8b"><b>requires authorization</b></span>
 

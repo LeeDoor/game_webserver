@@ -11,7 +11,7 @@ namespace http_handler{
         ApiHandler(HandlerParameters handler_parameters);
 
         virtual void Init() = 0;
-        void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
+        virtual void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
     protected:
         // identify the user by the token
         tokenm::Token SenderAuthentication(const HttpRequest& request);

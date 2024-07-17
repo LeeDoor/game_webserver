@@ -19,23 +19,22 @@ namespace notification_system{
         return pinstance_;
     }
 
-    bool NetworkNotifier::Subscribe(const dm::Uuid& uuid, std::shared_ptr<beast::tcp_stream> session) {
-        sessions_.emplace(uuid, session);
-        return sessions_.contains(uuid);
+    bool NetworkNotifier::Subscribe(const dm::Uuid& uuid, LongPollResponser&& notifier) {
+        requests_.emplace(uuid, std::move(notifier));
+        return requests_.contains(uuid);
     }
     bool NetworkNotifier::Unsubscribe(const dm::Uuid& uuid) {
-        sessions_.erase(uuid);
-        return !sessions_.contains(uuid);
+        requests_.erase(uuid);
+        return !requests_.contains(uuid);
     }
 
-    bool NetworkNotifier::Send(const dm::Uuid& uuid, StringResponse&& response) {
-        if(sessions_.contains(uuid)){
-            http::async_write(*sessions_[uuid], std::move(response),
-                [](beast::error_code ec, std::size_t bytes_written) {
-                    if(ec) {
-                        spdlog::error("NetworkNotifier error sending");
-                    }
-                });
+    bool NetworkNotifier::Notify(const dm::Uuid& uuid, bool unsubscribe) {
+        if(requests_.contains(uuid)){
+            requests_[uuid]();
+
+            if (unsubscribe){
+                return Unsubscribe(uuid);
+            }
             return true;
         }
         return false;

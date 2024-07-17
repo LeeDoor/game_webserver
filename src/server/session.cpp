@@ -37,11 +37,11 @@ namespace http_server {
         };
         auto subNotif = 
         [self = this->shared_from_this(), stream = this->stream_, notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
-            notifier->Subscribe(uuid, stream);
+            //notifier->Subscribe(uuid, stream);
         };
         auto unsubNotif = 
         [self = this->shared_from_this(), notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
-            notifier->Unsubscribe(uuid);
+            //notifier->Unsubscribe(uuid);
         };
         http_handler::SessionFunctions sf {
             strHandler, 
