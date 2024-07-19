@@ -14,8 +14,29 @@ TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 
     using Uuids = std::vector<dm::Uuid>;
     SECTION("valid_response"){
-    	Uuids given = MMQueueSuccess(socket, serializer);
+    	Uuids queue = MMQueueSuccess(socket, serializer);
     	// dont check emptyness. other test metods call login functions so queue can be filled
+		
+        hh::RegistrationData rd;
+        LoginData ld;
+		int prev_queue_size = queue.size();
+		
+		for(int i = 0; i < 10; ++i){		
+			rd = RegisterSuccess(socket, serializer);
+			ld = LoginSuccess(socket, rd.login, serializer);
+			bool res = EnqueueSuccess(socket, ld.token, serializer);
+			REQUIRE(res == true);
+			queue = MMQueueSuccess(socket, serializer);
+			if (prev_queue_size == 1){
+				REQUIRE(queue.empty());
+			}
+			else{
+				REQUIRE(queue.size() == 1);
+				REQUIRE(queue.back() == UserDataSuccess(socket, serializer, rd.login, rd.password).uuid);
+			}
+			prev_queue_size = queue.size();
+		}
+		
     }
 
     SECTION("admin_verification"){
