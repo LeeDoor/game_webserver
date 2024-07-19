@@ -20,29 +20,32 @@ namespace notification_system{
     }
 
     bool NetworkNotifier::Subscribe(const dm::Uuid& uuid, LongPollResponser&& notifier) {
-        if (requests_.contains(uuid)) return false;
+        if (requests_.contains(uuid)) 
+            Unsubscribe(uuid, "new poll connected");
 
         requests_.emplace(uuid, std::move(notifier));
 
         if(wait_for_poll_.contains(uuid)){
-            Notify(uuid, wait_for_poll_[uuid].additional_data, wait_for_poll_[uuid].unsubscribe);
+            Notify(uuid, wait_for_poll_[uuid]);
         }
         return requests_.contains(uuid);
     }
-    bool NetworkNotifier::Unsubscribe(const dm::Uuid& uuid) {
+    bool NetworkNotifier::Unsubscribe(const dm::Uuid& uuid, const std::string& reason) {
+        if(!reason.empty() && requests_.contains(uuid))
+            Notify(uuid, {.additional_data=reason, .code=StatusCode::PollClosed});
         return requests_.erase(uuid);
     }
 
-    bool NetworkNotifier::Notify(const dm::Uuid& uuid, const AdditionalData& additional_data, bool unsubscribe) {
+    bool NetworkNotifier::Notify(const dm::Uuid& uuid, const PollData& poll_data) {
         if(requests_.contains(uuid)){
-            requests_[uuid](additional_data);
+            requests_[uuid](poll_data.code, poll_data.additional_data);
 
-            if (unsubscribe){
+            if (poll_data.unsubscribe){
                 return Unsubscribe(uuid);
             }
             return true;
         }
-        wait_for_poll_.emplace(uuid, PollData{additional_data, unsubscribe});
+        wait_for_poll_.emplace(uuid, poll_data);
         return false;
     }
 }

@@ -38,9 +38,17 @@ namespace http_handler{
         auto uuid = tm_->GetUuidByToken(token);
         if (!uuid)
             return responser_.SendNoSuchUser(rns);
-        notification_system::NetworkNotifier::GetInstance()->Subscribe(*uuid, 
-            [resp = responser_, rns = std::move(rns)](const std::string& session_id){
-                resp.SendSessionId(rns, session_id);
+        using Notif = notification_system::NetworkNotifier;
+        Notif::GetInstance()->Subscribe(*uuid, 
+            [resp = responser_, rns = std::move(rns)](Notif::StatusCode code, const std::string& add_data){
+                switch(code){
+                    case Notif::StatusCode::Ok:
+                        resp.SendSessionId(rns, add_data); // add_data is sessionID
+                    break;
+                    case Notif::StatusCode::PollClosed:
+                        resp.SendPollClosed(rns, add_data); // add_data is error description
+                    break;
+                }
             });
     }
 }

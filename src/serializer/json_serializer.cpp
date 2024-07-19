@@ -8,7 +8,7 @@ namespace serializer{
     std::string JSONSerializer::SerializeEmpty() {
         return EMPTY_JSON;
     }
-    std::string JSONSerializer::SerializeError(std::string&& error_name, std::string&& desc) {
+    std::string JSONSerializer::SerializeError(const std::string& error_name, const std::string& desc) {
         nlohmann::json obj = nlohmann::json::object();
         obj["error_name"] = std::move(error_name);
         obj["description"] = std::move(desc);

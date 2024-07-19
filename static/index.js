@@ -88,10 +88,14 @@ function Enqueue(event) {
             'Content-Type': 'application/json',
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
-    }).then(response=>response.json())
-    .then(data=>{
-        if(data.length == 2){
+    }).then(response=>{
+        const data = response.json();
+        if(Object.keys(data).length === 0){
             showCustomPopup("queuing...", "#00FF00");
+            WaitForOpponent();
+        }
+        else if(response.ok){
+            showCustomPopup("already in queue. joining match from here", "#ffbf00");
             WaitForOpponent();
         }
         else{

@@ -18,7 +18,7 @@ namespace serializer{
 
         //serialize
         virtual std::string SerializeEmpty() = 0;
-        virtual std::string SerializeError(std::string&& error_name, std::string&& desc) = 0;
+        virtual std::string SerializeError(const std::string& error_name, const std::string& desc) = 0;
         virtual std::string SerializeMap(std::map<std::string, std::string>&& map) = 0;
         
         virtual std::string SerializeRegData(const hh::RegistrationData& rd) = 0;

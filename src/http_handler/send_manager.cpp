@@ -63,6 +63,9 @@ namespace http_handler{
     void SendManager::SendCantLogin(SessionData rns)const {
         Send(rns, status::service_unavailable, serializer_->SerializeError("login_error", "unable to add token to database."));
     }
+    void SendManager::SendPollClosed(SessionData rns, const std::string& description) const {
+        Send(rns, status::conflict, serializer_->SerializeError("poll_closed", description));
+    }
 
     void SendManager::SendWrongUrlParameters(SessionData rns)const {
         Send(rns, status::unprocessable_entity, serializer_->SerializeError("url_parameters_error", "this api function requires url parameters"));
