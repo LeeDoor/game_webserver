@@ -30,7 +30,7 @@ namespace game_manager{
         return false;
     }
 
-    GameManager::SessionId GameManager::GenerateSessionId(){
+    SessionId GameManager::GenerateSessionId(){
         SessionIdGenerator sig;
         return sig.Generate();
     }

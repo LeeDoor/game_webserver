@@ -102,6 +102,24 @@ LoginData EnqueueWorthyOpponent(tcp::socket& socket, ISerializer::Ptr serializer
     return ld;
 }   
 
+http::response<http::string_body> WaitForOpponent(tcp::socket& socket, const Token& token) {
+    http::request<http::string_body> request{http::verb::post, WAIT_FOR_OPPONENT_API, 11};
+
+    SetAuthorizationHeader(request, token);
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+game_manager::SessionId WaitForOpponentSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
+    http::response<http::string_body> response = WaitForOpponent(socket, token);
+    CheckStringResponse(response, 
+        {.res = http::status::ok});
+    auto map = serializer->DeserializeMap(response.body());
+    REQUIRE(map);
+    REQUIRE(map->size() == 1);
+    REQUIRE(map->contains("sessionId"));
+    return map->at("sessionId");
+}
+
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
     StringResponse response = PlayerTokens(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
     CheckStringResponse(response, {.res=http::status::ok});

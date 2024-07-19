@@ -3,6 +3,7 @@
 #include "user_data.hpp"
 
 namespace game_manager{
+    using SessionId = std::string;
     class Session{
     public:
         Session(dm::Uuid&& player1, dm::Uuid&& player2);

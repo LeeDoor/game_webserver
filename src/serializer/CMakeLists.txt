@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(DEPENDENCIES database_manager http_handler token_manager)
+set(DEPENDENCIES database_manager http_handler token_manager game_manager)
 set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}

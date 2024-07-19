@@ -4,7 +4,7 @@
 #include "user_data.hpp"
 using namespace serializer;
 
-TEST_CASE("ApiEnqueue", "[api][enqueue]"){
+TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
     ConnectSocket(ioc, socket);

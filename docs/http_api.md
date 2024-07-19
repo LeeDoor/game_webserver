@@ -472,6 +472,5 @@ if body is empty it means that no opponent found yet.
 ```js
 {}
 ```
-* `400 who_is_waiting`
- returns it when trying to wait for opponent while not in the queue.
-
+* `409 poll_closed`
+means that for your account there is another opened poll waiting. this poll closes and data will be sent to a new poll.

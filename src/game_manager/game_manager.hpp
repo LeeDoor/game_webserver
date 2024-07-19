@@ -7,7 +7,6 @@
 namespace game_manager{
     class GameManager{
     public:
-        using SessionId = std::string;
         using Ptr = std::shared_ptr<GameManager>;
 
         bool CreateSession(dm::Uuid&& player1, dm::Uuid&& player2);

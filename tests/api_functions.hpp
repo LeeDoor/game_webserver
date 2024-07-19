@@ -19,6 +19,7 @@ namespace dm = database_manager;
 #define PROFILE_API         "/api/profile"
 
 #define ENQUEUE_API         "/api/game/enqueue"
+#define WAIT_FOR_OPPONENT_API "/api/game/wait_for_opponent"
 
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
@@ -50,12 +51,17 @@ LoginData LoginSuccess(tcp::socket&, const dm::Login& login, ISerializer::Ptr se
 http::response<http::string_body> Profile(tcp::socket&, const Token& token);
 hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
+ /// GAME METHODS // 
+
 http::response<http::string_body> Enqueue(tcp::socket&, const Token& token);
 bool EnqueueSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
 //after calling this function there would be added an opponent to the queue 
 // and session will be created for given and enqueued player
 LoginData EnqueueWorthyOpponent(tcp::socket&, ISerializer::Ptr serializer);
+
+http::response<http::string_body> WaitForOpponent(tcp::socket&, const Token& token);
+game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
 /// DEBUG METHODS ///
 

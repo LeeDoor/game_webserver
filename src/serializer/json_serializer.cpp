@@ -1,7 +1,6 @@
 #include "json_serializer.hpp"
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
-//#include "spdlog/spdlog.h"
 #define EMPTY_JSON "{}"
 
 namespace serializer{
@@ -55,7 +54,6 @@ namespace serializer{
             pud = j.template get<hh::PublicUserData>();
         }
         catch(std::exception ex){
-            //spdlog::error("json DeserializePublicUserData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return pud;
@@ -67,7 +65,6 @@ namespace serializer{
             ud = j.template get<dm::UserData>();
         }
         catch(std::exception ex){
-            //spdlog::error("json DeserializeUserData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return ud;
@@ -79,7 +76,6 @@ namespace serializer{
             rd = j.template get<hh::RegistrationData>();
         }
         catch(std::exception ex){
-            //spdlog::error("json DeserializeRegData function terminated with {}", ex.what());
             return std::nullopt;
         }
         return rd;
@@ -93,7 +89,6 @@ namespace serializer{
             }
         }
         catch(std::exception ex){
-            //spdlog::error("json DeserializeMap function terminated with {}", ex.what());
             return std::nullopt;
         }
         return map;
@@ -105,7 +100,6 @@ namespace serializer{
             j.get_to(res);
         }
         catch(std::exception& ex){
-            //spdlog::error("json DeserializeUuids function terminated with {}", ex.what());
             return std::nullopt;
         }
         return res;
