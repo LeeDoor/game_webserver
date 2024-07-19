@@ -16,6 +16,7 @@ namespace http_handler{
         //apis
 
         void ApiEnqueue(SessionData rns);
+        void ApiWaitForOpponent(SessionData&& rns);
 
     private:
         game_manager::IQueueManager::Ptr iqm_;

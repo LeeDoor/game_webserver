@@ -11,7 +11,9 @@ namespace http_handler {
         ApiFunctionExecutor GetRegister(ExecutorFunction&& afe);
         ApiFunctionExecutor GetLogin(ExecutorFunction&& afe);
         ApiFunctionExecutor GetProfile(ExecutorFunction&& afe);
+        
         ApiFunctionExecutor GetEnqueue(ExecutorFunction&& afe);
+        ApiFunctionExecutor GetWaitForOpponent(ExecutorFunction&& afe);
 
         ApiFunctionExecutor GetPlayerTokens(ExecutorFunction&& afe);
         ApiFunctionExecutor GetUserData(ExecutorFunction&& afe);

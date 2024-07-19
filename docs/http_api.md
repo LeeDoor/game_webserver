@@ -365,7 +365,7 @@ requires authorization token. by this token gets profile information from db.
 
 ---
 ## Game API
-### API game/enqueue
+### API enqueue
 #### <span style="color:#87ff8b"><b>requires authorization</b></span>
 
 #### **action diagram**
@@ -402,7 +402,7 @@ ApiHandler->>User: send enqueue status
 _/api/game/enqueue_
 
 #### **function description**
-to start a game, you need to add yourself to the queue. you will be added to queue to search for an opponent by this api function execution. #TODO what is going to be when opponent found
+to start a game, you need to add yourself to the queue. you will be added to queue to search for an opponent by this api function execution. call wait_for_opponent immediately after that.
 
 #### **request body example**
 body must be empty
@@ -418,5 +418,60 @@ body must be empty
 **error_name meanings**
     - **enqueue_error**: error happened while enqueuing player (already in queue or wrong token)
 
-
 ---
+### API wait_for_opponent
+#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
+#### <span style="color:#f58a42"><b>Long-Poll</b></span> 
+
+#### **action diagram**
+```mermaid
+---
+title: api registger diagram
+---
+sequenceDiagram
+actor User1
+participant Server
+actor User2
+
+User1->>Server: enqueue
+User1->>Server: wait_for_opponent
+Server-->Server: enqueuing
+User2->>Server: enqueue
+User2->>Server: wait_for_opponent
+Server-->Server: enqueuing
+Server->>User1: opponent_found
+Server->>User2: opponent_found
+
+```
+
+#### **request target**  
+_api/game/wait_for_opponent_
+
+#### **function description**
+long-poll function to read data about future session. use it after enqueuing to the game and wait for response until enemy is found. when found, returns session ID to join the game.
+
+#### **request body example**
+
+```js
+
+```
+
+#### **responses**
+
+* `200 success`
+opponent found if body contains SessionId.
+*response body:*
+```js
+{
+	"sessionid": "ADD124558846"
+}
+```
+* `200 waiting`
+if body is empty it means that no opponent found yet.
+*response body:*
+```js
+{}
+```
+* `400 who_is_waiting`
+ returns it when trying to wait for opponent while not in the queue.
+

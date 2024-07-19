@@ -5,6 +5,7 @@ set(DEPENDENCIES
     token_manager 
     queue_manager
     game_manager
+    notification_system
 )
 set(LIBRARY_NAME http_handler)
 #creating library

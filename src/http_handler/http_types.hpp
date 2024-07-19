@@ -26,7 +26,7 @@ namespace http_handler{
         UnsubNotification unsubcsribe;
     }; 
     struct SessionData{
-        const HttpRequest& request;
-        const SessionFunctions& session_functions;
+        HttpRequest request;
+        SessionFunctions session_functions;
     };
 }

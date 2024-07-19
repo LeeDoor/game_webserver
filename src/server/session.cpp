@@ -1,6 +1,7 @@
 #include "listener.hpp"
 #include "http_server.hpp"
 #include "network_notifier.hpp"
+#include "spdlog/spdlog.h"
 
 namespace http_server {
     std::shared_ptr<Session> Session::GetSharedThis() {
@@ -29,9 +30,7 @@ namespace http_server {
     }
 
     void Session::HandleRequest(HttpRequest &&request) {
-        auto strHandler = [self = this->shared_from_this()](StringResponse &&response) {
-            self->Write(std::move(response));
-        };
+        spdlog::info("handling request {}", request.target().to_string());
         auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
             self->Write(std::move(response));
         };
@@ -43,13 +42,14 @@ namespace http_server {
         [self = this->shared_from_this(), notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
             //notifier->Unsubscribe(uuid);
         };
-        http_handler::SessionFunctions sf {
-            strHandler, 
+        request_handler_(std::move(request), {
+            [self = this->shared_from_this()](StringResponse &&response) {
+                self->Write(std::move(response));
+            }, 
             fileHandler,
             subNotif,
             unsubNotif
-        };
-        request_handler_(std::move(request), std::move(sf));
+        });
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {

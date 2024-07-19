@@ -9,7 +9,8 @@ namespace game_manager{
         SessionId si = GenerateSessionId();
         sessions_[si]; // create new session
         http_handler::ResponseBuilder<http::string_body> rb;
-        notif::NetworkNotifier::GetInstance()->Notify(player1);
+        notif::NetworkNotifier::GetInstance()->Notify(player1, si);
+        notif::NetworkNotifier::GetInstance()->Notify(player2, si);
         return sessions_.contains(si);
     }
 

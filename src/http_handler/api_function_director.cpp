@@ -13,7 +13,11 @@ namespace http_handler{
     ApiFunctionExecutor ApiFunctionDirector::GetProfile(ExecutorFunction&& afe){
         return afb_.NeedAuthor(tm_).GetHead().ExecFunc(std::move(afe)).GetProduct();
     }
+
     ApiFunctionExecutor ApiFunctionDirector::GetEnqueue(ExecutorFunction&& afe){
+        return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
+    }
+    ApiFunctionExecutor ApiFunctionDirector::GetWaitForOpponent(ExecutorFunction&& afe){
         return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
     }
     

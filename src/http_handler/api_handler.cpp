@@ -11,11 +11,11 @@ namespace http_handler{
         std::string::size_type pos = function.find('?');
         function = function.substr(0, pos);
 
-        SessionData rns {request, session_functions};
+        SessionData rns {std::move(request), std::move(session_functions)};
         if(request.method() == http::verb::options){
             ResponseBuilder<http::string_body> builder;
             http::response<http::string_body> product = 
-                builder.Allow({http::verb::get, http::verb::head, http::verb::post})
+                builder.Allow({http::verb::get, http::verb::head, http::verb::post, http::verb::options})
                 .Status(status::ok)
                 .GetProduct();
             product.set(http::field::access_control_allow_origin, "*");
@@ -25,7 +25,7 @@ namespace http_handler{
         }
         if(request_to_executor_.contains(function)) {
             ApiFunctionExecutor& executor = request_to_executor_.at(function);
-            ApiStatus result = executor.Execute(rns);
+            ApiStatus result = executor.Execute(std::move(rns));
             if(result != ApiStatus::Ok)
                 return responser_.HandleApiError(result, executor, rns);
         }

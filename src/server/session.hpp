@@ -32,10 +32,12 @@ namespace http_server {
             auto safe_response = std::make_shared<resp_ptr>(std::forward<resp_ptr>(response));
             auto self = GetSharedThis();
 
-            http::async_write(*stream_, *safe_response,
-                [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
-                    self->OnWrite(safe_response->need_eof(), ec, bytes_written);
-                });
+            if (stream_->socket().is_open()){
+                http::async_write(*stream_, *safe_response,
+                    [safe_response, self](beast::error_code ec, std::size_t bytes_written) {
+                        self->OnWrite(safe_response->need_eof(), ec, bytes_written);
+                    });
+            }
         }
 
         void HandleRequest(HttpRequest &&request);

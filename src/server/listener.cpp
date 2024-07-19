@@ -34,6 +34,7 @@ namespace http_server {
 
     void Listener::AsyncRunSession(tcp::socket&& socket) {
         spdlog::info("session opened");
-        std::make_shared<Session> (std::move(socket), handler_parameters_)->Run();
+        sessions_.push_back(std::make_shared<Session> (std::move(socket), handler_parameters_));
+        sessions_.back()->Run();
     }
 }

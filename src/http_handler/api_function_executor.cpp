@@ -9,7 +9,7 @@ namespace http_handler {
         serializer::ISerializer::Ptr serializer):
         api_function_ (std::move(api_function_params)), tm_(tm), serializer_(serializer){}
 
-    ApiStatus ApiFunctionExecutor::Execute(SessionData rns) {
+    ApiStatus ApiFunctionExecutor::Execute(SessionData&& rns) {
         if(!MatchMethod(rns.request.method())){
             return ApiStatus::WrongMethod;
         }
@@ -22,7 +22,7 @@ namespace http_handler {
         if (api_function_.IsDebug() && !MatchAdmin(rns.request)){
             return ApiStatus::AdminUnrecognized;
         }
-        api_function_(rns);
+        api_function_(std::move(rns));
         return ApiStatus::Ok;
     }
     const ApiFunction& ApiFunctionExecutor::GetApiFunction() const{
