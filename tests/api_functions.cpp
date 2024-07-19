@@ -94,6 +94,14 @@ bool EnqueueSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr se
     return response.body() == serializer->SerializeEmpty();
 }
 
+LoginData EnqueueWorthyOpponent(tcp::socket& socket, ISerializer::Ptr serializer) {
+    hh::RegistrationData rd = RegisterSuccess(socket, serializer);
+    LoginData ld = LoginSuccess(socket, rd.login, serializer);
+    bool res = EnqueueSuccess(socket, ld.token, serializer);
+    CHECK(res == true);
+    return ld;
+}   
+
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
     StringResponse response = PlayerTokens(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
     CheckStringResponse(response, {.res=http::status::ok});

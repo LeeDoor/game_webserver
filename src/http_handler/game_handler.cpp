@@ -26,8 +26,10 @@ namespace http_handler{
     void GameHandler::ApiEnqueue(SessionData rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        if (!uuid)
-            return responser_.SendCantEnqueue(rns);
+
+        if(gm_->HasPlayer(*uuid))
+            return responser_.SendInTheMatch(rns);
+            
         bool res = iqm_->EnqueuePlayer(*uuid);
         if (!res)
             return responser_.SendCantEnqueue(rns);
@@ -36,8 +38,6 @@ namespace http_handler{
     void GameHandler::ApiWaitForOpponent(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        if (!uuid)
-            return responser_.SendNoSuchUser(rns);
         using Notif = notification_system::NetworkNotifier;
         Notif::GetInstance()->Subscribe(*uuid, 
             [resp = responser_, rns = std::move(rns)](Notif::StatusCode code, const std::string& add_data){

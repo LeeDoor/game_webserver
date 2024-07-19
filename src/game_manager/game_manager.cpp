@@ -5,19 +5,27 @@
 
 namespace game_manager{
 
-    bool GameManager::CreateSession(const dm::Uuid& player1, const dm::Uuid& player2){
+    bool GameManager::CreateSession(dm::Uuid&& player1, dm::Uuid&& player2){
         SessionId si = GenerateSessionId();
-        sessions_[si]; // create new session
+        sessions_.emplace(si, Session{std::move(player1), std::move(player2)});
         http_handler::ResponseBuilder<http::string_body> rb;
         notif::NetworkNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::NetworkNotifier::GetInstance()->Notify(player2, {.additional_data=si });
         return sessions_.contains(si);
     }
 
+    bool GameManager::HasPlayer(const dm::Uuid& uuid) {
+        for(std::pair<SessionId, Session> pair : sessions_){
+            if (pair.second.HasPlayer(uuid))
+                return true;
+        }
+        return false;
+    }
+
     //ingame api
     bool GameManager::Ping(const dm::Uuid& player_id, const SessionId& session_id){
         if (sessions_.contains(session_id)){
-            return sessions_[session_id].Ping(player_id);
+            return sessions_.at(session_id).Ping(player_id);
         }
         return false;
     }

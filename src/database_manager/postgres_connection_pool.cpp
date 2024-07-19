@@ -30,6 +30,6 @@ namespace database_manager{
     ConnectionPool::ConnectionPtr ConnectionPool::ConnectionFactory(const std::string& bd_credentials){
         std::stringstream ss;
         ss << "postgres://" << bd_credentials << "@localhost:5432/hex_chess";
-        return std::make_shared<pqxx::connection>("postgres://postgres:1234@localhost:5432/hex_chess");
+        return std::make_shared<pqxx::connection>(ss.str());
     }
 }

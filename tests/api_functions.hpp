@@ -53,6 +53,10 @@ hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer:
 http::response<http::string_body> Enqueue(tcp::socket&, const Token& token);
 bool EnqueueSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
+//after calling this function there would be added an opponent to the queue 
+// and session will be created for given and enqueued player
+LoginData EnqueueWorthyOpponent(tcp::socket&, ISerializer::Ptr serializer);
+
 /// DEBUG METHODS ///
 
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);

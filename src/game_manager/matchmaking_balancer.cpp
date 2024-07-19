@@ -16,7 +16,7 @@ namespace game_manager{
             spdlog::error("MatchmakingBalancer::Ballance popping 2 players error");
             return false;  
         }
-        gm_->CreateSession(*first, *second);
+        gm_->CreateSession(std::move(*first), std::move(*second));
         return true;
     }
     void MatchmakingBalancer::Notify(IQueueManager::EventType event_type) {

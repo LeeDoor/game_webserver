@@ -84,6 +84,10 @@ int Initializer::StartServer(Args args) {
     co.password = args.redis_credentials;
     std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
 
+    if(args.test){
+        redis_ptr->flushall();
+    }
+
     /// HANDLER ///
     http_handler::HandlerParameters hp;
     hp.serializer = std::make_shared<serializer::JSONSerializer>();
