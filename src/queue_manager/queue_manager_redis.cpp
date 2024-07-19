@@ -23,9 +23,10 @@ namespace game_manager{
     std::optional<std::string> QueueManagerRedis::PopPlayer() {
         sw::redis::OptionalString os;
         os = redis_->rpop(redis_queue_name_);
-        if (os)
-            return *os;
-        return std::nullopt;
+        if (!os)
+            return std::nullopt;
+        redis_->srem(redis_set_name_, *os);
+        return *os;
     }
     long long QueueManagerRedis::GetLength()  {
         return redis_->llen(redis_queue_name_);

@@ -27,6 +27,7 @@ namespace notification_system{
 
         if(wait_for_poll_.contains(uuid)){
             Notify(uuid, wait_for_poll_[uuid]);
+            wait_for_poll_.erase(uuid);
         }
         return requests_.contains(uuid);
     }

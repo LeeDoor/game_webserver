@@ -19,7 +19,5 @@ namespace http_server {
         net::io_context& ioc_;
         tcp::acceptor acceptor_;
         http_handler::HandlerParameters handler_parameters_;
-
-        std::vector<Session::Ptr> sessions_;
     };
 }
