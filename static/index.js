@@ -68,32 +68,34 @@ function verifyToken(){
 
 }   
 
-async function WaitForOpponent(){
-    let response = await fetch('http://localhost:9999/api/game/wait_for_opponent', {
+function WaitForOpponent(){
+    fetch('http://localhost:9999/api/game/wait_for_opponent', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
-    });
+    }).then(response=>{
     if(response.ok){
-        showCustomPopup("game found! session #" + response.json(), "#00FF00");
-    }
+            showCustomPopup("game found! session #" + response.json(), "#00FF00");
+        }
+    });
 }
-async function Enqueue(event) {
+function Enqueue(event) {
     fetch('http://localhost:9999/api/game/enqueue', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
-    }).then(async response=>{
-        if(response.ok){
+    }).then(response=>response.json())
+    .then(data=>{
+        if(data.length == 2){
             showCustomPopup("queuing...", "#00FF00");
-            await WaitForOpponent();
+            WaitForOpponent();
         }
         else{
-            showCustomPopup("failed to add you to the queue " + response.json(), "#FF0000");
+            showCustomPopup("failed to add you to the queue: " + data.description, "#FF0000");
         }
     });
 }
@@ -147,6 +149,7 @@ document.getElementById('logButton').addEventListener('click', function(event) {
 });
 
 document.getElementById('playButton').addEventListener('click', Enqueue);
+
 document.addEventListener("DOMContentLoaded", function() {
     var lt = document.getElementById('loginText');
     if (lt){
