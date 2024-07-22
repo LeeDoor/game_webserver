@@ -21,6 +21,7 @@ namespace http_handler{
         request_to_executor_ = {
             {"/api/game/enqueue", afd.GetEnqueue(BIND(&GameHandler::ApiEnqueue))},
             {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND(&GameHandler::ApiWaitForOpponent))},
+            {"/api/game/session_state", afd.GetSessionState(BIND(&GameHandler::ApiSessionState))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData rns){
@@ -51,4 +52,17 @@ namespace http_handler{
                 }
             });
     }
+    void GameHandler::ApiSessionState(SessionData rns){
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = tm_->GetUuidByToken(token);
+        auto map = ParseUrlParameters(rns.request);
+        if(map.size() != 1 || !map.contains("sessionId"))
+            return responser_.SendWrongUrlParameters(rns);
+        gm::SessionId sid = map.at("sessionId");
+        gm::State::OptPtr state = gm_->GetState(sid);
+        if(!state.has_value())
+            return responser_.SendWrongSessionId(rns);
+        return responser_.SendGameState(rns, **state);
+    }
+
 }

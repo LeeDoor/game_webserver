@@ -1,6 +1,8 @@
 #pragma once
 #include "user_data.hpp"
 #include <vector>
+#include <memory>
+#include <optional>
 
 namespace game_manager {
     using Dimention = unsigned;
@@ -35,6 +37,8 @@ namespace game_manager {
         using Players = std::vector<Player>;
         using Terrain = std::vector<Obstacle>;
         using NowTurn = Player::Login;
+        using Ptr = std::shared_ptr<State>;
+        using OptPtr = std::optional<Ptr>;
 
         bool operator == (const State& state)const {
             return players == state.players && terrain == state.terrain && now_turn == state.now_turn;

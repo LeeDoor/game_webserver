@@ -9,7 +9,8 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
     tcp::socket socket{ioc};
     ConnectSocket(ioc, socket);
     std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string WRONG_SESSIONID = serializer->SerializeError("wrong_sessionId", "no sessionId passed or wrong sessionId");
+    std::string WRONG_SESSIONID = serializer->SerializeError("wrong_sessionId", "no session with such sessionId");
+    std::string URL_PARAMETERS_ERROR = serializer->SerializeError("url_parameters_error", "this api function requires url parameters");
     std::string UNAUTHORIZED = serializer->SerializeError("unathorized", "request must be authorized");
 
     if(MMQueueSuccess(socket, serializer).size() == 0)
@@ -34,14 +35,15 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
             .body=WRONG_SESSIONID,
             .res=http::status::bad_request,
         });
-
-        request = {http::verb::get, SESSION_STATE_API, 11};
+    }
+    SECTION("url_parameters_error") {
+        http::request<http::string_body> request = {http::verb::get, SESSION_STATE_API, 11};
 
         SetAuthorizationHeader(request, ld.token);
-        response = GetResponseToRequest(false, request, socket);
+        auto response = GetResponseToRequest(false, request, socket);
         CheckStringResponse(response, {
-            .body=WRONG_SESSIONID,
-            .res=http::status::bad_request,
+            .body=URL_PARAMETERS_ERROR,
+            .res=http::status::unprocessable_entity,
         });
     }
     SECTION ("not_logined"){

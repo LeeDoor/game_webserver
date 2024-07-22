@@ -29,6 +29,9 @@ namespace http_handler{
     void SendManager::SendSessionId(SessionData rns, const std::string& session_id) const {
         Send(rns, status::ok, serializer_->SerializeMap({{"sessionId", session_id}}));
     }
+    void SendManager::SendGameState(SessionData rns, const gm::State& state) const {
+        Send(rns, status::ok, serializer_->Serialize(state));
+    }
 
     void SendManager::SendWrongApiFunction(SessionData rns) const {
         Send(rns, status::bad_request, serializer_->SerializeError("api_error", "wrong api function"));
@@ -68,6 +71,9 @@ namespace http_handler{
     }
     void SendManager::SendPollClosed(SessionData rns, const std::string& description) const {
         Send(rns, status::conflict, serializer_->SerializeError("poll_closed", description));
+    }
+    void SendManager::SendWrongSessionId(SessionData rns) const{
+        Send(rns, status::bad_request, serializer_->SerializeError("wrong_sessionId", "no session with such sessionId"));
     }
 
     void SendManager::SendWrongUrlParameters(SessionData rns)const {

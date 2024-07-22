@@ -505,10 +505,17 @@ request to get session state. session id should be passed as URL parameter.
 * `200 OK`  
 *response body:*
 ***TO SEE RESPONSE EXAMPLE: [[session_state]]***
+* `400 url_parameters_error`
+```json
+{
+	"error_name":"url_parameters_error"
+	"description":"this api function requires url parameters"
+}
+```
 * `400 wrong_sessionId`
 ```json
 {
 	"error_name":"wrong_sessionId"
-	"description":"no sessionId passed or wrong sessionId"
+	"description":"no session with such sessionId"
 }
 ```

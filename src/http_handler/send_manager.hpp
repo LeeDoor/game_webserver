@@ -18,6 +18,7 @@ namespace http_handler{
         void SendUserData(SessionData rns, const PublicUserData& user_data) const;
         void SendHiddenUserData(SessionData rns, const dm::UserData& user_data) const;
         void SendSessionId(SessionData rns, const std::string& session_id) const;
+        void SendGameState(SessionData rns, const gm::State& state) const;
 
         void SendWrongApiFunction(SessionData rns) const;
         void SendWrongBodyData(SessionData rns) const;
@@ -32,6 +33,7 @@ namespace http_handler{
         void SendInTheMatch(SessionData rns) const;
         void SendCantLogin(SessionData rns) const;
         void SendPollClosed(SessionData rns, const std::string& description) const;
+        void SendWrongSessionId(SessionData rns) const;
 
         void SendWrongUrlParameters(SessionData rns) const;
 
