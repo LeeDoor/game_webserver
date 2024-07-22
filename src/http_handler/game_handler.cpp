@@ -59,7 +59,7 @@ namespace http_handler{
         if(map.size() != 1 || !map.contains("sessionId"))
             return responser_.SendWrongUrlParameters(rns);
         gm::SessionId sid = map.at("sessionId");
-        gm::State::OptPtr state = gm_->GetState(sid);
+        gm::State::OptCPtr state = gm_->GetState(sid);
         if(!state.has_value())
             return responser_.SendWrongSessionId(rns);
         return responser_.SendGameState(rns, **state);

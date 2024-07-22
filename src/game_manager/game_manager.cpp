@@ -27,7 +27,7 @@ namespace game_manager{
         }
         return false;
     }
-    State::OptPtr GameManager::GetState(const SessionId& sessionId){
+    State::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(sessions_.contains(sessionId))
             return sessions_.at(sessionId).GetState();
         return std::nullopt;

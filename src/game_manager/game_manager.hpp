@@ -14,7 +14,7 @@ namespace game_manager{
 
         bool CreateSession(dm::Uuid&& player1, dm::Uuid&& player2);
         bool HasPlayer(const dm::Uuid& uuid);
-        State::OptPtr GetState(const SessionId& sessionId);
+        State::OptCPtr GetState(const SessionId& sessionId);
 
         //ingame api
         bool Ping(const dm::Uuid& player_id, const SessionId& session_id); // placeholder

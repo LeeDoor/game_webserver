@@ -17,7 +17,7 @@ namespace game_manager{
         return player1_ == uuid || player2_ == uuid;
     }
 
-    State::Ptr Session::GetState(){
+    State::CPtr Session::GetState(){
         return state_;
     }
 

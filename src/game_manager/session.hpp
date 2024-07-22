@@ -11,7 +11,7 @@ namespace game_manager{
 
         bool HasPlayer(const dm::Uuid& uuid);
 
-        State::Ptr GetState();
+        State::CPtr GetState();
         
         bool Ping(const dm::Uuid& player_id);
 

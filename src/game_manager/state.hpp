@@ -38,7 +38,8 @@ namespace game_manager {
         using Terrain = std::vector<Obstacle>;
         using NowTurn = Player::Login;
         using Ptr = std::shared_ptr<State>;
-        using OptPtr = std::optional<Ptr>;
+        using CPtr = std::shared_ptr<const State>;
+        using OptCPtr = std::optional<CPtr>;
 
         bool operator == (const State& state)const {
             return players == state.players && terrain == state.terrain && now_turn == state.now_turn;
