@@ -15,6 +15,7 @@ add_executable(test_application
 
     test_api_game_enqueue.cpp
     test_api_game_wait_for_opponent.cpp
+    test_api_game_session_state.cpp
 
     test_api_player_tokens.cpp
     test_api_user_data.cpp

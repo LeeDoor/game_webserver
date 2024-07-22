@@ -120,6 +120,23 @@ game_manager::SessionId WaitForOpponentSuccess(tcp::socket& socket, const Token&
     return map->at("sessionId");
 }
 
+http::response<http::string_body> SessionState(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+    std::string target = SetUrlParameters(SESSION_STATE_API, {{"sessionId", sid}});
+    http::request<http::string_body> request{http::verb::get, target, 11};
+
+    SetAuthorizationHeader(request, token);
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+gm::State SessionStateSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const Token& token, const gm::SessionId& sid) {
+    http::response<http::string_body> response = SessionState(socket, token, sid);
+    CheckStringResponse(response, 
+        {.res = http::status::ok});
+    std::optional<gm::State> state_opt = serializer->DeserializeSessionState(response.body());
+    REQUIRE(state_opt);
+    return *state_opt;
+}
+
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {
     StringResponse response = PlayerTokens(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD);
     CheckStringResponse(response, {.res=http::status::ok});

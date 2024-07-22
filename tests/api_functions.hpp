@@ -22,6 +22,7 @@ namespace dm = database_manager;
 
 #define ENQUEUE_API         "/api/game/enqueue"
 #define WAIT_FOR_OPPONENT_API "/api/game/wait_for_opponent"
+#define SESSION_STATE_API   "/api/game/session_state"
 
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
@@ -65,6 +66,8 @@ LoginData EnqueueWorthyOpponent(tcp::socket&, ISerializer::Ptr serializer);
 http::response<http::string_body> WaitForOpponent(tcp::socket&, const Token& token);
 game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
+http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
+gm::State SessionStateSuccess(tcp::socket&, ISerializer::Ptr serializer, const Token& token, const gm::SessionId& sid);
 /// DEBUG METHODS ///
 
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);
