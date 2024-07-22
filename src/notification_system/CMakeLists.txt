@@ -3,8 +3,10 @@ set(DEPENDENCIES server)
 set(LIBRARY_NAME notification_system)
 #creating library
 add_library(${LIBRARY_NAME}
-    network_notifier.hpp
-    network_notifier.cpp
+    queue_notifier.hpp
+    queue_notifier.cpp
+    session_state_notifier.cpp
+    session_state_notifier.hpp
 )
 
 #including and linking dependencies

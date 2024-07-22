@@ -15,15 +15,11 @@ typedef http::response <http::string_body> StringResponse;
 typedef http::response <http::file_body> FileResponse;
 typedef std::function<void(StringResponse&&)> StrResponseSender;
 typedef std::function<void(FileResponse&&)> FileResponseSender;
-typedef std::function<void(const dm::Uuid&)> SubNotification;
-typedef std::function<void(const dm::Uuid&)> UnsubNotification;
 
 namespace http_handler{
     struct SessionFunctions{
         StrResponseSender send_string;
         FileResponseSender send_file;
-        SubNotification subcsribe;
-        UnsubNotification unsubcsribe;
     }; 
     struct SessionData{
         HttpRequest request;

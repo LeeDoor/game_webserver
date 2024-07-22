@@ -1,6 +1,5 @@
 #include "listener.hpp"
 #include "http_server.hpp"
-#include "network_notifier.hpp"
 #include "spdlog/spdlog.h"
 
 namespace http_server {
@@ -34,22 +33,13 @@ namespace http_server {
         auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
             self->Write(std::move(response));
         };
-        auto subNotif = 
-        [self = this->shared_from_this(), stream = this->stream_, notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
-            //notifier->Subscribe(uuid, stream);
-        };
-        auto unsubNotif = 
-        [self = this->shared_from_this(), notifier = notif::NetworkNotifier::GetInstance()](const dm::Uuid& uuid){
-            //notifier->Unsubscribe(uuid);
+        auto stringHandler = [self = this->shared_from_this()](StringResponse &&response) {
+            self->Write(std::move(response));
         };
         request_handler_(std::move(request), {
-            [self = this->shared_from_this()](StringResponse &&response) {
-                self->Write(std::move(response));
-            }, 
+            stringHandler,
             fileHandler,
-            subNotif,
-            unsubNotif
-        });
+        }); 
     }
 
     void Session::OnWrite(bool close, beast::error_code ec, std::size_t bytes_written) {

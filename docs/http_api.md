@@ -519,18 +519,58 @@ _/api/game/session_state?sessionId=SESSION_ID_
 #### **function description**
 request to get session state. session id should be passed as URL parameter.
 
-#### **request body example**
-
-```js
-{
-	"sessionId": "SESSION_ID"
-}
-```
-
 #### **responses**
 * `200 OK`  
 *response body:*
 ***TO SEE RESPONSE EXAMPLE: [[session_state]]***
+* `400 url_parameters_error`
+```json
+{
+	"error_name":"url_parameters_error"
+	"description":"this api function requires url parameters"
+}
+```
+* `400 wrong_sessionId`
+```json
+{
+	"error_name":"wrong_sessionId"
+	"description":"no session with such sessionId"
+}
+```
+---
+### API session_state_change
+#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
+
+#### **action diagram**
+```mermaid
+sequenceDiagram
+	actor Player1
+	participant Server
+	actor Player2
+	Player1 ->> Server: session_state_change
+	Player2 ->> Server: session_state_change
+	Player1 ->> Server: makes a move
+	Server --> Player1: edited_game_state
+	Server --> Player2: edited_game_state
+	Player1 ->> Server: session_state_change
+	Player2 ->> Server: session_state_change
+	Player2 ->> Server: makes a move
+	Server --> Player1: edited_game_state
+	Server --> Player2: edited_game_state
+	
+```
+#### **allowed methods**
+***`GET/HEAD`***
+#### **request target**  
+_/api/game/session_state_change?sessionId=SESSION_ID_
+
+#### **function description**
+Long-Poll function hangs until some action happens in the session. once it is, poller gets response with new game state. to get next notification send this function again. if game state happens before you resend poller, you still get LAST game state, immediately.
+
+#### **responses**
+* `200 OK`  
+*response body:*
+	SEE [[session_state]]
 * `400 url_parameters_error`
 ```json
 {

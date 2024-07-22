@@ -1,6 +1,6 @@
 #include "game_manager.hpp"
 #include "session_id_generator.hpp"
-#include "network_notifier.hpp"
+#include "queue_notifier.hpp"
 #include "response_builder.hpp"
 
 namespace game_manager{
@@ -15,8 +15,8 @@ namespace game_manager{
             return false;
         sessions_.emplace(si, Session{std::move(player1), ud1->login, std::move(player2), ud2->login});
         http_handler::ResponseBuilder<http::string_body> rb;
-        notif::NetworkNotifier::GetInstance()->Notify(player1, {.additional_data=si });
-        notif::NetworkNotifier::GetInstance()->Notify(player2, {.additional_data=si });
+        notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
+        notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
         return sessions_.contains(si);
     }
 

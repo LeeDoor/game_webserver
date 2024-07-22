@@ -12,6 +12,7 @@
 #include "queue_manager_redis.hpp"
 #include "matchmaking_balancer.hpp"
 #include "http_server.hpp"
+#include "session_state_notifier.hpp"
 
 #define PORT 9999
 
@@ -99,6 +100,7 @@ int Initializer::StartServer(Args args) {
 
     hp.queue_manager->OnEnqueueSubscribe
         (std::make_shared<game_manager::MatchmakingBalancer>(hp.queue_manager, hp.game_manager));
+    notification_system::SessionStateNotifier::Init(hp.game_manager);
 
     http_server::ServeHttp(ioc, {address, port}, hp);
     RunWorkers(num_threads, [&ioc]{

@@ -1,6 +1,7 @@
 #include "game_handler.hpp"
 #include "api_function_director.hpp"
-#include "network_notifier.hpp"
+#include "queue_notifier.hpp"
+#include "session_state_notifier.hpp"
 #include "spdlog/spdlog.h"
 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
@@ -39,7 +40,7 @@ namespace http_handler{
     void GameHandler::ApiWaitForOpponent(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        using Notif = notification_system::NetworkNotifier;
+        using Notif = notification_system::QueueNotifier;
         Notif::GetInstance()->Subscribe(*uuid, 
             [resp = responser_, rns = std::move(rns)](Notif::StatusCode code, const std::string& add_data){
                 switch(code){
@@ -65,4 +66,24 @@ namespace http_handler{
         return responser_.SendGameState(rns, **state);
     }
 
+    void GameHandler::ApiSessionStateChange(SessionData rns){
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = tm_->GetUuidByToken(token);
+        auto map = ParseUrlParameters(rns.request);
+        if(map.size() != 1 || !map.contains("sessionId"))
+            return responser_.SendWrongUrlParameters(rns);
+        gm::SessionId sid = map.at("sessionId");
+        using Notif = notif::SessionStateNotifier;
+        Notif::GetInstance()->ChangePoll(*uuid, sid, 
+        [rns = std::move(rns), resp = responser_](Notif::PollStatus status, gm::State::OptCPtr state){
+            switch(status){
+            case Notif::PollStatus::Ok:
+                resp.SendGameState(rns, **state);    
+                break;
+            case Notif::PollStatus::PollClosed:
+                resp.SendPollClosed(rns, "SessionStateNotifier poll replaced by other");    
+                break;
+            }
+        });
+    }
 }

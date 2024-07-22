@@ -3,7 +3,7 @@ notification system notifies users about in-game actions e.g. player found, enem
 it is achieved by using long-poll requests. user sends request to server and waits for response. once server is ready to respond, it sends response to active poll.
 all notifiers are Singleton objects for easier access.
 # classes
-* **QueueNotifier** - class, which takes care about notifying in-queue players about found enemies. once notifier calls, all pollers are being unsubscribed.
+* **QueueNotifier** - class, which takes care about notifying in-queue players about found enemies. when opponent is found, player's hanging poll returns sessionId. if opponent found before poll request sent, you still able to get response by waiting system. once notifier calls, all pollers are being unsubscribed. 
 ```mermaid
 ---
 title: QueueNotifier purpose
@@ -23,7 +23,7 @@ sequenceDiagram
 	Server->>User2: opponent_found
 
 ```
-* **GameStateNotifier** - class, which takes care about notifying players in the game and game spectators about happening actions in the game. once notified, notifier waits for a new poll and resubs user untill it unsubscribes.
+* **SessionStateNotifier** - class, which takes care about notifying players in the game and game spectators about happening actions in the game. once notified, notifier waits for a new poll and resubs user untill it unsubscribes. it means if session state updated since last poll and new poll was not sent yet, a new poll will get response immediately. if a game state updated twice or more, poll will get last game state.
 ```mermaid
 sequenceDiagram
 	actor Player1
@@ -62,20 +62,27 @@ classDiagram
 	}
 	QueueNotifier--> QueueNotifier-PollData
 	
-	class GameStateNotifier-PollData{
-		session_id : string
-	}
 	class GameStateNotifier{
-		+Subscribe(uuid, sessionid, responser)
-		+Unsubscribe(uuid, sessionid, reason)
-		+Unsubscribe(uuid, reason)
-		+Notify(sessionid, poll_data)
-
-		-requests: map sessionid->uuid, responser
-		-wait_for_poll: sessionid->poll_data
+		+Subscribe(uuid, sessionid)
+		+Unsubscribe(uuid, sessionid)
+		+Notify(sessionid)
+		+ChangePoll(uuid, sessionid, poll)
+		
+		-GetGameState(sessionid) state
+		-sessions_: map~sessionid, sessiondata~
 	}
-	GameStateNotifier--> GameStateNotifier-PollData
-
+	note for SesssionData "for each sessionId there is 
+	one sessionData object. it contains vector of users,
+	 who didnt send poll yet, but they should get 
+	 notification. also it contains map, which defines 
+	 poll responser for each uuid. if poll is responded 
+	 and not updated, its nullopt"
+	class SessionData{
+		users_responser: map~uuid,responser_opt~
+		poll_waiting: vector~uuid~
+	}
+	GameStateNotifier-->SessionData
+	
 	class GameManager{
 	}
 	GameManager-->GameStateNotifier

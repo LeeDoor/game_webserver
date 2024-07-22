@@ -7,7 +7,7 @@
 
 namespace notification_system{
 
-    class NetworkNotifier{
+    class QueueNotifier{
     public:
         enum StatusCode{
             Ok, // send as usual when success
@@ -21,22 +21,22 @@ namespace notification_system{
             StatusCode code = StatusCode::Ok;
         };
         using LongPollResponser = std::function<void(StatusCode, AdditionalData)>;
-        using Ptr = std::shared_ptr<NetworkNotifier>;
+        using Ptr = std::shared_ptr<QueueNotifier>;
 
 
-        NetworkNotifier(NetworkNotifier &other) = delete;
-        void operator=(const NetworkNotifier &) = delete;
+        QueueNotifier(QueueNotifier &other) = delete;
+        void operator=(const QueueNotifier &) = delete;
 
-        static NetworkNotifier::Ptr GetInstance();
+        static QueueNotifier::Ptr GetInstance();
 
         bool Subscribe(const dm::Uuid& uuid, LongPollResponser&& responser);
         bool Unsubscribe(const dm::Uuid& uuid, const std::string& reason = "");
 
         bool Notify(const dm::Uuid& uuid, const PollData& poll_data);
     private:
-        static NetworkNotifier::Ptr pinstance_;
+        static QueueNotifier::Ptr pinstance_;
         static std::mutex mutex_;
-        NetworkNotifier() ;
+        QueueNotifier() ;
 
         std::map<dm::Uuid, LongPollResponser> requests_;
         std::map<dm::Uuid, PollData> wait_for_poll_;
