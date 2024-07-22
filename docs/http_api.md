@@ -43,6 +43,8 @@ example:
 ### API player_tokens
 #### **description**
 debug function for getting users' authentication tokens and uuids.
+#### **allowed methods**
+***`GET/HEAD`***
 #### **request target**
 */api/debug/player_tokens*
 
@@ -74,6 +76,8 @@ debug function for getting users' authentication tokens and uuids.
 ### API user_data
 #### **description**
 debug function for getting users' profile info like login and password.
+#### **allowed methods**
+***`GET/HEAD`***
 #### **request target**
 */api/debug/user_data?uuid=USER_UUID*
 **OR**
@@ -107,6 +111,8 @@ debug function for getting users' profile info like login and password.
 ### API matchmaking_queue
 #### **description**
 debug function for getting queue of users' uuids
+#### **allowed methods**
+***`GET/HEAD`***
 #### **request target**
 */api/debug/matchmaking_queue*
 
@@ -136,9 +142,11 @@ debug function for getting queue of users' uuids
 
 
 ---
-### API sessions_list
+### API sessions_list #TODO
 #### **description**
 debug function for getting list of sessions with playing users.
+#### **allowed methods**
+***`GET/HEAD`***
 #### **request target**
 */api/debug/sessions_list*
 
@@ -199,6 +207,9 @@ UserDataManager->>ApiHandler: returns error code
 
 ApiHandler->>User: send registration state
 ```
+
+#### **allowed methods**
+***`POST`***
 #### **request target**
 */api/register*
 
@@ -275,6 +286,9 @@ TokenManager->>ApiHandler: returns token of user's session
 ApiHandler->>User: send login state and token
 ```
 
+#### **allowed methods**
+***`POST`***
+
 #### **request target**
 */api/login*
 
@@ -345,6 +359,8 @@ UserDataManager->>ApiHandler: returns user or error code
 ApiHandler->>User: send user data
 ```
 
+#### **allowed methods**
+***`GET/HEAD`***
 
 #### **request target**
 */api/profile*
@@ -407,6 +423,10 @@ MMQueue->>ApiHandler: returns enqueuing status
 
 ApiHandler->>User: send enqueue status
 ```
+
+#### **allowed methods**
+***`POST`***
+
 #### **request target**  
 _/api/game/enqueue_
 
@@ -453,6 +473,9 @@ Server->>User2: opponent_found
 
 ```
 
+#### **allowed methods**
+***`GET/HEAD`***
+
 #### **request target**  
 _api/game/wait_for_opponent_
 
@@ -486,6 +509,9 @@ means that for your account there is another opened poll waiting. this poll clos
 ---
 ### API session_state
 #### <span style="color:#87ff8b"><b>requires authorization</b></span> 
+
+#### **allowed methods**
+***`GET/HEAD`***
 
 #### **request target**  
 _/api/game/session_state?sessionId=SESSION_ID_

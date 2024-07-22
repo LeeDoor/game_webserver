@@ -18,7 +18,7 @@ namespace http_handler{
         return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
     }
     ApiFunctionExecutor ApiFunctionDirector::GetWaitForOpponent(ExecutorFunction&& afe){
-        return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
+        return afb_.NeedAuthor(tm_).GetHead().ExecFunc(std::move(afe)).GetProduct();
     }
     ApiFunctionExecutor ApiFunctionDirector::GetSessionState(ExecutorFunction&& afe) {
         return afb_.NeedAuthor(tm_).GetHead().ExecFunc(std::move(afe)).GetProduct();

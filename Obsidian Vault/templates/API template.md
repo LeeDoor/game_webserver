@@ -7,6 +7,8 @@
 ```mermaid
 
 ```
+#### **allowed methods**
+***`GET/HEAD`*** ***`POST`***
 #### **request target**  
 _ _
 

@@ -103,7 +103,7 @@ LoginData EnqueueWorthyOpponent(tcp::socket& socket, ISerializer::Ptr serializer
 }   
 
 http::response<http::string_body> WaitForOpponent(tcp::socket& socket, const Token& token) {
-    http::request<http::string_body> request{http::verb::post, WAIT_FOR_OPPONENT_API, 11};
+    http::request<http::string_body> request{http::verb::get, WAIT_FOR_OPPONENT_API, 11};
 
     SetAuthorizationHeader(request, token);
     auto response = GetResponseToRequest(false, request, socket);

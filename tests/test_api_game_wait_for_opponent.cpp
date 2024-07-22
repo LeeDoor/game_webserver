@@ -30,7 +30,7 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent]"){
         hh::RegistrationData rd = RegisterSuccess(socket, serializer);
         LoginData ld = LoginSuccess(socket, rd.login, serializer);
 
-        http::request<http::string_body> request{http::verb::post, WAIT_FOR_OPPONENT_API, 11};
+        http::request<http::string_body> request{http::verb::get, WAIT_FOR_OPPONENT_API, 11};
         auto response = GetResponseToRequest(false, request, socket);
 
         CheckStringResponse(response, 
