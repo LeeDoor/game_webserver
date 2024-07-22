@@ -42,12 +42,12 @@ namespace http_handler{
         auto uuid = tm_->GetUuidByToken(token);
         using Notif = notification_system::QueueNotifier;
         Notif::GetInstance()->Subscribe(*uuid, 
-            [resp = responser_, rns = std::move(rns)](Notif::StatusCode code, const std::string& add_data){
+            [resp = responser_, rns = std::move(rns)](Notif::PollStatus code, const std::string& add_data){
                 switch(code){
-                    case Notif::StatusCode::Ok:
+                    case Notif::PollStatus::Ok:
                         resp.SendSessionId(rns, add_data); // add_data is sessionID
                     break;
-                    case Notif::StatusCode::PollClosed:
+                    case Notif::PollStatus::PollClosed:
                         resp.SendPollClosed(rns, add_data); // add_data is error description
                     break;
                 }

@@ -18,31 +18,31 @@ namespace notification_system{
         return pinstance_;
     }
 
-    bool QueueNotifier::Subscribe(const dm::Uuid& uuid, LongPollResponser&& notifier) {
-        if (requests_.contains(uuid)) 
+    bool QueueNotifier::Subscribe(const dm::Uuid& uuid, Responser&& notifier) {
+        if (users_responser_.contains(uuid)) 
             Unsubscribe(uuid, "new poll connected");
 
-        requests_.emplace(uuid, std::move(notifier));
+        users_responser_.emplace(uuid, std::move(notifier));
 
-        if(wait_for_poll_.contains(uuid)){
-            Notify(uuid, wait_for_poll_[uuid]);
-            wait_for_poll_.erase(uuid);
+        if(poll_waiting_.contains(uuid)){
+            Notify(uuid, poll_waiting_[uuid]);
+            poll_waiting_.erase(uuid);
         }
-        return requests_.contains(uuid);
+        return users_responser_.contains(uuid);
     }
     bool QueueNotifier::Unsubscribe(const dm::Uuid& uuid, const std::string& reason) {
-        if(!reason.empty() && requests_.contains(uuid))
-            Notify(uuid, {.additional_data=reason, .code=StatusCode::PollClosed});
-        return requests_.erase(uuid);
+        if(!reason.empty() && users_responser_.contains(uuid))
+            Notify(uuid, {.additional_data=reason, .code=PollStatus::PollClosed});
+        return users_responser_.erase(uuid);
     }
 
     bool QueueNotifier::Notify(const dm::Uuid& uuid, const PollData& poll_data) {
-        if(requests_.contains(uuid)){
-            requests_[uuid](poll_data.code, poll_data.additional_data);
+        if(users_responser_.contains(uuid)){
+            users_responser_[uuid](poll_data.code, poll_data.additional_data);
 
             return Unsubscribe(uuid);
         }
-        wait_for_poll_.emplace(uuid, poll_data);
+        poll_waiting_.emplace(uuid, poll_data);
         return false;
     }
 }
