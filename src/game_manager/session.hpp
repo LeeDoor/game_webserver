@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "user_data.hpp"
+#include "state.hpp"
 
 namespace game_manager{
     using SessionId = std::string;
@@ -17,3 +18,4 @@ namespace game_manager{
         dm::Uuid player2_;
     };
 }   
+namespace gm = game_manager;

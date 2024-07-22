@@ -20,19 +20,19 @@ namespace serializer{
         }
         return obj.dump();
     } 
-    std::string JSONSerializer::SerializeRegData(const hh::RegistrationData& rd) {
+    std::string JSONSerializer::Serialize(const hh::RegistrationData& rd) {
         nlohmann::json json = rd;
         return json.dump();
     }
-    std::string JSONSerializer::SerializePublicUserData(const hh::PublicUserData& pud) {
+    std::string JSONSerializer::Serialize(const hh::PublicUserData& pud) {
         nlohmann::json json = pud;
         return json.dump();
     }
-    std::string JSONSerializer::SerializeUserData(const dm::UserData& ud) {
+    std::string JSONSerializer::Serialize(const dm::UserData& ud) {
         nlohmann::json json = ud;
         return json.dump();
     }
-    std::string JSONSerializer::SerializeTokenToUuid(const std::map<tm::Token,dm::Uuid>& ttu) {
+    std::string JSONSerializer::Serialize(const std::map<tm::Token,dm::Uuid>& ttu) {
         if(ttu.empty()){
             return SerializeEmpty();
         }
@@ -42,8 +42,12 @@ namespace serializer{
         }
         return obj.dump();
     }
-    std::string JSONSerializer::SerializeUuids(const std::vector<dm::Uuid>& v) {
+    std::string JSONSerializer::Serialize(const std::vector<dm::Uuid>& v) {
         nlohmann::json obj(v);
+        return obj.dump();
+    }
+    std::string JSONSerializer::Serialize(const gm::State& state) {
+        nlohmann::json obj(state);
         return obj.dump();
     }
 
@@ -95,6 +99,17 @@ namespace serializer{
     }
     std::optional<std::vector<dm::Uuid>> JSONSerializer::DeserializeUuids(const std::string& json_str) {
         std::vector<dm::Uuid> res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            j.get_to(res);
+        }
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
+    }
+    std::optional<gm::State> JSONSerializer::DeserializeSessionState(const std::string& json_str) {
+        gm::State res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             j.get_to(res);

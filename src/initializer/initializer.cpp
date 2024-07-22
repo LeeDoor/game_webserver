@@ -1,17 +1,17 @@
 #include "initializer.hpp"
-#include "http_server.hpp"
 #include <thread>
 #include <vector>
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
 #include <iostream>
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 #include "json_serializer.hpp"
-#include "user_data_postgres.hpp"
+#include "user_data_manager_postgres.hpp"
 #include "token_manager_redis.hpp"
 #include "queue_manager_redis.hpp"
 #include "matchmaking_balancer.hpp"
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/rotating_file_sink.h"
+#include "http_server.hpp"
 
 #define PORT 9999
 
@@ -93,7 +93,7 @@ int Initializer::StartServer(Args args) {
     hp.serializer = std::make_shared<serializer::JSONSerializer>();
     hp.user_data_manager = std::make_shared<database_manager::UserDataManagerPostgres>(args.test, std::move(args.postgres_credentials));
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
-    hp.game_manager = std::make_shared<game_manager::GameManager>();
+    hp.game_manager = std::make_shared<game_manager::GameManager>(hp.user_data_manager);
     hp.queue_manager = std::make_shared<game_manager::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
     hp.static_path = args.static_path;
 

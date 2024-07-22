@@ -4,8 +4,8 @@ set(LIBRARY_NAME database_manager)
 #creating library
 add_library(${LIBRARY_NAME}
     i_user_data_manager.hpp
-    user_data_postgres.cpp
-    user_data_postgres.hpp
+    user_data_manager_postgres.cpp
+    user_data_manager_postgres.hpp
     user_data.hpp
     postgres_connection_pool.hpp
     postgres_connection_pool.cpp

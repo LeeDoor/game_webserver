@@ -51,7 +51,7 @@ TEST_CASE("server register players", "[api][register]") {
     }
     SECTION ("request with incorrect method must fail"){
         hh::RegistrationData rd{"incorrect_method_login", "incorrect_method_password_1"};
-        std::string rd_json = serializer->SerializeRegData(rd);
+        std::string rd_json = serializer->Serialize(rd);
 
         for(auto verb : {http::verb::get, http::verb::head, http::verb::put, http::verb::move}){
             http::request<http::string_body> req{verb, "/api/register", 11};

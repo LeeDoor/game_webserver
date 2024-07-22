@@ -1,17 +1,33 @@
 #include <nlohmann/json.hpp>
 #include "registration_data.hpp"
 #include "public_user_data.hpp"
+#include "state.hpp"
 using json = nlohmann::json;
 
 namespace http_handler {
-    void to_json(json& j, const RegistrationData& rd);
-    void from_json(const json& j, RegistrationData& rd);
+    void to_json(json& j, const RegistrationData& v);
+    void from_json(const json& j, RegistrationData& v);
     
-    void to_json(json& j, const PublicUserData& rd);
-    void from_json(const json& j, PublicUserData& rd);
+    void to_json(json& j, const PublicUserData& v);
+    void from_json(const json& j, PublicUserData& v);
 } 
 
 namespace database_manager {
-    void to_json(json& j, const UserData& rd);
-    void from_json(const json& j, UserData& rd);
+    void to_json(json& j, const UserData& v);
+    void from_json(const json& j, UserData& v);
+}
+
+namespace game_manager{
+    void to_json(json& j, const State& v);
+    void from_json(const json& j, State& v);
+
+    void to_json(json& j, const Player& v);
+    void from_json(const json& j, Player& v);
+
+    void to_json(json& j, const Obstacle& v);
+    void from_json(const json& j, Obstacle& v);
+    
+    NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
+        {Obstacle::Type::Wall, "wall"},
+    })
 }

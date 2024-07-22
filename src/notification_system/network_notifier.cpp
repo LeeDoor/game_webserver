@@ -1,5 +1,4 @@
 #include "network_notifier.hpp"
-#include "session.hpp"
 #include <algorithm>
 #include <boost/beast.hpp>
 #include "spdlog/spdlog.h"
@@ -41,10 +40,7 @@ namespace notification_system{
         if(requests_.contains(uuid)){
             requests_[uuid](poll_data.code, poll_data.additional_data);
 
-            if (poll_data.unsubscribe){
-                return Unsubscribe(uuid);
-            }
-            return true;
+            return Unsubscribe(uuid);
         }
         wait_for_poll_.emplace(uuid, poll_data);
         return false;

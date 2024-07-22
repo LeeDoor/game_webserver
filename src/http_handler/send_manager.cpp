@@ -21,10 +21,10 @@ namespace http_handler{
         Send(rns, status::ok, serializer_->SerializeMap({{"token", token}}));
     }
     void SendManager::SendUserData(SessionData rns, const PublicUserData& puser_data)  const {
-        Send(rns, status::ok, serializer_->SerializePublicUserData(puser_data));
+        Send(rns, status::ok, serializer_->Serialize(puser_data));
     }
     void SendManager::SendHiddenUserData(SessionData rns, const dm::UserData& user_data) const {
-        Send(rns, status::ok, serializer_->SerializeUserData(user_data));
+        Send(rns, status::ok, serializer_->Serialize(user_data));
     }
     void SendManager::SendSessionId(SessionData rns, const std::string& session_id) const {
         Send(rns, status::ok, serializer_->SerializeMap({{"sessionId", session_id}}));

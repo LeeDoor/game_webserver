@@ -5,6 +5,8 @@
 #include "token.hpp"
 #include "json_serializer.hpp"
 #include "public_user_data.hpp"
+#include "session.hpp"
+
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;

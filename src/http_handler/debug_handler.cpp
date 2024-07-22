@@ -25,7 +25,7 @@ namespace http_handler{
     
     void DebugHandler::ApiGetPlayerTokens(SessionData rns){
         std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
-        std::string tm_string = serializer_->SerializeTokenToUuid(map);
+        std::string tm_string = serializer_->Serialize(map);
         return responser_.Send(rns, http::status::ok, tm_string);
     }
 
@@ -51,7 +51,7 @@ namespace http_handler{
 
     void DebugHandler::ApiGetMMQueue(SessionData rns) {
         const std::vector<dm::Uuid>& queue = qm_->GetQueue();
-        std::string queue_string = serializer_->SerializeUuids(queue);
+        std::string queue_string = serializer_->Serialize(queue);
         return responser_.Send(rns, status::ok, queue_string);
     }
 }

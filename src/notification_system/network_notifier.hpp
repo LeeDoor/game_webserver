@@ -18,7 +18,6 @@ namespace notification_system{
         using AdditionalData = std::string;
         struct PollData{
             AdditionalData additional_data;
-            bool unsubscribe = true;
             StatusCode code = StatusCode::Ok;
         };
         using LongPollResponser = std::function<void(StatusCode, AdditionalData)>;

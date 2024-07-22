@@ -25,7 +25,7 @@ void SetAuthorizationHeader(http::request<http::string_body>& request, const std
 
 http::response<http::string_body> Register(tcp::socket& socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer){
     hh::RegistrationData rd{login, password};
-    std::string rd_json = serializer->SerializeRegData(rd);
+    std::string rd_json = serializer->Serialize(rd);
     http::request<http::string_body> req{http::verb::post, REGISTER_API, 11};
     req.body() = rd_json;
     req.prepare_payload();
@@ -44,7 +44,7 @@ hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr seria
 
 http::response<http::string_body> Login(tcp::socket&socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer) {
     hh::RegistrationData rd{login, password};
-    std::string rd_json = serializer->SerializeRegData(rd);
+    std::string rd_json = serializer->Serialize(rd);
     http::request<http::string_body> req{http::verb::post, LOGIN_API, 11};
     req.body() = rd_json;
     req.prepare_payload();
@@ -131,7 +131,7 @@ std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::
 StringResponse PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password){
     http::request<http::string_body> req{http::verb::get, PLAYER_TOKENS_API, 11};
 
-    req.body() = serializer->SerializeRegData({login, password});
+    req.body() = serializer->Serialize(hh::RegistrationData{login, password});
     req.prepare_payload();
 
     return GetResponseToRequest(false, req, socket);
@@ -147,7 +147,7 @@ StringResponse UserData(
 
     std::string target = SetUrlParameters(USER_DATA_API, {{"login", Usrlogin}, {"password", Usrpassword}});
     http::request<http::string_body> req{http::verb::get, target, 11};;
-    req.body() = serializer->SerializeRegData({Admlogin, Admpassword});
+    req.body() = serializer->Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
 
     return GetResponseToRequest(false, req, socket);
@@ -161,7 +161,7 @@ StringResponse UserData(
     
     std::string target = SetUrlParameters(USER_DATA_API, {{"uuid", Usruuid}});
     http::request<http::string_body> req{http::verb::get, target, 11};
-    req.body() = serializer->SerializeRegData({Admlogin, Admpassword});
+    req.body() = serializer->Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
     
     return GetResponseToRequest(false, req, socket);
@@ -187,7 +187,7 @@ dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, c
 StringResponse MMQueue(tcp::socket& socket, ISerializer::Ptr serializer, std::string login, std::string password){
     http::request<http::string_body> req{http::verb::get, MM_QUEUE_API, 11};
 
-    req.body() = serializer->SerializeRegData({login, password});
+    req.body() = serializer->Serialize(hh::RegistrationData{login, password});
     req.prepare_payload();
 
     return GetResponseToRequest(false, req, socket);

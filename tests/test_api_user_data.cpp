@@ -102,7 +102,7 @@ TEST_CASE("ApiUserData", "[api][debug][user_data]") {
     	}
     	INFO(target);
 	    http::request<http::string_body> req{http::verb::get, target, 11};
-	    req.body() = serializer->SerializeRegData({ADMIN_LOGIN, ADMIN_PASSWORD});
+	    req.body() = serializer->Serialize(hh::RegistrationData{ADMIN_LOGIN, ADMIN_PASSWORD});
 	    req.prepare_payload();
 	    StringResponse response = GetResponseToRequest(false, req, socket);
 	    CheckStringResponse(response, {

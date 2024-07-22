@@ -3,6 +3,7 @@
 #include "registration_data.hpp"
 #include "public_user_data.hpp"
 #include "token.hpp"
+#include "type_serializer.hpp"
 #include <nlohmann/json.hpp>
 
 using namespace serializer;
@@ -92,20 +93,20 @@ TEST_CASE("SerializeMap & DeserializeMap", "[jsonserializer]") {
     }
 }
 
-TEST_CASE("SerializeRegData & DeserializeRegData", "[jsonserializer]") {
+TEST_CASE("Serialize & DeserializeRegData", "[jsonserializer]") {
     JSONSerializer serializer;
-    SECTION ("SerializeRegData") {
-        std::string rd_given = serializer.SerializeRegData({"login1", "password1"});
+    SECTION ("Serialize") {
+        std::string rd_given = serializer.Serialize(hh::RegistrationData{"login1", "password1"});
         CHECK(rd_given == "{\"login\":\"login1\",\"password\":\"password1\"}");
-        rd_given = serializer.SerializeRegData({"login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"});
+        rd_given = serializer.Serialize(hh::RegistrationData{"login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"});
         CHECK(rd_given == "{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
-        rd_given = serializer.SerializeRegData({"", ""});
+        rd_given = serializer.Serialize(hh::RegistrationData{"", ""});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"\"}");
-        rd_given = serializer.SerializeRegData({"123qwe123", ""});
+        rd_given = serializer.Serialize(hh::RegistrationData{"123qwe123", ""});
         CHECK(rd_given == "{\"login\":\"123qwe123\",\"password\":\"\"}");
-        rd_given = serializer.SerializeRegData({"", "123qwe123"});
+        rd_given = serializer.Serialize(hh::RegistrationData{"", "123qwe123"});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"123qwe123\"}");
-        rd_given = serializer.SerializeRegData({"login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"});
+        rd_given = serializer.Serialize(hh::RegistrationData{"login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"});
         CHECK(rd_given == "{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
     }
     SECTION ("DeserializeRegData") {
@@ -143,20 +144,20 @@ TEST_CASE("SerializeRegData & DeserializeRegData", "[jsonserializer]") {
     }
 }
 
-TEST_CASE("SerializePublicUserData & DeserializePublicUserData", "[jsonserializer]") {
+TEST_CASE("Serialize & DeserializePublicUserData", "[jsonserializer]") {
     JSONSerializer serializer;
-    SECTION ("SerializePublicUserData") {
-        std::string rd_given = serializer.SerializePublicUserData({{"uuid", "login1", "password1"}});
+    SECTION ("Serialize") {
+        std::string rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login1", "password1"}});
         CHECK(rd_given == "{\"login\":\"login1\",\"password\":\"password1\"}");
-        rd_given = serializer.SerializePublicUserData({{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
+        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
         CHECK(rd_given == "{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
-        rd_given = serializer.SerializePublicUserData({{"uuid", "", ""}});
+        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "", ""}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"\"}");
-        rd_given = serializer.SerializePublicUserData({{"uuid", "123qwe123", ""}});
+        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "123qwe123", ""}});
         CHECK(rd_given == "{\"login\":\"123qwe123\",\"password\":\"\"}");
-        rd_given = serializer.SerializePublicUserData({{"uuid", "", "123qwe123"}});
+        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "", "123qwe123"}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"123qwe123\"}");
-        rd_given = serializer.SerializePublicUserData({{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
+        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
         CHECK(rd_given == "{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
     }
     SECTION ("DeserializePublicUserData") {
@@ -194,7 +195,7 @@ TEST_CASE("SerializePublicUserData & DeserializePublicUserData", "[jsonserialize
     }
 }
 
-TEST_CASE("SerializeTokenToUuid", "[jsonserializer]"){
+TEST_CASE("Serialize token map", "[jsonserializer]"){
     using StringMap = std::map<token_manager::Token, dm::Uuid>;
     
     JSONSerializer serializer;
@@ -202,7 +203,7 @@ TEST_CASE("SerializeTokenToUuid", "[jsonserializer]"){
     StringMap given;
     json j;
 
-    SECTION("SerializeTokenToUuid"){
+    SECTION("Serialize"){
         map = {{"first", "second"}, {"third", "fourth"}};
         REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
         REQUIRE_NOTHROW(given = j.template get<StringMap>());
@@ -214,3 +215,85 @@ TEST_CASE("SerializeTokenToUuid", "[jsonserializer]"){
         CHECK(map == given);
     }
 }
+
+TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
+    JSONSerializer serializer;
+    json j;
+    gm::State given;
+    gm::State example;
+
+    SECTION("Serialize"){
+        example.now_turn = "login1";
+        example.players = {
+            {
+                "login1",
+                5,
+                5      
+            },
+            {
+                "login2",
+                1,
+                1
+            }
+        };
+        example.terrain = {
+            {2,2,gm::Obstacle::Type::Wall},
+            {3,3,gm::Obstacle::Type::Wall}
+        };
+        std::string given_str;
+        REQUIRE_NOTHROW(given_str = serializer.Serialize(std::move(example)));
+        REQUIRE_NOTHROW(j = json::parse(given_str));
+        REQUIRE_NOTHROW(given = j.template get<gm::State>());
+        REQUIRE(example == given);
+
+        example.now_turn = "";
+        example.players = {
+            {
+                "",
+                0,
+                0      
+            },
+            {
+                "",
+                0,
+                0
+            }
+        };
+        example.terrain = {
+            {0,0,gm::Obstacle::Type::Wall},
+            {0,0,gm::Obstacle::Type::Wall}
+        };
+        REQUIRE_NOTHROW(given_str = serializer.Serialize(example));
+        REQUIRE_NOTHROW(j = json::parse(given_str));
+        REQUIRE_NOTHROW(given = j.template get<gm::State>());
+        REQUIRE(example == given);
+    }
+    SECTION("Deserialize"){
+        std::string given_str = "{\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
+        auto opt = serializer.DeserializeSessionState(given_str);
+        REQUIRE(opt.has_value());
+        REQUIRE_NOTHROW(given = *opt);
+        example.now_turn = "login number one";
+        example.players = {
+            {
+                "login number one",
+                1,
+                2      
+            },
+            {
+                "login number twoo",
+                5,
+                6
+            }
+        };
+        example.terrain = {
+            {3,4,gm::Obstacle::Type::Wall},
+            {2,1,gm::Obstacle::Type::Wall},
+            {89,12222555,gm::Obstacle::Type::Wall}
+        };
+        j = given;
+        INFO(j.dump());
+        REQUIRE(given == example);
+
+    }
+}   

@@ -4,6 +4,8 @@
 #include "response_builder.hpp"
 
 namespace game_manager{
+    GameManager::GameManager(dm::IUserDataManager::Ptr udm)
+        :udm_(udm){}
 
     bool GameManager::CreateSession(dm::Uuid&& player1, dm::Uuid&& player2){
         SessionId si = GenerateSessionId();

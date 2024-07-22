@@ -21,6 +21,13 @@ all non-ok responses have same body type. for example:
     "description": "object that you are trying to access is not found"
 }
 ```
+
+* <span style="color:#87ff8b"><b>requires authorization</b></span> means that request must be authorized with `Authorization` header. example:
+```HTTP
+Authorization: Bearer FFAADDDDEE12161753563
+```
+*  <span style="color:#f58a42"><b>Long-Poll</b></span> means that request is Long-Poll. response will not arrive immediately, you should wait for response for a while.
+
 ## Debug API
 
 debug api is required to get data from app structures. to execute them you need to send admin login and password.
@@ -68,7 +75,9 @@ debug function for getting users' authentication tokens and uuids.
 #### **description**
 debug function for getting users' profile info like login and password.
 #### **request target**
-*/api/debug/user_data*
+*/api/debug/user_data?uuid=USER_UUID*
+**OR**
+*/api/debug/user_data?login=USER_LOGIN&password=USER_PASS*
 
 #### **request body example**
 ```js
@@ -85,9 +94,9 @@ debug function for getting users' profile info like login and password.
     *response body example:*
     ```js
     {
-        {"player_serega", "2012_serega@enjoyer"},
-        {"player_vasyan", "2009_vasili@pupkin"},
-        {"na@ibat0R", "Ilinskaya12"}
+		"uuid":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+		"login":"thebestuserever100"
+		"password":"Oksano4kaCute"
     }
     ```
     
@@ -474,3 +483,32 @@ if body is empty it means that no opponent found yet.
 ```
 * `409 poll_closed`
 means that for your account there is another opened poll waiting. this poll closes and data will be sent to a new poll.
+---
+### API session_state
+#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
+
+#### **request target**  
+_/api/game/session_state?sessionId=SESSION_ID_
+
+#### **function description**
+request to get session state. session id should be passed as URL parameter.
+
+#### **request body example**
+
+```js
+{
+	"sessionId": "SESSION_ID"
+}
+```
+
+#### **responses**
+* `200 OK`  
+*response body:*
+***TO SEE RESPONSE EXAMPLE: [[session_state]]***
+* `400 wrong_sessionId`
+```json
+{
+	"error_name":"wrong_sessionId"
+	"description":"no sessionId passed or wrong sessionId"
+}
+```
