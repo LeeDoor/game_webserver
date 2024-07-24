@@ -1,4 +1,3 @@
-
 body {
     background-color: lightgreen;
     display: flex;
@@ -7,54 +6,13 @@ body {
     height: 100vh;
     margin: 0;
 }
-.grid {
-    position:absolute;
+
+#canvas {
+    border: 1px solid black;
     display: flex;
-    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     width: min(90vh, 90vw);
     height: min(90vh, 90vw);
-    top: 0;
-    left: 0;
-    z-index: 0;
-}
-.players-field {
-    position:absolute;
-    display: flex;
-    flex-wrap: wrap;
-    width: min(90vh, 90vw);
-    height: min(90vh, 90vw);
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-.cell {
-    position:relative;
-    box-sizing: border-box;
-    width: calc(100% / 15);
-    height: calc(100% / 15);
-    border: 1px solid darkgreen;
-}
-.wall {
-    background-color: gray;
-}
-.grass {
-    background-color: green;
-}
-.player {
-    background-image: url('images/player1.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: calc(100% / 15);
-    height: calc(100% / 15);
-    position: absolute;
-    transition: top 0.1s, left 0.1s;
-}
-.enemy {
-    background-image: url('images/player2.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: calc(100% / 15);
-    height: calc(100% / 15);
-    position: absolute;
-    transition: top 0.1s, left 0.1s;
+    margin: 0;
 }

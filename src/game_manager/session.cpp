@@ -9,7 +9,15 @@ namespace game_manager{
 
         state_->players.resize(2);
         state_->players[0].login = login1;
+        state_->players[0].posX = 5;
         state_->players[1].login = login2;
+        state_->terrain.resize(2);
+        state_->terrain[0].posX = 2;
+        state_->terrain[0].posY = 3;
+        state_->terrain[0].type = Obstacle::Type::Wall;
+        state_->terrain[1].posX = 4;
+        state_->terrain[1].posY = 5;
+        state_->terrain[1].type = Obstacle::Type::Wall;
         state_->now_turn = login1;
     }
 

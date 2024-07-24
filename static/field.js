@@ -1,41 +1,145 @@
 
-const gridElement = document.getElementById('grid');
-const fieldElement = document.getElementById('players-field');
-const gridSize = 15;
-let field =[];
-let playerCell;
-let enemyCell;
-let player, enemy;
+class Cell{
+    constructor(x,y,type, selected){
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.selected = selected;
+    }
+}
 
-function createGrid(){
-    for (let y = 0; y < gridSize; ++y) {
-        for(let x = 0; x < gridSize; ++x){
-            const cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.position_x = x;
-            cell.position_y = y;
-            cell.grid_index = y*gridSize + x;
-            cell.classList.add('grass');
-            gridElement.appendChild(cell);
-            field.push(cell);
+class Player{
+    constructor(x,y,us){
+        this.x = x;
+        this.y = y;
+        this.us = us;
+    }
+}
+
+class Element{
+    constructor(w,h,t,l){
+        this.w = w;
+        this.h = h;
+        this.t = t;
+        this.l = l;
+    }
+}
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const gridSize = 15;
+const borderps = 0;
+const innerCellMarginps = 0.5;
+let cellMarginpx;
+let borderpx;
+let grid = [];
+
+let playerUs = new Player(0,0, true);
+let playerEnemy = new Player(0,0, false);
+
+let selectedCell;
+
+function initGrid(){
+    for(x = 0; x < gridSize; ++x){
+        let col = [];
+        for(y = 0; y < gridSize; ++y){
+            col.push(new Cell(x,y,"grass", false));
+        }
+        grid.push(col);
+    }
+}
+
+function elementData(x, y){
+    let res = new Element(0,0,0,0);
+
+    res.w = (canvas.width - 2 * borderpx)/gridSize;
+    res.h = (canvas.height - 2 * borderpx)/gridSize;
+    res.t = borderpx + y * res.h;
+    res.l = borderpx + x * res.w;
+
+    res.t += cellMarginpx;
+    res.l += cellMarginpx;
+    res.w -= cellMarginpx * 2;
+    res.h -= cellMarginpx * 2;
+
+    return res;
+}
+
+
+function drawCell(cell){
+    const element = elementData(cell.x, cell.y);
+    switch(cell.type){
+        case "grass":
+            ctx.fillStyle = "rgb("+(79+cell.selected*50)+" 255 170)";
+            break;
+        case "wall":
+            ctx.fillStyle = "rgb(191 255 252)";
+            break;
+    }
+    ctx.fillRect(element.l, element.t, element.w, element.h);
+}
+
+function drawPlayer(player){
+    const element = elementData(player.x, player.y);
+    if(player.us)
+        ctx.fillStyle = "rgb(66 79 255)";
+    else
+        ctx.fillStyle = "rgb(255 145 145)";
+    
+    ctx.fillRect(element.l, element.t, element.w, element.h);
+}
+
+function drawPlayers(){
+    drawPlayer(playerUs);
+    drawPlayer(playerEnemy);
+}
+
+function drawGrid(){
+    borderpx = canvas.width * borderps / 100;
+    cellMarginpx = canvas.width * innerCellMarginps / 100;
+
+    for(y = 0; y < gridSize; ++y){
+        for (x = 0; x < gridSize; ++x){
+            drawCell(grid[x][y]);
         }
     }
-} 
+}
+
+function drawScene(){
+    drawGrid();
+    drawPlayers();
+}
 
 function makeWall(cell){
-    cell.classList.remove('grass');
-    cell.classList.add('wall');
+    cell.type = "wall";
 }
 
-function updatePosition(){
-    player.style.top = playerCell.position_y/gridSize*100 + "%";
-    player.style.left = playerCell.position_x /gridSize*100 + "%";
-
-    enemy.style.top = enemyCell.position_y/gridSize*100 + "%";
-    enemy.style.left = enemyCell.position_x /gridSize*100 + "%";
+function updateTerrain(terrain){
+    for(i = 0; i < terrain.length; ++i){
+        let block = terrain[i];
+        makeWall(grid[block.posX][block.posY]);
+    }
 }
 
-async function applyState(){
+function updatePlayers(players){
+    let dataUs, dataEnemy;
+    if (players[0].login == localStorage.getItem('login')){
+        dataUs = players[0];
+        dataEnemy = players[1];
+    }
+    else{
+        dataUs = players[1];
+        dataEnemy = players[0];
+    }
+    playerUs.x = dataUs.posX;
+    playerUs.y = dataUs.posY;
+
+    playerEnemy.x = dataEnemy.posX;
+    playerEnemy.y = dataEnemy.posY;
+}
+
+async function updateScene(){
     const state_response = await 
         fetch('http://localhost:9999/api/game/session_state?sessionId='+localStorage.getItem('sessionId'), {
             method: 'GET',
@@ -46,100 +150,61 @@ async function applyState(){
         });
     const json = await state_response.json();
     const terrain = json.terrain;
-    for(i = 0; i < terrain.length; ++i){
-        let block = terrain[i];
-        makeWall(field[block.posY*gridSize + block.posX]);
-    }
-
-    let us, enemy;
-    if (json.players[0].login == localStorage.getItem('login')){
-        us = json.players[0];
-        enemy = json.players[1];
-    }
-    else{
-        us = json.players[1];
-        enemy = json.players[0];
-    }
-    playerCell.position_x = us.posX;
-    playerCell.position_y = us.posY;
-
-    enemyCell.position_x = enemy.posX;
-    enemyCell.position_y = enemy.posY;
-
-    updatePosition();
+    const players = json.players;
+    updateTerrain(terrain);
+    updatePlayers(players);
 }
 
-async function initField() {
-    createGrid();
-    // Place player on a random grass cell
-    const grassCells = field.filter(cell => cell.classList.contains('grass'));
-    const randomIndex = Math.floor(Math.random() * grassCells.length);
+        
+async function resizeCanvas() {
+    canvas.width = parseFloat(getComputedStyle(canvas).width);
+    canvas.height = parseFloat(getComputedStyle(canvas).height);
 
-    playerCell = grassCells[randomIndex];
-    player = document.createElement('div');
-    player.classList.add('player');
-    fieldElement.appendChild(player);
-
-
-    enemyCell = grassCells[randomIndex > 0? randomIndex-1 :randomIndex+1];
-    enemy = document.createElement('div');
-    enemy.classList.add('enemy');
-    fieldElement.appendChild(enemy);
-
-    applyState();
-    updatePosition();
-}
-function movePlayer(direction) {
-    let newPlayerCell;
-    const currentIndex = playerCell.grid_index;
-    const row = playerCell.position_y;
-    const col = playerCell.position_x;
-
-    switch (direction) {
-        case 'up':
-            if (row > 0) newPlayerCell = gridElement.children[currentIndex - gridSize];
-            break;
-        case 'down':
-            if (row < gridSize - 1) newPlayerCell = gridElement.children[currentIndex + gridSize];
-            break;
-        case 'left':
-            if (col > 0) newPlayerCell = gridElement.children[currentIndex - 1];
-            break;
-        case 'right':
-            if (col < gridSize - 1) newPlayerCell = gridElement.children[currentIndex + 1];
-            break;
-    }
-    
-    function Visitable(cell){
-        console.log(cell.position_x, cell.position_y);
-        return cell.classList.contains('grass') && cell != enemyCell;
-    }
-
-    if (newPlayerCell && Visitable(newPlayerCell)) {
-        player.style.top = newPlayerCell.position_y/gridSize*100 + "%";
-        player.style.left = newPlayerCell.position_x/gridSize*100 + "%";
-        playerCell = newPlayerCell;
-    }
+    await updateScene();
+    drawScene();
 }
 
-document.addEventListener('keydown', (event) => {
-    switch (event.key) {
-        case 'ArrowUp':
-        case 'w':
-            movePlayer('up');
-            break;
-        case 'ArrowDown':
-        case 's':
-            movePlayer('down');
-            break;
-        case 'ArrowLeft':
-        case 'a':
-            movePlayer('left');
-            break;
-        case 'ArrowRight':
-        case 'd':
-            movePlayer('right');
-            break;
+function getMousePos(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+    };
+}
+function getCell(coordinates) {
+    const x = Math.floor(coordinates.x/(canvas.width/gridSize));
+    const y = Math.floor(coordinates.y/(canvas.height/gridSize));
+    const fit = x >= 0 && x < gridSize && y >= 0 && y < gridSize;
+    console.log(x, y);
+    if(fit)
+        return grid[x][y];
+    return null;
+}
+
+
+function OnClick(event) {
+    playerUs.x = selectedCell.x;
+    playerUs.y = selectedCell.y;
+    drawScene();
+}
+
+function OnMouseOver(event){
+    if(selectedCell){
+        selectedCell.selected = false;
+        selectedCell = null;
     }
-});
-initField();
+    const mouse = getMousePos(canvas, event);
+    const cell = getCell(mouse);
+    if (!cell) return;
+    cell.selected = true;
+    selectedCell = cell;
+    drawScene();
+}
+
+initGrid();
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas, false);
+canvas.addEventListener('click', OnClick, false);
+canvas.addEventListener('mousemove', OnMouseOver, false);
+//canvas.addEventListener('mouseout', OnMouseOut, false);
+  

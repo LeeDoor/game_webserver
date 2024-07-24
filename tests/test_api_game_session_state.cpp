@@ -13,13 +13,23 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
     std::string URL_PARAMETERS_ERROR = serializer->SerializeError("url_parameters_error", "this api function requires url parameters");
     std::string UNAUTHORIZED = serializer->SerializeError("unathorized", "request must be authorized");
 
+    LoginData ld2;
     if(MMQueueSuccess(socket, serializer).size() == 0)
-        EnqueueWorthyOpponent(socket, serializer); // to operate with filled queue
+        ld2 = EnqueueWorthyOpponent(socket, serializer);
+    else{
+        auto ud = UserDataSuccess(socket, serializer, MMQueueSuccess(socket, serializer)[0]);
+        ld2 = LoginSuccess(socket, ud.login, serializer);
+    }
     LoginData ld = EnqueueWorthyOpponent(socket, serializer);
     gm::SessionId sid = WaitForOpponentSuccess(socket, ld.token, serializer);
 
     SECTION ("success"){
         gm::State state = SessionStateSuccess(socket, serializer, ld.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+
+        REQUIRE(state.players.size() == 2);
+        bool now_turn_match = state.now_turn == state.players[0].login || state.now_turn == state.players[1].login;
+        REQUIRE(now_turn_match);
 
         hh::RegistrationData rd = RegisterSuccess(socket, serializer);
         LoginData ld1 = LoginSuccess(socket, rd.login, serializer);
