@@ -585,3 +585,45 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 	"description":"no session with such sessionId"
 }
 ```
+
+---
+### API move
+#### <span style="color:#87ff8b"><b>requires authorization</b></span>
+#### **allowed methods**
+***`POST`***
+#### **request target**  
+_/api/game/move?sessionId=SESSION_ID_
+
+#### **function description**
+function tells the game about player's move. sessionId must be passed as URL parameter, body should contain move information.
+
+#### **request body example**
+
+```json
+{
+	"move_type":STRING,//"walk", ...
+	"posX":UNSIGNED,
+	"posY":UNISIGNED
+}
+```
+
+#### **responses**
+
+* `200 OK`  
+everything is ok, now opponent is moving
+* `400 wrong_move`
+according to the game rules, player cant make such move.
+```json
+{
+	"error_name": "wrong_move",
+	"description": "player cant make such move"
+}
+```
+* `400 not_your_move`
+now there is an enemy's move, you cant do anything.
+```json
+{
+	"error_name": "not_your_move",
+	"description": "the opponent's move is now"
+}
+```
