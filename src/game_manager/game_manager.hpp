@@ -13,11 +13,13 @@ namespace game_manager{
         GameManager(dm::IUserDataManager::Ptr udm);
 
         bool CreateSession(dm::Uuid&& player1, dm::Uuid&& player2);
+        bool HasSession(const SessionId& sid);
         bool HasPlayer(const dm::Uuid& uuid);
+        bool HasPlayer(const dm::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
 
         //ingame api
-        bool Ping(const dm::Uuid& player_id, const SessionId& session_id); // placeholder
+        Session::GameApiStatus Move(const dm::Uuid& player_id, const SessionId& session_id); // placeholder
     private:
         SessionId GenerateSessionId();
 

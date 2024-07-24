@@ -20,12 +20,20 @@ namespace game_manager{
         return sessions_.contains(si);
     }
 
+    bool GameManager::HasSession(const SessionId& sid){
+        return sessions_.contains(sid);
+    }
     bool GameManager::HasPlayer(const dm::Uuid& uuid) {
         for(std::pair<SessionId, Session> pair : sessions_){
             if (pair.second.HasPlayer(uuid))
                 return true;
         }
         return false;
+    }
+    bool GameManager::HasPlayer(const dm::Uuid& uuid, const SessionId& sessionId){
+        if (sessions_.contains(sessionId))
+            return sessions_.at(sessionId).HasPlayer(uuid);
+        throw std::runtime_error("GameManager Should check if session exists");
     }
     State::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(sessions_.contains(sessionId))
@@ -34,11 +42,11 @@ namespace game_manager{
     }
 
     //ingame api
-    bool GameManager::Ping(const dm::Uuid& player_id, const SessionId& session_id){
+    Session::GameApiStatus GameManager::Move(const dm::Uuid& player_id, const SessionId& session_id){
         if (sessions_.contains(session_id)){
-            return sessions_.at(session_id).Ping(player_id);
+            return sessions_.at(session_id).Move(player_id, {});
         }
-        return false;
+        throw std::runtime_error("GameManager Should check if session exists");
     }
 
     SessionId GameManager::GenerateSessionId(){

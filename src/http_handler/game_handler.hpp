@@ -18,6 +18,7 @@ namespace http_handler{
         void ApiWaitForOpponent(SessionData&& rns);
         void ApiSessionState(SessionData rns);
         void ApiSessionStateChange(SessionData&& rns);
+        void ApiMove(SessionData rns);
 
     private:
         game_manager::IQueueManager::Ptr iqm_;

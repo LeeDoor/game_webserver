@@ -34,6 +34,9 @@ namespace http_handler{
         void SendCantLogin(SessionData rns) const;
         void SendPollClosed(SessionData rns, const std::string& description) const;
         void SendWrongSessionId(SessionData rns) const;
+        void SendAccessDenied(SessionData rns) const;
+        void SendNotYourMove(SessionData rns) const;
+        void SendWrongMove(SessionData rns) const;
 
         void SendWrongUrlParameters(SessionData rns) const;
 

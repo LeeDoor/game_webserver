@@ -75,6 +75,15 @@ namespace http_handler{
     void SendManager::SendWrongSessionId(SessionData rns) const{
         Send(rns, status::bad_request, serializer_->SerializeError("wrong_sessionId", "no session with such sessionId"));
     }
+    void SendManager::SendAccessDenied(SessionData rns) const {
+        Send(rns, status::bad_request, serializer_->SerializeError("access_denied", "you have no access to do this action"));
+    }
+    void SendManager::SendNotYourMove(SessionData rns) const {
+        Send(rns, status::bad_request, serializer_->SerializeError("not_your_move", "the opponent's move is now"));
+    }
+    void SendManager::SendWrongMove(SessionData rns) const {
+        Send(rns, status::bad_request, serializer_->SerializeError("wrong_move", "player cant make such move"));
+    }
 
     void SendManager::SendWrongUrlParameters(SessionData rns)const {
         Send(rns, status::unprocessable_entity, serializer_->SerializeError("url_parameters_error", "this api function requires url parameters"));

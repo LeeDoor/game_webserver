@@ -585,7 +585,14 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 	"description":"no session with such sessionId"
 }
 ```
-
+* `400 no_such_session`
+session you are trying to get access to does not exist.
+```json
+{
+	"error_name": "no_such_session",
+	"description": "session you are trying to get access to does not exist"
+}
+```
 ---
 ### API move
 #### <span style="color:#87ff8b"><b>requires authorization</b></span>
@@ -616,7 +623,7 @@ according to the game rules, player cant make such move.
 ```json
 {
 	"error_name": "wrong_move",
-	"description": "player cant make such move"
+	"description": "GameManager"
 }
 ```
 * `400 not_your_move`
@@ -625,5 +632,21 @@ now there is an enemy's move, you cant do anything.
 {
 	"error_name": "not_your_move",
 	"description": "the opponent's move is now"
+}
+```
+* `400 access_denied`
+you don't have access to make a move in this match. probably you are not the player.
+```json
+{
+	"error_name": "access_denied",
+	"description": "you have no access to do this action"
+}
+```
+* `400 no_such_session`
+session you are trying to get access to does not exist.
+```json
+{
+	"error_name": "no_such_session",
+	"description": "session you are trying to get access to does not exist"
 }
 ```

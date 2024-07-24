@@ -3,7 +3,7 @@
 namespace game_manager{
 
     Session::Session(dm::Uuid&& player1, const dm::Login& login1, dm::Uuid&& player2, const dm::Login& login2) 
-        :player1_(player1), player2_(player2){
+        :player1_(std::move(player1)), player2_(std::move(player2)), uuid_to_login_{{player1, login1},{player2, login2}}{
 
         state_ = std::make_shared<State>();
 
@@ -29,7 +29,7 @@ namespace game_manager{
         return state_;
     }
 
-    bool Session::Ping(const dm::Uuid& player_id){
-        return true;
+    Session::GameApiStatus Session::Move(const dm::Uuid& player_id, const MoveData& move_data){
+        return GameApiStatus::Ok;
     }
 }

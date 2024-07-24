@@ -74,6 +74,8 @@ namespace http_handler{
         if(map.size() != 1 || !map.contains("sessionId"))
             return responser_.SendWrongUrlParameters(rns);
         gm::SessionId sid = map.at("sessionId");
+        if(!gm_->HasSession(sid))
+            return responser_.SendWrongSessionId(rns);
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(*uuid, sid, 
         [rns = std::move(rns), resp = responser_](Notif::PollStatus status, gm::State::OptCPtr state){
@@ -86,5 +88,28 @@ namespace http_handler{
                 break;
             }
         });
+    }
+
+    void GameHandler::ApiMove(SessionData rns) {
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = tm_->GetUuidByToken(token);
+        auto map = ParseUrlParameters(rns.request);
+        if(map.size() != 1 || !map.contains("sessionId"))
+            return responser_.SendWrongUrlParameters(rns);
+        gm::SessionId sid = map.at("sessionId");
+        if (!gm_->HasSession(sid))
+            return responser_.SendWrongSessionId(rns);
+        if (!gm_->HasPlayer(*uuid, sid))
+            return responser_.SendAccessDenied(rns);
+        using Status = gm::Session::GameApiStatus;
+        Status status = gm_->Move(*uuid, sid);
+        switch(status){
+        case Status::Ok:
+            return responser_.SendSuccess(rns);
+        case Status::NotYourMove:
+            return responser_.SendNotYourMove(rns);
+        case Status::WrongMove:
+            return responser_.SendWrongMove(rns);
+        }
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 #include "user_data.hpp"
 #include "state.hpp"
 
@@ -13,13 +14,27 @@ namespace game_manager{
 
         State::CPtr GetState();
         
-        bool Ping(const dm::Uuid& player_id);
+        enum GameApiStatus{
+            Ok,
+            WrongMove,
+            NotYourMove
+        };
+
+        struct GameApiData{
+            unsigned posX;
+            unsigned posY;
+        };
+
+        struct MoveData : public GameApiData{};
+        GameApiStatus Move(const dm::Uuid& player_id, const MoveData& move_data);
 
     private:
         State::Ptr state_;
 
         dm::Uuid player1_;
         dm::Uuid player2_;
+
+        const std::map<dm::Uuid, dm::Login> uuid_to_login_;
     };
 }   
 namespace gm = game_manager;
