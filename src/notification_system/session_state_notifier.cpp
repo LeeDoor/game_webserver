@@ -34,14 +34,14 @@ namespace notification_system{
             Subscribe(uuid, sid);
 
         std::vector<dm::Uuid>& pw = sessions_[sid].poll_waiting;
-        auto it = std::find(pw.begin(), pw.end(), uuid);
+        const std::vector<dm::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
             responser(PollStatus::Ok, GetGameState(sid));
             pw.erase(it);
             return true;
         }
 
-        if (!sessions_[sid].users_responser[uuid].has_value()){
+        if (sessions_[sid].users_responser[uuid].has_value()){
             //breaking previous poll if it is
             (*sessions_[sid].users_responser[uuid])(PollStatus::PollClosed, std::nullopt);
         }

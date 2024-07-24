@@ -207,7 +207,6 @@ function onClick(event) {
 
 // drops selected cell to null
 function dropSelectedCell(){
-    dropSelectedCell();
     if(selectedCell){
         selectedCell.selected = false;
         selectedCell = null;
@@ -216,6 +215,7 @@ function dropSelectedCell(){
 
 // mouse hovering event
 function onMouseOver(event){
+    dropSelectedCell();
     const mouse = getMousePos(canvas, event);
     const cell = getCell(mouse);
     if (!cell) return;
@@ -250,7 +250,7 @@ function waitForStateChange() {
     });
 }
 
-function move(){
+function walk(){
     const data = {
         move_type: "move",
         posX: selectedCell.x,

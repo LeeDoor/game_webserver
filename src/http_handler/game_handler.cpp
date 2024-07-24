@@ -23,6 +23,7 @@ namespace http_handler{
             {"/api/game/enqueue", afd.GetEnqueue(BIND(&GameHandler::ApiEnqueue))},
             {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND(&GameHandler::ApiWaitForOpponent))},
             {"/api/game/session_state", afd.GetSessionState(BIND(&GameHandler::ApiSessionState))},
+            {"/api/game/session_state_change", afd.GetSessionStateChange(BIND(&GameHandler::ApiSessionStateChange))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData rns){
@@ -66,7 +67,7 @@ namespace http_handler{
         return responser_.SendGameState(rns, **state);
     }
 
-    void GameHandler::ApiSessionStateChange(SessionData rns){
+    void GameHandler::ApiSessionStateChange(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         auto map = ParseUrlParameters(rns.request);
