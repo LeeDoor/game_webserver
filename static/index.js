@@ -70,14 +70,17 @@ function verifyToken(){
 
 function WaitForOpponent(){
     fetch('http://localhost:9999/api/game/wait_for_opponent', {
-        method: 'POST',
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
-    }).then(response=>{
-    if(response.ok){
-            showCustomPopup("game found! session #" + response.json(), "#00FF00");
+    }).then(async response=>{
+        if(response.ok){
+            showCustomPopup("game found!", "#00FF00");
+            const data = await response.json();
+            localStorage.setItem('sessionId', data.sessionId);
+            window.location.href = "http://localhost:9999/field.html";
         }
     });
 }
@@ -89,21 +92,18 @@ function Enqueue(event) {
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
     }).then(response=>{
-        const data = response.json();
-        if(Object.keys(data).length === 0){
+        if(response.ok){
             showCustomPopup("queuing...", "#00FF00");
             WaitForOpponent();
         }
-        else if(response.ok){
-            showCustomPopup("already in queue. joining match from here", "#ffbf00");
-            WaitForOpponent();
-        }
-        else{
-            showCustomPopup("failed to add you to the queue: " + data.description, "#FF0000");
+        return response.json();
+    }).then(function (json){
+        if(json.error_name){
+            showCustomPopup("failed to add you to the queue: " + json.description, "#FF0000");
         }
     });
 }
-document.getElementById('registerButton').addEventListener('click', function(event) {
+function Register(event) {
     const regLogin = document.getElementById('regLogin').value;
     const regPass = document.getElementById('regPass').value;
 
@@ -119,8 +119,8 @@ document.getElementById('registerButton').addEventListener('click', function(eve
         },
         body: JSON.stringify(data)
     });
-});
-document.getElementById('logButton').addEventListener('click', function(event) {
+}
+function Login(event) {
     const logLogin = document.getElementById('logLogin').value;
     const logPass = document.getElementById('logPass').value;
 
@@ -150,11 +150,8 @@ document.getElementById('logButton').addEventListener('click', function(event) {
         console.log(json.token);
         localStorage.setItem('token', json.token);
     });
-});
-
-document.getElementById('playButton').addEventListener('click', Enqueue);
-
-document.addEventListener("DOMContentLoaded", function() {
+}
+function DOMCL() {
     var lt = document.getElementById('loginText');
     if (lt){
         lt.textContent = localStorage.getItem('login');
@@ -162,4 +159,8 @@ document.addEventListener("DOMContentLoaded", function() {
             lt.textContent = 'Guest';
         }
     }
-});
+}
+document.getElementById('registerButton').addEventListener('click', Register);
+document.getElementById('logButton').addEventListener('click', Login);
+document.getElementById('playButton').addEventListener('click', Enqueue);
+document.addEventListener("DOMContentLoaded", DOMCL);
