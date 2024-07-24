@@ -19,7 +19,7 @@ namespace game_manager{
         State::OptCPtr GetState(const SessionId& sessionId);
 
         //ingame api
-        Session::GameApiStatus Move(const dm::Uuid& player_id, const SessionId& session_id); // placeholder
+        Session::GameApiStatus ApiWalk(const dm::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
     private:
         SessionId GenerateSessionId();
 

@@ -24,6 +24,7 @@ namespace http_handler{
             {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND(&GameHandler::ApiWaitForOpponent))},
             {"/api/game/session_state", afd.GetSessionState(BIND(&GameHandler::ApiSessionState))},
             {"/api/game/session_state_change", afd.GetSessionStateChange(BIND(&GameHandler::ApiSessionStateChange))},
+            {"/api/game/move", afd.GetMove(BIND(&GameHandler::ApiMove))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData rns){
@@ -101,8 +102,23 @@ namespace http_handler{
             return responser_.SendWrongSessionId(rns);
         if (!gm_->HasPlayer(*uuid, sid))
             return responser_.SendAccessDenied(rns);
+        
         using Status = gm::Session::GameApiStatus;
-        Status status = gm_->Move(*uuid, sid);
+        using Type = gm::Session::PlayerMoveType;
+        std::optional<Type> pmt = serializer_->DefinePlayerMove(rns.request.body());
+        if(!pmt.has_value())
+            return responser_.SendWrongBodyData(rns);
+        Status status;
+        switch (*pmt){
+        case Type::Walk:
+            std::optional<gm::Session::WalkData> data 
+                = serializer_->DeserializePlayerWalk(rns.request.body());
+            if(!data.has_value())
+                return responser_.SendWrongBodyData(rns);
+            status = gm_->ApiWalk(*uuid, sid, *data);
+            break;
+        }
+
         switch(status){
         case Status::Ok:
             return responser_.SendSuccess(rns);

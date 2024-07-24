@@ -1,11 +1,13 @@
 #include "session.hpp"
+#include <cmath>
 
 namespace game_manager{
 
-    Session::Session(dm::Uuid&& player1, const dm::Login& login1, dm::Uuid&& player2, const dm::Login& login2) 
-        :player1_(std::move(player1)), player2_(std::move(player2)), uuid_to_login_{{player1, login1},{player2, login2}}{
-
-        state_ = std::make_shared<State>();
+    Session::Session(dm::Uuid player1, const dm::Login& login1, dm::Uuid player2, const dm::Login& login2) 
+        :player1_(std::move(player1)), 
+        player2_(std::move(player2)), 
+        uuid_to_login_{{player1_, login1},{player2_, login2}},
+        state_(std::make_shared<State>()){
 
         state_->players.resize(2);
         state_->players[0].login = login1;
@@ -29,7 +31,24 @@ namespace game_manager{
         return state_;
     }
 
-    Session::GameApiStatus Session::Move(const dm::Uuid& player_id, const MoveData& move_data){
-        return GameApiStatus::Ok;
+    Session::GameApiStatus Session::ApiWalk(const dm::Uuid& player_id, const WalkData& move_data){
+        Player& player = StatePlayer1().login == uuid_to_login_.at(player_id)?
+            StatePlayer1() : StatePlayer2();
+        if (player.login != state_->now_turn)
+            return GameApiStatus::NotYourMove;
+        if (player.posX == move_data.posX && std::abs(static_cast<short>(player.posY - move_data.posY)) == 1 ||
+            player.posY == move_data.posY && std::abs(static_cast<short>(player.posX - move_data.posX)) == 1){
+            // sum of changes #TODO
+            player.posX = move_data.posX;
+            player.posY = move_data.posY;
+            AfterMove();
+            return GameApiStatus::Ok;
+        }
+        return GameApiStatus::WrongMove;
     }
+    
+    void Session::AfterMove(){
+        state_->now_turn = state_->now_turn == StatePlayer1().login? StatePlayer2().login : StatePlayer1().login;
+    }
+
 }

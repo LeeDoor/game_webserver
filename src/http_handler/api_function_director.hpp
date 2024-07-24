@@ -16,7 +16,7 @@ namespace http_handler {
         ApiFunctionExecutor GetWaitForOpponent(ExecutorFunction&& afe);
         ApiFunctionExecutor GetSessionState(ExecutorFunction&& afe);
         ApiFunctionExecutor GetSessionStateChange(ExecutorFunction&& afe);
-
+        ApiFunctionExecutor GetMove(ExecutorFunction&& afe);
 
         ApiFunctionExecutor GetPlayerTokens(ExecutorFunction&& afe);
         ApiFunctionExecutor GetUserData(ExecutorFunction&& afe);

@@ -119,4 +119,27 @@ namespace serializer{
         }
         return res;
     }
+
+    std::optional<gm::Session::PlayerMoveType> JSONSerializer::DefinePlayerMove(const std::string& json_str) {
+        gm::Session::PlayerMoveType res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            res = j["move_type"];
+        }
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
+    }
+    std::optional<gm::Session::WalkData> JSONSerializer::DeserializePlayerWalk(const std::string& json_str) {
+        gm::Session::WalkData res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            j.get_to(res);
+        }
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
+    }
 }

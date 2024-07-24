@@ -37,5 +37,8 @@ namespace serializer{
         virtual std::optional<dm::UserData> DeserializeUserData(const std::string& json) = 0;
         virtual std::optional<std::vector<dm::Uuid>> DeserializeUuids(const std::string& json) = 0;
         virtual std::optional<gm::State> DeserializeSessionState(const std::string& json) = 0;
+
+        virtual std::optional<gm::Session::PlayerMoveType> DefinePlayerMove(const std::string& json) = 0;
+        virtual std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) = 0;
     };
 }

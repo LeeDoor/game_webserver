@@ -55,4 +55,12 @@ namespace game_manager{
         j.at("posY").get_to(v.posY);
         j.at("type").get_to(v.type);
     }
+
+    void to_json(json& j, const Session::WalkData& v) {
+        j = json{{"posX", v.posX}, {"posY", v.posY}};
+    }
+    void from_json(const json& j, Session::WalkData& v) {
+        j.at("posX").get_to(v.posX);
+        j.at("posY").get_to(v.posY);
+    }
 }

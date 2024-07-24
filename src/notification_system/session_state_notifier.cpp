@@ -57,6 +57,7 @@ namespace notification_system{
                 continue;
             }
             (*pair.second)(PollStatus::Ok, state);
+            sessions_[sid].users_responser[pair.first] = std::nullopt;
         }
         return true;
     }

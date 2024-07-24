@@ -605,7 +605,6 @@ _/api/game/move?sessionId=SESSION_ID_
 function tells the game about player's move. sessionId must be passed as URL parameter, body should contain move information.
 
 #### **request body example**
-
 ```json
 {
 	"move_type":STRING,//"walk", ...
@@ -648,5 +647,13 @@ session you are trying to get access to does not exist.
 {
 	"error_name": "no_such_session",
 	"description": "session you are trying to get access to does not exist"
+}
+```
+* `400 wrong_body_data`
+body data is messed up. check the example above.
+```json
+{
+	"error_name": "body_data_error",
+	"description": "wrong body data"
 }
 ```

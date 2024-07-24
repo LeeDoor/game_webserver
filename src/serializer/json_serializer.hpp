@@ -21,5 +21,8 @@ namespace serializer{
         std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) override;
         std::optional<std::vector<dm::Uuid>> DeserializeUuids(const std::string& json) override;
         std::optional<gm::State> DeserializeSessionState(const std::string& json) override;
+
+        std::optional<gm::Session::PlayerMoveType> DefinePlayerMove(const std::string& json) override;
+        std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) override;
     };
 }
