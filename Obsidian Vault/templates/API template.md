@@ -1,8 +1,8 @@
 
 ---
 ### API enter_name
-#### <span style="color:#87ff8b"><b>requires authorization</b></span> ?????
-#### <span style="color:#f58a42"><b>Long-Poll</b></span> 
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll) 
 #### **action diagram**
 ```mermaid
 
@@ -28,5 +28,3 @@ _ _
     ```js
     ```
 * ``
-**error_name meanings**
-    - ** **: 1

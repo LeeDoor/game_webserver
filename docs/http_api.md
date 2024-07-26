@@ -21,15 +21,49 @@ all non-ok responses have same body type. for example:
     "description": "object that you are trying to access is not found"
 }
 ```
-
-* <span style="color:#87ff8b"><b>requires authorization</b></span> means that request must be authorized with `Authorization` header. example:
+## Function Tags
+### Requires Authorization 
+means that request must be authorized with `Authorization` header. example:
 ```HTTP
 Authorization: Bearer FFAADDDDEE12161753563
 ```
-*  <span style="color:#f58a42"><b>Long-Poll</b></span> means that request is Long-Poll. response will not arrive immediately, you should wait for response for a while.
-
+**includes these errors: **
+1. status: ***`UNAUTHORIZED`***
+given request does not have Authorization header.
+```json
+{
+	"error_name":"unathorized",
+	"description":"request must be authorized"
+}
+```
+2. status: ***`UNAUTHORIZED`***
+given request has Authorization header but with wrong token.
+```json
+{
+	"error_name":"invalid_token",
+	"description":"request authorization is invalid"
+}
+```
+2. status: ***`UNAUTHORIZED`***
+given request has Authorization header with valid-formed token but not addressing to anybody.
+```json
+{
+	"error_name":"person_removed",
+	"description":"person with this token is unavailable (prob. removed)"
+}
+```
+### Long-Poll
+means that request is Long-Poll. response will not arrive immediately, you should wait for response for a while.
+**includes these errors: **
+1. status: ***`CONFLICT`***
+this poll is closed and replaced with the other one.
+```json
+{
+	"error_name":"poll_closed",
+	"description":"SessionStateNotifier poll replaced by other"
+}
+```
 ## Debug API
-
 debug api is required to get data from app structures. to execute them you need to send admin login and password.
 
 example:
@@ -39,7 +73,13 @@ example:
 	"password": "abcde12345" 
 }
 ```
-
+if admin credentials not provided, you get this errror: ***`UNAUTHORIZED`***
+```json
+{
+	"error_name":"invalid_admin",
+	"description":"the administrator password is missing or incorrect"
+}
+```
 ### API player_tokens
 #### **description**
 debug function for getting users' authentication tokens and uuids.
@@ -59,7 +99,6 @@ debug function for getting users' authentication tokens and uuids.
 #### **responses**
 * `200 OK`\
     tokens sent successfully
-
     *response body example:*
     ```js
     {
@@ -68,10 +107,6 @@ debug function for getting users' authentication tokens and uuids.
         "token3AVA324": "UUID1735788",
     }
     ```
-    
-* `401 unauthorized`\
-    admin login or password are invalid.
-
 ---
 ### API user_data
 #### **description**
@@ -94,7 +129,6 @@ debug function for getting users' profile info like login and password.
 #### **responses**
 * `200 OK`\
     user_data sent successfully
-
     *response body example:*
     ```js
     {
@@ -103,10 +137,6 @@ debug function for getting users' profile info like login and password.
 		"password":"Oksano4kaCute"
     }
     ```
-    
-* `401 unauthorized`\
-    admin login or password are invalid.
-
 ---
 ### API matchmaking_queue
 #### **description**
@@ -127,7 +157,6 @@ debug function for getting queue of users' uuids
 #### **responses**
 * `200 OK`\
     matchmaking queue sent successfully
-
     *response body example:*
     ```js
     {
@@ -136,10 +165,6 @@ debug function for getting queue of users' uuids
         "UUID125"
     }
     ```
-    
-* `401 unauthorized`\
-    admin login or password are invalid.
-
 
 ---
 ### API sessions_list #TODO
@@ -171,10 +196,6 @@ debug function for getting list of sessions with playing users.
         }
     }
     ```
-    
-* `401 unauthorized`\
-    admin login or password are invalid.
-
 ## User API
 ### API register
 #### **action diagram**
@@ -326,36 +347,20 @@ by given login and password in body, logins to get authorization token, which is
     - **no_such_user**: no user found with given login and password
 ---
 ### API profile
-#### <span style="color:#87ff8b"><b>requires authorization</b></span>
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 
 #### **action diagram**
 ```mermaid
 ---
-
 title: api profile diagram
-
 ---
-
-  
-
 sequenceDiagram
-
 actor User
-
 ApiHandler->>ApiHandler: gets Authorization token
-
-  
-
 ApiHandler->>TokenManager: gets user's uuid by token
-
 TokenManager->>ApiHandler: user's uuid
-
-  
-
 ApiHandler->>UserDataManager: gets user by uuid
-
 UserDataManager->>ApiHandler: returns user or error code
-
 ApiHandler->>User: send user data
 ```
 
@@ -371,7 +376,6 @@ requires authorization token. by this token gets profile information from db.
 #### **responses**
 * `200 OK`\
     authorization is correct, send profile data in response
-    
     *response body"*
     ```js
     {
@@ -379,19 +383,10 @@ requires authorization token. by this token gets profile information from db.
         "password": "pass123123"
     }
     ```
-
-* `401 unauthorized`\
-    no authorization header, invalid token or person with this token is removed
-
-    **error_name meanings**
-    - **unathorized**: request must be authorized with Authorization header
-    - **invalid_token**: request authorization is invalid (token in Authorization header has wrong format)
-    - **person_removed**: person with this token is unavailable (probably removed)
-
 ---
 ## Game API
 ### API enqueue
-#### <span style="color:#87ff8b"><b>requires authorization</b></span>
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 
 #### **action diagram**
 ```mermaid
@@ -449,8 +444,8 @@ body must be empty
 
 ---
 ### API wait_for_opponent
-#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
-#### <span style="color:#f58a42"><b>Long-Poll</b></span> 
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
 
 #### **action diagram**
 ```mermaid
@@ -498,17 +493,9 @@ opponent found if body contains SessionId.
 	"sessionid": "ADD124558846"
 }
 ```
-* `200 waiting`
-if body is empty it means that no opponent found yet.
-*response body:*
-```js
-{}
-```
-* `409 poll_closed`
-means that for your account there is another opened poll waiting. this poll closes and data will be sent to a new poll.
 ---
 ### API session_state
-#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization) 
 
 #### **allowed methods**
 ***`GET/HEAD`***
@@ -539,8 +526,8 @@ request to get session state. session id should be passed as URL parameter.
 ```
 ---
 ### API session_state_change
-#### <span style="color:#87ff8b"><b>requires authorization</b></span> 
-
+#### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **action diagram**
 ```mermaid
 sequenceDiagram
@@ -579,23 +566,23 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 }
 ```
 * `400 wrong_sessionId`
+session you are trying to get access to does not exist.
 ```json
 {
 	"error_name":"wrong_sessionId"
 	"description":"no session with such sessionId"
 }
 ```
-* `400 no_such_session`
-session you are trying to get access to does not exist.
+* `400 poll_closed`
 ```json
 {
-	"error_name": "no_such_session",
-	"description": "session you are trying to get access to does not exist"
+	"error_name": "poll_closed",
+	"description": "this poll is closed and replaced with the other one"
 }
 ```
 ---
 ### API move
-#### <span style="color:#87ff8b"><b>requires authorization</b></span>
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
