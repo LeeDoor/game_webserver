@@ -240,12 +240,14 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {2,2,gm::Obstacle::Type::Wall},
             {3,3,gm::Obstacle::Type::Wall}
         };
+        example.map_size = {15,15};
         std::string given_str;
         REQUIRE_NOTHROW(given_str = serializer.Serialize(std::move(example)));
         REQUIRE_NOTHROW(j = json::parse(given_str));
         REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
 
+        example.map_size = {0,0};
         example.now_turn = "";
         example.players = {
             {
@@ -269,7 +271,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         REQUIRE(example == given);
     }
     SECTION("Deserialize"){
-        std::string given_str = "{\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
+        std::string given_str = "{\"map_size\":{\"width\":15,\"height\":15},\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
         auto opt = serializer.DeserializeSessionState(given_str);
         REQUIRE(opt.has_value());
         REQUIRE_NOTHROW(given = *opt);

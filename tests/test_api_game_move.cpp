@@ -4,6 +4,14 @@
 #include "session.hpp"
 using namespace serializer;
 
+bool ValidCell(const gm::State& state, unsigned x, unsigned y){
+    auto& terrain = state.terrain;
+    
+    auto it = std::find_if(terrain.begin(), terrain.end(), 
+        [&](const gm::Obstacle& o){return o.posX == x && o.posY == y;});
+    return it == terrain.end();
+}
+
 TEST_CASE("ApiMove", "[api][game][move]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
@@ -22,13 +30,32 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         LoginData ld2 = EnqueueNewPlayer(socket, serializer);
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
-        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
-        dm::Login& now_turn = state.now_turn;
-        LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
-        
-        WalkSuccess(socket, serializer, gm::Session::WalkData{player.posX + 1, player.posY}, ld.token, sid);
+        std::optional<dm::Login> prev_turn = std::nullopt;
+        for(int i = 0; i < 10; ++i){
+            gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
+            REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+
+            dm::Login& now_turn = state.now_turn;
+            LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
+            gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+
+            if(prev_turn)
+                CHECK(*prev_turn != now_turn);
+
+            std::vector<gm::Session::WalkData> wds{
+                {player.posX + 1, player.posY},
+                {player.posX, player.posY + 1},
+                {player.posX - 1, player.posY},
+                {player.posX, player.posY - 1},
+            }; 
+            for(auto& wd : wds){
+                if (ValidCell(state, wd.posX, wd.posY)){
+                    WalkSuccess(socket, serializer, wd, ld.token, sid);
+                    break;
+                }
+            }
+            prev_turn = std::string(now_turn);
+        }
     }
 
 }

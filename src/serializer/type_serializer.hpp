@@ -27,6 +27,9 @@ namespace game_manager{
     void to_json(json& j, const Obstacle& v);
     void from_json(const json& j, Obstacle& v);
 
+    void to_json(json& j, const MapSize& v);
+    void from_json(const json& j, MapSize& v);
+
     void to_json(json& j, const Session::WalkData& v);
     void from_json(const json& j, Session::WalkData& v);
     

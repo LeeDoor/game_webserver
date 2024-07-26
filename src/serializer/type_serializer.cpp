@@ -30,12 +30,18 @@ namespace database_manager {
 } 
 namespace game_manager{
     void to_json(json& j, const State& v) {
-        j = json{{"players", v.players}, {"terrain", v.terrain}, {"now_turn", v.now_turn}};
+        j = json{
+            {"players", v.players}, 
+            {"terrain", v.terrain}, 
+            {"now_turn", v.now_turn},
+            {"map_size", v.map_size},
+            };
     }
     void from_json(const json& j, State& v) {
         j.at("players").get_to(v.players);
         j.at("terrain").get_to(v.terrain);
         j.at("now_turn").get_to(v.now_turn);
+        j.at("map_size").get_to(v.map_size);
     }
 
     void to_json(json& j, const Player& v) {
@@ -54,6 +60,14 @@ namespace game_manager{
         j.at("posX").get_to(v.posX);
         j.at("posY").get_to(v.posY);
         j.at("type").get_to(v.type);
+    }
+
+    void to_json(json& j, const MapSize& v) {
+        j = json{{"width", v.width}, {"height", v.height}};
+    }
+    void from_json(const json& j, MapSize& v) {
+        j.at("width").get_to(v.width);
+        j.at("height").get_to(v.height);
     }
 
     void to_json(json& j, const Session::WalkData& v) {

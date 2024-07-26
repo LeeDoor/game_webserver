@@ -33,6 +33,11 @@ namespace game_manager {
         Type type;
     };
 
+    struct MapSize{
+        unsigned width;
+        unsigned height;
+    };
+
     struct State{
         using Players = std::vector<Player>;
         using Terrain = std::vector<Obstacle>;
@@ -48,6 +53,7 @@ namespace game_manager {
         Players players;
         Terrain terrain;
         NowTurn now_turn;
+        MapSize map_size;
     };
 
 }
