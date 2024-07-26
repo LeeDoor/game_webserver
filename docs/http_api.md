@@ -625,8 +625,8 @@ you don't have access to make a move in this match. probably you are not the pla
 session you are trying to get access to does not exist.
 ```json
 {
-	"error_name": "no_such_session",
-	"description": "session you are trying to get access to does not exist"
+	"error_name": "wrong_sessionId",
+	"description": "no session with such sessionId"
 }
 ```
 * `400 wrong_body_data`
