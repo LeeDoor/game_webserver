@@ -1,6 +1,7 @@
 #pragma once
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
+#include <functional>
 #include <catch2/catch_test_macros.hpp>
 #include "json_serializer.hpp"
 #include "../src/http_handler/http_types.hpp"
@@ -13,6 +14,7 @@ using tcp = net::ip::tcp;
 template<typename T>
 using opt = std::optional<T>;
 using vecstr = std::vector<std::string>;
+using ResponsePtr = std::shared_ptr<StringResponse>;
 
 void ConnectSocket(net::io_context& ioc, tcp::socket& socket);
 

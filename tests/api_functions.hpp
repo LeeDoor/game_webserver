@@ -6,6 +6,7 @@
 #include "json_serializer.hpp"
 #include "public_user_data.hpp"
 #include "session.hpp"
+#include "socket_functions.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;

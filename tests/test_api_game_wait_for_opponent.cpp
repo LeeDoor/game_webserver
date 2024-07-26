@@ -4,19 +4,20 @@
 #include "user_data.hpp"
 using namespace serializer;
 
-TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent]"){
+TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
+
     ConnectSocket(ioc, socket);
     std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
     std::string POLL_CLOSED = serializer->SerializeError("poll_closed", "new poll connected");
     std::string UNAUTHORIZED = serializer->SerializeError("unathorized", "request must be authorized");
     std::string INVALID_TOKEN = serializer->SerializeError("invalid_token", "request authorization is invalid");
 
-    if(MMQueueSuccess(socket, serializer).size() > 0)
-        EnqueueWorthyOpponent(socket, serializer); // to operate with empty queue
 
-    SECTION("success"){
+    SECTION("success_immediately"){
+        if(MMQueueSuccess(socket, serializer).size() > 0)
+            EnqueueWorthyOpponent(socket, serializer); // to operate with empty queue
         LoginData ld1 = EnqueueWorthyOpponent(socket, serializer);
         LoginData ld2 = EnqueueWorthyOpponent(socket, serializer);
         //here the session with two enqueued players should create
@@ -24,6 +25,82 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent]"){
         game_manager::SessionId session_id2 = WaitForOpponentSuccess(socket, ld2.token, serializer);
         // aware of blocking thread by WaitForOpponentSuccess if opponent not found yet
         REQUIRE(session_id1 == session_id2);
+    }
+
+    SECTION ("success_long_poll"){
+        if(MMQueueSuccess(socket, serializer).size() == 1)
+            EnqueueWorthyOpponent(socket, serializer);
+        LoginData ld1 = EnqueueWorthyOpponent(socket, serializer);
+        StringResponse response;
+        std::promise<void> promise;
+        std::future<void> future = promise.get_future();
+
+        std::thread thread([&]{
+            response = WaitForOpponent(socket, ld1.token);
+            promise.set_value();
+        });
+
+        net::io_context ioc2;
+        tcp::socket socket2{ioc2};
+        ConnectSocket(ioc2, socket2);
+
+        LoginData ld2 = EnqueueWorthyOpponent(socket2, serializer);
+        future.wait();
+        gm::SessionId sid = WaitForOpponentSuccess(socket2, ld2.token, serializer);
+        CheckStringResponse(response,{
+            .body = serializer->SerializeMap({{"sessionId", sid}}),
+            .res = http::status::ok
+        });
+
+        thread.join();
+    }
+
+    SECTION ("replacing_polls"){
+        if(MMQueueSuccess(socket, serializer).size() == 1)
+            EnqueueWorthyOpponent(socket, serializer);
+        
+        std::promise<void> promise1, promise2;
+        std::future<void> future1 = promise1.get_future();
+        std::future<void> future2 = promise2.get_future();
+
+        net::io_context ioc2;
+        tcp::socket socket2{ioc2};
+        ConnectSocket(ioc2, socket2);
+
+        LoginData ld1 = EnqueueWorthyOpponent(socket, serializer);
+        StringResponse response1, response2;
+
+        // calling first wait_for_opponent as first player
+        std::thread thread1([&]{
+            response1 = WaitForOpponent(socket, ld1.token);
+            promise1.set_value();
+        });
+
+        // calling second wait_for_opponent as same player
+        // first call should drop
+        std::thread thread2([&]{
+            response2 = WaitForOpponent(socket2, ld1.token);
+            promise2.set_value();
+        });
+
+        future1.wait();
+        CheckStringResponse(response1, {
+            .body = POLL_CLOSED,
+            .res = http::status::conflict
+        });
+
+        // socket(1) is now freed
+        LoginData ld2 = EnqueueWorthyOpponent(socket, serializer);
+        future2.wait();
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld2.token, serializer);
+        CheckStringResponse(response2, {
+            .body = serializer->SerializeMap({{"sessionId", sid}}),
+            .res = http::status::ok
+        });
+
+
+        thread1.join();
+        thread2.join();
     }
 
     SECTION("wrong_token"){

@@ -573,13 +573,6 @@ session you are trying to get access to does not exist.
 	"description":"no session with such sessionId"
 }
 ```
-* `400 poll_closed`
-```json
-{
-	"error_name": "poll_closed",
-	"description": "this poll is closed and replaced with the other one"
-}
-```
 ---
 ### API move
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)

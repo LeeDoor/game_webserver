@@ -1,5 +1,4 @@
 #include "api_functions.hpp"
-#include "socket_functions.hpp"
 #include "nick_generator.hpp"
 #include "registration_data.hpp"
 #include "json_serializer.hpp"
@@ -110,10 +109,13 @@ http::response<http::string_body> WaitForOpponent(tcp::socket& socket, const Tok
     return response;
 }
 game_manager::SessionId WaitForOpponentSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
+    INFO("CALLING WaitForOpponentSuccess 1");
     http::response<http::string_body> response = WaitForOpponent(socket, token);
+    INFO("GOT WaitForOpponentSuccess 1");
     CheckStringResponse(response, 
         {.res = http::status::ok});
     auto map = serializer->DeserializeMap(response.body());
+    INFO(response.body());
     REQUIRE(map);
     REQUIRE(map->size() == 1);
     REQUIRE(map->contains("sessionId"));
