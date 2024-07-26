@@ -21,9 +21,10 @@ namespace dm = database_manager;
 #define REGISTER_API        "/api/register"
 #define PROFILE_API         "/api/profile"
 
-#define ENQUEUE_API         "/api/game/enqueue"
-#define WAIT_FOR_OPPONENT_API "/api/game/wait_for_opponent"
-#define SESSION_STATE_API   "/api/game/session_state"
+#define ENQUEUE_API             "/api/game/enqueue"
+#define WAIT_FOR_OPPONENT_API   "/api/game/wait_for_opponent"
+#define SESSION_STATE_API       "/api/game/session_state"
+#define MOVE_API                "/api/game/move"
 
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define USER_DATA_API       "/api/debug/user_data"
@@ -62,13 +63,19 @@ bool EnqueueSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serialize
 
 //after calling this function there would be added an opponent to the queue 
 // and session will be created for given and enqueued player
-LoginData EnqueueWorthyOpponent(tcp::socket&, ISerializer::Ptr serializer);
+LoginData EnqueueNewPlayer(tcp::socket&, ISerializer::Ptr serializer);
 
 http::response<http::string_body> WaitForOpponent(tcp::socket&, const Token& token);
 game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
 http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
 gm::State SessionStateSuccess(tcp::socket&, ISerializer::Ptr serializer, const Token& token, const gm::SessionId& sid);
+
+http::response<http::string_body> Move(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
+void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
+
+StringResponse Walk(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
+void WalkSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
 /// DEBUG METHODS ///
 
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);

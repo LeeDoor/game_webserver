@@ -93,7 +93,7 @@ bool EnqueueSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr se
     return response.body() == serializer->SerializeEmpty();
 }
 
-LoginData EnqueueWorthyOpponent(tcp::socket& socket, ISerializer::Ptr serializer) {
+LoginData EnqueueNewPlayer(tcp::socket& socket, ISerializer::Ptr serializer) {
     hh::RegistrationData rd = RegisterSuccess(socket, serializer);
     LoginData ld = LoginSuccess(socket, rd.login, serializer);
     bool res = EnqueueSuccess(socket, ld.token, serializer);
@@ -137,6 +137,32 @@ gm::State SessionStateSuccess(tcp::socket& socket, ISerializer::Ptr serializer, 
     std::optional<gm::State> state_opt = serializer->DeserializeSessionState(response.body());
     REQUIRE(state_opt);
     return *state_opt;
+}
+
+http::response<http::string_body> Move(tcp::socket& socket, std::string&& body, const Token& token, const gm::SessionId& sid){
+    std::string target = SetUrlParameters(MOVE_API, {{"sessionId", sid}});
+    http::request<http::string_body> request{http::verb::post, target, 11};
+
+    SetAuthorizationHeader(request, token);
+    request.body() = std::move(body);
+    request.prepare_payload();
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+void MoveSuccess(tcp::socket& socket, std::string&& body, const Token& token, const gm::SessionId& sid){
+    http::response<http::string_body> response = Move(socket, std::move(body), token, sid);
+    CheckStringResponse(response, 
+        {
+            .body = "{}",
+            .res = http::status::ok
+        });
+}
+
+StringResponse Walk(tcp::socket& socket, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid){
+    return Move(socket, serializer->Serialize(wd), token, sid);
+}
+void WalkSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid){
+    return MoveSuccess(socket, serializer->Serialize(wd), token, sid);
 }
 
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {

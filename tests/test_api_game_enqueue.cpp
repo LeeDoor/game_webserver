@@ -52,7 +52,7 @@ TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
             rd1.password = ud.password;
             ld1 = LoginSuccess(socket, rd1.login, serializer);
         }
-        LoginData ld2 = EnqueueWorthyOpponent(socket, serializer);
+        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
 
         // they get in the same session
 

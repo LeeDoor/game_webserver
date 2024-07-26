@@ -34,7 +34,7 @@ namespace game_manager{
         {Obstacle::Type::Wall, "wall"},
     })
 
-    NLOHMANN_JSON_SERIALIZE_ENUM( Session::PlayerMoveType, {
-        {Session::PlayerMoveType::Walk, "walk"},
+    NLOHMANN_JSON_SERIALIZE_ENUM( Session::MoveType, {
+        {Session::MoveType::Walk, "walk"},
     })
 }

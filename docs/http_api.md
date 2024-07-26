@@ -602,7 +602,7 @@ according to the game rules, player cant make such move.
 ```json
 {
 	"error_name": "wrong_move",
-	"description": "GameManager"
+	"description": "player cant make such move"
 }
 ```
 * `400 not_your_move`

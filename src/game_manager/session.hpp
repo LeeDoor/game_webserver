@@ -14,7 +14,7 @@ namespace game_manager{
 
         State::CPtr GetState();
 
-        enum PlayerMoveType{
+        enum MoveType{
             Walk
         };
         
@@ -24,12 +24,12 @@ namespace game_manager{
             NotYourMove
         };
 
-        struct GameApiData{
+        struct MoveData{
             unsigned posX;
             unsigned posY;
         };
 
-        struct WalkData : public GameApiData{};
+        struct WalkData : public MoveData{};
         GameApiStatus ApiWalk(const dm::Uuid& player_id, const WalkData& move_data);
 
     private:

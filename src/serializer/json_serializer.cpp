@@ -50,6 +50,11 @@ namespace serializer{
         nlohmann::json obj(state);
         return obj.dump();
     }
+    std::string JSONSerializer::Serialize(const gm::Session::WalkData& wd) {
+        nlohmann::json obj(wd);
+        obj["move_type"] = "walk";
+        return obj.dump();
+    }
 
     std::optional<hh::PublicUserData> JSONSerializer::DeserializePublicUserData(const std::string& json_str) {
         hh::PublicUserData pud;
@@ -120,8 +125,8 @@ namespace serializer{
         return res;
     }
 
-    std::optional<gm::Session::PlayerMoveType> JSONSerializer::DefinePlayerMove(const std::string& json_str) {
-        gm::Session::PlayerMoveType res;
+    std::optional<gm::Session::MoveType> JSONSerializer::DefinePlayerMove(const std::string& json_str) {
+        gm::Session::MoveType res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             res = j["move_type"];

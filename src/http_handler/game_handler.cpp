@@ -104,7 +104,7 @@ namespace http_handler{
             return responser_.SendAccessDenied(rns);
         
         using Status = gm::Session::GameApiStatus;
-        using Type = gm::Session::PlayerMoveType;
+        using Type = gm::Session::MoveType;
         std::optional<Type> pmt = serializer_->DefinePlayerMove(rns.request.body());
         if(!pmt.has_value())
             return responser_.SendWrongBodyData(rns);
