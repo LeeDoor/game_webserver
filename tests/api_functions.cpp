@@ -138,6 +138,17 @@ gm::State SessionStateSuccess(tcp::socket& socket, ISerializer::Ptr serializer, 
     REQUIRE(state_opt);
     return *state_opt;
 }
+http::response<http::string_body> SessionStateChange(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+    std::string target = SetUrlParameters(SESSION_STATE_CHANGE_API, {{"sessionId", sid}});
+    http::request<http::string_body> request{http::verb::get, target, 11};
+
+    SetAuthorizationHeader(request, token);
+    http::write(socket, request);
+    beast::flat_buffer buffer;
+    http::response<http::string_body> response;
+    http::read(socket, buffer, response);
+    return response;
+}
 
 http::response<http::string_body> Move(tcp::socket& socket, std::string&& body, const Token& token, const gm::SessionId& sid){
     std::string target = SetUrlParameters(MOVE_API, {{"sessionId", sid}});

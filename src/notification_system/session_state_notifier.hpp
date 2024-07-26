@@ -35,6 +35,7 @@ namespace notification_system{
         bool Unsubscribe(const dm::Uuid& uuid, const gm::SessionId& sid);
         bool ChangePoll(const dm::Uuid& uuid, const gm::SessionId& sid, Responser&& responser);
         bool Notify(const gm::SessionId& sid);  
+        bool SessionCreated(const dm::Uuid& player1, const dm::Uuid& player2, const gm::SessionId& sid);
     private:
         SessionStateNotifier(gm::GameManager::Ptr gm);
         static SessionStateNotifier::Ptr pinstance_;

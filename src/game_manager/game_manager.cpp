@@ -18,6 +18,8 @@ namespace game_manager{
         http_handler::ResponseBuilder<http::string_body> rb;
         notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
+
+        notif::SessionStateNotifier::GetInstance()->SessionCreated(player1, player2, si);
         return sessions_.contains(si);
     }
 

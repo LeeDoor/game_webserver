@@ -24,6 +24,7 @@ namespace dm = database_manager;
 #define ENQUEUE_API             "/api/game/enqueue"
 #define WAIT_FOR_OPPONENT_API   "/api/game/wait_for_opponent"
 #define SESSION_STATE_API       "/api/game/session_state"
+#define SESSION_STATE_CHANGE_API       "/api/game/session_state_change"
 #define MOVE_API                "/api/game/move"
 
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
@@ -70,6 +71,8 @@ game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token,
 
 http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
 gm::State SessionStateSuccess(tcp::socket&, ISerializer::Ptr serializer, const Token& token, const gm::SessionId& sid);
+
+http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
 http::response<http::string_body> Move(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);

@@ -1,5 +1,5 @@
 #include "session_state_notifier.hpp"
-
+#include "spdlog/spdlog.h"
 namespace notification_system{
     SessionStateNotifier::SessionStateNotifier(gm::GameManager::Ptr gm)
         : gm_(gm){}
@@ -24,6 +24,7 @@ namespace notification_system{
             return false;
         }
         sessions_[sid].users_responser[uuid] = std::nullopt;
+        spdlog::info("{} subscribed to {}", uuid, sid);
         return true;
     }
     bool SessionStateNotifier::Unsubscribe(const dm::Uuid& uuid, const gm::SessionId& sid) {
@@ -36,6 +37,7 @@ namespace notification_system{
         std::vector<dm::Uuid>& pw = sessions_[sid].poll_waiting;
         const std::vector<dm::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
+            spdlog::info("{} player got call about {} using poll waiting", uuid, sid);
             responser(PollStatus::Ok, GetGameState(sid));
             pw.erase(it);
             return true;
@@ -43,6 +45,7 @@ namespace notification_system{
 
         if (sessions_[sid].users_responser[uuid].has_value()){
             //breaking previous poll if it is
+            spdlog::info("{} player got call about CLOSING {}", uuid, sid);
             (*sessions_[sid].users_responser[uuid])(PollStatus::PollClosed, std::nullopt);
         }
 
@@ -53,12 +56,19 @@ namespace notification_system{
         gm::State::OptCPtr state = GetGameState(sid);
         for(const std::pair<dm::Uuid, ResponserOpt>& pair : sessions_[sid].users_responser){
             if(!pair.second.has_value()){
+                spdlog::info("{} player got added to poll waiting of {}", pair.first, sid);
                 sessions_[sid].poll_waiting.push_back(pair.first);
                 continue;
             }
+            spdlog::info("{} player got call about {} using standard Notify()", pair.first, sid);
             (*pair.second)(PollStatus::Ok, state);
             sessions_[sid].users_responser[pair.first] = std::nullopt;
         }
+        return true;
+    }
+    bool SessionStateNotifier::SessionCreated(const dm::Uuid& player1, const dm::Uuid& player2, const gm::SessionId& sid){
+        Subscribe(player1, sid);
+        Subscribe(player2, sid);
         return true;
     }
 

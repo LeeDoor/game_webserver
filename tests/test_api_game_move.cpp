@@ -31,6 +31,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
         std::optional<dm::Login> prev_turn = std::nullopt;
+        std::optional<gm::Session::WalkData> new_wd = std::nullopt;
         for(int i = 0; i < 10; ++i){
             gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
             REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
@@ -41,6 +42,12 @@ TEST_CASE("ApiMove", "[api][game][move]"){
 
             if(prev_turn)
                 CHECK(*prev_turn != now_turn);
+
+            if(new_wd){
+                gm::Player& waiting_player = state.players[1].login == now_turn ? state.players[0] : state.players[1];
+                CHECK(waiting_player.posX == new_wd->posX);
+                CHECK(waiting_player.posY == new_wd->posY);
+            }
 
             std::vector<gm::Session::WalkData> wds{
                 {player.posX + 1, player.posY},

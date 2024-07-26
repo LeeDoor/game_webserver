@@ -65,6 +65,7 @@ int Initializer::Init(int argc, char **argv) {
         std::cout << "Log init failed: " << ex.what() << std::endl;
     }
     spdlog::flush_every(std::chrono::seconds(1));
+    spdlog::flush_on(spdlog::level::info);
     Args args = ParseParameters(argc, argv);
     return StartServer(args);
 }
