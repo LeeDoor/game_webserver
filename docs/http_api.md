@@ -510,7 +510,7 @@ request to get session state. session id should be passed as URL parameter.
 * `200 OK`  
 *response body:*
 ***TO SEE RESPONSE EXAMPLE: [[session_state]]***
-* `400 url_parameters_error`
+* `422 url_parameters_error`
 ```json
 {
 	"error_name":"url_parameters_error"
@@ -558,7 +558,7 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 * `200 OK`  
 *response body:*
 	SEE [[session_state]]
-* `400 url_parameters_error`
+* `422 url_parameters_error`
 ```json
 {
 	"error_name":"url_parameters_error"
