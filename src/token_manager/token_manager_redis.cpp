@@ -14,7 +14,7 @@ namespace token_manager{
         return std::move(t);
     }
 
-    std::optional<dm::Uuid> TokenManagerRedis::GetUuidByToken(const Token& token) {
+    std::optional<um::Uuid> TokenManagerRedis::GetUuidByToken(const Token& token) {
     	sw::redis::OptionalString os;
         os = redis_->hget(redis_data_name_, token);
         if (os)
@@ -22,14 +22,14 @@ namespace token_manager{
         return std::nullopt;
     }
 
-    bool TokenManagerRedis::AddTokenToUuid(const Token& token, const dm::Uuid& uuid) {
+    bool TokenManagerRedis::AddTokenToUuid(const Token& token, const um::Uuid& uuid) {
         redis_->hset(redis_data_name_, token, uuid);
         auto uuid_opt = GetUuidByToken(token);
         return uuid_opt.has_value() && *uuid_opt == uuid; // hset returns 0 even if line edited (edited != added)
     }
 
-    std::map<Token, dm::Uuid> TokenManagerRedis::GetValue() const {
-        std::map<Token, dm::Uuid> res;
+    std::map<Token, um::Uuid> TokenManagerRedis::GetValue() const {
+        std::map<Token, um::Uuid> res;
     	redis_->hgetall(redis_data_name_, std::inserter(res, res.begin()));
         return res;
     }

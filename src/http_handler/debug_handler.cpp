@@ -24,7 +24,7 @@ namespace http_handler{
     }
     
     void DebugHandler::ApiGetPlayerTokens(SessionData rns){
-        std::map<token_manager::Token, dm::Uuid> map = tm_->GetValue();
+        std::map<token_manager::Token, um::Uuid> map = tm_->GetValue();
         std::string tm_string = serializer_->Serialize(map);
         return responser_.Send(rns, http::status::ok, tm_string);
     }
@@ -34,14 +34,14 @@ namespace http_handler{
         if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
             return responser_.SendWrongUrlParameters(rns);
         if (map.contains("uuid")){
-            std::optional<dm::User> ud = dm_->GetByUuid(map["uuid"]);
+            std::optional<um::User> ud = dm_->GetByUuid(map["uuid"]);
             if (!ud.has_value())
                 return responser_.Send(rns, status::not_found, 
                     serializer_->SerializeError(
                         "user_not_found", "no user with provided uuid found"));
             return responser_.SendHiddenUser(rns, *ud);
         }
-        std::optional<dm::User> ud = dm_->GetByLoginPassword(map["login"], map["password"]);
+        std::optional<um::User> ud = dm_->GetByLoginPassword(map["login"], map["password"]);
         if (!ud.has_value())
             return responser_.Send(rns, status::not_found, 
                 serializer_->SerializeError(
@@ -50,7 +50,7 @@ namespace http_handler{
     }
 
     void DebugHandler::ApiGetMMQueue(SessionData rns) {
-        const std::vector<dm::Uuid>& queue = qm_->GetQueue();
+        const std::vector<um::Uuid>& queue = qm_->GetQueue();
         std::string queue_string = serializer_->Serialize(queue);
         return responser_.Send(rns, status::ok, queue_string);
     }

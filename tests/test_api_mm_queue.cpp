@@ -12,7 +12,7 @@ TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
     std::string UNAUTHORIZED = serializer->SerializeError("invalid_admin", "the administrator password is missing or incorrect");
     std::string ENQUEUE_ERROR = serializer->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)");
 
-    using Uuids = std::vector<dm::Uuid>;
+    using Uuids = std::vector<um::Uuid>;
     SECTION("valid_response"){
     	Uuids queue = MMQueueSuccess(socket, serializer);
     	// dont check emptyness. other test metods call login functions so queue can be filled

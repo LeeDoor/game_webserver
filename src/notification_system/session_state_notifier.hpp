@@ -15,8 +15,8 @@ namespace notification_system{
         };
         using Responser = std::function<void(PollStatus, gm::State::OptCPtr)>; // long poll responser
         using ResponserOpt = std::optional<Responser>; // optional responser
-        using UsersResponser = std::map<dm::Uuid, ResponserOpt>; // user's polls to response
-        using PollWaiting = std::vector<dm::Uuid>; // vector of users who didnt update poll
+        using UsersResponser = std::map<um::Uuid, ResponserOpt>; // user's polls to response
+        using PollWaiting = std::vector<um::Uuid>; // vector of users who didnt update poll
         struct SessionData{
             UsersResponser users_responser;
             PollWaiting poll_waiting;
@@ -31,11 +31,11 @@ namespace notification_system{
         static void Init(gm::GameManager::Ptr gm);
         //
 
-        bool Subscribe(const dm::Uuid& uuid, const gm::SessionId& sid);
-        bool Unsubscribe(const dm::Uuid& uuid, const gm::SessionId& sid);
-        bool ChangePoll(const dm::Uuid& uuid, const gm::SessionId& sid, Responser&& responser);
+        bool Subscribe(const um::Uuid& uuid, const gm::SessionId& sid);
+        bool Unsubscribe(const um::Uuid& uuid, const gm::SessionId& sid);
+        bool ChangePoll(const um::Uuid& uuid, const gm::SessionId& sid, Responser&& responser);
         bool Notify(const gm::SessionId& sid);  
-        bool SessionCreated(const dm::Uuid& player1, const dm::Uuid& player2, const gm::SessionId& sid);
+        bool SessionCreated(const um::Uuid& player1, const um::Uuid& player2, const gm::SessionId& sid);
     private:
         SessionStateNotifier(gm::GameManager::Ptr gm);
         static SessionStateNotifier::Ptr pinstance_;

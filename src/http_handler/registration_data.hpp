@@ -4,13 +4,13 @@
 
 namespace http_handler{
     struct RegistrationData{
-        dm::Login login;
-        dm::Password password;
+        um::Login login;
+        um::Password password;
     };
 
     bool ValidateRegData(const RegistrationData& rd);
-    bool ValidateLogin(const dm::Login& login);
-    bool ValidatePassword(const dm::Password& password);
+    bool ValidateLogin(const um::Login& login);
+    bool ValidatePassword(const um::Password& password);
 }
 
 namespace hh = http_handler;

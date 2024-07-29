@@ -18,7 +18,7 @@ namespace notification_system{
         return pinstance_;
     }
 
-    bool QueueNotifier::Subscribe(const dm::Uuid& uuid, Responser&& notifier) {
+    bool QueueNotifier::Subscribe(const um::Uuid& uuid, Responser&& notifier) {
         if (users_responser_.contains(uuid)) 
             Unsubscribe(uuid, "new poll connected");
 
@@ -30,13 +30,13 @@ namespace notification_system{
         }
         return users_responser_.contains(uuid);
     }
-    bool QueueNotifier::Unsubscribe(const dm::Uuid& uuid, const std::string& reason) {
+    bool QueueNotifier::Unsubscribe(const um::Uuid& uuid, const std::string& reason) {
         if(!reason.empty() && users_responser_.contains(uuid))
             Notify(uuid, {.additional_data=reason, .code=PollStatus::PollClosed});
         return users_responser_.erase(uuid);
     }
 
-    bool QueueNotifier::Notify(const dm::Uuid& uuid, const PollData& poll_data) {
+    bool QueueNotifier::Notify(const um::Uuid& uuid, const PollData& poll_data) {
         if(users_responser_.contains(uuid)){
             users_responser_[uuid](poll_data.code, poll_data.additional_data);
 

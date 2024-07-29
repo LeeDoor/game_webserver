@@ -8,11 +8,11 @@ namespace game_manager {
         using RedisPtr = std::shared_ptr<sw::redis::Redis>;
         QueueManagerRedis(std::string&& redis_data_name, std::string&& redis_set_name, RedisPtr redis);
 
-        bool EnqueuePlayer(const dm::Uuid& uuid) override;
-        bool DequeuePlayer(const dm::Uuid& uuid) override;
+        bool EnqueuePlayer(const um::Uuid& uuid) override;
+        bool DequeuePlayer(const um::Uuid& uuid) override;
         std::optional<std::string> PopPlayer() override;
         long long GetLength() override;
-        std::vector<dm::Uuid> GetQueue(int start = 0, int end = -1) override;
+        std::vector<um::Uuid> GetQueue(int start = 0, int end = -1) override;
         void OnEnqueueSubscribe(IObserver::Ptr observer) override;
     private:
         void Notify(EventType type) override;

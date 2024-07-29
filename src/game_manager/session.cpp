@@ -5,7 +5,7 @@
 
 namespace game_manager{
 
-    Session::Session(dm::Uuid player1, const dm::Login& login1, dm::Uuid player2, const dm::Login& login2) 
+    Session::Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2) 
         :player1_(std::move(player1)), 
         player2_(std::move(player2)), 
         uuid_to_login_{{player1_, login1},{player2_, login2}},
@@ -13,7 +13,7 @@ namespace game_manager{
         InitSessionState(login1, login2);
     }
 
-    bool Session::HasPlayer(const dm::Uuid& uuid){
+    bool Session::HasPlayer(const um::Uuid& uuid){
         return player1_ == uuid || player2_ == uuid;
     }
 
@@ -21,7 +21,7 @@ namespace game_manager{
         return state_;
     }
 
-    Session::GameApiStatus Session::ApiWalk(const dm::Uuid& player_id, const WalkData& move_data){
+    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const WalkData& move_data){
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
 
@@ -40,7 +40,7 @@ namespace game_manager{
         return GameApiStatus::Ok;
     }
     
-    void Session::InitSessionState(const dm::Login& login1, const dm::Login& login2){
+    void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
         state_->players.resize(2);
         player1().login = login1;
         player2().login = login2;

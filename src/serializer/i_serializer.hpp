@@ -12,7 +12,7 @@
 namespace serializer{
     namespace hh = http_handler;
     namespace tm = token_manager;
-    namespace dm = user_manager;
+    namespace um = user_manager;
     class ISerializer {
     public:
         using Ptr = std::shared_ptr<ISerializer>;
@@ -24,9 +24,9 @@ namespace serializer{
         
         virtual std::string Serialize(const hh::RegistrationData& rd) = 0;
         virtual std::string Serialize(const hh::PublicUser& pud) = 0;
-        virtual std::string Serialize(const dm::User& ud) = 0;
-        virtual std::string Serialize(const std::map<tm::Token, dm::Uuid>& ttu) = 0;
-        virtual std::string Serialize(const std::vector<dm::Uuid>& v) = 0;
+        virtual std::string Serialize(const um::User& ud) = 0;
+        virtual std::string Serialize(const std::map<tm::Token, um::Uuid>& ttu) = 0;
+        virtual std::string Serialize(const std::vector<um::Uuid>& v) = 0;
         virtual std::string Serialize(const gm::State& state) = 0;
         virtual std::string Serialize(const gm::Session::WalkData& wd) = 0;
 
@@ -35,8 +35,8 @@ namespace serializer{
 
         virtual std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) = 0;
         virtual std::optional<hh::PublicUser> DeserializePublicUser(const std::string& json) = 0;
-        virtual std::optional<dm::User> DeserializeUser(const std::string& json) = 0;
-        virtual std::optional<std::vector<dm::Uuid>> DeserializeUuids(const std::string& json) = 0;
+        virtual std::optional<um::User> DeserializeUser(const std::string& json) = 0;
+        virtual std::optional<std::vector<um::Uuid>> DeserializeUuids(const std::string& json) = 0;
         virtual std::optional<gm::State> DeserializeSessionState(const std::string& json) = 0;
 
         virtual std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json) = 0;

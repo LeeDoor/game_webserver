@@ -9,4 +9,4 @@ namespace user_manager{
         Password password;
     };
 }
-namespace dm = user_manager;
+namespace um = user_manager;

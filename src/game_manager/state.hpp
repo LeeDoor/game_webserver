@@ -8,7 +8,7 @@ namespace game_manager {
     using Dimention = unsigned;
 
     struct Player{
-        using Login = dm::Login;
+        using Login = um::Login;
 
         bool operator == (const Player& other)const {
             return posX == other.posX && posY == other.posY && login == other.login;

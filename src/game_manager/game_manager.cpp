@@ -5,13 +5,13 @@
 #include "response_builder.hpp"
 
 namespace game_manager{
-    GameManager::GameManager(dm::IUserManager::Ptr dm)
-        :dm_(dm){}
+    GameManager::GameManager(um::IUserManager::Ptr um)
+        :dm_(um){}
 
-    bool GameManager::CreateSession(dm::Uuid&& player1, dm::Uuid&& player2){
+    bool GameManager::CreateSession(um::Uuid&& player1, um::Uuid&& player2){
         SessionId si = GenerateSessionId();
-        std::optional<dm::User> ud1 = dm_->GetByUuid(player1);
-        std::optional<dm::User> ud2 = dm_->GetByUuid(player2);
+        std::optional<um::User> ud1 = dm_->GetByUuid(player1);
+        std::optional<um::User> ud2 = dm_->GetByUuid(player2);
         if(!ud1.has_value() || !ud2.has_value()) 
             return false;
         sessions_.emplace(si, Session{player1, ud1->login, player2, ud2->login}); 
@@ -26,14 +26,14 @@ namespace game_manager{
     bool GameManager::HasSession(const SessionId& sid){
         return sessions_.contains(sid);
     }
-    bool GameManager::HasPlayer(const dm::Uuid& uuid) {
+    bool GameManager::HasPlayer(const um::Uuid& uuid) {
         for(std::pair<SessionId, Session> pair : sessions_){
             if (pair.second.HasPlayer(uuid))
                 return true;
         }
         return false;
     }
-    bool GameManager::HasPlayer(const dm::Uuid& uuid, const SessionId& sessionId){
+    bool GameManager::HasPlayer(const um::Uuid& uuid, const SessionId& sessionId){
         if (sessions_.contains(sessionId))
             return sessions_.at(sessionId).HasPlayer(uuid);
         throw std::runtime_error("GameManager Should check if session exists");
@@ -44,7 +44,7 @@ namespace game_manager{
         return std::nullopt;
     }
 
-    bool GameManager::ApiResign(const dm::Uuid& uuid, const gm::SessionId& sid) {
+    bool GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
         if (!HasPlayer(uuid, sid))
             return false;
         sessions_.erase(sid);
@@ -52,7 +52,7 @@ namespace game_manager{
     }
 
     //ingame api
-    Session::GameApiStatus GameManager::ApiWalk(const dm::Uuid& uuid, const SessionId& sid, const Session::WalkData& data){
+    Session::GameApiStatus GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data){
         if (sessions_.contains(sid)){
             auto status = sessions_.at(sid).ApiWalk(uuid, data);
             if (status == Session::GameApiStatus::Ok)

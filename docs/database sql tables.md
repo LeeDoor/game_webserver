@@ -6,10 +6,10 @@ CREATE TABLE users (
 	password VARCHAR(30) NOT NULL
 );
 ```
-# finished_sessions
+# sessions
 ```SQL
-CREATE TABLE finished_sessions (
-	id UUID PRIMARY KEY,
+CREATE TABLE sessions (
+	id char(16) PRIMARY KEY,
 	player1 UUID,
 	player2 UUID,
 	winner BIT,

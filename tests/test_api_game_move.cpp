@@ -33,13 +33,13 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         LoginData ld2 = EnqueueNewPlayer(socket, serializer);
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
-        std::optional<dm::Login> prev_turn = std::nullopt;
+        std::optional<um::Login> prev_turn = std::nullopt;
         std::optional<gm::Session::WalkData> new_wd = std::nullopt;
         for(int i = 0; i < 10; ++i){
             gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
             REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
 
-            dm::Login& now_turn = state.now_turn;
+            um::Login& now_turn = state.now_turn;
             LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
             gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
 
@@ -82,7 +82,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
 
-        dm::Login& now_turn = state.now_turn;
+        um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
 
@@ -119,7 +119,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
 
-        dm::Login& now_turn = state.now_turn;
+        um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
         gm::Player& player = state.players[0].login == now_turn ? state.players[1] : state.players[0];
 
@@ -188,7 +188,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
 
-        dm::Login& now_turn = state.now_turn;
+        um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
 
         http::response<http::string_body> response = Move(socket, "{}", ld.token, sid);

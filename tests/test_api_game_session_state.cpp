@@ -59,7 +59,7 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
         for(int i = 0; i < 10; i+=2){
             REQUIRE(states[i] == states[i + 1]);
             gm::State& state = states[i];
-            dm::Login& nt = state.now_turn;
+            um::Login& nt = state.now_turn;
             gm::State::Players& players = state.players;
             REQUIRE(players.size() == 2);
             gm::Player& player1 = players[0];

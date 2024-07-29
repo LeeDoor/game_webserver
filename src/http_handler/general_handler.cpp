@@ -50,7 +50,7 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        std::optional<dm::User> ud;
+        std::optional<um::User> ud;
         ud = dm_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
         if(!ud){
             return responser_.SendNoSuchUser(rns);

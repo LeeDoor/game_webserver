@@ -27,11 +27,11 @@ namespace serializer{
         nlohmann::json json = pud;
         return json.dump();
     }
-    std::string JSONSerializer::Serialize(const dm::User& ud) {
+    std::string JSONSerializer::Serialize(const um::User& ud) {
         nlohmann::json json = ud;
         return json.dump();
     }
-    std::string JSONSerializer::Serialize(const std::map<tm::Token,dm::Uuid>& ttu) {
+    std::string JSONSerializer::Serialize(const std::map<tm::Token,um::Uuid>& ttu) {
         if(ttu.empty()){
             return SerializeEmpty();
         }
@@ -41,7 +41,7 @@ namespace serializer{
         }
         return obj.dump();
     }
-    std::string JSONSerializer::Serialize(const std::vector<dm::Uuid>& v) {
+    std::string JSONSerializer::Serialize(const std::vector<um::Uuid>& v) {
         nlohmann::json obj(v);
         return obj.dump();
     }
@@ -66,11 +66,11 @@ namespace serializer{
         }
         return pud;
     }
-    std::optional<dm::User> JSONSerializer::DeserializeUser(const std::string& json_str) {
-        dm::User ud;
+    std::optional<um::User> JSONSerializer::DeserializeUser(const std::string& json_str) {
+        um::User ud;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            ud = j.template get<dm::User>();
+            ud = j.template get<um::User>();
         }
         catch(std::exception ex){
             return std::nullopt;
@@ -101,8 +101,8 @@ namespace serializer{
         }
         return map;
     }
-    std::optional<std::vector<dm::Uuid>> JSONSerializer::DeserializeUuids(const std::string& json_str) {
-        std::vector<dm::Uuid> res;
+    std::optional<std::vector<um::Uuid>> JSONSerializer::DeserializeUuids(const std::string& json_str) {
+        std::vector<um::Uuid> res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             j.get_to(res);

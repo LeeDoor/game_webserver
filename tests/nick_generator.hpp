@@ -5,7 +5,7 @@
 
 class NickGenerator {
 public:
-    dm::Login GenerateNick(){
+    um::Login GenerateNick(){
         std::stringstream ss;
         uint64_t key1 = generator1_();
         ss << std::hex << std::setw(10) << std::setfill('0') << key1;

@@ -9,6 +9,7 @@ set (DEPENDENCIES
     game_manager 
     serializer
     notification_system
+    session_manager
 )
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})

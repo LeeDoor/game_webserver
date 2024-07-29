@@ -29,17 +29,17 @@ namespace notification_system{
 
         static QueueNotifier::Ptr GetInstance();
 
-        bool Subscribe(const dm::Uuid& uuid, Responser&& responser);
-        bool Unsubscribe(const dm::Uuid& uuid, const std::string& reason = "");
+        bool Subscribe(const um::Uuid& uuid, Responser&& responser);
+        bool Unsubscribe(const um::Uuid& uuid, const std::string& reason = "");
 
-        bool Notify(const dm::Uuid& uuid, const PollData& poll_data);
+        bool Notify(const um::Uuid& uuid, const PollData& poll_data);
     private:
         static QueueNotifier::Ptr pinstance_;
         static std::mutex mutex_;
         QueueNotifier() ;
 
-        std::map<dm::Uuid, Responser> users_responser_;
-        std::map<dm::Uuid, PollData> poll_waiting_;
+        std::map<um::Uuid, Responser> users_responser_;
+        std::map<um::Uuid, PollData> poll_waiting_;
     };
 }
 namespace notif = notification_system;

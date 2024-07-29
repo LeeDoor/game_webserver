@@ -10,23 +10,23 @@ namespace game_manager{
     public:
         using Ptr = std::shared_ptr<GameManager>;
 
-        GameManager(dm::IUserManager::Ptr dm);
+        GameManager(um::IUserManager::Ptr um);
 
-        bool CreateSession(dm::Uuid&& player1, dm::Uuid&& player2);
+        bool CreateSession(um::Uuid&& player1, um::Uuid&& player2);
         bool HasSession(const SessionId& sid);
-        bool HasPlayer(const dm::Uuid& uuid);
-        bool HasPlayer(const dm::Uuid& uuid, const SessionId& sessionId);
+        bool HasPlayer(const um::Uuid& uuid);
+        bool HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
 
-        bool ApiResign(const dm::Uuid& uuid, const gm::SessionId& sid);
+        bool ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
 
         //ingame api
-        Session::GameApiStatus ApiWalk(const dm::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
+        Session::GameApiStatus ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
         
     private:
         SessionId GenerateSessionId();
 
-        dm::IUserManager::Ptr dm_;
+        um::IUserManager::Ptr dm_;
         
         std::map<SessionId, Session> sessions_;
     };

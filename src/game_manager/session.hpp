@@ -8,9 +8,9 @@ namespace game_manager{
     using SessionId = std::string;
     class Session{
     public:
-        Session(dm::Uuid player1, const dm::Login& login1, dm::Uuid player2, const dm::Login& login2);
+        Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2);
 
-        bool HasPlayer(const dm::Uuid& uuid);
+        bool HasPlayer(const um::Uuid& uuid);
 
         State::CPtr GetState();
 
@@ -30,24 +30,24 @@ namespace game_manager{
         };
 
         struct WalkData : public MoveData{};
-        GameApiStatus ApiWalk(const dm::Uuid& player_id, const WalkData& move_data);
+        GameApiStatus ApiWalk(const um::Uuid& player_id, const WalkData& move_data);
 
     private:
-        void InitSessionState(const dm::Login& login1, const dm::Login& login2);
+        void InitSessionState(const um::Login& login1, const um::Login& login2);
         void AfterMove();
         bool ValidCell(unsigned posX, unsigned posY);
 
         State::Ptr state_;
 
-        dm::Uuid player1_;
-        dm::Uuid player2_;
+        um::Uuid player1_;
+        um::Uuid player2_;
 
         Player& player1(){return state_->players[0];}
         Player& player2(){return state_->players[1];}
-        dm::Login& nowTurn(){return state_->now_turn;}
+        um::Login& nowTurn(){return state_->now_turn;}
         State::Terrain& terrain(){return state_->terrain;}
 
-        const std::map<dm::Uuid, dm::Login> uuid_to_login_;
+        const std::map<um::Uuid, um::Login> uuid_to_login_;
     };
 }   
 namespace gm = game_manager;

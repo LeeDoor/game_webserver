@@ -19,7 +19,7 @@ namespace notification_system{
         pinstance_ = std::shared_ptr<SessionStateNotifier>(new SessionStateNotifier(gm));
     }
 
-    bool SessionStateNotifier::Subscribe(const dm::Uuid& uuid, const gm::SessionId& sid) {
+    bool SessionStateNotifier::Subscribe(const um::Uuid& uuid, const gm::SessionId& sid) {
         if (sessions_[sid].users_responser.contains(uuid)){
             return false;
         }
@@ -27,15 +27,15 @@ namespace notification_system{
         spdlog::info("{} subscribed to {}", uuid, sid);
         return true;
     }
-    bool SessionStateNotifier::Unsubscribe(const dm::Uuid& uuid, const gm::SessionId& sid) {
+    bool SessionStateNotifier::Unsubscribe(const um::Uuid& uuid, const gm::SessionId& sid) {
         return sessions_[sid].users_responser.erase(uuid);
     }
-    bool SessionStateNotifier::ChangePoll(const dm::Uuid& uuid, const gm::SessionId& sid, Responser&& responser) {
+    bool SessionStateNotifier::ChangePoll(const um::Uuid& uuid, const gm::SessionId& sid, Responser&& responser) {
         if(!sessions_[sid].users_responser.contains(uuid))
             Subscribe(uuid, sid);
 
-        std::vector<dm::Uuid>& pw = sessions_[sid].poll_waiting;
-        const std::vector<dm::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
+        std::vector<um::Uuid>& pw = sessions_[sid].poll_waiting;
+        const std::vector<um::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
             spdlog::info("{} player got call about {} using poll waiting", uuid, sid);
             responser(PollStatus::Ok, GetGameState(sid));
@@ -54,7 +54,7 @@ namespace notification_system{
     }
     bool SessionStateNotifier::Notify(const gm::SessionId& sid) {
         gm::State::OptCPtr state = GetGameState(sid);
-        for(const std::pair<dm::Uuid, ResponserOpt>& pair : sessions_[sid].users_responser){
+        for(const std::pair<um::Uuid, ResponserOpt>& pair : sessions_[sid].users_responser){
             if(!pair.second.has_value()){
                 spdlog::info("{} player got added to poll waiting of {}", pair.first, sid);
                 sessions_[sid].poll_waiting.push_back(pair.first);
@@ -66,7 +66,7 @@ namespace notification_system{
         }
         return true;
     }
-    bool SessionStateNotifier::SessionCreated(const dm::Uuid& player1, const dm::Uuid& player2, const gm::SessionId& sid){
+    bool SessionStateNotifier::SessionCreated(const um::Uuid& player1, const um::Uuid& player2, const gm::SessionId& sid){
         Subscribe(player1, sid);
         Subscribe(player2, sid);
         return true;

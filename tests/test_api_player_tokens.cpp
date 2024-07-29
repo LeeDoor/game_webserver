@@ -11,7 +11,7 @@ TEST_CASE ("player_tokens", "[api][debug][player_tokens]"){
     std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
     std::string UNAUTHORIZED = serializer->SerializeError("invalid_admin", "the administrator password is missing or incorrect");
     
-    using StringMap = std::map<token_manager::Token, dm::Uuid>;
+    using StringMap = std::map<token_manager::Token, um::Uuid>;
     SECTION ("server returns valid map when authorized"){
     	StringMap sm_given = PlayerTokensSuccess(socket, serializer);
     	// dont check emptyness. other test metods call login functions so map can be filled

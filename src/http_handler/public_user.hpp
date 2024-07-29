@@ -6,12 +6,12 @@ namespace http_handler{
 
     struct PublicUser{
         PublicUser() = default;
-        PublicUser(dm::User ud){
+        PublicUser(um::User ud){
             login = ud.login;
             password = ud.password;
         }
-        dm::Login login;
-        dm::Password password;
+        um::Login login;
+        um::Password password;
     };
 
 }

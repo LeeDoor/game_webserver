@@ -11,11 +11,11 @@ namespace token_manager{
         TokenManagerRedis(std::string&& redis_data_name, RedisPtr rp);
 
         Token GenerateToken() override;
-        std::optional<dm::Uuid> GetUuidByToken(const Token& token) override;
-        bool AddTokenToUuid(const Token& token, const dm::Uuid& uuid) override;
+        std::optional<um::Uuid> GetUuidByToken(const Token& token) override;
+        bool AddTokenToUuid(const Token& token, const um::Uuid& uuid) override;
 
         // for debug admin api functions only
-        std::map<Token, dm::Uuid> GetValue() const override;
+        std::map<Token, um::Uuid> GetValue() const override;
 
     private:
         std::string redis_data_name_;

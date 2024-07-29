@@ -15,7 +15,7 @@ using tcp = net::ip::tcp;
 namespace hh = http_handler;
 using namespace serializer;
 using namespace token_manager;
-namespace dm = user_manager;
+namespace um = user_manager;
 
 #define LOGIN_API           "/api/login"
 #define REGISTER_API        "/api/register"
@@ -40,7 +40,7 @@ namespace dm = user_manager;
 
 struct LoginData{
     Token token;
-    dm::Login login;
+    um::Login login;
 };
 
 // **Success functions does not require checking for validness of the answer and possibility to call.
@@ -48,11 +48,11 @@ struct LoginData{
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
 void SetAuthorizationHeader(http::request<http::string_body>& request, const std::string& token);
 
-http::response<http::string_body> Register(tcp::socket& socket, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
+http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer);
 hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
 
-http::response<http::string_body> Login(tcp::socket&, const dm::Login& login, const dm::Password& password, ISerializer::Ptr serializer);
-LoginData LoginSuccess(tcp::socket&, const dm::Login& login, ISerializer::Ptr serializer);
+http::response<http::string_body> Login(tcp::socket&, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer);
+LoginData LoginSuccess(tcp::socket&, const um::Login& login, ISerializer::Ptr serializer);
 
 http::response<http::string_body> Profile(tcp::socket&, const Token& token);
 hh::PublicUser ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
@@ -81,24 +81,24 @@ StringResponse Walk(tcp::socket&, ISerializer::Ptr serializer, const gm::Session
 void WalkSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
 /// DEBUG METHODS ///
 
-StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);
-std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
+StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const um::Login& login, const um::Password& password);
+std::map<Token, um::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
 
 StringResponse User(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
-    const dm::Login& Usrlogin, 
-    const dm::Password& Usrpassword);
+    const um::Login& Usrlogin, 
+    const um::Password& Usrpassword);
 StringResponse User(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
-    const dm::Uuid& Usruuid);
-dm::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword);
-dm::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Uuid& uuid);
+    const um::Uuid& Usruuid);
+um::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const um::Login& Usrlogin, const um::Password& Usrpassword);
+um::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const um::Uuid& uuid);
 
 StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password);
-std::vector<dm::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer);
+std::vector<um::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer);

@@ -16,7 +16,7 @@ namespace http_handler{
         void SendSuccess(SessionData rns) const;
         void SendToken(SessionData rns, token_manager::Token& token) const;
         void SendUser(SessionData rns, const PublicUser& user) const;
-        void SendHiddenUser(SessionData rns, const dm::User& user) const;
+        void SendHiddenUser(SessionData rns, const um::User& user) const;
         void SendSessionId(SessionData rns, const std::string& session_id) const;
         void SendGameState(SessionData rns, const gm::State& state) const;
 

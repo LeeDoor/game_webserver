@@ -23,7 +23,7 @@ namespace http_handler{
     void SendManager::SendUser(SessionData rns, const PublicUser& puser)  const {
         Send(rns, status::ok, serializer_->Serialize(puser));
     }
-    void SendManager::SendHiddenUser(SessionData rns, const dm::User& user) const {
+    void SendManager::SendHiddenUser(SessionData rns, const um::User& user) const {
         Send(rns, status::ok, serializer_->Serialize(user));
     }
     void SendManager::SendSessionId(SessionData rns, const std::string& session_id) const {

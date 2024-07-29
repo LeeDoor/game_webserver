@@ -47,7 +47,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             promise2.set_value();
         });
 
-        dm::Login& now_turn = state.now_turn;
+        um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
 
@@ -110,7 +110,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             p3.set_value();
         });
 
-        dm::Login& now_turn = state.now_turn;
+        um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
         WalkSuccess(socket3, serializer, {player.posX + 1, player.posY}, ld.token, sid);

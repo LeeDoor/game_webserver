@@ -18,7 +18,7 @@ TEST_CASE("ApiUser", "[api][debug][user]") {
     	LoginData ld = LoginSuccess(socket, rd.login, serializer);
     	auto map = PlayerTokensSuccess(socket, serializer);
     	REQUIRE(map.contains(ld.token)); // player_tokens error
-		dm::User ud = UserSuccess(socket, serializer, map[ld.token]);
+		um::User ud = UserSuccess(socket, serializer, map[ld.token]);
 		CHECK(ud.login == rd.login);    	
 		CHECK(ud.password == rd.password);    	
     }
@@ -28,7 +28,7 @@ TEST_CASE("ApiUser", "[api][debug][user]") {
     	LoginData ld = LoginSuccess(socket, rd.login, serializer);
     	auto map = PlayerTokensSuccess(socket, serializer);
     	REQUIRE(map.contains(ld.token)); // player_tokens error
-		dm::User ud = UserSuccess(socket, serializer, rd.login, rd.password);
+		um::User ud = UserSuccess(socket, serializer, rd.login, rd.password);
 		CHECK(ud.uuid == map[ld.token]);    	
     }
 
