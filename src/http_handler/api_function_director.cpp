@@ -29,6 +29,9 @@ namespace http_handler{
     ApiFunctionExecutor ApiFunctionDirector::GetMove(ExecutorFunction&& afe) {
         return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
     }
+    ApiFunctionExecutor ApiFunctionDirector::GetResign(ExecutorFunction&& afe){
+        return afb_.NeedAuthor(tm_).Post().ExecFunc(std::move(afe)).GetProduct();
+    }
     
     ApiFunctionExecutor ApiFunctionDirector::GetPlayerTokens(ExecutorFunction&& afe){
         return afb_.ForDebug().GetHead().ExecFunc(std::move(afe)).GetProduct();

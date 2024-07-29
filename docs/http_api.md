@@ -385,6 +385,23 @@ requires authorization token. by this token gets profile information from db.
     ```
 ---
 ## Game API
+some of game API functions are declared to some `session`. it's id should be passed as url parameter (see each function's description). this entails the possibility of the following errors:
+* `400 no_such_session`
+session you are trying to get access to does not exist.
+```json
+{
+	"error_name": "wrong_sessionId",
+	"description": "no session with such sessionId"
+}
+```
+* `400 session_finished`
+session you are trying to get access is already finished. see the game's stats.
+```json
+{
+	"error_name": "session_finished",
+	"description": "session is finished"
+}
+```
 ### API enqueue
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 
@@ -517,11 +534,12 @@ request to get session state. session id should be passed as URL parameter.
 	"description":"this api function requires url parameters"
 }
 ```
-* `400 wrong_sessionId`
+* `400 no_such_session`
+session you are trying to get access to does not exist.
 ```json
 {
-	"error_name":"wrong_sessionId"
-	"description":"no session with such sessionId"
+	"error_name": "wrong_sessionId",
+	"description": "no session with such sessionId"
 }
 ```
 ---
@@ -565,12 +583,12 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 	"description":"this api function requires url parameters"
 }
 ```
-* `400 wrong_sessionId`
+* `400 no_such_session`
 session you are trying to get access to does not exist.
 ```json
 {
-	"error_name":"wrong_sessionId"
-	"description":"no session with such sessionId"
+	"error_name": "wrong_sessionId",
+	"description": "no session with such sessionId"
 }
 ```
 ---
@@ -621,14 +639,6 @@ you don't have access to make a move in this match. probably you are not the pla
 	"description": "you have no access to do this action"
 }
 ```
-* `400 no_such_session`
-session you are trying to get access to does not exist.
-```json
-{
-	"error_name": "wrong_sessionId",
-	"description": "no session with such sessionId"
-}
-```
 * `400 wrong_body_data`
 body data is messed up. check the example above.
 ```json
@@ -650,16 +660,7 @@ _/api/game/resign?sessionId=SESSION_ID_
 function calls about your resign and ends the game. url parameter should contain sessionId, where you are resigning. body is empty.
 
 #### **responses**
-
 * `200 OK`  
-* `400 no_such_session`
-session you are trying to get access to does not exist.
-```json
-{
-	"error_name": "wrong_sessionId",
-	"description": "no session with such sessionId"
-}
-```
 * `400 access_denied`
 you cant resign with this login token. you should be one of the players.
 ```json

@@ -44,6 +44,13 @@ namespace game_manager{
         return std::nullopt;
     }
 
+    bool GameManager::ApiResign(const dm::Uuid& uuid, const gm::SessionId& sid) {
+        if (!HasPlayer(uuid, sid))
+            return false;
+        sessions_.erase(sid);
+        return true;
+    }
+
     //ingame api
     Session::GameApiStatus GameManager::ApiWalk(const dm::Uuid& uuid, const SessionId& sid, const Session::WalkData& data){
         if (sessions_.contains(sid)){

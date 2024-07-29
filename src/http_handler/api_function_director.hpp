@@ -17,6 +17,7 @@ namespace http_handler {
         ApiFunctionExecutor GetSessionState(ExecutorFunction&& afe);
         ApiFunctionExecutor GetSessionStateChange(ExecutorFunction&& afe);
         ApiFunctionExecutor GetMove(ExecutorFunction&& afe);
+        ApiFunctionExecutor GetResign(ExecutorFunction&& afe);
 
         ApiFunctionExecutor GetPlayerTokens(ExecutorFunction&& afe);
         ApiFunctionExecutor GetUserData(ExecutorFunction&& afe);

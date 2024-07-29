@@ -25,6 +25,7 @@ namespace http_handler{
             {"/api/game/session_state", afd.GetSessionState(BIND(&GameHandler::ApiSessionState))},
             {"/api/game/session_state_change", afd.GetSessionStateChange(BIND(&GameHandler::ApiSessionStateChange))},
             {"/api/game/move", afd.GetMove(BIND(&GameHandler::ApiMove))},
+            {"/api/game/resign", afd.GetResign(BIND(&GameHandler::ApiResign))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData rns){
@@ -58,10 +59,11 @@ namespace http_handler{
     void GameHandler::ApiSessionState(SessionData rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        auto map = ParseUrlParameters(rns.request);
-        if(map.size() != 1 || !map.contains("sessionId"))
-            return responser_.SendWrongUrlParameters(rns);
-        gm::SessionId sid = map.at("sessionId");
+        
+        auto sidopt = ParseUrlSessionId(rns.request);
+        if(DefineSessionState(rns, sidopt)) return;
+        auto sid = *sidopt;
+
         gm::State::OptCPtr state = gm_->GetState(sid);
         if(!state.has_value())
             return responser_.SendWrongSessionId(rns);
@@ -71,10 +73,11 @@ namespace http_handler{
     void GameHandler::ApiSessionStateChange(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        auto map = ParseUrlParameters(rns.request);
-        if(map.size() != 1 || !map.contains("sessionId"))
-            return responser_.SendWrongUrlParameters(rns);
-        gm::SessionId sid = map.at("sessionId");
+        
+        auto sidopt = ParseUrlSessionId(rns.request);
+        if(DefineSessionState(rns, sidopt)) return;
+        auto sid = *sidopt;
+
         if(!gm_->HasSession(sid))
             return responser_.SendWrongSessionId(rns);
         using Notif = notif::SessionStateNotifier;
@@ -94,10 +97,10 @@ namespace http_handler{
     void GameHandler::ApiMove(SessionData rns) {
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        auto map = ParseUrlParameters(rns.request);
-        if(map.size() != 1 || !map.contains("sessionId"))
-            return responser_.SendWrongUrlParameters(rns);
-        gm::SessionId sid = map.at("sessionId");
+        auto sidopt = ParseUrlSessionId(rns.request);
+        if(DefineSessionState(rns, sidopt)) return;
+        auto sid = *sidopt;
+
         if (!gm_->HasSession(sid))
             return responser_.SendWrongSessionId(rns);
         if (!gm_->HasPlayer(*uuid, sid))
@@ -127,5 +130,37 @@ namespace http_handler{
         case Status::WrongMove:
             return responser_.SendWrongMove(rns);
         }
+    }
+
+    void GameHandler::ApiResign(SessionData rns) {
+        auto token = SenderAuthentication(rns.request);
+        auto uuid = tm_->GetUuidByToken(token);
+        auto sidopt = ParseUrlSessionId(rns.request);
+        if(DefineSessionState(rns, sidopt)) return;
+        auto sid = *sidopt;
+        if(!gm_->ApiResign(*uuid, sid))
+            return responser_.SendAccessDenied(rns);
+        return responser_.SendSuccess(rns);
+        
+    }
+
+    std::optional<gm::SessionId> GameHandler::ParseUrlSessionId(const HttpRequest& request) {
+        auto map = ParseUrlParameters(request);
+        if(map.size() != 1 || !map.contains("sessionId"))
+            return std::nullopt;
+        return map.at("sessionId");
+    }
+    bool GameHandler::DefineSessionState(SessionData rns, std::optional<gm::SessionId>& sid){
+        if(sid.has_value()){
+            if (gm_->HasSession(*sid)){
+                return false;
+            }
+            else{
+                responser_.SendWrongSessionId(rns);
+                return true;
+            }
+        }
+        responser_.SendWrongUrlParameters(rns);
+        return true;
     }
 }
