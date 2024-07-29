@@ -11,10 +11,10 @@ namespace http_handler{
         void ApiFunctionsParse();
 
         void ApiGetPlayerTokens(SessionData rns);
-        void ApiGetUserData(SessionData rns);
+        void ApiGetUser(SessionData rns);
         void ApiGetMMQueue(SessionData rns);
 
-        database_manager::IUserDataManager::Ptr udm_;
+        user_manager::IUserManager::Ptr dm_;
         token_manager::ITokenManager::Ptr tm_;
         game_manager::IQueueManager::Ptr qm_;
     };

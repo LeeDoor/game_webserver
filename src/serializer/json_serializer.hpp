@@ -9,15 +9,15 @@ namespace serializer{
         std::string SerializeMap(std::map<std::string, std::string>&& map) override; 
         
         std::string Serialize(const hh::RegistrationData& rd) override;
-        std::string Serialize(const dm::UserData& ud) override;
-        std::string Serialize(const hh::PublicUserData& pud) override;
+        std::string Serialize(const dm::User& ud) override;
+        std::string Serialize(const hh::PublicUser& pud) override;
         std::string Serialize(const std::map<tm::Token,dm::Uuid>& ttu) override;
         std::string Serialize(const std::vector<dm::Uuid>& v) override;
         std::string Serialize(const gm::State& state) override;
         std::string Serialize(const gm::Session::WalkData& wd) override;
 
-        std::optional<hh::PublicUserData> DeserializePublicUserData(const std::string& json) override;
-        std::optional<dm::UserData> DeserializeUserData(const std::string& json_str) override;
+        std::optional<hh::PublicUser> DeserializePublicUser(const std::string& json) override;
+        std::optional<dm::User> DeserializeUser(const std::string& json_str) override;
         std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json) override;
         std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) override;
         std::optional<std::vector<dm::Uuid>> DeserializeUuids(const std::string& json) override;

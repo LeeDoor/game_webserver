@@ -1,5 +1,5 @@
 #list with all libraries
-set (DEPENDENCIES http_handler database_manager token_manager queue_manager game_manager serializer)
+set (DEPENDENCIES http_handler user_manager token_manager queue_manager game_manager serializer)
 
 add_executable(test_application 
     api_functions.cpp
@@ -20,7 +20,7 @@ add_executable(test_application
     test_api_game_move.cpp
     
     test_api_player_tokens.cpp
-    test_api_user_data.cpp
+    test_api_user.cpp
     test_api_mm_queue.cpp
 )
 

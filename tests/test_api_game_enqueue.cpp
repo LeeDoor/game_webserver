@@ -1,7 +1,7 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
 #include "json_serializer.hpp"
-#include "user_data.hpp"
+#include "user.hpp"
 using namespace serializer;
 
 TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
@@ -25,7 +25,7 @@ TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
             CHECK(res == true);
         }
         else{
-            dm::UserData ud = UserDataSuccess(socket, serializer, queue.back());
+            dm::User ud = UserSuccess(socket, serializer, queue.back());
             rd = {ud.login, ud.password};
             ld = LoginSuccess(socket, rd.login, serializer);
         }
@@ -47,7 +47,7 @@ TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
             REQUIRE(res == true);
         }
         else{
-            dm::UserData ud = UserDataSuccess(socket, serializer, queue.back());
+            dm::User ud = UserSuccess(socket, serializer, queue.back());
             rd1.login = ud.login;
             rd1.password = ud.password;
             ld1 = LoginSuccess(socket, rd1.login, serializer);

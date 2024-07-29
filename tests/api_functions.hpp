@@ -1,10 +1,10 @@
 #pragma once
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
-#include "user_data.hpp"
+#include "user.hpp"
 #include "token.hpp"
 #include "json_serializer.hpp"
-#include "public_user_data.hpp"
+#include "public_user.hpp"
 #include "session.hpp"
 #include "socket_functions.hpp"
 
@@ -15,7 +15,7 @@ using tcp = net::ip::tcp;
 namespace hh = http_handler;
 using namespace serializer;
 using namespace token_manager;
-namespace dm = database_manager;
+namespace dm = user_manager;
 
 #define LOGIN_API           "/api/login"
 #define REGISTER_API        "/api/register"
@@ -28,7 +28,7 @@ namespace dm = database_manager;
 #define MOVE_API                "/api/game/move"
 
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
-#define USER_DATA_API       "/api/debug/user_data"
+#define user_API       "/api/debug/user"
 #define MM_QUEUE_API        "/api/debug/matchmaking_queue"
 
 #define VALID_PASS      "01Veterduet2000"
@@ -55,7 +55,7 @@ http::response<http::string_body> Login(tcp::socket&, const dm::Login& login, co
 LoginData LoginSuccess(tcp::socket&, const dm::Login& login, ISerializer::Ptr serializer);
 
 http::response<http::string_body> Profile(tcp::socket&, const Token& token);
-hh::PublicUserData ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+hh::PublicUser ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
 
  /// GAME METHODS // 
 
@@ -84,21 +84,21 @@ void WalkSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::W
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& login, const dm::Password& password);
 std::map<Token, dm::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
 
-StringResponse UserData(
+StringResponse User(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
     const dm::Login& Usrlogin, 
     const dm::Password& Usrpassword);
-StringResponse UserData(
+StringResponse User(
     tcp::socket&, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
     const dm::Uuid& Usruuid);
-dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword);
-dm::UserData UserDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Uuid& uuid);
+dm::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword);
+dm::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const dm::Uuid& uuid);
 
 StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password);
 std::vector<dm::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer);

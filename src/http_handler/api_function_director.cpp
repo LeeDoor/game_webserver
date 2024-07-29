@@ -36,7 +36,7 @@ namespace http_handler{
     ApiFunctionExecutor ApiFunctionDirector::GetPlayerTokens(ExecutorFunction&& afe){
         return afb_.ForDebug().GetHead().ExecFunc(std::move(afe)).GetProduct();
     }
-    ApiFunctionExecutor ApiFunctionDirector::GetUserData(ExecutorFunction&& afe){
+    ApiFunctionExecutor ApiFunctionDirector::GetUser(ExecutorFunction&& afe){
         return afb_.ForDebug().GetHead().ExecFunc(std::move(afe)).GetProduct();
     }
     ApiFunctionExecutor ApiFunctionDirector::GetMatchmakingQueue(ExecutorFunction&& afe){

@@ -9,7 +9,7 @@ flowchart LR
 initializer --"starts server"--> server
 server --"passes request handling to"--> http_handler
 http_handler --"uses serializer to send and get requests with JSON"--> serializer
-http_handler --"uses database_manager to get information from db and set it to db"--> database_manager
+http_handler --"uses user_manager to get information from db and set it to db"--> user_manager
 http_handler --"manages linkage between token and it's user"--> token_manager
 http_handler --"manages player's queue to play the game and balancing them"-->matchmaking_system
 http_handler --"uses api for managing game process"-->game_manager
@@ -19,7 +19,7 @@ click initializer "initializer.md"
 click server "server.md"
 click http_handler "http_handler.md"
 click serializer "serializer.md"
-click database_manager "database_manager.md"
+click user_manager "user_manager.md"
 click token_manager "token_manager.md"
 click matchmaking_system "matchmaking_system.md"
 click game_manager "game_manager.md"

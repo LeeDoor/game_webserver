@@ -68,12 +68,12 @@ http::response<http::string_body> Profile(tcp::socket& socket, const Token& toke
     auto response = GetResponseToRequest(false, request, socket);
     return response;
 }
-hh::PublicUserData ProfileSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
+hh::PublicUser ProfileSuccess(tcp::socket& socket, const Token& token, ISerializer::Ptr serializer) {
     http::response<http::string_body> response = Profile(socket, token);
     CheckStringResponse(response, 
         {.res = http::status::ok});
 
-    auto is_pud = serializer->DeserializePublicUserData(response.body());
+    auto is_pud = serializer->DeserializePublicUser(response.body());
     REQUIRE(is_pud);
     return *is_pud;
 }
@@ -193,7 +193,7 @@ StringResponse PlayerTokens(tcp::socket& socket, ISerializer::Ptr serializer, co
     return GetResponseToRequest(false, req, socket);
 }
 
-StringResponse UserData(
+StringResponse User(
     tcp::socket& socket, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
@@ -201,43 +201,43 @@ StringResponse UserData(
     const dm::Login& Usrlogin, 
     const dm::Password& Usrpassword) {
 
-    std::string target = SetUrlParameters(USER_DATA_API, {{"login", Usrlogin}, {"password", Usrpassword}});
+    std::string target = SetUrlParameters(user_API, {{"login", Usrlogin}, {"password", Usrpassword}});
     http::request<http::string_body> req{http::verb::get, target, 11};;
     req.body() = serializer->Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
 
     return GetResponseToRequest(false, req, socket);
 }
-StringResponse UserData(
+StringResponse User(
     tcp::socket& socket, 
     ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
     const dm::Password& Usruuid) {
     
-    std::string target = SetUrlParameters(USER_DATA_API, {{"uuid", Usruuid}});
+    std::string target = SetUrlParameters(user_API, {{"uuid", Usruuid}});
     http::request<http::string_body> req{http::verb::get, target, 11};
     req.body() = serializer->Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
     
     return GetResponseToRequest(false, req, socket);
 }
-dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword) {
-    StringResponse response = UserData(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, Usrlogin, Usrpassword);
+dm::User UserSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Login& Usrlogin, const dm::Password& Usrpassword) {
+    StringResponse response = User(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, Usrlogin, Usrpassword);
     CheckStringResponse(response, {.res=http::status::ok});
-    auto given_user_data = serializer->DeserializeUserData(response.body());
-    REQUIRE(given_user_data.has_value());
-    CHECK(given_user_data->login == Usrlogin);
-    CHECK(given_user_data->password == Usrpassword);
-    return *given_user_data;
+    auto given_user = serializer->DeserializeUser(response.body());
+    REQUIRE(given_user.has_value());
+    CHECK(given_user->login == Usrlogin);
+    CHECK(given_user->password == Usrpassword);
+    return *given_user;
 }
-dm::UserData UserDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Uuid& uuid) {
-    StringResponse response = UserData(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, uuid);
+dm::User UserSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const dm::Uuid& uuid) {
+    StringResponse response = User(socket, serializer, ADMIN_LOGIN, ADMIN_PASSWORD, uuid);
     CheckStringResponse(response, {.res=http::status::ok});
-    auto given_user_data = serializer->DeserializeUserData(response.body());
-    REQUIRE(given_user_data.has_value());
-    CHECK(given_user_data->uuid == uuid);
-    return *given_user_data;
+    auto given_user = serializer->DeserializeUser(response.body());
+    REQUIRE(given_user.has_value());
+    CHECK(given_user->uuid == uuid);
+    return *given_user;
 }
 
 StringResponse MMQueue(tcp::socket& socket, ISerializer::Ptr serializer, std::string login, std::string password){

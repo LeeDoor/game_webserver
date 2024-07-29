@@ -108,15 +108,15 @@ debug function for getting users' authentication tokens and uuids.
     }
     ```
 ---
-### API user_data
+### API user
 #### **description**
 debug function for getting users' profile info like login and password.
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**
-*/api/debug/user_data?uuid=USER_UUID*
+*/api/debug/user?uuid=USER_UUID*
 **OR**
-*/api/debug/user_data?login=USER_LOGIN&password=USER_PASS*
+*/api/debug/user?login=USER_LOGIN&password=USER_PASS*
 
 #### **request body example**
 ```js
@@ -128,7 +128,7 @@ debug function for getting users' profile info like login and password.
 
 #### **responses**
 * `200 OK`\
-    user_data sent successfully
+    user sent successfully
     *response body example:*
     ```js
     {
@@ -219,9 +219,9 @@ Serializer->>ApiHandler: returns login and password from body
 
 ApiHandler->>ApiHandler: checks validness of data
 
-ApiHandler->>UserDataManager: adds user to database
+ApiHandler->>UserManager: adds user to database
 
-UserDataManager->>ApiHandler: returns error code
+UserManager->>ApiHandler: returns error code
 
   
 
@@ -293,9 +293,9 @@ Serializer->>ApiHandler: returns login and password from body
 
 ApiHandler->>ApiHandler: checks validness of data
 
-ApiHandler->>UserDataManager: searches for a user with such login and password
+ApiHandler->>UserManager: searches for a user with such login and password
 
-UserDataManager->>ApiHandler: returns user or error code
+UserManager->>ApiHandler: returns user or error code
 
 ApiHandler->>TokenManager: creates session with current user
 
@@ -359,8 +359,8 @@ actor User
 ApiHandler->>ApiHandler: gets Authorization token
 ApiHandler->>TokenManager: gets user's uuid by token
 TokenManager->>ApiHandler: user's uuid
-ApiHandler->>UserDataManager: gets user by uuid
-UserDataManager->>ApiHandler: returns user or error code
+ApiHandler->>UserManager: gets user by uuid
+UserManager->>ApiHandler: returns user or error code
 ApiHandler->>User: send user data
 ```
 

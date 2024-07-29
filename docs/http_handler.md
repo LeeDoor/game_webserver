@@ -23,7 +23,7 @@ all handlers have [ISerializer](serializer.md) object. this object can serialize
 handlers contain objects to handle requests.
 * **send_manager** - all api send functions moved here to avoid overwhelming api_handler class
 * **[serializer](serializer.md)** - serializes and deserializes response and request bodies
-* **user_data_manager** - [database manager class](database_manager.md)
+* **user_manager** - [database manager class](user_manager.md)
 * [**token_manager**](token_manager.md) - contains map to get uuid of player by token
 * [**queue_manager**](queue_manager.md) - class to communicate with queue.
 * [**game_manager**](game_manager.md) - class to balance players in queue, put them into the game and make in-game moves.
@@ -57,7 +57,7 @@ classDiagram
   -request_to_executor_      
         -serializer
         -send_manager(responser_)
-        -user_data_manager(udm_)
+        -user_manager(dm_)
         -token_to_uuid (ttu_)
         -matchmaking_queue(mm_queue_)
     }

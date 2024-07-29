@@ -3,7 +3,7 @@
 #include <memory>
 #include <condition_variable>
 
-namespace database_manager{
+namespace user_manager{
     class ConnectionPool {
         using PoolType = ConnectionPool;
         using ConnectionPtr = std::shared_ptr<pqxx::connection>;

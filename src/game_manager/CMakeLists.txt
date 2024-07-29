@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(DEPENDENCIES database_manager notification_system)
+set(DEPENDENCIES user_manager notification_system)
 set(LIBRARY_NAME game_manager)
 #creating library
 add_library(${LIBRARY_NAME}

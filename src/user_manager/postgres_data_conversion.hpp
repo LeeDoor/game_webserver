@@ -1,10 +1,10 @@
 #pragma once
 #include <pqxx/pqxx>
-#include "user_data.hpp"
+#include "user.hpp"
 
-namespace database_manager {
-    static UserData from_result(const pqxx::row& row) {
-        database_manager::UserData instance;
+namespace user_manager {
+    static User from_result(const pqxx::row& row) {
+        user_manager::User instance;
         instance.uuid = row.at("id").as<Uuid>();
         instance.login = row.at("login").as<Login>();
         instance.password = row.at("password").as<Password>();

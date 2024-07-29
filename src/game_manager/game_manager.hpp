@@ -3,14 +3,14 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "i_user_data_manager.hpp"
+#include "i_user_manager.hpp"
 
 namespace game_manager{
     class GameManager{
     public:
         using Ptr = std::shared_ptr<GameManager>;
 
-        GameManager(dm::IUserDataManager::Ptr udm);
+        GameManager(dm::IUserManager::Ptr dm);
 
         bool CreateSession(dm::Uuid&& player1, dm::Uuid&& player2);
         bool HasSession(const SessionId& sid);
@@ -26,7 +26,7 @@ namespace game_manager{
     private:
         SessionId GenerateSessionId();
 
-        dm::IUserDataManager::Ptr udm_;
+        dm::IUserManager::Ptr dm_;
         
         std::map<SessionId, Session> sessions_;
     };

@@ -1,7 +1,7 @@
 #initializer's dependencies
 set(DEPENDENCIES 
     serializer 
-    database_manager
+    user_manager
     token_manager 
     queue_manager
     game_manager
@@ -29,7 +29,7 @@ add_library(${LIBRARY_NAME}
     handler_parameters.hpp
     send_manager.hpp
     send_manager.cpp
-    public_user_data.hpp
+    public_user.hpp
     registration_data.hpp
     registration_data.cpp
     get_token_from_header.hpp

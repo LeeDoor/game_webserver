@@ -1,6 +1,6 @@
 #include <nlohmann/json.hpp>
 #include "registration_data.hpp"
-#include "public_user_data.hpp"
+#include "public_user.hpp"
 #include "session.hpp"
 using json = nlohmann::json;
 
@@ -8,13 +8,13 @@ namespace http_handler {
     void to_json(json& j, const RegistrationData& v);
     void from_json(const json& j, RegistrationData& v);
     
-    void to_json(json& j, const PublicUserData& v);
-    void from_json(const json& j, PublicUserData& v);
+    void to_json(json& j, const PublicUser& v);
+    void from_json(const json& j, PublicUser& v);
 } 
 
-namespace database_manager {
-    void to_json(json& j, const UserData& v);
-    void from_json(const json& j, UserData& v);
+namespace user_manager {
+    void to_json(json& j, const User& v);
+    void from_json(const json& j, User& v);
 }
 
 namespace game_manager{

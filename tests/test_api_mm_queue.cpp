@@ -1,7 +1,7 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
 #include "json_serializer.hpp"
-#include "user_data.hpp"
+#include "user.hpp"
 using namespace serializer;
 
 TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
@@ -32,7 +32,7 @@ TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 			}
 			else{
 				REQUIRE(queue.size() == 1);
-				REQUIRE(queue.back() == UserDataSuccess(socket, serializer, rd.login, rd.password).uuid);
+				REQUIRE(queue.back() == UserSuccess(socket, serializer, rd.login, rd.password).uuid);
 			}
 			prev_queue_size = queue.size();
 		}

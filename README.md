@@ -28,7 +28,7 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [server](docs/server.md)
 * [http_handler](docs/http_handler.md)
 * [serializer(JSON)](docs/serializer.md)
-* [database_manager](docs/database_manager.md)
+* [user_manager](docs/user_manager.md)
 * [token_manager](docs/token_manager.md)
 * [queue_manager](queue_manager.md)
 * [game_manager](docs/game_manager.md)

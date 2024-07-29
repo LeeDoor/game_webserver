@@ -1,12 +1,12 @@
 #initializer's dependencies
 set(DEPENDENCIES  http_handler)
-set(LIBRARY_NAME database_manager)
+set(LIBRARY_NAME user_manager)
 #creating library
 add_library(${LIBRARY_NAME}
-    i_user_data_manager.hpp
-    user_data_manager_postgres.cpp
-    user_data_manager_postgres.hpp
-    user_data.hpp
+    i_user_manager.hpp
+    user_manager_postgres.cpp
+    user_manager_postgres.hpp
+    user.hpp
     postgres_connection_pool.hpp
     postgres_connection_pool.cpp
     postgres_data_conversion.hpp

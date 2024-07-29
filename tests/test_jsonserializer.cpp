@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "json_serializer.hpp"
 #include "registration_data.hpp"
-#include "public_user_data.hpp"
+#include "public_user.hpp"
 #include "token.hpp"
 #include "type_serializer.hpp"
 #include <nlohmann/json.hpp>
@@ -144,51 +144,51 @@ TEST_CASE("Serialize & DeserializeRegData", "[jsonserializer]") {
     }
 }
 
-TEST_CASE("Serialize & DeserializePublicUserData", "[jsonserializer]") {
+TEST_CASE("Serialize & DeserializePublicUser", "[jsonserializer]") {
     JSONSerializer serializer;
     SECTION ("Serialize") {
-        std::string rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login1", "password1"}});
+        std::string rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login1", "password1"}});
         CHECK(rd_given == "{\"login\":\"login1\",\"password\":\"password1\"}");
-        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
+        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
         CHECK(rd_given == "{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
-        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "", ""}});
+        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "", ""}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "123qwe123", ""}});
+        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "123qwe123", ""}});
         CHECK(rd_given == "{\"login\":\"123qwe123\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "", "123qwe123"}});
+        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "", "123qwe123"}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"123qwe123\"}");
-        rd_given = serializer.Serialize(hh::PublicUserData{{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
+        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
         CHECK(rd_given == "{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
     }
-    SECTION ("DeserializePublicUserData") {
-        hh::PublicUserData rd;
+    SECTION ("DeserializePublicUser") {
+        hh::PublicUser rd;
         rd = {{"uuid", "login1", "password1"}};
-        std::optional<hh::PublicUserData> rd_given;
-        rd_given = serializer.DeserializePublicUserData("{\"login\":\"login1\",\"password\":\"password1\"}");
+        std::optional<hh::PublicUser> rd_given;
+        rd_given = serializer.DeserializePublicUser("{\"login\":\"login1\",\"password\":\"password1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}};
-        rd_given = serializer.DeserializePublicUserData("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
+        rd_given = serializer.DeserializePublicUser("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "", ""}};
-        rd_given = serializer.DeserializePublicUserData("{\"login\":\"\",\"password\":\"\"}");
+        rd_given = serializer.DeserializePublicUser("{\"login\":\"\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "123123123", ""}};
-        rd_given = serializer.DeserializePublicUserData("{\"login\":\"123123123\",\"password\":\"\"}");
+        rd_given = serializer.DeserializePublicUser("{\"login\":\"123123123\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}};
-        rd_given = serializer.DeserializePublicUserData("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
+        rd_given = serializer.DeserializePublicUser("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);

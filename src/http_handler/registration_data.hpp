@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "user_data.hpp"
+#include "user.hpp"
 
 namespace http_handler{
     struct RegistrationData{

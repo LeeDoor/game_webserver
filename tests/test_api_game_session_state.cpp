@@ -17,7 +17,7 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
     if(MMQueueSuccess(socket, serializer).size() == 0)
         ld2 = EnqueueNewPlayer(socket, serializer);
     else{
-        auto ud = UserDataSuccess(socket, serializer, MMQueueSuccess(socket, serializer)[0]);
+        auto ud = UserSuccess(socket, serializer, MMQueueSuccess(socket, serializer)[0]);
         ld2 = LoginSuccess(socket, ud.login, serializer);
     }
     LoginData ld = EnqueueNewPlayer(socket, serializer);

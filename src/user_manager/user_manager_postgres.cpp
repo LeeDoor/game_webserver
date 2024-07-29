@@ -1,9 +1,9 @@
-#include "user_data_manager_postgres.hpp"
+#include "user_manager_postgres.hpp"
 #include "postgres_data_conversion.hpp"
 #include "spdlog/spdlog.h"
 
-namespace database_manager{    
-    UserDataManagerPostgres::UserDataManagerPostgres(bool is_test, std::string&& bd_credentials) 
+namespace user_manager{    
+    UserManagerPostgres::UserManagerPostgres(bool is_test, std::string&& bd_credentials) 
     : pool_(CONNECTION_CAPACITY, is_test, std::move(bd_credentials)){
         if(is_test){
             try{
@@ -18,7 +18,7 @@ namespace database_manager{
         }
     }
 
-    bool UserDataManagerPostgres::AddLine(hh::RegistrationData& rd) {
+    bool UserManagerPostgres::AddLine(hh::RegistrationData& rd) {
         try{
             ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
             pqxx::work trans(*cw);
@@ -32,14 +32,14 @@ namespace database_manager{
         }
         return false;
     }
-    std::optional<UserData> UserDataManagerPostgres::GetByUuid(const Uuid& uuid) {
+    std::optional<User> UserManagerPostgres::GetByUuid(const Uuid& uuid) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 
         try {
             pqxx::row res = 
                 trans.exec_params1("SELECT * FROM users WHERE id=$1;", uuid);
-            UserData ud = from_result(res);
+            User ud = from_result(res);
             return ud;
         } 
         catch (const std::exception& ex) {
@@ -48,14 +48,14 @@ namespace database_manager{
         }
         
     }
-    std::optional<UserData> UserDataManagerPostgres::GetByLoginPassword(const Login& login, const Password& password) {
+    std::optional<User> UserManagerPostgres::GetByLoginPassword(const Login& login, const Password& password) {
         ConnectionPool::ConnectionWrapper cw = pool_.GetConnection();
         pqxx::read_transaction trans(*cw);
 
         try {
             pqxx::row res = 
                 trans.exec_params1("SELECT * FROM users WHERE login=$1 AND password=$2;", login, password);
-            UserData ud = from_result(res);
+            User ud = from_result(res);
             return ud;
         } 
         catch (const std::exception& ex) {  

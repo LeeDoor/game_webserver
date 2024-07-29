@@ -1,7 +1,7 @@
 #pragma once
 #include <random>
 #include <iomanip>
-#include "user_data.hpp"
+#include "user.hpp"
 
 class NickGenerator {
 public:

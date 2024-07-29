@@ -14,7 +14,7 @@ TEST_CASE("server correctly returns profile data", "[api][profile]"){
     SECTION ("logining and trying to get profile data with authorization token"){
         hh::RegistrationData rd = RegisterSuccess(socket, serializer);
         LoginData ld = LoginSuccess(socket, rd.login, serializer);
-        http_handler::PublicUserData pud = ProfileSuccess(socket, ld.token, serializer);
+        http_handler::PublicUser pud = ProfileSuccess(socket, ld.token, serializer);
         CHECK(pud.login == rd.login);
         CHECK(pud.password == rd.password);
     }
@@ -43,7 +43,7 @@ TEST_CASE("server correctly returns profile data", "[api][profile]"){
         }
 
         for(int i = 0; i < login_datas.size(); ++i){
-            hh::PublicUserData pud = ProfileSuccess(socket, login_datas[i].token, serializer);
+            hh::PublicUser pud = ProfileSuccess(socket, login_datas[i].token, serializer);
             CHECK(pud.login == reg_datas[i].login);
             CHECK(pud.password == reg_datas[i].password);
         }

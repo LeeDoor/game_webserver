@@ -3,8 +3,8 @@
 #include "i_serializer.hpp"
 #include "token.hpp"
 #include "api_function_executor.hpp"
-#include "user_data.hpp"
-#include "public_user_data.hpp"
+#include "user.hpp"
+#include "public_user.hpp"
 
 namespace http_handler{
     class SendManager{
@@ -15,8 +15,8 @@ namespace http_handler{
 
         void SendSuccess(SessionData rns) const;
         void SendToken(SessionData rns, token_manager::Token& token) const;
-        void SendUserData(SessionData rns, const PublicUserData& user_data) const;
-        void SendHiddenUserData(SessionData rns, const dm::UserData& user_data) const;
+        void SendUser(SessionData rns, const PublicUser& user) const;
+        void SendHiddenUser(SessionData rns, const dm::User& user) const;
         void SendSessionId(SessionData rns, const std::string& session_id) const;
         void SendGameState(SessionData rns, const gm::State& state) const;
 

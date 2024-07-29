@@ -1,6 +1,6 @@
 #include "postgres_connection_pool.hpp"
 
-namespace database_manager{
+namespace user_manager{
 
 
     ConnectionPool::ConnectionPool(size_t capacity, bool is_test, std::string&& bd_credentials) {

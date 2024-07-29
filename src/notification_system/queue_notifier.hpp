@@ -2,7 +2,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include "user_data.hpp"
+#include "user.hpp"
 #include "http_types.hpp"
 
 namespace notification_system{

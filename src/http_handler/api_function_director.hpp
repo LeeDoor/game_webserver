@@ -20,7 +20,7 @@ namespace http_handler {
         ApiFunctionExecutor GetResign(ExecutorFunction&& afe);
 
         ApiFunctionExecutor GetPlayerTokens(ExecutorFunction&& afe);
-        ApiFunctionExecutor GetUserData(ExecutorFunction&& afe);
+        ApiFunctionExecutor GetUser(ExecutorFunction&& afe);
         ApiFunctionExecutor GetMatchmakingQueue(ExecutorFunction&& afe);
 
     private:

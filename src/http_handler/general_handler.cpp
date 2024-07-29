@@ -10,7 +10,7 @@
 namespace http_handler {
     GeneralHandler::GeneralHandler(HandlerParameters handler_parameters) 
         :   ApiHandler(handler_parameters),
-            udm_(handler_parameters.user_data_manager),
+            dm_(handler_parameters.user_manager),
             tm_(handler_parameters.token_manager){}
 
     void GeneralHandler::Init(){
@@ -35,7 +35,7 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        bool add_line_res = udm_->AddLine(*rd);
+        bool add_line_res = dm_->AddLine(*rd);
         if(!add_line_res){
             return responser_.SendLoginTaken(rns);
         }
@@ -50,8 +50,8 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        std::optional<dm::UserData> ud;
-        ud = udm_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
+        std::optional<dm::User> ud;
+        ud = dm_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
         if(!ud){
             return responser_.SendNoSuchUser(rns);
         }
@@ -64,11 +64,11 @@ namespace http_handler {
     void GeneralHandler::ApiGetProfileData(SessionData rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        auto user_data = udm_->GetByUuid(*uuid);
-        if(!user_data)
+        auto user = dm_->GetByUuid(*uuid);
+        if(!user)
             return responser_.SendTokenToRemovedPerson(rns);
             
-        return responser_.SendUserData(rns, *user_data);
+        return responser_.SendUser(rns, *user);
     }
     
 } // http_handler

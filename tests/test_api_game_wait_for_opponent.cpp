@@ -1,7 +1,7 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
 #include "json_serializer.hpp"
-#include "user_data.hpp"
+#include "user.hpp"
 using namespace serializer;
 
 TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){

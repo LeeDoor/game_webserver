@@ -5,13 +5,13 @@
 #include "response_builder.hpp"
 
 namespace game_manager{
-    GameManager::GameManager(dm::IUserDataManager::Ptr udm)
-        :udm_(udm){}
+    GameManager::GameManager(dm::IUserManager::Ptr dm)
+        :dm_(dm){}
 
     bool GameManager::CreateSession(dm::Uuid&& player1, dm::Uuid&& player2){
         SessionId si = GenerateSessionId();
-        std::optional<dm::UserData> ud1 = udm_->GetByUuid(player1);
-        std::optional<dm::UserData> ud2 = udm_->GetByUuid(player2);
+        std::optional<dm::User> ud1 = dm_->GetByUuid(player1);
+        std::optional<dm::User> ud2 = dm_->GetByUuid(player2);
         if(!ud1.has_value() || !ud2.has_value()) 
             return false;
         sessions_.emplace(si, Session{player1, ud1->login, player2, ud2->login}); 

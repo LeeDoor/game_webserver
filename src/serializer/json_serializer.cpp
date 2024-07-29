@@ -23,11 +23,11 @@ namespace serializer{
         nlohmann::json json = rd;
         return json.dump();
     }
-    std::string JSONSerializer::Serialize(const hh::PublicUserData& pud) {
+    std::string JSONSerializer::Serialize(const hh::PublicUser& pud) {
         nlohmann::json json = pud;
         return json.dump();
     }
-    std::string JSONSerializer::Serialize(const dm::UserData& ud) {
+    std::string JSONSerializer::Serialize(const dm::User& ud) {
         nlohmann::json json = ud;
         return json.dump();
     }
@@ -55,22 +55,22 @@ namespace serializer{
         return obj.dump();
     }
 
-    std::optional<hh::PublicUserData> JSONSerializer::DeserializePublicUserData(const std::string& json_str) {
-        hh::PublicUserData pud;
+    std::optional<hh::PublicUser> JSONSerializer::DeserializePublicUser(const std::string& json_str) {
+        hh::PublicUser pud;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            pud = j.template get<hh::PublicUserData>();
+            pud = j.template get<hh::PublicUser>();
         }
         catch(std::exception ex){
             return std::nullopt;
         }
         return pud;
     }
-    std::optional<dm::UserData> JSONSerializer::DeserializeUserData(const std::string& json_str) {
-        dm::UserData ud;
+    std::optional<dm::User> JSONSerializer::DeserializeUser(const std::string& json_str) {
+        dm::User ud;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            ud = j.template get<dm::UserData>();
+            ud = j.template get<dm::User>();
         }
         catch(std::exception ex){
             return std::nullopt;

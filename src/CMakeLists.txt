@@ -3,7 +3,7 @@ set (DEPENDENCIES
     initializer 
     server 
     http_handler 
-    database_manager 
+    user_manager 
     token_manager 
     queue_manager 
     game_manager 

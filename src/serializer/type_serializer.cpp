@@ -10,19 +10,19 @@ namespace http_handler {
         j.at("password").get_to(v.password);
     }
 
-    void to_json(json& j, const PublicUserData& v) {
+    void to_json(json& j, const PublicUser& v) {
         j = json{{"login", v.login}, {"password", v.password}};
     }
-    void from_json(const json& j, PublicUserData& v) {
+    void from_json(const json& j, PublicUser& v) {
         j.at("login").get_to(v.login);
         j.at("password").get_to(v.password);
     }
 }
-namespace database_manager {
-    void to_json(json& j, const UserData& v) {
+namespace user_manager {
+    void to_json(json& j, const User& v) {
         j = json{{"uuid", v.uuid}, {"login", v.login}, {"password", v.password}};
     }
-    void from_json(const json& j, UserData& v) {
+    void from_json(const json& j, User& v) {
         j.at("uuid").get_to(v.uuid);
         j.at("login").get_to(v.login);
         j.at("password").get_to(v.password);

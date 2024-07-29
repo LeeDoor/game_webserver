@@ -18,7 +18,7 @@ namespace http_handler {
         void ApiLogin(SessionData rns);
         void ApiGetProfileData(SessionData rns);
         
-        database_manager::IUserDataManager::Ptr udm_;
+        user_manager::IUserManager::Ptr dm_;
         token_manager::ITokenManager::Ptr tm_;
     };
 
