@@ -33,6 +33,7 @@ namespace game_manager{
         GameApiStatus ApiWalk(const dm::Uuid& player_id, const WalkData& move_data);
 
     private:
+        void InitSessionState(const dm::Login& login1, const dm::Login& login2);
         void AfterMove();
         bool ValidCell(unsigned posX, unsigned posY);
 

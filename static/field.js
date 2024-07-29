@@ -28,7 +28,7 @@ class Element{
 const canvas = document.getElementById('canvas'); // canvas
 const ctx = canvas.getContext('2d'); // canvas context
 
-const gridSize = 16; // size of grid in cells (grid is square)
+let gridSize = 8; // size of grid in cells (grid is square)
 const innerCellMarginps = 0.5; // canvas size's persents% between cells
 let cellMarginpx; // current size between cells in pixels
 let grid = []; // two-dimentional array of cells
@@ -42,6 +42,7 @@ let selectedCell; // highlighted celected cell
 
 // creates cells for grid
 function initGrid(){
+    grid = [];
     for(x = 0; x < gridSize; ++x){
         let col = [];
         for(y = 0; y < gridSize; ++y){
@@ -112,6 +113,7 @@ function drawGrid(){
 
 // draws all objects on scene
 function drawScene(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
     drawPlayers();
 }
@@ -167,6 +169,7 @@ function updateScene(){
     const players = lastSessionState.players;
     updateTerrain(terrain);
     updatePlayers(players);
+    gridSize == lastSessionState.map_size.width ? context.clearRect(0, 0, canvas.width, canvas.height) : null;
     drawScene();
 }
      
@@ -271,7 +274,6 @@ function move(data){
         },
         body: JSON.stringify(data)
     }).then(response=>{
-        updateScene();
         return response.json();
     }).then(json=>{
         console.log(json);

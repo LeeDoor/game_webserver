@@ -10,20 +10,7 @@ namespace game_manager{
         player2_(std::move(player2)), 
         uuid_to_login_{{player1_, login1},{player2_, login2}},
         state_(std::make_shared<State>()){
-
-        state_->players.resize(2);
-        state_->players[0].login = login1;
-        state_->players[0].posX = 5;
-        state_->players[1].login = login2;
-        state_->terrain.resize(2);
-        state_->terrain[0].posX = 2;
-        state_->terrain[0].posY = 3;
-        state_->terrain[0].type = Obstacle::Type::Wall;
-        state_->terrain[1].posX = 4;
-        state_->terrain[1].posY = 5;
-        state_->terrain[1].type = Obstacle::Type::Wall;
-        state_->now_turn = login1;
-        state_->map_size = {15,15};
+        InitSessionState(login1, login2);
     }
 
     bool Session::HasPlayer(const dm::Uuid& uuid){
@@ -53,6 +40,32 @@ namespace game_manager{
         return GameApiStatus::Ok;
     }
     
+    void Session::InitSessionState(const dm::Login& login1, const dm::Login& login2){
+        state_->players.resize(2);
+        player1().login = login1;
+        player2().login = login2;
+
+        player1().posX = 4;
+        player1().posY = 1;
+
+        player2().posX = 3;
+        player2().posY = 6;
+        
+        std::vector<std::pair<unsigned, unsigned>> walls = {
+            {0,2}, {3,2}, 
+            {4,3}, {6,3},
+            {1,4}, {3,4},
+            {4,5}, {7,5}
+        };
+        terrain().reserve(walls.size());
+        for(auto& pair : walls){
+            terrain().emplace_back(pair.first, pair.second, Obstacle::Type::Wall);
+        }
+
+        nowTurn() = login1;
+        state_->map_size = {15,15};    
+    }
+
     void Session::AfterMove(){
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
     }
