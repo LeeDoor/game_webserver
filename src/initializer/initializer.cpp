@@ -91,9 +91,11 @@ int Initializer::StartServer(Args args) {
     }
 
     /// HANDLER ///
+    cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(args.test, std::move(args.postgres_credentials));
+
     http_handler::HandlerParameters hp;
     hp.serializer = std::make_shared<serializer::JSONSerializer>();
-    hp.user_manager = std::make_shared<user_manager::UserManagerPostgres>(args.test, std::move(args.postgres_credentials));
+    hp.user_manager = std::make_shared<user_manager::UserManagerPostgres>(connection_pool);
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     hp.game_manager = std::make_shared<game_manager::GameManager>(hp.user_manager);
     hp.queue_manager = std::make_shared<game_manager::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);

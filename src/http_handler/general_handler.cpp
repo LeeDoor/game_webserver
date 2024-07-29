@@ -35,7 +35,7 @@ namespace http_handler {
         if(!ValidateRegData(*rd)){
             return responser_.SendWrongLoginOrPassword(rns);
         }
-        bool add_line_res = dm_->AddLine(*rd);
+        bool add_line_res = dm_->AddLine(rd->login, rd->password);
         if(!add_line_res){
             return responser_.SendLoginTaken(rns);
         }

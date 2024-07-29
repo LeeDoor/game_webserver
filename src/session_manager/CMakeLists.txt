@@ -7,6 +7,7 @@ add_library(${LIBRARY_NAME}
     session_manager_postgres.hpp
     session_manager_postgres.cpp
     session_data.hpp
+    postgres_session_conversion.hpp
 )
 
 #including and linking dependencies

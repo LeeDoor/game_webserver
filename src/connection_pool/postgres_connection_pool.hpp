@@ -3,12 +3,13 @@
 #include <memory>
 #include <condition_variable>
 
-namespace user_manager{
+namespace connection_pool{
     class ConnectionPool {
         using PoolType = ConnectionPool;
         using ConnectionPtr = std::shared_ptr<pqxx::connection>;
 
     public:
+        using Ptr = std::shared_ptr<ConnectionPool>;
         class ConnectionWrapper {
         public:
             ConnectionWrapper(std::shared_ptr<pqxx::connection>&& conn, PoolType& pool) noexcept
@@ -42,7 +43,7 @@ namespace user_manager{
             PoolType* pool_;
         };
 
-        ConnectionPool(size_t capacity, bool is_test, std::string&& bd_credentials);
+        ConnectionPool(bool is_test, std::string&& bd_credentials);
         ConnectionWrapper GetConnection();
     private:
         void ReturnConnection(ConnectionPtr&& conn);
@@ -55,5 +56,4 @@ namespace user_manager{
     }; 
 }
 
-
-
+namespace cp = connection_pool;

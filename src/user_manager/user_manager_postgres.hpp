@@ -8,13 +8,13 @@
 namespace user_manager{
     class UserManagerPostgres : public IUserManager {
     public:
-        UserManagerPostgres(bool is_test, std::string&& bd_credentials);
+        UserManagerPostgres(cp::ConnectionPool::Ptr pool);
 
-        bool AddLine(hh::RegistrationData& rd) override;
+        bool AddLine(const Login& login, const Password& password) override;
         std::optional<User> GetByUuid(const Uuid& uuid) override;
         std::optional<User> GetByLoginPassword(const Login& login, const Password& password) override;
 
     private:
-        ConnectionPool pool_;
+        cp::ConnectionPool::Ptr pool_;
     };
 }

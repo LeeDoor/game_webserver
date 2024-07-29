@@ -1,7 +1,8 @@
 #pragma once
-#include "session.hpp"
+#include "game_manager.hpp"
 #include <map>
 #include <optional>
+#include <functional>
 #include <memory>
 #include <mutex>
 
