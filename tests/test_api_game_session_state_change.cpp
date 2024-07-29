@@ -51,7 +51,9 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
 
-        Walk(socket3, serializer, {player.posX + 1, player.posY}, ld.token, sid);
+        INFO(player.posX << " " << player.posY);
+
+        WalkSuccess(socket3, serializer, {player.posX + 1, player.posY}, ld.token, sid);
 
         future1.get();
         future2.get();

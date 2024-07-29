@@ -34,14 +34,17 @@ namespace game_manager{
 
     private:
         void AfterMove();
+        bool ValidCell(unsigned posX, unsigned posY);
 
         State::Ptr state_;
 
         dm::Uuid player1_;
         dm::Uuid player2_;
 
-        Player& StatePlayer1(){return state_->players[0];}
-        Player& StatePlayer2(){return state_->players[1];}
+        Player& player1(){return state_->players[0];}
+        Player& player2(){return state_->players[1];}
+        dm::Login& nowTurn(){return state_->now_turn;}
+        State::Terrain& terrain(){return state_->terrain;}
 
         const std::map<dm::Uuid, dm::Login> uuid_to_login_;
     };

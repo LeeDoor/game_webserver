@@ -1,6 +1,6 @@
 #include "type_serializer.hpp"
-
 #include "spdlog/spdlog.h"
+
 namespace http_handler {
     void to_json(json& j, const RegistrationData& v) {
         j = json{{"login", v.login}, {"password", v.password}};
@@ -66,6 +66,8 @@ namespace game_manager{
         j = json{{"width", v.width}, {"height", v.height}};
     }
     void from_json(const json& j, MapSize& v) {
+        if(!j.at("width").is_number_unsigned() ||
+           !j.at("height").is_number_unsigned())
         j.at("width").get_to(v.width);
         j.at("height").get_to(v.height);
     }
@@ -74,6 +76,9 @@ namespace game_manager{
         j = json{{"posX", v.posX}, {"posY", v.posY}};
     }
     void from_json(const json& j, Session::WalkData& v) {
+        if(!j.at("posX").is_number_unsigned() ||
+           !j.at("posY").is_number_unsigned())
+            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
         j.at("posX").get_to(v.posX);
         j.at("posY").get_to(v.posY);
     }

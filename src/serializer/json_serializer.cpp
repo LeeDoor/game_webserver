@@ -2,7 +2,6 @@
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
 #define EMPTY_JSON "{}"
-
 namespace serializer{
     std::string JSONSerializer::SerializeEmpty() {
         return EMPTY_JSON;

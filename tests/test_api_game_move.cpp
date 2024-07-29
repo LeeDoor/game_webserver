@@ -2,6 +2,9 @@
 #include "api_functions.hpp"
 #include "json_serializer.hpp"
 #include "session.hpp"
+#include "json_serializer.hpp"
+#include "json_type_converter.hpp"
+#include "type_serializer.hpp"
 using namespace serializer;
 
 bool ValidCell(const gm::State& state, unsigned x, unsigned y){
@@ -172,5 +175,38 @@ TEST_CASE("ApiMove", "[api][game][move]"){
             .body = NO_SUCH_SESSION,
             .res = http::status::bad_request
         });
+    }
+
+    SECTION("wrong_body_data"){
+        if(MMQueueSuccess(socket, serializer).size() == 1)
+            EnqueueNewPlayer(socket, serializer);
+        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
+        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+        
+        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+
+        dm::Login& now_turn = state.now_turn;
+        LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
+
+        http::response<http::string_body> response = Move(socket, "{}", ld.token, sid);
+        CheckStringResponse(response, 
+            {
+                .body = WRONG_BODY_DATA,
+                .res = http::status::bad_request
+            });
+
+        nlohmann::json obj(gm::Session::WalkData{0,0});
+        obj["move_type"] = "walk";
+        obj["posX"] = -1;
+
+        response = Move(socket, obj.dump(), ld.token, sid);
+        CheckStringResponse(response, 
+            {
+                .body = WRONG_BODY_DATA,
+                .res = http::status::bad_request
+            });
     }
 }

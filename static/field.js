@@ -28,7 +28,7 @@ class Element{
 const canvas = document.getElementById('canvas'); // canvas
 const ctx = canvas.getContext('2d'); // canvas context
 
-const gridSize = 15; // size of grid in cells (grid is square)
+const gridSize = 16; // size of grid in cells (grid is square)
 const innerCellMarginps = 0.5; // canvas size's persents% between cells
 let cellMarginpx; // current size between cells in pixels
 let grid = []; // two-dimentional array of cells
