@@ -8,11 +8,33 @@ body {
 }
 
 #canvas {
-    border: 1px solid black;
-    display: flex;
     justify-content: center;
-    align-items: center;
     width: min(90vh, 90vw);
     height: min(90vh, 90vw);
     margin: 0;
+}
+
+
+#resign-button {
+    width: 100px;
+    background-color: blueviolet;
+    margin: 20px;
+    position: relative;
+}
+
+#resign-button::before {
+    content: '';
+    display: block;
+    padding-top: 100%; /* This makes the height equal to the width */
+}
+
+#resign-button::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: blueviolet;
 }

@@ -274,9 +274,25 @@ function move(data){
         },
         body: JSON.stringify(data)
     }).then(response=>{
+        updateScene();
         return response.json();
     }).then(json=>{
         console.log(json);
+    });
+}
+
+function resign(){
+    fetch('http://localhost:9999/api/game/resign?sessionId='+localStorage.getItem('sessionId'), 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization':'Bearer ' + localStorage.getItem('token')
+        },
+    }).then(response=>{
+        if(response.ok){
+            window.location.href = "http://localhost:9999/index.html";
+        }
     });
 }
 
@@ -289,4 +305,4 @@ window.addEventListener('resize', resizeCanvas, false);
 canvas.addEventListener('click', onClick, false);
 canvas.addEventListener('mousemove', onMouseOver, false);
 canvas.addEventListener('mouseout', onMouseOut, false);
-  
+document.getElementById('resign-button').addEventListener('click', resign);

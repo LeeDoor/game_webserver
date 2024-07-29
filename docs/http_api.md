@@ -637,3 +637,34 @@ body data is messed up. check the example above.
 	"description": "wrong body data"
 }
 ```
+
+---
+### API resign
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### **allowed methods**
+***`POST`***
+#### **request target**  
+_/api/game/resign?sessionId=SESSION_ID_
+
+#### **function description**
+function calls about your resign and ends the game. url parameter should contain sessionId, where you are resigning. body is empty.
+
+#### **responses**
+
+* `200 OK`  
+* `400 no_such_session`
+session you are trying to get access to does not exist.
+```json
+{
+	"error_name": "wrong_sessionId",
+	"description": "no session with such sessionId"
+}
+```
+* `400 access_denied`
+you cant resign with this login token. you should be one of the players.
+```json
+{
+	"error_name": "access_denied",
+	"description": "you have no access to do this action"
+}
+```
