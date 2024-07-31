@@ -14,6 +14,10 @@ namespace session_manager{
         gm::SessionId id;
         std::optional<um::Login> winner;
         std::optional<um::Login> loser;
+
+        bool operator == (const PublicSessionData& other) const{
+            return id == other.id && winner == other.winner && loser == other.loser;
+        }
     };
 }
 

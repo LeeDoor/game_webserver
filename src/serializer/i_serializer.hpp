@@ -43,6 +43,8 @@ namespace serializer{
         virtual std::optional<sm::PublicSessionData> DeserializePublicSessionData(const std::string& json) = 0;
 
         virtual std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json) = 0;
+        // true if playing, false if finished
+        virtual bool DefineSessionState(const std::string& json) = 0;
         virtual std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) = 0;
     };
 }

@@ -81,14 +81,9 @@ namespace http_handler{
         auto uuid = tm_->GetUuidByToken(token);
 
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(!sidopt)
-            return responser_.SendWrongUrlParameters(rns);
+        if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
-        if(!gm_->HasSession(sid)){
-            if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
-                return responser_.SendFinishedState(rns, *sd);
-            return responser_.SendWrongSessionId(rns);
-        }    
+
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(*uuid, sid, 
         [rns = std::move(rns), resp = responser_, sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){

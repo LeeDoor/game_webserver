@@ -21,6 +21,18 @@ void SetAuthorizationHeader(http::request<http::string_body>& request, const std
     ss << "Bearer " << token;
     request.set(http::field::authorization, ss.str());
 }
+SessionData CreateNewMatch(tcp::socket& socket, ISerializer::Ptr serializer) {
+    if(MMQueueSuccess(socket, serializer).size() == 1)
+        EnqueueNewPlayer(socket, serializer);
+    LoginData ld1 = EnqueueNewPlayer(socket, serializer);
+    LoginData ld2 = EnqueueNewPlayer(socket, serializer);
+    gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
+    REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+    gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
+    REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+
+    return {ld1, ld2, sid, state};
+}
 
 http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer){
     hh::RegistrationData rd{login, password};
@@ -134,6 +146,7 @@ gm::State SessionStateSuccess(tcp::socket& socket, ISerializer::Ptr serializer, 
     http::response<http::string_body> response = SessionState(socket, token, sid);
     CheckStringResponse(response, 
         {.res = http::status::ok});
+    REQUIRE(serializer->DefineSessionState(response.body()));
     std::optional<gm::State> state_opt = serializer->DeserializeSessionState(response.body());
     REQUIRE(state_opt);
     return *state_opt;
@@ -153,7 +166,6 @@ http::response<http::string_body> SessionStateChange(tcp::socket& socket, const 
 http::response<http::string_body> Move(tcp::socket& socket, std::string&& body, const Token& token, const gm::SessionId& sid){
     std::string target = SetUrlParameters(MOVE_API, {{"sessionId", sid}});
     http::request<http::string_body> request{http::verb::post, target, 11};
-
     SetAuthorizationHeader(request, token);
     request.body() = std::move(body);
     request.prepare_payload();
@@ -174,6 +186,35 @@ StringResponse Walk(tcp::socket& socket, ISerializer::Ptr serializer, const gm::
 }
 void WalkSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid){
     return MoveSuccess(socket, serializer->Serialize(wd), token, sid);
+}
+
+StringResponse Resign(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+    std::string target = SetUrlParameters(RESIGN_API, {{"sessionId", sid}});
+    http::request<http::string_body> request{http::verb::post, target, 11};
+
+    SetAuthorizationHeader(request, token);
+    auto response = GetResponseToRequest(false, request, socket);
+    return response;
+}
+void ResignSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+    http::response<http::string_body> response = Resign(socket, token, sid);
+    CheckStringResponse(response, 
+        {
+            .body = "{}",
+            .res = http::status::ok
+        });
+}
+sm::PublicSessionData PublicSessionDataSuccess(tcp::socket& socket, ISerializer::Ptr serializer, const gm::SessionId& sid, const Token& token) {
+    StringResponse response = SessionState(socket, token, sid);
+    CheckStringResponse(response, 
+        {
+            .res = http::status::ok
+        });
+    INFO(token);
+    REQUIRE(!serializer->DefineSessionState(response.body()));
+    auto psd = serializer->DeserializePublicSessionData(response.body());
+    REQUIRE(psd.has_value());
+    return *psd;
 }
 
 std::map<Token, um::Uuid> PlayerTokensSuccess(tcp::socket& socket, ISerializer::Ptr serializer) {

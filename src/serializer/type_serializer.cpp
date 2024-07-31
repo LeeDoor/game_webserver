@@ -100,8 +100,12 @@ namespace session_manager{
         j.at("winner").get_to(login);
         if(login == "null")
             v.winner = std::nullopt;
+        else
+            v.winner = login;
         j.at("loser").get_to(login);
         if(login == "null")
             v.loser = std::nullopt;
+        else
+            v.loser = login;
     }
 }

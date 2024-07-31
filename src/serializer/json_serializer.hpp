@@ -26,6 +26,7 @@ namespace serializer{
         std::optional<sm::PublicSessionData> DeserializePublicSessionData(const std::string& json) override;
 
         std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json) override;
+        bool DefineSessionState(const std::string& json) override;
         std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) override;
     };
 }

@@ -139,6 +139,16 @@ namespace serializer{
         }
         return res;
     }
+    bool JSONSerializer::DefineSessionState(const std::string& json_str) {
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            return j["state"] == "playing";
+        }
+        catch(std::exception& ex){
+            return false;
+        }
+        return false;
+    }
     std::optional<gm::Session::WalkData> JSONSerializer::DeserializePlayerWalk(const std::string& json_str) {
         gm::Session::WalkData res;
         try{

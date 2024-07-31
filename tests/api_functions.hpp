@@ -21,12 +21,12 @@ namespace um = user_manager;
 #define REGISTER_API        "/api/register"
 #define PROFILE_API         "/api/profile"
 
-#define ENQUEUE_API             "/api/game/enqueue"
-#define WAIT_FOR_OPPONENT_API   "/api/game/wait_for_opponent"
-#define SESSION_STATE_API       "/api/game/session_state"
-#define SESSION_STATE_CHANGE_API       "/api/game/session_state_change"
-#define MOVE_API                "/api/game/move"
-
+#define ENQUEUE_API              "/api/game/enqueue"
+#define WAIT_FOR_OPPONENT_API    "/api/game/wait_for_opponent"
+#define SESSION_STATE_API        "/api/game/session_state"
+#define SESSION_STATE_CHANGE_API "/api/game/session_state_change"
+#define MOVE_API                 "/api/game/move"
+#define RESIGN_API               "/api/game/resign"
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define user_API       "/api/debug/user"
 #define MM_QUEUE_API        "/api/debug/matchmaking_queue"
@@ -43,10 +43,18 @@ struct LoginData{
     um::Login login;
 };
 
+struct SessionData{
+    LoginData l1;
+    LoginData l2;
+    gm::SessionId sid;
+    gm::State state;
+};
+
 // **Success functions does not require checking for validness of the answer and possibility to call.
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
 void SetAuthorizationHeader(http::request<http::string_body>& request, const std::string& token);
+SessionData CreateNewMatch(tcp::socket&, ISerializer::Ptr serializer);
 
 http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer);
 hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
@@ -79,6 +87,11 @@ void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm:
 
 StringResponse Walk(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
 void WalkSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
+
+StringResponse Resign(tcp::socket&, const Token& token, const gm::SessionId& sid);
+void ResignSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
+
+sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::SessionId& sid, const Token& token);
 /// DEBUG METHODS ///
 
 StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const um::Login& login, const um::Password& password);
