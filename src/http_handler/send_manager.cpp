@@ -32,6 +32,9 @@ namespace http_handler{
     void SendManager::SendGameState(SessionData rns, const gm::State& state) const {
         Send(rns, status::ok, serializer_->Serialize(state));
     }
+    void SendManager::SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) const{
+        Send(rns, status::ok, serializer_->Serialize(data));
+    }
 
     void SendManager::SendWrongApiFunction(SessionData rns) const {
         Send(rns, status::bad_request, serializer_->SerializeError("api_error", "wrong api function"));
@@ -83,6 +86,9 @@ namespace http_handler{
     }
     void SendManager::SendWrongMove(SessionData rns) const {
         Send(rns, status::bad_request, serializer_->SerializeError("wrong_move", "player cant make such move"));
+    }
+    void SendManager::SendSessionFinished(SessionData rns) const{
+        Send(rns, status::bad_request, serializer_->SerializeError("session_finished", "session is finished"));
     }
 
     void SendManager::SendWrongUrlParameters(SessionData rns)const {

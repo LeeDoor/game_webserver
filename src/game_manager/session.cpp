@@ -20,7 +20,14 @@ namespace game_manager{
     State::CPtr Session::GetState(){
         return state_;
     }
+    Session::Results Session::GetResults() {
+        return results_;
+    }
 
+    Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
+        FinishSession(player_id != player1_);
+        return GameApiStatus::Finish;
+    }
     Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const WalkData& move_data){
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
@@ -40,6 +47,12 @@ namespace game_manager{
         return GameApiStatus::Ok;
     }
     
+    void Session::FinishSession(bool firstWinner) {
+        results_ = firstWinner ? 
+              Results{.winner=player1_, .loser=player2_} 
+            : Results{.winner=player2_, .loser=player1_};
+    }
+
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
         state_->players.resize(2);
         player1().login = login1;

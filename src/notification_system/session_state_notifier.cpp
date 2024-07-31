@@ -28,7 +28,12 @@ namespace notification_system{
         return true;
     }
     bool SessionStateNotifier::Unsubscribe(const um::Uuid& uuid, const gm::SessionId& sid) {
-        return sessions_[sid].users_responser.erase(uuid);
+        if(!sessions_[sid].users_responser.contains(uuid))
+            return false;
+        if(!sessions_[sid].users_responser[uuid].has_value())
+            return false;
+        (*sessions_[sid].users_responser[uuid])(PollStatus::NotRelevant, std::nullopt);
+        return true;
     }
     bool SessionStateNotifier::ChangePoll(const um::Uuid& uuid, const gm::SessionId& sid, Responser&& responser) {
         if(!sessions_[sid].users_responser.contains(uuid))

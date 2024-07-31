@@ -1,12 +1,20 @@
 #pragma once
 #include "user.hpp"
-#include "session.hpp"
+#include <optional>
+#include "../game_manager/session.hpp"
 
 namespace session_manager{
     struct SessionData{
         gm::SessionId id;
-        um::Uuid player1;
-        um::Uuid player2;
-        bool winner;
+        um::Uuid winner;
+        um::Uuid loser;
+    };
+
+    struct PublicSessionData{
+        gm::SessionId id;
+        std::optional<um::Login> winner;
+        std::optional<um::Login> loser;
     };
 }
+
+namespace sm = session_manager;

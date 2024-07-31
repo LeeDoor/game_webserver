@@ -27,11 +27,11 @@ namespace user_manager{
         try {
             pqxx::row res = 
                 trans.exec_params1("SELECT * FROM users WHERE id=$1;", uuid);
-            User ud = from_result(res);
+            User ud = UserFromResult(res);
             return ud;
         } 
         catch (const std::exception& ex) {
-            spdlog::error("database GetByUuid function terminated with {}", ex.what());
+            spdlog::error("PostgreSQL users GetByUuid({}) {}", uuid, ex.what());
             return std::nullopt;
         }
     }
@@ -42,7 +42,7 @@ namespace user_manager{
         try {
             pqxx::row res = 
                 trans.exec_params1("SELECT * FROM users WHERE login=$1 AND password=$2;", login, password);
-            User ud = from_result(res);
+            User ud = UserFromResult(res);
             return ud;
         } 
         catch (const std::exception& ex) {  

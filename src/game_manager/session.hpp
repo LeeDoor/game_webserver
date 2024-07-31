@@ -14,14 +14,23 @@ namespace game_manager{
 
         State::CPtr GetState();
 
+        struct Results{
+            um::Uuid winner;
+            um::Uuid loser;
+        };
+
+        Results GetResults();
+
         enum MoveType{
-            Walk
+            Walk,
+            Resign
         };
         
         enum GameApiStatus{
             Ok,
             WrongMove,
-            NotYourMove
+            NotYourMove,
+            Finish
         };
 
         struct MoveData{
@@ -32,7 +41,11 @@ namespace game_manager{
         struct WalkData : public MoveData{};
         GameApiStatus ApiWalk(const um::Uuid& player_id, const WalkData& move_data);
 
+        GameApiStatus ApiResign(const um::Uuid& player_id);
+
     private:
+        void FinishSession(bool firstWinner);
+
         void InitSessionState(const um::Login& login1, const um::Login& login2);
         void AfterMove();
         bool ValidCell(unsigned posX, unsigned posY);
@@ -41,6 +54,8 @@ namespace game_manager{
 
         um::Uuid player1_;
         um::Uuid player2_;
+
+        Results results_;
 
         Player& player1(){return state_->players[0];}
         Player& player2(){return state_->players[1];}

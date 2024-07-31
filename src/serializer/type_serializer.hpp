@@ -2,6 +2,7 @@
 #include "registration_data.hpp"
 #include "public_user.hpp"
 #include "session.hpp"
+#include "session_data.hpp"
 using json = nlohmann::json;
 
 namespace http_handler {
@@ -40,4 +41,9 @@ namespace game_manager{
     NLOHMANN_JSON_SERIALIZE_ENUM( Session::MoveType, {
         {Session::MoveType::Walk, "walk"},
     })
+}
+
+namespace session_manager{
+    void to_json(json& j, const PublicSessionData& v);
+    void from_json(const json& j, PublicSessionData& v);
 }

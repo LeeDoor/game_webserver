@@ -25,6 +25,9 @@ class Element{
     }
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const sessionId = urlParams.get('sessionId');
+
 const canvas = document.getElementById('canvas'); // canvas
 const ctx = canvas.getContext('2d'); // canvas context
 
@@ -152,7 +155,7 @@ function updatePlayers(players){
 // loads and updates information from the server immediately
 async function loadScene(){
     const stateResponse = await 
-        fetch('http://localhost:9999/api/game/session_state?sessionId='+localStorage.getItem('sessionId'), {
+        fetch('http://localhost:9999/api/game/session_state?sessionId='+sessionId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -235,7 +238,7 @@ function onMouseOut(event){
 
 // asyncronically waits for opponent move
 function waitForStateChange() {
-    fetch('http://localhost:9999/api/game/session_state_change?sessionId='+localStorage.getItem('sessionId'), 
+    fetch('http://localhost:9999/api/game/session_state_change?sessionId='+sessionId, 
     {
         method: 'GET',
         headers: {
@@ -248,8 +251,12 @@ function waitForStateChange() {
         return response.json();
     }).then(json=>{
         lastSessionState = json;
-        waitForStateChange();
-        updateScene();
+        if(json.state == "finished")
+            window.location.href = "http://localhost:9999/session_state.html?sessionId="+sessionId;
+        else{
+            waitForStateChange();
+            updateScene();
+        }
     });
 }
 
@@ -265,7 +272,7 @@ function walk(){
 
 // sends player's moving
 function move(data){
-    fetch('http://localhost:9999/api/game/move?sessionId='+localStorage.getItem('sessionId'), 
+    fetch('http://localhost:9999/api/game/move?sessionId='+sessionId, 
     {
         method: 'POST',
         headers: {
@@ -282,17 +289,13 @@ function move(data){
 }
 
 function resign(){
-    fetch('http://localhost:9999/api/game/resign?sessionId='+localStorage.getItem('sessionId'), 
+    fetch('http://localhost:9999/api/game/resign?sessionId='+sessionId, 
     {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization':'Bearer ' + localStorage.getItem('token')
         },
-    }).then(response=>{
-        if(response.ok){
-            window.location.href = "http://localhost:9999/index.html";
-        }
     });
 }
 

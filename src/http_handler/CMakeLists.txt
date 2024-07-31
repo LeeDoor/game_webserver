@@ -6,6 +6,7 @@ set(DEPENDENCIES
     queue_manager
     game_manager
     notification_system
+    session_manager
 )
 set(LIBRARY_NAME http_handler)
 #creating library

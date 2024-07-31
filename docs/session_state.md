@@ -36,8 +36,7 @@
 ```json
 {
 	"state": "finished",
-	"player1": "login1",
-	"player2": "login2", 
-	"winner": 2
+	"winner": "login1",
+	"loser": "login2"
 }
 ```

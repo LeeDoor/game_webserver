@@ -12,6 +12,7 @@ namespace notification_system{
         using Ptr = std::shared_ptr<SessionStateNotifier>;
         enum PollStatus{ // status of sent data
             Ok,
+            NotRelevant,
             PollClosed
         };
         using Responser = std::function<void(PollStatus, gm::State::OptCPtr)>; // long poll responser

@@ -7,6 +7,7 @@
 #include "registration_data.hpp"
 #include "public_user.hpp"
 #include "token.hpp"
+#include "session_data.hpp"
 #include "../game_manager/session.hpp"
 
 namespace serializer{
@@ -29,6 +30,7 @@ namespace serializer{
         virtual std::string Serialize(const std::vector<um::Uuid>& v) = 0;
         virtual std::string Serialize(const gm::State& state) = 0;
         virtual std::string Serialize(const gm::Session::WalkData& wd) = 0;
+        virtual std::string Serialize(const session_manager::PublicSessionData& data) = 0;
 
         //deserialize        
         virtual std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) = 0;
@@ -38,6 +40,7 @@ namespace serializer{
         virtual std::optional<um::User> DeserializeUser(const std::string& json) = 0;
         virtual std::optional<std::vector<um::Uuid>> DeserializeUuids(const std::string& json) = 0;
         virtual std::optional<gm::State> DeserializeSessionState(const std::string& json) = 0;
+        virtual std::optional<sm::PublicSessionData> DeserializePublicSessionData(const std::string& json) = 0;
 
         virtual std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json) = 0;
         virtual std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) = 0;

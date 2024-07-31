@@ -15,6 +15,7 @@ namespace serializer{
         std::string Serialize(const std::vector<um::Uuid>& v) override;
         std::string Serialize(const gm::State& state) override;
         std::string Serialize(const gm::Session::WalkData& wd) override;
+        std::string Serialize(const session_manager::PublicSessionData& data) override;
 
         std::optional<hh::PublicUser> DeserializePublicUser(const std::string& json) override;
         std::optional<um::User> DeserializeUser(const std::string& json_str) override;
@@ -22,6 +23,7 @@ namespace serializer{
         std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) override;
         std::optional<std::vector<um::Uuid>> DeserializeUuids(const std::string& json) override;
         std::optional<gm::State> DeserializeSessionState(const std::string& json) override;
+        std::optional<sm::PublicSessionData> DeserializePublicSessionData(const std::string& json) override;
 
         std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json) override;
         std::optional<gm::Session::WalkData> DeserializePlayerWalk(const std::string& json) override;

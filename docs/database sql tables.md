@@ -10,13 +10,12 @@ CREATE TABLE users (
 ```SQL
 CREATE TABLE sessions (
 	id char(16) PRIMARY KEY,
-	player1 UUID,
-	player2 UUID,
-	winner BIT,
-	FOREIGN KEY (player1) 
+	winner UUID,
+	loser UUID,
+	FOREIGN KEY (winner) 
 		REFERENCES users(id) 
 		ON DELETE SET NULL,
-	FOREIGN KEY (player2)
+	FOREIGN KEY (loser)
 		REFERENCES users(id) 
 		ON DELETE SET NULL
 );

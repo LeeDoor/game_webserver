@@ -13,6 +13,7 @@
 #include "matchmaking_balancer.hpp"
 #include "http_server.hpp"
 #include "session_state_notifier.hpp"
+#include "session_manager_postgres.hpp"
 
 #define PORT 9999
 
@@ -95,10 +96,11 @@ int Initializer::StartServer(Args args) {
 
     http_handler::HandlerParameters hp;
     hp.serializer = std::make_shared<serializer::JSONSerializer>();
-    hp.user_manager = std::make_shared<user_manager::UserManagerPostgres>(connection_pool);
+    hp.user_manager = std::make_shared<um::UserManagerPostgres>(connection_pool);
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
-    hp.game_manager = std::make_shared<game_manager::GameManager>(hp.user_manager);
-    hp.queue_manager = std::make_shared<game_manager::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
+    hp.session_manager = std::make_shared<sm::SessionManagerPostgres>(connection_pool);
+    hp.game_manager = std::make_shared<gm::GameManager>(hp.user_manager, hp.session_manager);
+    hp.queue_manager = std::make_shared<gm::QueueManagerRedis>("matchmaking_queue", "matchmaking_set", redis_ptr);
     hp.static_path = args.static_path;
 
     hp.queue_manager->OnEnqueueSubscribe

@@ -5,8 +5,8 @@
 #include "response_builder.hpp"
 
 namespace game_manager{
-    GameManager::GameManager(um::IUserManager::Ptr um)
-        :dm_(um){}
+    GameManager::GameManager(um::IUserManager::Ptr um, sm::ISessionManager::Ptr sm)
+        :dm_(um), sm_(sm){}
 
     bool GameManager::CreateSession(um::Uuid&& player1, um::Uuid&& player2){
         SessionId si = GenerateSessionId();
@@ -34,32 +34,46 @@ namespace game_manager{
         return false;
     }
     bool GameManager::HasPlayer(const um::Uuid& uuid, const SessionId& sessionId){
-        if (sessions_.contains(sessionId))
-            return sessions_.at(sessionId).HasPlayer(uuid);
-        throw std::runtime_error("GameManager Should check if session exists");
+        if (!sessions_.contains(sessionId))
+            throw std::runtime_error("GameManager Should check if session exists");
+        return sessions_.at(sessionId).HasPlayer(uuid);
     }
     State::OptCPtr GameManager::GetState(const SessionId& sessionId){
-        if(sessions_.contains(sessionId))
-            return sessions_.at(sessionId).GetState();
-        return std::nullopt;
+        if(!sessions_.contains(sessionId))
+            return std::nullopt;
+        return sessions_.at(sessionId).GetState();
     }
 
     bool GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
-        if (!HasPlayer(uuid, sid))
+        if (!sessions_.contains(sid))
+            throw std::runtime_error("GameManager Should check if session exists");
+        auto status = sessions_.at(sid).ApiResign(uuid);
+        if(status != Session::GameApiStatus::Finish)
             return false;
-        sessions_.erase(sid);
+        FinishSession(sid);
         return true;
     }
 
     //ingame api
     Session::GameApiStatus GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data){
-        if (sessions_.contains(sid)){
-            auto status = sessions_.at(sid).ApiWalk(uuid, data);
-            if (status == Session::GameApiStatus::Ok)
-                notif::SessionStateNotifier::GetInstance()->Notify(sid);
-            return status;
-        }
-        throw std::runtime_error("GameManager Should check if session exists");
+        if (!sessions_.contains(sid))
+            throw std::runtime_error("GameManager Should check if session exists");
+        auto status = sessions_.at(sid).ApiWalk(uuid, data);
+        if (status == Session::GameApiStatus::Ok)
+            notif::SessionStateNotifier::GetInstance()->Notify(sid);
+        return status;
+    }
+
+    void GameManager::FinishSession(const SessionId& sid) {
+        if (!sessions_.contains(sid))
+            throw std::runtime_error("GameManager Should check if session exists");
+        const Session::Results& players = sessions_.at(sid).GetResults();
+        sm_->AddLine({sid, players.winner, players.loser});
+
+        notif::SessionStateNotifier::GetInstance()->Unsubscribe(players.winner, sid);
+        notif::SessionStateNotifier::GetInstance()->Unsubscribe(players.loser, sid);
+
+        sessions_.erase(sid);
     }
 
     SessionId GameManager::GenerateSessionId(){

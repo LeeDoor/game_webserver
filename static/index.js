@@ -79,8 +79,7 @@ function WaitForOpponent(){
         if(response.ok){
             showCustomPopup("game found!", "#00FF00");
             const data = await response.json();
-            localStorage.setItem('sessionId', data.sessionId);
-            window.location.href = "http://localhost:9999/field.html";
+            window.location.href = "http://localhost:9999/field.html?sessionId="+data.sessionId;
         }
     });
 }

@@ -19,6 +19,7 @@ namespace http_handler{
         void SendHiddenUser(SessionData rns, const um::User& user) const;
         void SendSessionId(SessionData rns, const std::string& session_id) const;
         void SendGameState(SessionData rns, const gm::State& state) const;
+        void SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) const;
 
         void SendWrongApiFunction(SessionData rns) const;
         void SendWrongBodyData(SessionData rns) const;
@@ -37,6 +38,7 @@ namespace http_handler{
         void SendAccessDenied(SessionData rns) const;
         void SendNotYourMove(SessionData rns) const;
         void SendWrongMove(SessionData rns) const;
+        void SendSessionFinished(SessionData rns) const;
 
         void SendWrongUrlParameters(SessionData rns) const;
 

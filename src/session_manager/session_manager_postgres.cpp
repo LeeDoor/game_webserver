@@ -8,7 +8,7 @@ namespace session_manager{
         try{
             cp::ConnectionPool::ConnectionWrapper cw = pool_->GetConnection();
             pqxx::work trans(*cw);
-            trans.exec_params0("INSERT INTO sessions VALUES ($1, $2, $3, $4);", sd.id, sd.player1, sd.player2, sd.winner);
+            trans.exec_params0("INSERT INTO sessions VALUES ($1, $2, $3);", sd.id, sd.winner, sd.loser);
             trans.commit();
             return true;
         }
@@ -17,17 +17,22 @@ namespace session_manager{
         }
         return false;
     }
-    std::optional<SessionData> SessionManagerPostgres::GetLine(const gm::SessionId& sid) {
+    std::optional<PublicSessionData> SessionManagerPostgres::GetPublicLine(const gm::SessionId& sid) {
         cp::ConnectionPool::ConnectionWrapper cw = pool_->GetConnection();
         pqxx::read_transaction trans(*cw);
         try {
             pqxx::row res = 
-                trans.exec_params1("SELECT * FROM sessions WHERE id=$1;", sid);
-            SessionData sd = from_result(res);
+                trans.exec_params1(
+                    "SELECT s.id as id, u1.login as winner, u2.login as loser " 
+                    "FROM sessions s "
+                    "LEFT JOIN users u1 ON s.winner = u1.id "
+                    "LEFT JOIN users u2 ON s.loser = u2.id "
+                    "WHERE s.id=$1;", sid);
+            PublicSessionData sd = PublicSessionDataFromRes(res);
             return sd;
         } 
         catch (const std::exception& ex) {
-            spdlog::error("database GetByUuid function terminated with {}", ex.what());
+            spdlog::error("database GetPublicLine function terminated with {}", ex.what());
             return std::nullopt;
         }
     }

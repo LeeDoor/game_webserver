@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding-top: 50px;
+        }
+        .win {
+            background-color: #4CAF50;
+            color: #f4f4f4;
+            padding: 15px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .lose {
+            background-color: red;
+            color: #f4f4f4;
+            padding: 15px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }   
+    </style>
+</head>
+<body>
+    <div id="result"></div>
+    <button id="redirectButton">Go to Index</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('sessionId');
+            const token = localStorage.getItem('token');
+            const login = localStorage.getItem('login');
+
+            if (sessionId && token && login) {
+                fetch(`http://localhost:9999/api/game/session_state?sessionId=${sessionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('result');
+                    if (data.winner === login) {
+                        resultDiv.textContent = "You Won!";
+                        resultDiv.classList.add('win');
+                    } else {
+                        resultDiv.textContent = "You Lost!";
+                        resultDiv.classList.add('lose');
+                    }
+                })
+                .catch(error => console.error('Error fetching session state:', error));
+            } else {
+                console.error('Required data is missing from local storage or URL parameters.');
+            }
+
+            document.getElementById('redirectButton').addEventListener('click', function() {
+                window.location.href = 'http://localhost:9999/index.html';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -31,11 +31,12 @@ namespace user_manager {
 namespace game_manager{
     void to_json(json& j, const State& v) {
         j = json{
+            {"state", "playing"}, 
             {"players", v.players}, 
             {"terrain", v.terrain}, 
             {"now_turn", v.now_turn},
             {"map_size", v.map_size},
-            };
+        };
     }
     void from_json(const json& j, State& v) {
         j.at("players").get_to(v.players);
@@ -81,5 +82,26 @@ namespace game_manager{
             throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
         j.at("posX").get_to(v.posX);
         j.at("posY").get_to(v.posY);
+    }
+}
+
+namespace session_manager{
+    void to_json(json& j, const PublicSessionData& v) {
+        j = json{
+            {"state", "finished"}, 
+            {"id", v.id}, 
+            {"winner", v.winner?*v.winner:"null"}, 
+            {"loser", v.loser?*v.loser:"null"}
+        };
+    }
+    void from_json(const json& j, PublicSessionData& v) {
+        j.at("id").get_to(v.id);
+        um::Login login;
+        j.at("winner").get_to(login);
+        if(login == "null")
+            v.winner = std::nullopt;
+        j.at("loser").get_to(login);
+        if(login == "null")
+            v.loser = std::nullopt;
     }
 }

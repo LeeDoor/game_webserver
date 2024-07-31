@@ -2,6 +2,7 @@
 #include <memory>
 #include "http_types.hpp"
 #include "api_handler.hpp"
+#include "i_session_manager.hpp"
 
 namespace http_handler{
 
@@ -28,6 +29,7 @@ namespace http_handler{
         game_manager::IQueueManager::Ptr iqm_;
         game_manager::GameManager::Ptr gm_;
         token_manager::ITokenManager::Ptr tm_;
+        sm::ISessionManager::Ptr sm_;
     };
 
 }

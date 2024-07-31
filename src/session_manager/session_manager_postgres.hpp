@@ -7,7 +7,7 @@ namespace session_manager{
         SessionManagerPostgres(cp::ConnectionPool::Ptr pool);
 
         bool AddLine(SessionData&& sd) override;
-        std::optional<SessionData> GetLine(const gm::SessionId& sid) override;
+        std::optional<PublicSessionData> GetPublicLine(const gm::SessionId& sid) override;
 
     private:
         cp::ConnectionPool::Ptr pool_;

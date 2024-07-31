@@ -11,7 +11,8 @@ namespace http_handler{
     :ApiHandler(handler_parameters),
      iqm_(handler_parameters.queue_manager),
      gm_(handler_parameters.game_manager),
-     tm_(handler_parameters.token_manager)
+     tm_(handler_parameters.token_manager),
+     sm_(handler_parameters.session_manager)
       {}
 
     void GameHandler::Init() {
@@ -61,9 +62,14 @@ namespace http_handler{
         auto uuid = tm_->GetUuidByToken(token);
         
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(DefineSessionState(rns, sidopt)) return;
+        if(!sidopt)
+            return responser_.SendWrongUrlParameters(rns);
         auto sid = *sidopt;
-
+        if(!gm_->HasSession(sid)){
+            if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
+                return responser_.SendFinishedState(rns, *sd);
+            return responser_.SendWrongSessionId(rns);
+        }
         gm::State::OptCPtr state = gm_->GetState(sid);
         if(!state.has_value())
             return responser_.SendWrongSessionId(rns);
@@ -73,20 +79,30 @@ namespace http_handler{
     void GameHandler::ApiSessionStateChange(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
-        
-        auto sidopt = ParseUrlSessionId(rns.request);
-        if(DefineSessionState(rns, sidopt)) return;
-        auto sid = *sidopt;
 
-        if(!gm_->HasSession(sid))
+        auto sidopt = ParseUrlSessionId(rns.request);
+        if(!sidopt)
+            return responser_.SendWrongUrlParameters(rns);
+        auto sid = *sidopt;
+        if(!gm_->HasSession(sid)){
+            if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
+                return responser_.SendFinishedState(rns, *sd);
             return responser_.SendWrongSessionId(rns);
+        }    
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(*uuid, sid, 
-        [rns = std::move(rns), resp = responser_](Notif::PollStatus status, gm::State::OptCPtr state){
+        [rns = std::move(rns), resp = responser_, sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){
             switch(status){
             case Notif::PollStatus::Ok:
-                resp.SendGameState(rns, **state);    
+                    resp.SendGameState(rns, **state);    
                 break;
+            case Notif::PollStatus::NotRelevant:
+                if(std::optional<session_manager::PublicSessionData> sd = sm->GetPublicLine(sid))
+                    resp.SendFinishedState(rns, *sd);
+                else
+                    resp.SendWrongSessionId(rns);
+                break;
+
             case Notif::PollStatus::PollClosed:
                 resp.SendPollClosed(rns, "SessionStateNotifier poll replaced by other");    
                 break;
@@ -98,7 +114,7 @@ namespace http_handler{
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(DefineSessionState(rns, sidopt)) return;
+        if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
 
         if (!gm_->HasSession(sid))
@@ -136,8 +152,10 @@ namespace http_handler{
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(DefineSessionState(rns, sidopt)) return;
+        if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
+        if(!gm_->HasPlayer(*uuid, sid))
+            return responser_.SendAccessDenied(rns);
         if(!gm_->ApiResign(*uuid, sid))
             return responser_.SendAccessDenied(rns);
         return responser_.SendSuccess(rns);
@@ -153,14 +171,18 @@ namespace http_handler{
     bool GameHandler::DefineSessionState(SessionData rns, std::optional<gm::SessionId>& sid){
         if(sid.has_value()){
             if (gm_->HasSession(*sid)){
+                return true;
+            }
+            else if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(*sid)){
+                responser_.SendSessionFinished(rns);
                 return false;
             }
             else{
                 responser_.SendWrongSessionId(rns);
-                return true;
+                return false;
             }
         }
         responser_.SendWrongUrlParameters(rns);
-        return true;
+        return false;
     }
 }
