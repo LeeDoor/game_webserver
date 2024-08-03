@@ -5,6 +5,7 @@
 #include <memory>
 #include "i_user_manager.hpp"
 #include "i_session_manager.hpp"
+#include <mutex>
 
 namespace game_manager{
     class GameManager{
@@ -28,6 +29,9 @@ namespace game_manager{
         void FinishSession(const SessionId& sid);
 
         SessionId GenerateSessionId();
+
+        std::mutex sessions_mutex;
+        std::map<SessionId, Session>& sessions_mt();
 
         sm::ISessionManager::Ptr sm_;
         um::IUserManager::Ptr dm_;

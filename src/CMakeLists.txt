@@ -10,7 +10,7 @@ set (DEPENDENCIES
     serializer
     notification_system
     session_manager
-    connection_pool
+    psql_connection_pool
 )
 #add subdirectories
 foreach (dir IN ITEMS ${DEPENDENCIES})

@@ -1,5 +1,5 @@
 #initializer's dependencies
-set(LIBRARY_NAME connection_pool)
+set(LIBRARY_NAME psql_connection_pool)
 #creating library
 add_library(${LIBRARY_NAME}
     postgres_connection_pool.hpp

@@ -90,9 +90,10 @@ int Initializer::StartServer(Args args) {
         redis_ptr->flushall();
     }
 
-    /// HANDLER ///
+    /// POSTGRES ///
     cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(args.test, std::move(args.postgres_credentials));
 
+    /// HANDLER ///
     http_handler::HandlerParameters hp;
     hp.user_manager = std::make_shared<um::UserManagerPostgres>(connection_pool);
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
