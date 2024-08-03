@@ -1,5 +1,4 @@
 #pragma once
-#include "static_handler.hpp"
 #include "api_handler.hpp"
 
 namespace http_handler {

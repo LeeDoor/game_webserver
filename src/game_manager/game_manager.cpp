@@ -2,7 +2,6 @@
 #include "session_id_generator.hpp"
 #include "queue_notifier.hpp"
 #include "session_state_notifier.hpp"
-#include "response_builder.hpp"
 
 namespace game_manager{
     GameManager::GameManager(um::IUserManager::Ptr um, sm::ISessionManager::Ptr sm)
@@ -15,7 +14,6 @@ namespace game_manager{
         if(!ud1.has_value() || !ud2.has_value()) 
             return false;
         sessions_.emplace(si, Session{player1, ud1->login, player2, ud2->login}); 
-        http_handler::ResponseBuilder<http::string_body> rb;
         notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
 

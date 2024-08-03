@@ -1,5 +1,5 @@
 #list with all libraries
-set (DEPENDENCIES http_handler user_manager token_manager queue_manager game_manager serializer)
+set (DEPENDENCIES serializer)
 
 add_executable(test_application 
     api_functions.cpp
@@ -27,7 +27,7 @@ add_executable(test_application
 
 
 #including and linking dependencies
-target_link_libraries(test_application ${CONAN_LIBS_CATCH2} ${DEPENDENCIES})
+target_link_libraries(test_application ${DEPENDENCIES} ${CONAN_LIBS_CATCH2})
 foreach (dir IN ITEMS ${DEPENDENCIES})
     target_include_directories(test_application PRIVATE "../src/${dir}")
 endforeach ()

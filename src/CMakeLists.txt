@@ -24,4 +24,4 @@ add_executable(${PROJECT_NAME} main.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE ${DEPENDENCIES})
 
 #link conan libraries
-target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS} ${DEPENDENCIES})
+target_link_libraries(${PROJECT_NAME} ${DEPENDENCIES} ${CONAN_LIBS}) 

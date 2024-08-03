@@ -1,5 +1,4 @@
 #initializer's dependencies
-set(DEPENDENCIES server)
 set(LIBRARY_NAME initializer)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -8,8 +7,21 @@ add_library(${LIBRARY_NAME}
 )
 
 #including and linking dependencies
-target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES})
-target_include_directories(${LIBRARY_NAME} PUBLIC "../${DEPENDENCIES}")
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_link_libraries(${LIBRARY_NAME} 
+    PRIVATE server
+    PRIVATE user_manager 
+    PRIVATE token_manager 
+    PRIVATE queue_manager 
+    PRIVATE game_manager 
+    PRIVATE session_manager
+    PRIVATE notification_system
+)
+target_include_directories(${LIBRARY_NAME} 
+    PRIVATE "../server"
+    PRIVATE "../user_manager" 
+    PRIVATE "../token_manager" 
+    PRIVATE "../queue_manager" 
+    PRIVATE "../game_manager" 
+    PRIVATE "../session_manager"
+    PRIVATE "../notification_system"
+)

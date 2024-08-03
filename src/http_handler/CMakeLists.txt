@@ -1,13 +1,4 @@
-#initializer's dependencies
-set(DEPENDENCIES 
-    serializer 
-    user_manager
-    token_manager 
-    queue_manager
-    game_manager
-    notification_system
-    session_manager
-)
+set(DEPENDENCIES token_manager user_manager queue_manager session_manager game_manager notification_system serializer)
 set(LIBRARY_NAME http_handler)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -49,7 +40,23 @@ add_library(${LIBRARY_NAME}
 )
 
 #including and linking dependencies
-target_link_libraries(${LIBRARY_NAME} PUBLIC ${DEPENDENCIES})
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_link_libraries(${LIBRARY_NAME} 
+    PUBLIC token_manager 
+    PUBLIC user_manager
+    PUBLIC queue_manager
+    PUBLIC session_manager
+    PUBLIC game_manager
+
+    PRIVATE notification_system
+    PRIVATE serializer
+)
+target_include_directories(${LIBRARY_NAME} 
+    PUBLIC "../token_manager" 
+    PUBLIC "../user_manager"
+    PUBLIC "../queue_manager"
+    PUBLIC "../session_manager"
+    PUBLIC "../game_manager"
+
+    PRIVATE "../notification_system"
+    PRIVATE "../serializer"
+)
