@@ -8,11 +8,12 @@ namespace notification_system{
     std::mutex SessionStateNotifier::mutex_;
 
 
-    SessionStateNotifier::Ptr SessionStateNotifier::GetInstance() {
-        std::lock_guard<std::mutex> lock(mutex_);
+    Lock<SessionStateNotifier::Ptr> SessionStateNotifier::GetInstance() {
+        mutex_.lock();
         if (pinstance_ == nullptr)
             throw std::runtime_error("SessionStateNotifier not initialized. call SessionStateNotifier::Init");
-        return pinstance_;
+        mutex_.unlock();
+        return {mutex_, pinstance_};
     }
     void SessionStateNotifier::Init(gm::GameManager::Ptr gm) {
         std::lock_guard<std::mutex> lock(mutex_);

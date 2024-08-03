@@ -1,5 +1,6 @@
 #pragma once
 #include "game_manager.hpp"
+#include "thread_lock.hpp"
 #include <map>
 #include <optional>
 #include <functional>
@@ -29,9 +30,8 @@ namespace notification_system{
         SessionStateNotifier(SessionStateNotifier &other) = delete;
         void operator=(const SessionStateNotifier &) = delete;
 
-        static SessionStateNotifier::Ptr GetInstance();
+        static Lock<SessionStateNotifier::Ptr> GetInstance();
         static void Init(gm::GameManager::Ptr gm);
-        //
 
         bool Subscribe(const um::Uuid& uuid, const gm::SessionId& sid);
         bool Unsubscribe(const um::Uuid& uuid, const gm::SessionId& sid);

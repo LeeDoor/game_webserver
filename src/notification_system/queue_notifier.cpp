@@ -9,13 +9,14 @@ namespace notification_system{
 
     QueueNotifier::QueueNotifier(){}
 
-    QueueNotifier::Ptr QueueNotifier::GetInstance() {
-        std::lock_guard<std::mutex> lock(mutex_);
+    Lock<QueueNotifier::Ptr> QueueNotifier::GetInstance() {
+        mutex_.lock();
         if (pinstance_ == nullptr)
         {
             pinstance_ = std::shared_ptr<QueueNotifier>(new QueueNotifier());
         }
-        return pinstance_;
+        mutex_.unlock();
+        return {mutex_, pinstance_};
     }
 
     bool QueueNotifier::Subscribe(const um::Uuid& uuid, Responser&& notifier) {

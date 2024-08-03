@@ -4,6 +4,7 @@
 #include <mutex>
 #include "user.hpp"
 #include "http_types.hpp"
+#include "thread_lock.hpp"
 
 namespace notification_system{
 
@@ -27,7 +28,7 @@ namespace notification_system{
         QueueNotifier(QueueNotifier &other) = delete;
         void operator=(const QueueNotifier &) = delete;
 
-        static QueueNotifier::Ptr GetInstance();
+        static Lock<QueueNotifier::Ptr> GetInstance();
 
         bool Subscribe(const um::Uuid& uuid, Responser&& responser);
         bool Unsubscribe(const um::Uuid& uuid, const std::string& reason = "");
@@ -36,7 +37,7 @@ namespace notification_system{
     private:
         static QueueNotifier::Ptr pinstance_;
         static std::mutex mutex_;
-        QueueNotifier() ;
+        QueueNotifier();
 
         std::map<um::Uuid, Responser> users_responser_;
         std::map<um::Uuid, PollData> poll_waiting_;

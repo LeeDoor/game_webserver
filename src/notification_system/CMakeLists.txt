@@ -7,6 +7,7 @@ add_library(${LIBRARY_NAME}
     queue_notifier.cpp
     session_state_notifier.cpp
     session_state_notifier.hpp
+    thread_lock.hpp
 )
 
 #including and linking dependencies
