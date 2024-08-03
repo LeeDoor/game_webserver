@@ -14,9 +14,9 @@ namespace http_handler {
         void ApiFunctionsParse();
         
         // api functions
-        void ApiRegister(SessionData rns);
-        void ApiLogin(SessionData rns);
-        void ApiGetProfileData(SessionData rns);
+        void ApiRegister(SessionData&& rns, const RequestData& rd);
+        void ApiLogin(SessionData&& rns, const RequestData& rd);
+        void ApiGetProfileData(SessionData&& rns, const RequestData& rd);
         
         user_manager::IUserManager::Ptr dm_;
         token_manager::ITokenManager::Ptr tm_;

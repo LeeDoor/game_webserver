@@ -1,5 +1,4 @@
 #include "general_handler.hpp"
-#include "get_token_from_header.hpp"
 #include "api_function_director.hpp"
 #include "registration_data.hpp"
 #include "send_manager.hpp"
@@ -8,7 +7,7 @@
 #include "spdlog/spdlog.h"
 #include <fstream>
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2) 
 
 #define STREAM_POS(stream_name) std::to_string(static_cast<long long>(stream_name.tellg()))
 namespace http_handler {
@@ -29,32 +28,32 @@ namespace http_handler {
         };
     }
 
-    void GeneralHandler::ApiRegister(SessionData rns) {
-        std::optional<RegistrationData> rd;
-        rd = serializer::DeserializeRegData(rns.request.body());
-        if(!rd.has_value()) {
+    void GeneralHandler::ApiRegister(SessionData&& rns, const RequestData& rd) {
+        std::optional<RegistrationData> red;
+        red = serializer::DeserializeRegData(rns.request.body());
+        if(!red.has_value()) {
             return SendWrongBodyData(rns);
         }
-        if(!ValidateRegData(*rd)){
+        if(!ValidateRegData(*red)){
             return SendWrongLoginOrPassword(rns);
         }
-        bool add_line_res = dm_->AddLine(rd->login, rd->password);
+        bool add_line_res = dm_->AddLine(red->login, red->password);
         if(!add_line_res){
             return SendLoginTaken(rns);
         }
         return SendSuccess(rns);
     }
-    void GeneralHandler::ApiLogin(SessionData rns) {
-        std::optional<RegistrationData> rd;
-        rd = serializer::DeserializeRegData(rns.request.body());
-        if(!rd.has_value()) {
+    void GeneralHandler::ApiLogin(SessionData&& rns, const RequestData& rd) {
+        std::optional<RegistrationData> red;
+        red = serializer::DeserializeRegData(rns.request.body());
+        if(!red.has_value()) {
             return SendWrongBodyData(rns);
         }
-        if(!ValidateRegData(*rd)){
+        if(!ValidateRegData(*red)){
             return SendWrongLoginOrPassword(rns);
         }
         std::optional<um::User> ud;
-        ud = dm_->GetByLoginPassword(std::move(rd->login), std::move(rd->password));
+        ud = dm_->GetByLoginPassword(std::move(red->login), std::move(red->password));
         if(!ud){
             return SendNoSuchUser(rns);
         }
@@ -64,10 +63,9 @@ namespace http_handler {
             return SendCantLogin(rns);
         return SendToken(rns, token);
     }
-    void GeneralHandler::ApiGetProfileData(SessionData rns){
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
-        auto user = dm_->GetByUuid(*uuid);
+    void GeneralHandler::ApiGetProfileData(SessionData&& rns, const RequestData& rd){
+        um::Uuid uuid = rd.uuid;
+        auto user = dm_->GetByUuid(uuid);
         if(!user)
             return SendTokenToRemovedPerson(rns);
             

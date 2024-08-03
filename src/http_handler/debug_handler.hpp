@@ -10,9 +10,9 @@ namespace http_handler{
         // generate api function set from file
         void ApiFunctionsParse();
 
-        void ApiGetPlayerTokens(SessionData rns);
-        void ApiGetUser(SessionData rns);
-        void ApiGetMMQueue(SessionData rns);
+        void ApiGetPlayerTokens(SessionData&& rns, const RequestData& rd);
+        void ApiGetUser(SessionData&& rns, const RequestData& rd);
+        void ApiGetMMQueue(SessionData&& rns, const RequestData& rd);
 
         user_manager::IUserManager::Ptr dm_;
         token_manager::ITokenManager::Ptr tm_;

@@ -23,8 +23,11 @@ namespace http_handler {
         ApiStatus MatchAuthorization(const HttpRequest& request);
         bool MatchAdmin(const HttpRequest& request);
 
+        std::optional<tokenm::Token> GetTokenFromHeader(const std::string& header);
+
         ApiFunction api_function_;
         std::optional<token_manager::ITokenManager::Ptr> tm_;
+        RequestData rd_;
     };
 
 } // http_handler

@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "api_function_executor.hpp"
-#include "get_token_from_header.hpp"
 #include "registration_data.hpp"
 #include "serializer_http.hpp"
 
@@ -22,7 +21,7 @@ namespace http_handler {
         if (api_function_.IsDebug() && !MatchAdmin(rns.request)){
             return ApiStatus::AdminUnrecognized;
         }
-        api_function_(std::move(rns));
+        api_function_(std::move(rns), rd_);
         return ApiStatus::Ok;
     }
     const ApiFunction& ApiFunctionExecutor::GetApiFunction() const{
@@ -44,6 +43,7 @@ namespace http_handler {
         std::optional<um::Uuid> uuid = tm_.value()->GetUuidByToken(*token);
         if(!uuid)
             return ApiStatus::InvalidToken;
+        rd_.uuid = *uuid;
         return ApiStatus::Ok;
     }
     bool ApiFunctionExecutor::MatchAdmin(const HttpRequest& request) {
@@ -52,5 +52,14 @@ namespace http_handler {
         if (!rd.has_value())
             return false;
         return rd->login == "leedoor" && rd->password == "123qwe123";
+    }
+
+    std::optional<tokenm::Token> ApiFunctionExecutor::GetTokenFromHeader(const std::string& header){
+        if(header.substr(0, 7) == "Bearer "){
+            tokenm::Token token = header.substr(7);
+            if(token.size() == 32)
+                return token;
+        }
+        return std::nullopt;
     }
 } // http_handler

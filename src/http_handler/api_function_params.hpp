@@ -1,7 +1,15 @@
 #pragma once
 #include <functional>
+#include <optional>
+#include "user.hpp"
+#include "http_types.hpp"
 namespace http_handler{
-	typedef std::function<void(SessionData&&)> ExecutorFunction;
+    struct RequestData{
+        // uuid of requestor (empty string if no requestor provided)
+        um::Uuid uuid;
+    };
+
+	typedef std::function<void(SessionData&&, const RequestData&)> ExecutorFunction;
     typedef std::vector<http::verb> AllowedMethods;
 
     struct ApiFunctionParams {

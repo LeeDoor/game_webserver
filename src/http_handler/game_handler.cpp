@@ -8,7 +8,7 @@
 #include "serializer_game.hpp"
 #include "spdlog/spdlog.h"
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2) 
 
 namespace http_handler{
     GameHandler::GameHandler(HandlerParameters handler_parameters)
@@ -33,23 +33,21 @@ namespace http_handler{
             {"/api/game/resign", afd.GetResign(BIND(&GameHandler::ApiResign))},
         };
     }
-    void GameHandler::ApiEnqueue(SessionData rns){
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiEnqueue(SessionData&& rns, const RequestData& rd){
+        um::Uuid uuid = rd.uuid;
 
-        if(gm_->HasPlayer(*uuid))
+        if(gm_->HasPlayer(uuid))
             return SendInTheMatch(rns);
             
-        bool res = iqm_->EnqueuePlayer(*uuid);
+        bool res = iqm_->EnqueuePlayer(uuid);
         if (!res)
             return SendCantEnqueue(rns);
         return SendSuccess(rns);
     }
-    void GameHandler::ApiWaitForOpponent(SessionData&& rns){
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiWaitForOpponent(SessionData&& rns, const RequestData& rd){
+        um::Uuid uuid = rd.uuid;
         using Notif = notification_system::QueueNotifier;
-        Notif::GetInstance()->Subscribe(*uuid, 
+        Notif::GetInstance()->Subscribe(uuid, 
             [rns = std::move(rns)](Notif::PollStatus code, const std::string& add_data){
                 switch(code){
                     case Notif::PollStatus::Ok:
@@ -61,9 +59,8 @@ namespace http_handler{
                 }
             });
     }
-    void GameHandler::ApiSessionState(SessionData rns){
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiSessionState(SessionData&& rns, const RequestData& rd){
+        um::Uuid uuid = rd.uuid;
         
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!sidopt)
@@ -80,16 +77,15 @@ namespace http_handler{
         return SendGameState(rns, **state);
     }
 
-    void GameHandler::ApiSessionStateChange(SessionData&& rns){
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiSessionStateChange(SessionData&& rns, const RequestData& rd){
+        um::Uuid uuid = rd.uuid;
 
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
 
         using Notif = notif::SessionStateNotifier;
-        Notif::GetInstance()->ChangePoll(*uuid, sid, 
+        Notif::GetInstance()->ChangePoll(uuid, sid, 
         [rns = std::move(rns),sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){
             switch(status){
             case Notif::PollStatus::Ok:
@@ -109,16 +105,15 @@ namespace http_handler{
         });
     }
 
-    void GameHandler::ApiMove(SessionData rns) {
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiMove(SessionData&& rns, const RequestData& rd) {
+        um::Uuid uuid = rd.uuid;
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
 
         if (!gm_->HasSession(sid))
             return SendWrongSessionId(rns);
-        if (!gm_->HasPlayer(*uuid, sid))
+        if (!gm_->HasPlayer(uuid, sid))
             return SendAccessDenied(rns);
         
         using Status = gm::Session::GameApiStatus;
@@ -133,7 +128,7 @@ namespace http_handler{
                 = serializer::DeserializePlayerWalk(rns.request.body());
             if(!data.has_value())
                 return SendWrongBodyData(rns);
-            status = gm_->ApiWalk(*uuid, sid, *data);
+            status = gm_->ApiWalk(uuid, sid, *data);
             break;
         }
 
@@ -147,15 +142,14 @@ namespace http_handler{
         }
     }
 
-    void GameHandler::ApiResign(SessionData rns) {
-        auto token = SenderAuthentication(rns.request);
-        auto uuid = tm_->GetUuidByToken(token);
+    void GameHandler::ApiResign(SessionData&& rns, const RequestData& rd) {
+        um::Uuid uuid = rd.uuid;
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
-        if(!gm_->HasPlayer(*uuid, sid))
+        if(!gm_->HasPlayer(uuid, sid))
             return SendAccessDenied(rns);
-        if(!gm_->ApiResign(*uuid, sid))
+        if(!gm_->ApiResign(uuid, sid))
             return SendAccessDenied(rns);
         return SendSuccess(rns);
         

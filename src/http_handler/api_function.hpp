@@ -9,7 +9,7 @@ namespace http_handler {
 
         const AllowedMethods& GetAllowedMethods() const;
         bool IsDebug() const;
-        void operator()(SessionData&& rns);
+        void operator()(SessionData&& rns, const RequestData& rd);
 
     private:
         ExecutorFunction executor_function_;

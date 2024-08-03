@@ -5,7 +5,7 @@
 #include "send_manager.hpp"
 #include "send_manager_um.hpp"
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
+#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2) 
 
 namespace http_handler{
 
@@ -26,13 +26,13 @@ namespace http_handler{
         };
     }
     
-    void DebugHandler::ApiGetPlayerTokens(SessionData rns){
+    void DebugHandler::ApiGetPlayerTokens(SessionData&& rns, const RequestData& rd){
         std::map<token_manager::Token, um::Uuid> map = tm_->GetValue();
         std::string tm_string = serializer::Serialize(map);
         return Send(rns, http::status::ok, tm_string);
     }
 
-    void DebugHandler::ApiGetUser(SessionData rns) {
+    void DebugHandler::ApiGetUser(SessionData&& rns, const RequestData& rd) {
         std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
         if (!(map.contains("login") && map.contains("password") && map.size() == 2 || map.contains("uuid") && map.size() == 1))
             return SendWrongUrlParameters(rns);
@@ -52,7 +52,7 @@ namespace http_handler{
         return SendHiddenUser(rns, *ud);
     }
 
-    void DebugHandler::ApiGetMMQueue(SessionData rns) {
+    void DebugHandler::ApiGetMMQueue(SessionData&& rns, const RequestData& rd) {
         const std::vector<um::Uuid>& queue = qm_->GetQueue();
         std::string queue_string = serializer::Serialize(queue);
         return Send(rns, status::ok, queue_string);

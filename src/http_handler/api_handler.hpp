@@ -13,9 +13,6 @@ namespace http_handler{
         virtual void Init() = 0;
         virtual void Handle(HttpRequest&& request, SessionFunctions&& session_functions);
     protected:
-        // identify the user by the token
-        tokenm::Token SenderAuthentication(const HttpRequest& request);
-
         // get url parameters
         std::map<std::string, std::string> ParseUrlParameters(const HttpRequest& request);
         std::pair<std::string, std::string> ParseUrlPair(std::string&& pair);

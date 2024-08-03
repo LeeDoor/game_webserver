@@ -15,12 +15,12 @@ namespace http_handler{
         void ApiFunctionsParse();
 
         //apis
-        void ApiEnqueue(SessionData rns);
-        void ApiWaitForOpponent(SessionData&& rns);
-        void ApiSessionState(SessionData rns);
-        void ApiSessionStateChange(SessionData&& rns);
-        void ApiMove(SessionData rns);
-        void ApiResign(SessionData rns);
+        void ApiEnqueue(SessionData&& rns, const RequestData& rd);
+        void ApiWaitForOpponent(SessionData&& rns, const RequestData& rd);
+        void ApiSessionState(SessionData&& rns, const RequestData& rd);
+        void ApiSessionStateChange(SessionData&& rns, const RequestData& rd);
+        void ApiMove(SessionData&& rns, const RequestData& rd);
+        void ApiResign(SessionData&& rns, const RequestData& rd);
 
     private:
         std::optional<gm::SessionId> ParseUrlSessionId(const HttpRequest& request);

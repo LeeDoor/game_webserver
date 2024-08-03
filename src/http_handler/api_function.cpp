@@ -1,4 +1,4 @@
-#include "api_function.hpp"
+ #include "api_function.hpp"
 
 namespace http_handler {
     ApiFunction::ApiFunction(ApiFunctionParams&& params):
@@ -12,7 +12,7 @@ namespace http_handler {
     bool ApiFunction::IsDebug() const {
         return is_debug_;
     }
-    void ApiFunction::operator()(SessionData&& rns) {
-        executor_function_(std::move(rns));
+    void ApiFunction::operator()(SessionData&& rns, const RequestData& rd) {
+        executor_function_(std::move(rns), rd);
     }
 } // http_handler

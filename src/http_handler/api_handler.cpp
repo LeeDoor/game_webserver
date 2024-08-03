@@ -1,5 +1,4 @@
 #include "api_handler.hpp"
-#include "get_token_from_header.hpp"
 #include "send_manager.hpp"
 #include "response_builder.hpp"
 #include "api_function_executor.hpp"
@@ -33,12 +32,6 @@ namespace http_handler{
         else{
             SendWrongApiFunction(rns);
         }
-    }
-
-    tokenm::Token ApiHandler::SenderAuthentication(const HttpRequest& request) {
-        auto auth_iter = request.find(http::field::authorization);
-        std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
-        return *token;
     }
 
     std::map<std::string, std::string> ApiHandler::ParseUrlParameters(const HttpRequest& request){
