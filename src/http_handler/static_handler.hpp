@@ -5,8 +5,6 @@
 #include "api_handler.hpp"
 
 namespace http_handler {
-    using namespace serializer;
-
     class StaticHandler : public ApiHandler{
     public:
         using Ptr = std::shared_ptr<StaticHandler>;

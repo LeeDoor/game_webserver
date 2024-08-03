@@ -1,12 +1,16 @@
 #include <catch2/catch_test_macros.hpp>
-#include "json_serializer.hpp"
+#include "serializer_basic.hpp"
+#include "serializer_game.hpp"
+#include "serializer_user.hpp"
+#include "serializer_http.hpp"
+#include "serializer_session.hpp"
 #include "registration_data.hpp"
 #include "public_user.hpp"
 #include "token.hpp"
 #include "type_serializer.hpp"
 #include <nlohmann/json.hpp>
 
-using namespace serializer;
+
 using json = nlohmann::json;
 namespace hh = http_handler;
 
@@ -33,28 +37,26 @@ void CompareErrors(const Error& given, const Error& expected){
 }
 
 TEST_CASE("SerializeEmpty", "[jsonserializer]"){
-    JSONSerializer serializer;
-    REQUIRE(serializer.SerializeEmpty() == "{}");
+    REQUIRE(serializer::SerializeEmpty() == "{}");
 }
 
 TEST_CASE("SerializeError", "[jsonserializer]") {
-    JSONSerializer serializer;
     json j;
     Error given;
 
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("error name 1", "description 1")));
+    REQUIRE_NOTHROW(j = json::parse(serializer::SerializeError("error name 1", "description 1")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
     CompareErrors(given, {"error name 1", "description 1"});
 
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("", "description 1")));
+    REQUIRE_NOTHROW(j = json::parse(serializer::SerializeError("", "description 1")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
     CompareErrors(given, {"", "description 1"});
 
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("error name 1", "")));
+    REQUIRE_NOTHROW(j = json::parse(serializer::SerializeError("error name 1", "")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
     CompareErrors(given, {"error name 1", ""});
 
-    REQUIRE_NOTHROW(j = json::parse(serializer.SerializeError("", "")));
+    REQUIRE_NOTHROW(j = json::parse(serializer::SerializeError("", "")));
     REQUIRE_NOTHROW(given = j.template get<Error>());
     CompareErrors(given, {"", ""});
 }
@@ -62,19 +64,18 @@ TEST_CASE("SerializeError", "[jsonserializer]") {
 TEST_CASE("SerializeMap & DeserializeMap", "[jsonserializer]") {
     using StringMap = std::map<std::string, std::string>;
     
-    JSONSerializer serializer;
     StringMap map;
     StringMap given;
     json j;
 
     SECTION("SerializeMap"){
         map = {{"first", "second"}, {"third", "fourth"}};
-        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(j = json::parse(serializer::SerializeMap(std::move(map))));
         REQUIRE_NOTHROW(given = j.template get<StringMap>());
         CHECK(map == given);
 
         map = {{"", ""}};
-        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(j = json::parse(serializer::SerializeMap(std::move(map))));
         REQUIRE_NOTHROW(given = j.template get<StringMap>());
         CHECK(map == given);
     }
@@ -83,7 +84,7 @@ TEST_CASE("SerializeMap & DeserializeMap", "[jsonserializer]") {
         for(auto pair : map){
             j[pair.first] = pair.second;
         }
-        auto is_given = serializer.DeserializeMap(j.dump());
+        auto is_given = serializer::DeserializeMap(j.dump());
         REQUIRE(is_given);
         given = *is_given;
         for(auto pair : given){
@@ -94,50 +95,49 @@ TEST_CASE("SerializeMap & DeserializeMap", "[jsonserializer]") {
 }
 
 TEST_CASE("Serialize & DeserializeRegData", "[jsonserializer]") {
-    JSONSerializer serializer;
     SECTION ("Serialize") {
-        std::string rd_given = serializer.Serialize(hh::RegistrationData{"login1", "password1"});
+        std::string rd_given = serializer::Serialize(hh::RegistrationData{"login1", "password1"});
         CHECK(rd_given == "{\"login\":\"login1\",\"password\":\"password1\"}");
-        rd_given = serializer.Serialize(hh::RegistrationData{"login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"});
+        rd_given = serializer::Serialize(hh::RegistrationData{"login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"});
         CHECK(rd_given == "{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
-        rd_given = serializer.Serialize(hh::RegistrationData{"", ""});
+        rd_given = serializer::Serialize(hh::RegistrationData{"", ""});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::RegistrationData{"123qwe123", ""});
+        rd_given = serializer::Serialize(hh::RegistrationData{"123qwe123", ""});
         CHECK(rd_given == "{\"login\":\"123qwe123\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::RegistrationData{"", "123qwe123"});
+        rd_given = serializer::Serialize(hh::RegistrationData{"", "123qwe123"});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"123qwe123\"}");
-        rd_given = serializer.Serialize(hh::RegistrationData{"login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"});
+        rd_given = serializer::Serialize(hh::RegistrationData{"login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"});
         CHECK(rd_given == "{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
     }
     SECTION ("DeserializeRegData") {
         hh::RegistrationData rd;
         rd = {"login1", "password1"};
         std::optional<hh::RegistrationData> rd_given;
-        rd_given = serializer.DeserializeRegData("{\"login\":\"login1\",\"password\":\"password1\"}");
+        rd_given = serializer::DeserializeRegData("{\"login\":\"login1\",\"password\":\"password1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {"login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"};
-        rd_given = serializer.DeserializeRegData("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
+        rd_given = serializer::DeserializeRegData("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {"", ""};
-        rd_given = serializer.DeserializeRegData("{\"login\":\"\",\"password\":\"\"}");
+        rd_given = serializer::DeserializeRegData("{\"login\":\"\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {"123123123", ""};
-        rd_given = serializer.DeserializeRegData("{\"login\":\"123123123\",\"password\":\"\"}");
+        rd_given = serializer::DeserializeRegData("{\"login\":\"123123123\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {"login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"};
-        rd_given = serializer.DeserializeRegData("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
+        rd_given = serializer::DeserializeRegData("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
@@ -145,50 +145,49 @@ TEST_CASE("Serialize & DeserializeRegData", "[jsonserializer]") {
 }
 
 TEST_CASE("Serialize & DeserializePublicUser", "[jsonserializer]") {
-    JSONSerializer serializer;
     SECTION ("Serialize") {
-        std::string rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login1", "password1"}});
+        std::string rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "login1", "password1"}});
         CHECK(rd_given == "{\"login\":\"login1\",\"password\":\"password1\"}");
-        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
+        rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}});
         CHECK(rd_given == "{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
-        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "", ""}});
+        rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "", ""}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "123qwe123", ""}});
+        rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "123qwe123", ""}});
         CHECK(rd_given == "{\"login\":\"123qwe123\",\"password\":\"\"}");
-        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "", "123qwe123"}});
+        rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "", "123qwe123"}});
         CHECK(rd_given == "{\"login\":\"\",\"password\":\"123qwe123\"}");
-        rd_given = serializer.Serialize(hh::PublicUser{{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
+        rd_given = serializer::Serialize(hh::PublicUser{{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}});
         CHECK(rd_given == "{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
     }
     SECTION ("DeserializePublicUser") {
         hh::PublicUser rd;
         rd = {{"uuid", "login1", "password1"}};
         std::optional<hh::PublicUser> rd_given;
-        rd_given = serializer.DeserializePublicUser("{\"login\":\"login1\",\"password\":\"password1\"}");
+        rd_given = serializer::DeserializePublicUser("{\"login\":\"login1\",\"password\":\"password1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "login174387458578348735745687r576845785467956985957895678956789567", "passwor12344444444234234444444444444444444444444444444444444442342342d1"}};
-        rd_given = serializer.DeserializePublicUser("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
+        rd_given = serializer::DeserializePublicUser("{\"login\":\"login174387458578348735745687r576845785467956985957895678956789567\",\"password\":\"passwor12344444444234234444444444444444444444444444444444444442342342d1\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "", ""}};
-        rd_given = serializer.DeserializePublicUser("{\"login\":\"\",\"password\":\"\"}");
+        rd_given = serializer::DeserializePublicUser("{\"login\":\"\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "123123123", ""}};
-        rd_given = serializer.DeserializePublicUser("{\"login\":\"123123123\",\"password\":\"\"}");
+        rd_given = serializer::DeserializePublicUser("{\"login\":\"123123123\",\"password\":\"\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
 
         rd = {{"uuid", "login@@@``~~~==/.<>@#$!%^", "password@@@``~~~==/.<>@#$!%^"}};
-        rd_given = serializer.DeserializePublicUser("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
+        rd_given = serializer::DeserializePublicUser("{\"login\":\"login@@@``~~~==/.<>@#$!%^\",\"password\":\"password@@@``~~~==/.<>@#$!%^\"}");
         CHECK(rd_given.has_value());
         CHECK(rd_given->login == rd.login);
         CHECK(rd_given->password == rd.password);
@@ -198,26 +197,24 @@ TEST_CASE("Serialize & DeserializePublicUser", "[jsonserializer]") {
 TEST_CASE("Serialize token map", "[jsonserializer]"){
     using StringMap = std::map<token_manager::Token, um::Uuid>;
     
-    JSONSerializer serializer;
     StringMap map;
     StringMap given;
     json j;
 
     SECTION("Serialize"){
         map = {{"first", "second"}, {"third", "fourth"}};
-        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(j = json::parse(serializer::SerializeMap(std::move(map))));
         REQUIRE_NOTHROW(given = j.template get<StringMap>());
         CHECK(map == given);
 
         map = {{"", ""}};
-        REQUIRE_NOTHROW(j = json::parse(serializer.SerializeMap(std::move(map))));
+        REQUIRE_NOTHROW(j = json::parse(serializer::SerializeMap(std::move(map))));
         REQUIRE_NOTHROW(given = j.template get<StringMap>());
         CHECK(map == given);
     }
 }
 
 TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
-    JSONSerializer serializer;
     json j;
     gm::State given;
     gm::State example;
@@ -242,7 +239,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         };
         example.map_size = {15,15};
         std::string given_str;
-        REQUIRE_NOTHROW(given_str = serializer.Serialize(std::move(example)));
+        REQUIRE_NOTHROW(given_str = serializer::Serialize(std::move(example)));
         REQUIRE_NOTHROW(j = json::parse(given_str));
         REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
@@ -265,14 +262,14 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {0,0,gm::Obstacle::Type::Wall},
             {0,0,gm::Obstacle::Type::Wall}
         };
-        REQUIRE_NOTHROW(given_str = serializer.Serialize(example));
+        REQUIRE_NOTHROW(given_str = serializer::Serialize(example));
         REQUIRE_NOTHROW(j = json::parse(given_str));
         REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
     }
     SECTION("Deserialize"){
         std::string given_str = "{\"map_size\":{\"width\":15,\"height\":15},\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
-        auto opt = serializer.DeserializeSessionState(given_str);
+        auto opt = serializer::DeserializeSessionState(given_str);
         REQUIRE(opt.has_value());
         REQUIRE_NOTHROW(given = *opt);
         example.now_turn = "login number one";

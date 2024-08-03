@@ -1,36 +1,36 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
-#include "json_serializer.hpp"
+
 #include "user.hpp"
-using namespace serializer;
+
 
 TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
 
     ConnectSocket(ioc, socket);
-    std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string POLL_CLOSED = serializer->SerializeError("poll_closed", "new poll connected");
-    std::string UNAUTHORIZED = serializer->SerializeError("unathorized", "request must be authorized");
-    std::string INVALID_TOKEN = serializer->SerializeError("invalid_token", "request authorization is invalid");
+    
+    std::string POLL_CLOSED = serializer::SerializeError("poll_closed", "new poll connected");
+    std::string UNAUTHORIZED = serializer::SerializeError("unathorized", "request must be authorized");
+    std::string INVALID_TOKEN = serializer::SerializeError("invalid_token", "request authorization is invalid");
 
 
     SECTION("success_immediately"){
-        if(MMQueueSuccess(socket, serializer).size() > 0)
-            EnqueueNewPlayer(socket, serializer); // to operate with empty queue
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
+        if(MMQueueSuccess(socket).size() > 0)
+            EnqueueNewPlayer(socket); // to operate with empty queue
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
         //here the session with two enqueued players should create
-        game_manager::SessionId session_id1 = WaitForOpponentSuccess(socket, ld1.token, serializer);
-        game_manager::SessionId session_id2 = WaitForOpponentSuccess(socket, ld2.token, serializer);
+        game_manager::SessionId session_id1 = WaitForOpponentSuccess(socket, ld1.token);
+        game_manager::SessionId session_id2 = WaitForOpponentSuccess(socket, ld2.token);
         // aware of blocking thread by WaitForOpponentSuccess if opponent not found yet
         REQUIRE(session_id1 == session_id2);
     }
 
     SECTION ("success_long_poll"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
         StringResponse response;
         std::promise<void> promise;
         std::future<void> future = promise.get_future();
@@ -44,11 +44,11 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
         tcp::socket socket2{ioc2};
         ConnectSocket(ioc2, socket2);
 
-        LoginData ld2 = EnqueueNewPlayer(socket2, serializer);
+        LoginData ld2 = EnqueueNewPlayer(socket2);
         future.wait();
-        gm::SessionId sid = WaitForOpponentSuccess(socket2, ld2.token, serializer);
+        gm::SessionId sid = WaitForOpponentSuccess(socket2, ld2.token);
         CheckStringResponse(response,{
-            .body = serializer->SerializeMap({{"sessionId", sid}}),
+            .body = serializer::SerializeMap({{"sessionId", sid}}),
             .res = http::status::ok
         });
 
@@ -56,8 +56,8 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
     }
 
     SECTION ("replacing_polls"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
         
         std::promise<void> promise1, promise2;
         std::future<void> future1 = promise1.get_future();
@@ -67,7 +67,7 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
         tcp::socket socket2{ioc2};
         ConnectSocket(ioc2, socket2);
 
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
+        LoginData ld1 = EnqueueNewPlayer(socket);
         StringResponse response1, response2;
 
         // calling first wait_for_opponent as first player
@@ -102,14 +102,14 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
         });
 
         // socket(1) is now freed
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
+        LoginData ld2 = EnqueueNewPlayer(socket);
         INFO("A");
         future2.get();
         INFO("A");
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld2.token, serializer);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld2.token);
         INFO("A");
         CheckStringResponse(response2, {
-            .body = serializer->SerializeMap({{"sessionId", sid}}),
+            .body = serializer::SerializeMap({{"sessionId", sid}}),
             .res = http::status::ok
         });
 
@@ -119,8 +119,8 @@ TEST_CASE("ApiWaitForOpponent", "[api][game][wait_for_opponent][long_poll]"){
     }
 
     SECTION("wrong_token"){
-        hh::RegistrationData rd = RegisterSuccess(socket, serializer);
-        LoginData ld = LoginSuccess(socket, rd.login, serializer);
+        hh::RegistrationData rd = RegisterSuccess(socket);
+        LoginData ld = LoginSuccess(socket, rd.login);
 
         http::request<http::string_body> request{http::verb::get, WAIT_FOR_OPPONENT_API, 11};
         auto response = GetResponseToRequest(false, request, socket);

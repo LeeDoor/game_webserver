@@ -42,6 +42,10 @@ add_library(${LIBRARY_NAME}
     general_handler.cpp
     debug_handler.cpp
     debug_handler.cpp
+    send_manager_gm.hpp
+    send_manager_sm.hpp
+    send_manager_tm.hpp
+    send_manager_um.hpp
 )
 
 #including and linking dependencies

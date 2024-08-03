@@ -1,9 +1,10 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
-#include "json_serializer.hpp"
+#include "serializer_session.hpp"
+#include "serializer_game.hpp"
 #include "session.hpp"
 #include <thread>
-using namespace serializer;
+
 
 TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]"){
 	net::io_context ioc;
@@ -18,21 +19,21 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
     tcp::socket socket3{ioc3};
     ConnectSocket(ioc3, socket3);
 
-    std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string WRONG_SESSIONID = serializer->SerializeError("wrong_sessionId", "no session with such sessionId");
-    std::string URL_PARAMETERS_ERROR = serializer->SerializeError("url_parameters_error", "this api function requires url parameters");
-    std::string POLL_CLOSED = serializer->SerializeError("poll_closed", "SessionStateNotifier poll replaced by other");
+    
+    std::string WRONG_SESSIONID = serializer::SerializeError("wrong_sessionId", "no session with such sessionId");
+    std::string URL_PARAMETERS_ERROR = serializer::SerializeError("url_parameters_error", "this api function requires url parameters");
+    std::string POLL_CLOSED = serializer::SerializeError("poll_closed", "SessionStateNotifier poll replaced by other");
 
     SECTION("success"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> promise1, promise2;
         std::future<void> future1 = promise1.get_future(),
@@ -53,7 +54,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
 
         INFO(player.posX << " " << player.posY);
 
-        WalkSuccess(socket3, serializer, {player.posX + 1, player.posY}, ld.token, sid);
+        WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
 
         future1.get();
         future2.get();
@@ -68,23 +69,23 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::State state1, state2;
         INFO(response1.body());
         INFO(response2.body());
-        REQUIRE_NOTHROW(state1 = *serializer->DeserializeSessionState(response1.body()));
-        REQUIRE_NOTHROW(state2 = *serializer->DeserializeSessionState(response2.body()));
+        REQUIRE_NOTHROW(state1 = *serializer::DeserializeSessionState(response1.body()));
+        REQUIRE_NOTHROW(state2 = *serializer::DeserializeSessionState(response2.body()));
         CHECK(state1 == state2);
 
         thread1.join();
         thread2.join();
     }
     SECTION("poll_closed"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> p1, p2, p3;
         std::future<void> f1 = p1.get_future(), f2 = p2.get_future(), f3 = p3.get_future();
@@ -113,7 +114,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
-        WalkSuccess(socket3, serializer, {player.posX + 1, player.posY}, ld.token, sid);
+        WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
 
         f2.wait();
         f3.wait();
@@ -127,22 +128,22 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             .res = http::status::ok
         });
 
-        gm::State state2 = *serializer->DeserializeSessionState(response1.body());
+        gm::State state2 = *serializer::DeserializeSessionState(response1.body());
         CHECK(state != state2);
         th1.join();
         th2.join();
         th3.join();
     }
     SECTION("wrong_sessionId"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response = SessionStateChange(socket2, ld2.token, "ABOBUSSS");
         CheckStringResponse(response, {
@@ -151,15 +152,15 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         });
     }
     SECTION("url_parameters_error"){
-        if(MMQueueSuccess(socket, serializer).size() == 1)
-            EnqueueNewPlayer(socket, serializer);
-        LoginData ld1 = EnqueueNewPlayer(socket, serializer);
-        LoginData ld2 = EnqueueNewPlayer(socket, serializer);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token, serializer);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token, serializer));
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, serializer, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response;
         http::request<http::string_body> request{http::verb::get, SESSION_STATE_CHANGE_API, 11};

@@ -1,20 +1,20 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
-#include "json_serializer.hpp"
+
 #include "user.hpp"
-using namespace serializer;
+
 
 TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
     ConnectSocket(ioc, socket);
-    std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string UNAUTHORIZED = serializer->SerializeError("invalid_admin", "the administrator password is missing or incorrect");
-    std::string ENQUEUE_ERROR = serializer->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)");
+    
+    std::string UNAUTHORIZED = serializer::SerializeError("invalid_admin", "the administrator password is missing or incorrect");
+    std::string ENQUEUE_ERROR = serializer::SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)");
 
     using Uuids = std::vector<um::Uuid>;
     SECTION("valid_response"){
-    	Uuids queue = MMQueueSuccess(socket, serializer);
+    	Uuids queue = MMQueueSuccess(socket);
     	// dont check emptyness. other test metods call login functions so queue can be filled
 		
         hh::RegistrationData rd;
@@ -22,17 +22,17 @@ TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 		int prev_queue_size = queue.size();
 		
 		for(int i = 0; i < 10; ++i){		
-			rd = RegisterSuccess(socket, serializer);
-			ld = LoginSuccess(socket, rd.login, serializer);
-			bool res = EnqueueSuccess(socket, ld.token, serializer);
+			rd = RegisterSuccess(socket);
+			ld = LoginSuccess(socket, rd.login);
+			bool res = EnqueueSuccess(socket, ld.token);
 			REQUIRE(res == true);
-			queue = MMQueueSuccess(socket, serializer);
+			queue = MMQueueSuccess(socket);
 			if (prev_queue_size == 1){
 				REQUIRE(queue.empty());
 			}
 			else{
 				REQUIRE(queue.size() == 1);
-				REQUIRE(queue.back() == UserSuccess(socket, serializer, rd.login, rd.password).uuid);
+				REQUIRE(queue.back() == UserSuccess(socket, rd.login, rd.password).uuid);
 			}
 			prev_queue_size = queue.size();
 		}
@@ -65,21 +65,21 @@ TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 		    });
 		}
 	    SECTION ("server returns error when body is json, but wrong credentials"){
-	    	StringResponse response = PlayerTokens(socket, serializer, "wrong login", "wrong password");
+	    	StringResponse response = PlayerTokens(socket, "wrong login", "wrong password");
 		    CheckStringResponse(response, {
 		    	.body=UNAUTHORIZED,
 		    	.res=http::status::unauthorized,
 		    });
 		}
 	    SECTION ("server returns error when body is json, but wrong password"){
-	    	StringResponse response = PlayerTokens(socket, serializer, "leedoor", "wrong password");
+	    	StringResponse response = PlayerTokens(socket, "leedoor", "wrong password");
 		    CheckStringResponse(response, {
 		    	.body=UNAUTHORIZED,
 		    	.res=http::status::unauthorized,
 		    });
 		}
 	    SECTION ("server returns error when body is json, but wrong login"){
-	    	StringResponse response = PlayerTokens(socket, serializer, "wrong login", "123qwe123");
+	    	StringResponse response = PlayerTokens(socket, "wrong login", "123qwe123");
 		    CheckStringResponse(response, {
 		    	.body=UNAUTHORIZED,
 		    	.res=http::status::unauthorized,

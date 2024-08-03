@@ -166,36 +166,6 @@ debug function for getting queue of users' uuids
     }
     ```
 
----
-### API sessions_list #TODO
-#### **description**
-debug function for getting list of sessions with playing users.
-#### **allowed methods**
-***`GET/HEAD`***
-#### **request target**
-*/api/debug/sessions_list*
-
-#### **request body example**
-```js
-    {
-        "login": "admin2009",
-        "password": "nadejni_parol2"
-    }
-```
-
-#### **responses**
-* `200 OK`\
-    sessions list sent successfully
-
-    *response body example:*
-    ```js
-    {
-        "sessionId1":{
-            "player1":"UUID123",
-            "player2":"UUID228",
-        }
-    }
-    ```
 ## User API
 ### API register
 #### **action diagram**
@@ -213,7 +183,7 @@ actor User
 
 ApiHandler->>Serializer: deserialize body data
 
-Serializer->>ApiHandler: returns login and password from body
+serializer::>ApiHandler: returns login and password from body
 
   
 
@@ -287,7 +257,7 @@ actor User
 
 ApiHandler->>Serializer: deserialize body data
 
-Serializer->>ApiHandler: returns login and password from body
+serializer::>ApiHandler: returns login and password from body
 
   
 

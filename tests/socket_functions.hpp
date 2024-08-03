@@ -3,7 +3,6 @@
 #include <boost/beast.hpp>
 #include <functional>
 #include <catch2/catch_test_macros.hpp>
-#include "json_serializer.hpp"
 #include "../src/http_handler/http_types.hpp"
 namespace beast = boost::beast;
 namespace http = beast::http;

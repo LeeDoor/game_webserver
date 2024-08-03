@@ -1,101 +1,107 @@
 #include "send_manager.hpp"
+#include "send_manager_gm.hpp"
+#include "send_manager_sm.hpp"
+#include "send_manager_tm.hpp"
+#include "send_manager_um.hpp"
+#include "send_manager_http.hpp"
 #include "spdlog/spdlog.h"
+#include "serializer_basic.hpp"
+#include "serializer_user.hpp"
+#include "serializer_game.hpp"
+#include "serializer_http.hpp"
+#include "serializer_session.hpp"
+#include "response_builder.hpp"
 
 namespace http_handler{
-
-    SendManager::SendManager(serializer::ISerializer::Ptr ser){
-        serializer_ = ser;
-    }
-    
-    void SendManager::Send(SessionData rns, status stat, std::string body) const {
+    void Send(SessionData rns, status stat, std::string body) {
         ResponseBuilder<http::string_body> builder;
         spdlog::info("SENT [{}] to {}", static_cast<int>(stat), rns.request.target().to_string());  
         StringResponse response = builder.BodyText(std::move(body), rns.request.method()).Status(stat).GetProduct();
         rns.session_functions.send_string(std::move(response));
     }
     
-    void SendManager::SendSuccess(SessionData rns) const {
-        Send(rns, status::ok, serializer_->SerializeEmpty());
+    void SendSuccess(SessionData rns) {
+        Send(rns, status::ok, serializer::SerializeEmpty());
     }
-    void SendManager::SendToken(SessionData rns, token_manager::Token& token)const {
-        Send(rns, status::ok, serializer_->SerializeMap({{"token", token}}));
+    void SendToken(SessionData rns, token_manager::Token& token) {
+        Send(rns, status::ok, serializer::SerializeMap({{"token", token}}));
     }
-    void SendManager::SendUser(SessionData rns, const PublicUser& puser)  const {
-        Send(rns, status::ok, serializer_->Serialize(puser));
+    void SendUser(SessionData rns, const PublicUser& puser) {
+        Send(rns, status::ok, serializer::Serialize(puser));
     }
-    void SendManager::SendHiddenUser(SessionData rns, const um::User& user) const {
-        Send(rns, status::ok, serializer_->Serialize(user));
+    void SendHiddenUser(SessionData rns, const um::User& user) {
+        Send(rns, status::ok, serializer::Serialize(user));
     }
-    void SendManager::SendSessionId(SessionData rns, const std::string& session_id) const {
-        Send(rns, status::ok, serializer_->SerializeMap({{"sessionId", session_id}}));
+    void SendSessionId(SessionData rns, const gm::SessionId& session_id) {
+        Send(rns, status::ok, serializer::SerializeMap({{"sessionId", session_id}}));
     }
-    void SendManager::SendGameState(SessionData rns, const gm::State& state) const {
-        Send(rns, status::ok, serializer_->Serialize(state));
+    void SendGameState(SessionData rns, const gm::State& state) {
+        Send(rns, status::ok, serializer::Serialize(state));
     }
-    void SendManager::SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) const{
-        Send(rns, status::ok, serializer_->Serialize(data));
-    }
-
-    void SendManager::SendWrongApiFunction(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("api_error", "wrong api function"));
-    }
-    void SendManager::SendWrongBodyData(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("body_data_error", "wrong body data"));
-    }
-    void SendManager::SendLoginTaken(SessionData rns) const {
-        Send(rns, status::conflict, serializer_->SerializeError("login_taken", "login is already taken"));
-    }
-    void SendManager::SendWrongLoginOrPassword(SessionData rns)const {
-        Send(rns, status::bad_request, serializer_->SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)"));
-    }
-    void SendManager::SendNoSuchUser(SessionData rns)const {
-        Send(rns, status::bad_request, serializer_->SerializeError("no_such_user", "no user with this login or password"));
-    }
-    void SendManager::SendUnauthorized(SessionData rns) const {
-        Send(rns, status::unauthorized, serializer_->SerializeError("unathorized", "request must be authorized"));
-    }
-    void SendManager::SendInvalidToken(SessionData rns) const {
-        Send(rns, status::unauthorized, serializer_->SerializeError("invalid_token", "request authorization is invalid"));
-    }
-    void SendManager::SendAdminUnrecognized(SessionData rns)const {
-        Send(rns, status::unauthorized, serializer_->SerializeError("invalid_admin", "the administrator password is missing or incorrect"));
-    }
-    void SendManager::SendTokenToRemovedPerson(SessionData rns) const {
-        Send(rns, status::unauthorized, serializer_->SerializeError("person_removed", "person with this token is unavailable (prob. removed)"));
-    }
-    void SendManager::SendCantEnqueue(SessionData rns) const {
-        Send(rns, status::ok, serializer_->SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)"));
-    }
-    void SendManager::SendInTheMatch(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("in_the_match", "error happened while enqueuing player (already in the match)"));
-    }
-    void SendManager::SendCantLogin(SessionData rns)const {
-        Send(rns, status::service_unavailable, serializer_->SerializeError("login_error", "unable to add token to database."));
-    }
-    void SendManager::SendPollClosed(SessionData rns, const std::string& description) const {
-        Send(rns, status::conflict, serializer_->SerializeError("poll_closed", description));
-    }
-    void SendManager::SendWrongSessionId(SessionData rns) const{
-        Send(rns, status::bad_request, serializer_->SerializeError("wrong_sessionId", "no session with such sessionId"));
-    }
-    void SendManager::SendAccessDenied(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("access_denied", "you have no access to do this action"));
-    }
-    void SendManager::SendNotYourMove(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("not_your_move", "the opponent's move is now"));
-    }
-    void SendManager::SendWrongMove(SessionData rns) const {
-        Send(rns, status::bad_request, serializer_->SerializeError("wrong_move", "player cant make such move"));
-    }
-    void SendManager::SendSessionFinished(SessionData rns) const{
-        Send(rns, status::bad_request, serializer_->SerializeError("session_finished", "session is finished"));
+    void SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) {
+        Send(rns, status::ok, serializer::Serialize(data));
     }
 
-    void SendManager::SendWrongUrlParameters(SessionData rns)const {
-        Send(rns, status::unprocessable_entity, serializer_->SerializeError("url_parameters_error", "this api function requires url parameters"));
+    void SendWrongApiFunction(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("api_error", "wrong api function"));
+    }
+    void SendWrongBodyData(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("body_data_error", "wrong body data"));
+    }
+    void SendLoginTaken(SessionData rns) {
+        Send(rns, status::conflict, serializer::SerializeError("login_taken", "login is already taken"));
+    }
+    void SendWrongLoginOrPassword(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)"));
+    }
+    void SendNoSuchUser(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("no_such_user", "no user with this login or password"));
+    }
+    void SendUnauthorized(SessionData rns) {
+        Send(rns, status::unauthorized, serializer::SerializeError("unathorized", "request must be authorized"));
+    }
+    void SendInvalidToken(SessionData rns) {
+        Send(rns, status::unauthorized, serializer::SerializeError("invalid_token", "request authorization is invalid"));
+    }
+    void SendAdminUnrecognized(SessionData rns) {
+        Send(rns, status::unauthorized, serializer::SerializeError("invalid_admin", "the administrator password is missing or incorrect"));
+    }
+    void SendTokenToRemovedPerson(SessionData rns) {
+        Send(rns, status::unauthorized, serializer::SerializeError("person_removed", "person with this token is unavailable (prob. removed)"));
+    }
+    void SendCantEnqueue(SessionData rns) {
+        Send(rns, status::ok, serializer::SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)"));
+    }
+    void SendInTheMatch(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("in_the_match", "error happened while enqueuing player (already in the match)"));
+    }
+    void SendCantLogin(SessionData rns) {
+        Send(rns, status::service_unavailable, serializer::SerializeError("login_error", "unable to add token to database."));
+    }
+    void SendPollClosed(SessionData rns, const std::string& description) {
+        Send(rns, status::conflict, serializer::SerializeError("poll_closed", description));
+    }
+    void SendWrongSessionId(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("wrong_sessionId", "no session with such sessionId"));
+    }
+    void SendAccessDenied(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("access_denied", "you have no access to do this action"));
+    }
+    void SendNotYourMove(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("not_your_move", "the opponent's move is now"));
+    }
+    void SendWrongMove(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("wrong_move", "player cant make such move"));
+    }
+    void SendSessionFinished(SessionData rns) {
+        Send(rns, status::bad_request, serializer::SerializeError("session_finished", "session is finished"));
     }
 
-    void SendManager::HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, SessionData rns) const {
+    void SendWrongUrlParameters(SessionData rns) {
+        Send(rns, status::unprocessable_entity, serializer::SerializeError("url_parameters_error", "this api function requires url parameters"));
+    }
+
+    void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, SessionData rns) {
         switch(status) {
         case ApiStatus::WrongMethod:
             SendWrongMethod(executor, rns);
@@ -115,16 +121,16 @@ namespace http_handler{
         }
     }
     
-    void SendManager::SendWrongMethod(const ApiFunctionExecutor& executor, SessionData rns)const {
+    void SendWrongMethod(const ApiFunctionExecutor& executor, SessionData rns) {
         ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("wrong_method", "method not allowed");
+        std::string body = serializer::SerializeError("wrong_method", "method not allowed");
         const std::vector<http::verb>& methods = executor.GetApiFunction().GetAllowedMethods();
         bool can_head = std::find(methods.begin(), methods.end(), http::verb::head) != methods.end();
         rns.session_functions.send_string(builder.BodyText(std::move(body), rns.request.method(), can_head).Status(status::method_not_allowed).Allow(methods).GetProduct());
     }
-    void SendManager::SendUndefinedError(const ApiFunctionExecutor& executor, SessionData rns)const {
+    void SendUndefinedError(const ApiFunctionExecutor& executor, SessionData rns) {
         ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("undefined_error", "some weird error happened");
+        std::string body = serializer::SerializeError("undefined_error", "some weird error happened");
         rns.session_functions.send_string(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct());
     }
 }

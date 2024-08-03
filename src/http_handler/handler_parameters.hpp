@@ -1,5 +1,4 @@
 #pragma once
-#include "i_serializer.hpp"
 #include "i_user_manager.hpp"
 #include "i_token_manager.hpp"
 #include "i_queue_manager.hpp"
@@ -9,7 +8,6 @@
 
 namespace http_handler{
     struct HandlerParameters{
-        serializer::ISerializer::Ptr serializer;
         um::IUserManager::Ptr user_manager;
         token_manager::ITokenManager::Ptr token_manager;
         gm::IQueueManager::Ptr queue_manager;

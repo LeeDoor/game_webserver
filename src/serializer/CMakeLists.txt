@@ -4,9 +4,12 @@ set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
     json_type_converter.hpp
-    i_serializer.hpp
-    json_serializer.cpp
-    json_serializer.hpp
+    serializer.cpp
+    serializer_basic.hpp
+    serializer_game.hpp
+    serializer_user.hpp
+    serializer_http.hpp
+    serializer_session.hpp
     type_serializer.cpp
     type_serializer.hpp
 )

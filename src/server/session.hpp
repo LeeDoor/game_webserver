@@ -3,7 +3,6 @@
 #include <boost/asio/strand.hpp>
 #include <memory>
 #include "http_handler.hpp"
-#include "i_serializer.hpp"
 
 using namespace std::literals;
 

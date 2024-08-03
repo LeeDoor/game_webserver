@@ -6,7 +6,6 @@
 #include <iostream>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/rotating_file_sink.h"
-#include "json_serializer.hpp"
 #include "user_manager_postgres.hpp"
 #include "token_manager_redis.hpp"
 #include "queue_manager_redis.hpp"
@@ -95,7 +94,6 @@ int Initializer::StartServer(Args args) {
     cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(args.test, std::move(args.postgres_credentials));
 
     http_handler::HandlerParameters hp;
-    hp.serializer = std::make_shared<serializer::JSONSerializer>();
     hp.user_manager = std::make_shared<um::UserManagerPostgres>(connection_pool);
     hp.token_manager = std::make_shared<token_manager::TokenManagerRedis>("token_to_uuid", redis_ptr); 
     hp.session_manager = std::make_shared<sm::SessionManagerPostgres>(connection_pool);

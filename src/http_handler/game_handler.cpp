@@ -2,13 +2,17 @@
 #include "api_function_director.hpp"
 #include "queue_notifier.hpp"
 #include "session_state_notifier.hpp"
+#include "send_manager.hpp"
+#include "send_manager_gm.hpp"
+#include "send_manager_sm.hpp"
+#include "serializer_game.hpp"
 #include "spdlog/spdlog.h"
 
 #define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1) 
 
 namespace http_handler{
     GameHandler::GameHandler(HandlerParameters handler_parameters)
-    :ApiHandler(handler_parameters),
+    :ApiHandler(),
      iqm_(handler_parameters.queue_manager),
      gm_(handler_parameters.game_manager),
      tm_(handler_parameters.token_manager),
@@ -19,7 +23,7 @@ namespace http_handler{
         ApiFunctionsParse();
     }
     void GameHandler::ApiFunctionsParse() {
-        ApiFunctionDirector afd(serializer_, tm_);
+        ApiFunctionDirector afd(tm_);
         request_to_executor_ = {
             {"/api/game/enqueue", afd.GetEnqueue(BIND(&GameHandler::ApiEnqueue))},
             {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND(&GameHandler::ApiWaitForOpponent))},
@@ -34,25 +38,25 @@ namespace http_handler{
         auto uuid = tm_->GetUuidByToken(token);
 
         if(gm_->HasPlayer(*uuid))
-            return responser_.SendInTheMatch(rns);
+            return SendInTheMatch(rns);
             
         bool res = iqm_->EnqueuePlayer(*uuid);
         if (!res)
-            return responser_.SendCantEnqueue(rns);
-        return responser_.SendSuccess(rns);
+            return SendCantEnqueue(rns);
+        return SendSuccess(rns);
     }
     void GameHandler::ApiWaitForOpponent(SessionData&& rns){
         auto token = SenderAuthentication(rns.request);
         auto uuid = tm_->GetUuidByToken(token);
         using Notif = notification_system::QueueNotifier;
         Notif::GetInstance()->Subscribe(*uuid, 
-            [resp = responser_, rns = std::move(rns)](Notif::PollStatus code, const std::string& add_data){
+            [rns = std::move(rns)](Notif::PollStatus code, const std::string& add_data){
                 switch(code){
                     case Notif::PollStatus::Ok:
-                        resp.SendSessionId(rns, add_data); // add_data is sessionID
+                        SendSessionId(rns, add_data); // add_data is sessionID
                     break;
                     case Notif::PollStatus::PollClosed:
-                        resp.SendPollClosed(rns, add_data); // add_data is error description
+                        SendPollClosed(rns, add_data); // add_data is error description
                     break;
                 }
             });
@@ -63,17 +67,17 @@ namespace http_handler{
         
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!sidopt)
-            return responser_.SendWrongUrlParameters(rns);
+            return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
         if(!gm_->HasSession(sid)){
             if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
-                return responser_.SendFinishedState(rns, *sd);
-            return responser_.SendWrongSessionId(rns);
+                return SendFinishedState(rns, *sd);
+            return SendWrongSessionId(rns);
         }
         gm::State::OptCPtr state = gm_->GetState(sid);
         if(!state.has_value())
-            return responser_.SendWrongSessionId(rns);
-        return responser_.SendGameState(rns, **state);
+            return SendWrongSessionId(rns);
+        return SendGameState(rns, **state);
     }
 
     void GameHandler::ApiSessionStateChange(SessionData&& rns){
@@ -86,20 +90,20 @@ namespace http_handler{
 
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(*uuid, sid, 
-        [rns = std::move(rns), resp = responser_, sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){
+        [rns = std::move(rns),sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){
             switch(status){
             case Notif::PollStatus::Ok:
-                    resp.SendGameState(rns, **state);    
+                    SendGameState(rns, **state);    
                 break;
             case Notif::PollStatus::NotRelevant:
                 if(std::optional<session_manager::PublicSessionData> sd = sm->GetPublicLine(sid))
-                    resp.SendFinishedState(rns, *sd);
+                    SendFinishedState(rns, *sd);
                 else
-                    resp.SendWrongSessionId(rns);
+                    SendWrongSessionId(rns);
                 break;
 
             case Notif::PollStatus::PollClosed:
-                resp.SendPollClosed(rns, "SessionStateNotifier poll replaced by other");    
+                SendPollClosed(rns, "SessionStateNotifier poll replaced by other");    
                 break;
             }
         });
@@ -113,33 +117,33 @@ namespace http_handler{
         auto sid = *sidopt;
 
         if (!gm_->HasSession(sid))
-            return responser_.SendWrongSessionId(rns);
+            return SendWrongSessionId(rns);
         if (!gm_->HasPlayer(*uuid, sid))
-            return responser_.SendAccessDenied(rns);
+            return SendAccessDenied(rns);
         
         using Status = gm::Session::GameApiStatus;
         using Type = gm::Session::MoveType;
-        std::optional<Type> pmt = serializer_->DefinePlayerMove(rns.request.body());
+        std::optional<Type> pmt = serializer::DefinePlayerMove(rns.request.body());
         if(!pmt.has_value())
-            return responser_.SendWrongBodyData(rns);
+            return SendWrongBodyData(rns);
         Status status;
         switch (*pmt){
         case Type::Walk:
             std::optional<gm::Session::WalkData> data 
-                = serializer_->DeserializePlayerWalk(rns.request.body());
+                = serializer::DeserializePlayerWalk(rns.request.body());
             if(!data.has_value())
-                return responser_.SendWrongBodyData(rns);
+                return SendWrongBodyData(rns);
             status = gm_->ApiWalk(*uuid, sid, *data);
             break;
         }
 
         switch(status){
         case Status::Ok:
-            return responser_.SendSuccess(rns);
+            return SendSuccess(rns);
         case Status::NotYourMove:
-            return responser_.SendNotYourMove(rns);
+            return SendNotYourMove(rns);
         case Status::WrongMove:
-            return responser_.SendWrongMove(rns);
+            return SendWrongMove(rns);
         }
     }
 
@@ -150,10 +154,10 @@ namespace http_handler{
         if(!DefineSessionState(rns, sidopt)) return;
         auto sid = *sidopt;
         if(!gm_->HasPlayer(*uuid, sid))
-            return responser_.SendAccessDenied(rns);
+            return SendAccessDenied(rns);
         if(!gm_->ApiResign(*uuid, sid))
-            return responser_.SendAccessDenied(rns);
-        return responser_.SendSuccess(rns);
+            return SendAccessDenied(rns);
+        return SendSuccess(rns);
         
     }
 
@@ -169,15 +173,15 @@ namespace http_handler{
                 return true;
             }
             else if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(*sid)){
-                responser_.SendSessionFinished(rns);
+                SendSessionFinished(rns);
                 return false;
             }
             else{
-                responser_.SendWrongSessionId(rns);
+                SendWrongSessionId(rns);
                 return false;
             }
         }
-        responser_.SendWrongUrlParameters(rns);
+        SendWrongUrlParameters(rns);
         return false;
     }
 }

@@ -1,7 +1,7 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
 #include <catch2/catch_get_random_seed.hpp>
-using namespace serializer;
+#include "serializer_http.hpp"
 
 TEST_CASE("server register players", "[api][register]") {
     net::io_context ioc;
@@ -9,16 +9,16 @@ TEST_CASE("server register players", "[api][register]") {
 
     ConnectSocket(ioc, socket);
 
-    std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string LOGIN_TAKEN = serializer->SerializeError("login_taken", "login is already taken");
-    std::string WRONG_LOGIN_OR_PASSWORD = serializer->SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)");
-    std::string METHOD_NOT_ALLOWED = serializer->SerializeError("wrong_method", "method not allowed");
+    
+    std::string LOGIN_TAKEN = serializer::SerializeError("login_taken", "login is already taken");
+    std::string WRONG_LOGIN_OR_PASSWORD = serializer::SerializeError("wrong_login_or_password", "login size >= 3 password size >= 6 with digit(s)");
+    std::string METHOD_NOT_ALLOWED = serializer::SerializeError("wrong_method", "method not allowed");
     
     SECTION("correct json request must add user only once with given login") {
-        hh::RegistrationData rd = RegisterSuccess(socket, serializer);
+        hh::RegistrationData rd = RegisterSuccess(socket);
         SECTION("same request must return error"){
             http::response<http::string_body> response;
-            response = Register(socket, rd.login, VALID_PASS, serializer);
+            response = Register(socket, rd.login, VALID_PASS);
             CheckStringResponse(response, 
                 {.body = LOGIN_TAKEN, 
                 .res = http::status::conflict });
@@ -44,14 +44,14 @@ TEST_CASE("server register players", "[api][register]") {
             password = "123";
         }
         http::response<http::string_body> response;
-        response = Register(socket, login, password, serializer);
+        response = Register(socket, login, password);
         CheckStringResponse(response, 
             {.body = WRONG_LOGIN_OR_PASSWORD, 
             .res = http::status::bad_request });
     }
     SECTION ("request with incorrect method must fail"){
         hh::RegistrationData rd{"incorrect_method_login", "incorrect_method_password_1"};
-        std::string rd_json = serializer->Serialize(rd);
+        std::string rd_json = serializer::Serialize(rd);
 
         for(auto verb : {http::verb::get, http::verb::head, http::verb::put, http::verb::move}){
             http::request<http::string_body> req{verb, "/api/register", 11};

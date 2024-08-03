@@ -1,9 +1,6 @@
 #include "api_function_builder.hpp"
 
 namespace http_handler{
-    ApiFunctionBuilder::ApiFunctionBuilder(serializer::ISerializer::Ptr serializer):
-        serializer_(serializer){}
-
     ApiFunctionBuilder& ApiFunctionBuilder::Methods(AllowedMethods&& allowed_methods) {
         allowed_methods_ = std::move(allowed_methods);
         return *this;
@@ -37,8 +34,7 @@ namespace http_handler{
                 std::move(allowed_methods_),
                 is_debug_
             }, 
-            tm_,
-            serializer_
+            tm_
         };
         tm_ = std::nullopt;
         allowed_methods_.clear();

@@ -1,8 +1,8 @@
 #include "api_function_director.hpp"   
 
 namespace http_handler{
-    ApiFunctionDirector::ApiFunctionDirector(serializer::ISerializer::Ptr serializer, token_manager::ITokenManager::Ptr tm)
-        : afb_(serializer), tm_(tm){}
+    ApiFunctionDirector::ApiFunctionDirector(token_manager::ITokenManager::Ptr tm)
+        : tm_(tm){}
 
     ApiFunctionExecutor ApiFunctionDirector::GetRegister(ExecutorFunction&& afe){
         return afb_.Post().ExecFunc(std::move(afe)).GetProduct();

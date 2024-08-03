@@ -1,39 +1,39 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
-#include "json_serializer.hpp"
+
 #include "session.hpp"
-using namespace serializer;
+
 
 TEST_CASE("ApiSessionState", "[api][game][session_state]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
     ConnectSocket(ioc, socket);
-    std::shared_ptr<JSONSerializer> serializer = std::make_shared<JSONSerializer>();
-    std::string WRONG_SESSIONID = serializer->SerializeError("wrong_sessionId", "no session with such sessionId");
-    std::string URL_PARAMETERS_ERROR = serializer->SerializeError("url_parameters_error", "this api function requires url parameters");
-    std::string UNAUTHORIZED = serializer->SerializeError("unathorized", "request must be authorized");
+    
+    std::string WRONG_SESSIONID = serializer::SerializeError("wrong_sessionId", "no session with such sessionId");
+    std::string URL_PARAMETERS_ERROR = serializer::SerializeError("url_parameters_error", "this api function requires url parameters");
+    std::string UNAUTHORIZED = serializer::SerializeError("unathorized", "request must be authorized");
 
     LoginData ld2;
-    if(MMQueueSuccess(socket, serializer).size() == 0)
-        ld2 = EnqueueNewPlayer(socket, serializer);
+    if(MMQueueSuccess(socket).size() == 0)
+        ld2 = EnqueueNewPlayer(socket);
     else{
-        auto ud = UserSuccess(socket, serializer, MMQueueSuccess(socket, serializer)[0]);
-        ld2 = LoginSuccess(socket, ud.login, serializer);
+        auto ud = UserSuccess(socket, MMQueueSuccess(socket)[0]);
+        ld2 = LoginSuccess(socket, ud.login);
     }
-    LoginData ld = EnqueueNewPlayer(socket, serializer);
-    gm::SessionId sid = WaitForOpponentSuccess(socket, ld.token, serializer);
+    LoginData ld = EnqueueNewPlayer(socket);
+    gm::SessionId sid = WaitForOpponentSuccess(socket, ld.token);
 
     SECTION ("success"){
-        gm::State state = SessionStateSuccess(socket, serializer, ld.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, serializer, ld2.token, sid));
+        gm::State state = SessionStateSuccess(socket, ld.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         REQUIRE(state.players.size() == 2);
         bool now_turn_match = state.now_turn == state.players[0].login || state.now_turn == state.players[1].login;
         REQUIRE(now_turn_match);
 
-        hh::RegistrationData rd = RegisterSuccess(socket, serializer);
-        LoginData ld1 = LoginSuccess(socket, rd.login, serializer);
-        gm::State state2 = SessionStateSuccess(socket, serializer, ld1.token, sid);
+        hh::RegistrationData rd = RegisterSuccess(socket);
+        LoginData ld1 = LoginSuccess(socket, rd.login);
+        gm::State state2 = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == state2);
     }
     SECTION ("success_multiple_sessions"){
@@ -44,9 +44,9 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
         sessions.resize(10);
         states.resize(10);
         for(LoginData& ld : users)
-            ld = EnqueueNewPlayer(socket, serializer);
+            ld = EnqueueNewPlayer(socket);
         for(int i = 0; i < 10; ++i)
-            sessions[i] = WaitForOpponentSuccess(socket, users[i].token, serializer);
+            sessions[i] = WaitForOpponentSuccess(socket, users[i].token);
         REQUIRE(sessions[0] == sessions[1]); // same session has same sessionId
         for(int i = 1; i < 10; i+=2){
             REQUIRE(sessions[i] != sessions[i + 1]); // each session is unique
@@ -54,7 +54,7 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
         }
 
         for(int i = 0; i < 10; ++i){
-            states[i] = SessionStateSuccess(socket, serializer, users[i].token, sessions[i]);
+            states[i] = SessionStateSuccess(socket, users[i].token, sessions[i]);
         }
         for(int i = 0; i < 10; i+=2){
             REQUIRE(states[i] == states[i + 1]);

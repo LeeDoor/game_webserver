@@ -3,17 +3,20 @@
 #include <boost/beast.hpp>
 #include "user.hpp"
 #include "token.hpp"
-#include "json_serializer.hpp"
 #include "public_user.hpp"
 #include "session.hpp"
 #include "socket_functions.hpp"
+#include "registration_data.hpp"
+#include "serializer_basic.hpp"
+#include "session.hpp"
+#include "session_data.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
 namespace net = boost::asio;
 using tcp = net::ip::tcp;
 namespace hh = http_handler;
-using namespace serializer;
+
 using namespace token_manager;
 namespace um = user_manager;
 
@@ -54,64 +57,62 @@ struct SessionData{
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
 void SetAuthorizationHeader(http::request<http::string_body>& request, const std::string& token);
-SessionData CreateNewMatch(tcp::socket&, ISerializer::Ptr serializer);
+SessionData CreateNewMatch(tcp::socket&);
 
-http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer);
-hh::RegistrationData RegisterSuccess(tcp::socket& socket, ISerializer::Ptr serializer);
+http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password);
+hh::RegistrationData RegisterSuccess(tcp::socket& socket);
 
-http::response<http::string_body> Login(tcp::socket&, const um::Login& login, const um::Password& password, ISerializer::Ptr serializer);
-LoginData LoginSuccess(tcp::socket&, const um::Login& login, ISerializer::Ptr serializer);
+http::response<http::string_body> Login(tcp::socket&, const um::Login& login, const um::Password& password);
+LoginData LoginSuccess(tcp::socket&, const um::Login& login);
 
 http::response<http::string_body> Profile(tcp::socket&, const Token& token);
-hh::PublicUser ProfileSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+hh::PublicUser ProfileSuccess(tcp::socket&, const Token& token);
 
  /// GAME METHODS // 
 
 http::response<http::string_body> Enqueue(tcp::socket&, const Token& token);
-bool EnqueueSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+bool EnqueueSuccess(tcp::socket&, const Token& token);
 
 //after calling this function there would be added an opponent to the queue 
 // and session will be created for given and enqueued player
-LoginData EnqueueNewPlayer(tcp::socket&, ISerializer::Ptr serializer);
+LoginData EnqueueNewPlayer(tcp::socket&);
 
 http::response<http::string_body> WaitForOpponent(tcp::socket&, const Token& token);
-game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token, ISerializer::Ptr serializer);
+game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token);
 
 http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
-gm::State SessionStateSuccess(tcp::socket&, ISerializer::Ptr serializer, const Token& token, const gm::SessionId& sid);
+gm::State SessionStateSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
 http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
 http::response<http::string_body> Move(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 
-StringResponse Walk(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
-void WalkSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
+StringResponse Walk(tcp::socket&, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
+void WalkSuccess(tcp::socket&, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid);
 
 StringResponse Resign(tcp::socket&, const Token& token, const gm::SessionId& sid);
 void ResignSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
-sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, ISerializer::Ptr serializer, const gm::SessionId& sid, const Token& token);
+sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, const gm::SessionId& sid, const Token& token);
 /// DEBUG METHODS ///
 
-StringResponse PlayerTokens(tcp::socket&, ISerializer::Ptr serializer, const um::Login& login, const um::Password& password);
-std::map<Token, um::Uuid> PlayerTokensSuccess(tcp::socket&, ISerializer::Ptr serializer);
+StringResponse PlayerTokens(tcp::socket&, const um::Login& login, const um::Password& password);
+std::map<Token, um::Uuid> PlayerTokensSuccess(tcp::socket&);
 
 StringResponse User(
     tcp::socket&, 
-    ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
     const um::Login& Usrlogin, 
     const um::Password& Usrpassword);
 StringResponse User(
     tcp::socket&, 
-    ISerializer::Ptr serializer, 
     const std::string& Admlogin, 
     const std::string& Admpassword,
     const um::Uuid& Usruuid);
-um::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const um::Login& Usrlogin, const um::Password& Usrpassword);
-um::User UserSuccess(tcp::socket&, ISerializer::Ptr serializer, const um::Uuid& uuid);
+um::User UserSuccess(tcp::socket&, const um::Login& Usrlogin, const um::Password& Usrpassword);
+um::User UserSuccess(tcp::socket&, const um::Uuid& uuid);
 
-StringResponse MMQueue(tcp::socket&, ISerializer::Ptr serializer, std::string login, std::string password);
-std::vector<um::Uuid> MMQueueSuccess(tcp::socket&, ISerializer::Ptr serializer);
+StringResponse MMQueue(tcp::socket&, std::string login, std::string password);
+std::vector<um::Uuid> MMQueueSuccess(tcp::socket&);

@@ -2,12 +2,12 @@
 #include "api_function_executor.hpp"
 #include "get_token_from_header.hpp"
 #include "registration_data.hpp"
+#include "serializer_http.hpp"
 
 namespace http_handler {
     ApiFunctionExecutor::ApiFunctionExecutor(ApiFunctionParams&& api_function_params, 
-        std::optional<token_manager::ITokenManager::Ptr> tm,
-        serializer::ISerializer::Ptr serializer):
-        api_function_ (std::move(api_function_params)), tm_(tm), serializer_(serializer){}
+        std::optional<token_manager::ITokenManager::Ptr> tm):
+        api_function_ (std::move(api_function_params)), tm_(tm){}
 
     ApiStatus ApiFunctionExecutor::Execute(SessionData&& rns) {
         if(!MatchMethod(rns.request.method())){
@@ -48,10 +48,9 @@ namespace http_handler {
     }
     bool ApiFunctionExecutor::MatchAdmin(const HttpRequest& request) {
         std::optional<RegistrationData> rd = 
-            serializer_->DeserializeRegData(request.body());
+            serializer::DeserializeRegData(request.body());
         if (!rd.has_value())
             return false;
         return rd->login == "leedoor" && rd->password == "123qwe123";
     }
-
 } // http_handler

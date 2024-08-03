@@ -22,7 +22,7 @@ while reading docs you can see beatiful diagrams and schemas. framework called [
 
 # documentation
 NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
-as i write my code i also try to documentate it. here is the list of readmes for each module: #TODO to supplement the documentation as the project grows.
+as i write my code i also try to documentate it. here is the list of readmes for each module:
 * [new module creation](docs/new_module_creation.md)
 * [initializer](docs/initializer.md)
 * [server](docs/server.md)
@@ -32,7 +32,10 @@ as i write my code i also try to documentate it. here is the list of readmes for
 * [token_manager](docs/token_manager.md)
 * [queue_manager](queue_manager.md)
 * [game_manager](docs/game_manager.md)
+* [session_manager](docs/session_manager.md)
+* [notification_system](docs/notification_system.md)
 * [API](docs/http_api.md)
 * [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)
-
+* [session state](docs/session_state.md)
+* [SQL table init](docs/database%20sql%20tables.md)
 how to write tests, naming rules etc. [here](docs/tests.md)

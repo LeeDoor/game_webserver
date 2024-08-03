@@ -4,7 +4,7 @@
 	* **finished** - game is finished. you still can get info about passed game. a day later info is being cleared.
 # example with state: playing
 * **players** - all of the players in the match. there is their position and login
-* **terrain** - all of the obstacles in the match. there is their position and type. for now type can only be the `wall`, means that players cannot pass through it. #TODO
+* **terrain** - all of the obstacles in the match. there is their position and type. for now type can only be the `wall`, means that players cannot pass through it. 
 * **now_turn** - login of the player who is moving now.
 ```json
 {

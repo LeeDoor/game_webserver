@@ -6,7 +6,7 @@
 namespace http_handler {
     class ApiFunctionDirector {
     public:
-        ApiFunctionDirector(serializer::ISerializer::Ptr serializer_, token_manager::ITokenManager::Ptr tm);
+        ApiFunctionDirector(token_manager::ITokenManager::Ptr tm);
 
         ApiFunctionExecutor GetRegister(ExecutorFunction&& afe);
         ApiFunctionExecutor GetLogin(ExecutorFunction&& afe);

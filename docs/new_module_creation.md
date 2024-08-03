@@ -1,5 +1,5 @@
 # what is module
-project consists of several modules which a tied up with each other. whole bunch of modules presented here: #TODO to supplement the documentation as the project grows.
+project consists of several modules which a tied up with each other. whole bunch of modules presented here: 
 
 ```mermaid
 ---

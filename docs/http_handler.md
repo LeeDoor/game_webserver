@@ -11,7 +11,6 @@ this module contains a bunch of files to handle each http request. this module i
     2. execution function
     3. needs authorization or not
     4. is debug method
-    5. #TODO finish the list
 * **ApiFunctionExecutor** - launches execution of **ApiFunction**. in fact, this class is a wrapper over the **ApiFunction**, since first it runs all the verification functions to correlate the request data and the allowed data (for example, so that the request method is correct) and only then **ApiFunction** is executed.
 * **ApiFunction** - contains data built by  **ApiFunctionBuilder**. it is just a function of api method.
 * **ApiFunctionDirector** - handles **ApiFunctionBuilder** to create functions and not overwhelm \*_handler's code(at the cost of overwhelming the schema and the number of files).

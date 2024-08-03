@@ -1,10 +1,11 @@
 #include "api_handler.hpp"
 #include "get_token_from_header.hpp"
+#include "send_manager.hpp"
+#include "response_builder.hpp"
+#include "api_function_executor.hpp"
+#include "send_manager_http.hpp"
 
 namespace http_handler{
-    ApiHandler::ApiHandler(HandlerParameters handler_parameters)
-    : serializer_(handler_parameters.serializer),
-     responser_(handler_parameters.serializer){}
     void ApiHandler::Handle(HttpRequest&& request, SessionFunctions&& session_functions){
         std::string function = static_cast<std::string>(request.target());
         // removing url parameters
@@ -27,10 +28,10 @@ namespace http_handler{
             ApiFunctionExecutor& executor = request_to_executor_.at(function);
             ApiStatus result = executor.Execute(std::move(rns));
             if(result != ApiStatus::Ok)
-                return responser_.HandleApiError(result, executor, rns);
+                return HandleApiError(result, executor, rns);
         }
         else{
-            responser_.SendWrongApiFunction(rns);
+            SendWrongApiFunction(rns);
         }
     }
 

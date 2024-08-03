@@ -2,8 +2,6 @@
 #include "api_function.hpp"
 #include <optional>
 #include "i_token_manager.hpp"
-#include "i_serializer.hpp"
-
 namespace http_handler {
     enum ApiStatus {
         Ok,
@@ -16,8 +14,7 @@ namespace http_handler {
     class ApiFunctionExecutor {
     public:
         ApiFunctionExecutor(ApiFunctionParams&& api_function_params, 
-            std::optional<token_manager::ITokenManager::Ptr> tm,
-            serializer::ISerializer::Ptr serializer_);
+            std::optional<token_manager::ITokenManager::Ptr> tm);
 
         ApiStatus Execute(SessionData&& rns);
         const ApiFunction& GetApiFunction() const;
@@ -28,7 +25,6 @@ namespace http_handler {
 
         ApiFunction api_function_;
         std::optional<token_manager::ITokenManager::Ptr> tm_;
-        serializer::ISerializer::Ptr serializer_;
     };
 
 } // http_handler

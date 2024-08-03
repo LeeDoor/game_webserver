@@ -1,10 +1,11 @@
 #include "static_handler.hpp"
 #include "response_builder.hpp"
+#include "serializer_basic.hpp"
 #include "spdlog/spdlog.h"
 
 namespace http_handler {
     StaticHandler::StaticHandler(HandlerParameters handler_parameters)
-    : ApiHandler(handler_parameters){
+    : ApiHandler(){
         static_path_ = fs::weakly_canonical(handler_parameters.static_path);
     }
 
@@ -32,12 +33,12 @@ namespace http_handler {
     }
     void StaticHandler::SendWrongPathError(SessionData rns){
         ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("wrong_path", "file does not exists");
+        std::string body = serializer::SerializeError("wrong_path", "file does not exists");
         rns.session_functions.send_string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
     }
     void StaticHandler::SendNoAccessError(SessionData rns){
         ResponseBuilder<http::string_body> builder;
-        std::string body = serializer_->SerializeError("no_acess", "path is out of root");
+        std::string body = serializer::SerializeError("no_acess", "path is out of root");
         rns.session_functions.send_string(std::move(builder.BodyText(std::move(body), rns.request.method()).Status(status::bad_request).GetProduct()));
     }
 
