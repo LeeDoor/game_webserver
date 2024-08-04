@@ -66,14 +66,12 @@ namespace http_handler{
         if(!sidopt)
             return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
-        if(!gm_->HasSession(sid)){
+        gm::State::OptCPtr state = gm_->GetState(sid);
+        if(!state){
             if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
                 return SendFinishedState(rns, *sd);
             return SendWrongSessionId(rns);
         }
-        gm::State::OptCPtr state = gm_->GetState(sid);
-        if(!state.has_value())
-            return SendWrongSessionId(rns);
         return SendGameState(rns, **state);
     }
 
@@ -81,8 +79,11 @@ namespace http_handler{
         um::Uuid uuid = rd.uuid;
 
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(!DefineSessionState(rns, sidopt)) return;
+        if(!sidopt)
+            return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
+        if(!gm_->HasSession(sid)) 
+            return DefineSessionState(rns, sid);
 
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(uuid, sid, 
@@ -108,12 +109,13 @@ namespace http_handler{
     void GameHandler::ApiMove(SessionData&& rns, const RequestData& rd) {
         um::Uuid uuid = rd.uuid;
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(!DefineSessionState(rns, sidopt)) return;
+        if(!sidopt)
+            return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
-
-        if (!gm_->HasSession(sid))
-            return SendWrongSessionId(rns);
-        if (!gm_->HasPlayer(uuid, sid))
+        auto res = gm_->HasPlayer(uuid, sid);
+        if (!res)
+            return DefineSessionState(rns, sid);
+        if (!res.value())
             return SendAccessDenied(rns);
         
         using Status = gm::Session::GameApiStatus;
@@ -121,7 +123,7 @@ namespace http_handler{
         std::optional<Type> pmt = serializer::DefinePlayerMove(rns.request.body());
         if(!pmt.has_value())
             return SendWrongBodyData(rns);
-        Status status;
+        std::optional<Status> status;
         switch (*pmt){
         case Type::Walk:
             std::optional<gm::Session::WalkData> data 
@@ -131,8 +133,9 @@ namespace http_handler{
             status = gm_->ApiWalk(uuid, sid, *data);
             break;
         }
-
-        switch(status){
+        if(!status)
+            return DefineSessionState(rns, sid);
+        switch(*status){
         case Status::Ok:
             return SendSuccess(rns);
         case Status::NotYourMove:
@@ -145,11 +148,16 @@ namespace http_handler{
     void GameHandler::ApiResign(SessionData&& rns, const RequestData& rd) {
         um::Uuid uuid = rd.uuid;
         auto sidopt = ParseUrlSessionId(rns.request);
-        if(!DefineSessionState(rns, sidopt)) return;
+        if(!sidopt) 
+            return SendWrongUrlParameters(rns);
+        
         auto sid = *sidopt;
         if(!gm_->HasPlayer(uuid, sid))
             return SendAccessDenied(rns);
-        if(!gm_->ApiResign(uuid, sid))
+        auto res = gm_->ApiResign(uuid, sid);
+        if(!res.has_value())
+            return DefineSessionState(rns, sid);
+        if(!res.value())
             return SendAccessDenied(rns);
         return SendSuccess(rns);
         
@@ -161,21 +169,9 @@ namespace http_handler{
             return std::nullopt;
         return map.at("sessionId");
     }
-    bool GameHandler::DefineSessionState(SessionData rns, std::optional<gm::SessionId>& sid){
-        if(sid.has_value()){
-            if (gm_->HasSession(*sid)){
-                return true;
-            }
-            else if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(*sid)){
-                SendSessionFinished(rns);
-                return false;
-            }
-            else{
-                SendWrongSessionId(rns);
-                return false;
-            }
-        }
-        SendWrongUrlParameters(rns);
-        return false;
+    void GameHandler::DefineSessionState(SessionData rns, const gm::SessionId& sid){
+        if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
+            return SendSessionFinished(rns);
+        return SendWrongSessionId(rns);
     }
 }

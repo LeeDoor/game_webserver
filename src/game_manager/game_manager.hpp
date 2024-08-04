@@ -6,6 +6,7 @@
 #include "i_user_manager.hpp"
 #include "i_session_manager.hpp"
 #include <mutex>
+#include <optional>
 
 namespace game_manager{
     class GameManager{
@@ -17,21 +18,18 @@ namespace game_manager{
         bool CreateSession(um::Uuid&& player1, um::Uuid&& player2);
         bool HasSession(const SessionId& sid);
         bool HasPlayer(const um::Uuid& uuid);
-        bool HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
+        std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
 
-        bool ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
+        std::optional<bool> ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
 
         //ingame api
-        Session::GameApiStatus ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
+        std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
         
     private:
-        void FinishSession(const SessionId& sid);
+        bool FinishSession(const SessionId& sid);
 
         SessionId GenerateSessionId();
-
-        std::mutex sessions_mutex;
-        std::map<SessionId, Session>& sessions_mt();
 
         sm::ISessionManager::Ptr sm_;
         um::IUserManager::Ptr dm_;

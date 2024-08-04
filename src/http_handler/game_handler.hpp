@@ -24,7 +24,7 @@ namespace http_handler{
 
     private:
         std::optional<gm::SessionId> ParseUrlSessionId(const HttpRequest& request);
-        bool DefineSessionState(SessionData rns, std::optional<gm::SessionId>& sid);
+        void DefineSessionState(SessionData rns, const gm::SessionId& sid);
 
         game_manager::IQueueManager::Ptr iqm_;
         game_manager::GameManager::Ptr gm_;
