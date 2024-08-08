@@ -4,7 +4,7 @@
 
 void ConnectSocket(net::io_context& ioc, tcp::socket& socket){
     tcp::resolver resolver(ioc); 
-    auto const results = resolver.resolve("127.0.0.1", "9999");
+    auto const results = resolver.resolve("127.0.0.1", "8080");
     net::connect(socket, results.begin(), results.end());
     REQUIRE(socket.is_open());
 }

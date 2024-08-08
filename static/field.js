@@ -1,4 +1,4 @@
-
+IPADDR = '95.220.184.224:8080'
 class Cell{
     constructor(x,y,type, selected){
         this.x = x;
@@ -155,7 +155,7 @@ function updatePlayers(players){
 // loads and updates information from the server immediately
 async function loadScene(){
     const stateResponse = await 
-        fetch('http://localhost:9999/api/game/session_state?sessionId='+sessionId, {
+        fetch('http://' + IPADDR + '/api/game/session_state?sessionId='+sessionId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ function onMouseOut(event){
 
 // asyncronically waits for opponent move
 function waitForStateChange() {
-    fetch('http://localhost:9999/api/game/session_state_change?sessionId='+sessionId, 
+    fetch('http://' + IPADDR + '/api/game/session_state_change?sessionId='+sessionId, 
     {
         method: 'GET',
         headers: {
@@ -252,7 +252,7 @@ function waitForStateChange() {
     }).then(json=>{
         lastSessionState = json;
         if(json.state == "finished")
-            window.location.href = "http://localhost:9999/session_state.html?sessionId="+sessionId;
+            window.location.href = 'http://' + IPADDR + '/session_state.html?sessionId='+sessionId;
         else{
             waitForStateChange();
             updateScene();
@@ -272,7 +272,7 @@ function walk(){
 
 // sends player's moving
 function move(data){
-    fetch('http://localhost:9999/api/game/move?sessionId='+sessionId, 
+    fetch('http://' + IPADDR + '/api/game/move?sessionId='+sessionId, 
     {
         method: 'POST',
         headers: {
@@ -289,7 +289,7 @@ function move(data){
 }
 
 function resign(){
-    fetch('http://localhost:9999/api/game/resign?sessionId='+sessionId, 
+    fetch('http://' + IPADDR + '/api/game/resign?sessionId='+sessionId, 
     {
         method: 'POST',
         headers: {

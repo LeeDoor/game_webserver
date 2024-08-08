@@ -15,7 +15,7 @@ cd hex_chess_backend/scripts
 ./build_no_tests.sh
 ./run_app.sh
 ```
-port is 9999 by default
+port is 8080 by default
 
 # uml diagrams
 while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)

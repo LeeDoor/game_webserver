@@ -5,4 +5,4 @@ cd cmake-build-debug
 rm -r bin
 conan install .. --build=missing -s compiler.libcxx=libstdc++11
 cmake -DBUILD_TESTS=OFF ..
-make
+make -j 16

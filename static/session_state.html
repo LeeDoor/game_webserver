@@ -49,6 +49,7 @@
     <button id="redirectButton">Go to Index</button>
 
     <script>
+    IPADDR = '95.220.184.224:8080';
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             const sessionId = urlParams.get('sessionId');
@@ -56,7 +57,7 @@
             const login = localStorage.getItem('login');
 
             if (sessionId && token && login) {
-                fetch(`http://localhost:9999/api/game/session_state?sessionId=${sessionId}`, {
+                fetch(`http://' + IPADDR + '/api/game/session_state?sessionId=${sessionId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -79,7 +80,7 @@
             }
 
             document.getElementById('redirectButton').addEventListener('click', function() {
-                window.location.href = 'http://localhost:9999/index.html';
+                window.location.href = 'http://' + IPADDR + '/index.html';
             });
         });
     </script>

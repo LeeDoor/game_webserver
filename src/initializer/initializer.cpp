@@ -14,7 +14,7 @@
 #include "session_state_notifier.hpp"
 #include "session_manager_postgres.hpp"
 
-#define PORT 9999
+#define PORT 8080
 
 namespace initializer {
 
@@ -77,7 +77,7 @@ int Initializer::StartServer(Args args) {
 
     net::io_context ioc (static_cast<int>(num_threads)); // core io functionality for socket users
 
-    const auto address = net::ip::make_address("127.0.0.1");
+    const auto address = net::ip::make_address("0.0.0.0");
     constexpr net::ip::port_type port = PORT;    
 
     /// REDIS ///
@@ -85,6 +85,9 @@ int Initializer::StartServer(Args args) {
     co.host = "127.0.0.1";  
     co.password = args.redis_credentials;
     std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
+
+    if(redis_ptr->ping() != "PONG")
+        spdlog::critical("PING is not PONG smh");
 
     if(args.test){
         redis_ptr->flushall();

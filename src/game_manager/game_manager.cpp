@@ -44,8 +44,9 @@ namespace game_manager{
     }
 
     std::optional<bool> GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
-        if (!sessions_.contains(sid))
-            return std::nullopt;
+        auto res = HasPlayer(uuid, sid);
+        if (!res || !res.value())
+            return res;
         auto status = sessions_.at(sid).ApiResign(uuid);
         if(status != Session::GameApiStatus::Finish)
             return false;

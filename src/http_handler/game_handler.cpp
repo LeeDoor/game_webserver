@@ -150,15 +150,14 @@ namespace http_handler{
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!sidopt) 
             return SendWrongUrlParameters(rns);
-        
         auto sid = *sidopt;
-        if(!gm_->HasPlayer(uuid, sid))
-            return SendAccessDenied(rns);
+
         auto res = gm_->ApiResign(uuid, sid);
         if(!res.has_value())
             return DefineSessionState(rns, sid);
         if(!res.value())
             return SendAccessDenied(rns);
+
         return SendSuccess(rns);
         
     }

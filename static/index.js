@@ -1,4 +1,4 @@
-
+IPADDR = '95.220.184.224:8080';
 function showCustomPopup(text, color) {
     var existingPopups = document.getElementsByClassName('popup');
     var newPopup = document.createElement('div');
@@ -27,7 +27,7 @@ function showCustomPopup(text, color) {
 
 function verifyToken(){
     let res = false; // true if login is valid
-    fetch('http://localhost:9999/api/profile', {
+    fetch('http://' + IPADDR + '/api/profile', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function verifyToken(){
         login: localStorage.getItem('login'),
         password: localStorage.getItem('password')
     };
-    fetch('http://localhost:9999/api/login', {
+    fetch('http://' + IPADDR + '/api/login', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ function verifyToken(){
 }   
 
 function WaitForOpponent(){
-    fetch('http://localhost:9999/api/game/wait_for_opponent', {
+    fetch('http://' + IPADDR + '/api/game/wait_for_opponent', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -79,12 +79,13 @@ function WaitForOpponent(){
         if(response.ok){
             showCustomPopup("game found!", "#00FF00");
             const data = await response.json();
-            window.location.href = "http://localhost:9999/field.html?sessionId="+data.sessionId;
+            const href = 'http://' + IPADDR + '/field.html?sessionId='+data.sessionId;
+            window.location.href = href;
         }
     });
 }
 function Enqueue(event) {
-    fetch('http://localhost:9999/api/game/enqueue', {
+    fetch('http://' + IPADDR + '/api/game/enqueue', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ function Register(event) {
         password: regPass 
     };
 
-    fetch('http://localhost:9999/api/register', {
+    fetch('http://' + IPADDR + '/api/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -128,7 +129,7 @@ function Login(event) {
         password: logPass 
     };
 
-    fetch('http://localhost:9999/api/login', {
+    fetch('http://' + IPADDR + '/api/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
