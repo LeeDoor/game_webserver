@@ -43,6 +43,9 @@ let playerEnemy = new Player(0,0, false); // enemy player object
 
 let selectedCell; // highlighted celected cell
 
+let now_turn = true;
+let validCells = [];
+
 // creates cells for grid
 function initGrid(){
     grid = [];
@@ -77,7 +80,12 @@ function drawCell(cell){
     const element = elementData(cell.x, cell.y);
     switch(cell.type){
         case "grass":
-            ctx.fillStyle = "rgb("+(79+cell.selected*50)+" 255 170)";
+            if (validCells.includes(cell))
+                ctx.fillStyle = "rgb(135, 181, 255)";
+            else if (cell.selected)
+                ctx.fillStyle = "rgb(129 255 170)";
+            else
+                ctx.fillStyle = "rgb(79 255 170)";
             break;
         case "wall":
             ctx.fillStyle = "rgb(191 255 252)";
@@ -89,6 +97,7 @@ function drawCell(cell){
 // draws player
 function drawPlayer(player){
     const element = elementData(player.x, player.y);
+    
     if(player.us)
         ctx.fillStyle = "rgb(66 79 255)";
     else
@@ -103,10 +112,23 @@ function drawPlayers(){
     drawPlayer(playerEnemy);
 }
 
+function ValidCell(cell){
+    return cell && cell.x >= 0 && cell.x < gridSize &&
+        cell.y >= 0 && cell.y < gridSize && cell.type == "grass"; 
+}
+function DefineWalkValidCell() {
+    validCells = [];
+    if(!now_turn) return;
+    let x = playerUs.x, y = playerUs.y;
+    if(ValidCell(grid[x - 1][y])) validCells.push(grid[x - 1][y]);
+    if(ValidCell(grid[x + 1][y])) validCells.push(grid[x + 1][y]);
+    if(ValidCell(grid[x][y - 1])) validCells.push(grid[x][y - 1]);
+    if(ValidCell(grid[x][y + 1])) validCells.push(grid[x][y + 1]);
+}
+
 // draws all cells in grid
 function drawGrid(){
     cellMarginpx = canvas.width * innerCellMarginps / 100;
-
     for(y = 0; y < gridSize; ++y){
         for (x = 0; x < gridSize; ++x){
             drawCell(grid[x][y]);
@@ -173,6 +195,8 @@ function updateScene(){
     updateTerrain(terrain);
     updatePlayers(players);
     gridSize == lastSessionState.map_size.width ? context.clearRect(0, 0, canvas.width, canvas.height) : null;
+    now_turn = lastSessionState.now_turn == localStorage.getItem('login');
+    DefineWalkValidCell();
     drawScene();
 }
      
@@ -205,10 +229,11 @@ function getCell(coordinates) {
 
 // click event
 function onClick(event) {
-    walk();
-    playerUs.x = selectedCell.x;
-    playerUs.y = selectedCell.y;
-    drawScene();
+    if(walk()){
+        playerUs.x = selectedCell.x;
+        playerUs.y = selectedCell.y;
+        drawScene();
+    }
 }
 
 // drops selected cell to null
@@ -266,8 +291,13 @@ function walk(){
         posX: selectedCell.x,
         posY: selectedCell.y
     };
+    if(!now_turn)
+        return false;
+    if(Math.abs(data.posX - playerUs.x) + Math.abs(data.posY - playerUs.y) != 1)
+        return false;
 
     move(data);
+    return true;
 }
 
 // sends player's moving
