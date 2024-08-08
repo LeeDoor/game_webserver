@@ -257,7 +257,7 @@ actor User
 
 ApiHandler->>Serializer: deserialize body data
 
-serializer::>ApiHandler: returns login and password from body
+serializer->>ApiHandler: returns login and password from body
 
   
 

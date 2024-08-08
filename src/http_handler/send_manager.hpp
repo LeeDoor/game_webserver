@@ -18,7 +18,6 @@ namespace http_handler{
     void SendAdminUnrecognized(SessionData rns);
     void SendTokenToRemovedPerson(SessionData rns);
     void SendCantEnqueue(SessionData rns);
-    void SendInTheMatch(SessionData rns);
     void SendCantLogin(SessionData rns);
     void SendPollClosed(SessionData rns, const std::string& description);
     void SendWrongSessionId(SessionData rns);

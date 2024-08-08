@@ -17,7 +17,7 @@ namespace game_manager{
 
         bool CreateSession(um::Uuid&& player1, um::Uuid&& player2);
         bool HasSession(const SessionId& sid);
-        bool HasPlayer(const um::Uuid& uuid);
+        std::optional<SessionId> HasPlayer(const um::Uuid& uuid);
         std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
 

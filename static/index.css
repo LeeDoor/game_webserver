@@ -51,7 +51,7 @@ button:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     overflow: hidden;
-    animation: fadeInOut 3s forwards;
+    animation: fadeInOut 10s forwards;
 }
 
 @keyframes fadeInOut {

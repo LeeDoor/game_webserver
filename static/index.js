@@ -1,4 +1,6 @@
 IPADDR = '95.220.184.224:8080';
+const popups = document.getElementById("popups");
+
 function showCustomPopup(text, color) {
     var existingPopups = document.getElementsByClassName('popup');
     var newPopup = document.createElement('div');
@@ -6,23 +8,21 @@ function showCustomPopup(text, color) {
     newPopup.style.color = color;
     newPopup.classList.add('popup');
 
-    if (existingPopups.length > 0) {
+    if (existingPopups.length > 0 && existingPopups.length < 10) {
         var lastPopup = existingPopups[existingPopups.length - 1];
         var lastPopupBottom = lastPopup.offsetTop + lastPopup.offsetHeight;
-        if (lastPopupBottom > '500'){
-            lastPopupBottom = '20'
-        }
         newPopup.style.top = lastPopupBottom + 'px';
     } else  {
+        popups.innerHTML = '';
         newPopup.style.top = '20px'; 
     }
     newPopup.style.left = '20px'; 
 
-    document.body.appendChild(newPopup);
+    popups.appendChild(newPopup);
 
     setTimeout(function() {
         newPopup.remove();
-    }, 3000); 
+    }, 10000); 
 }
 
 function verifyToken(){
@@ -68,6 +68,12 @@ function verifyToken(){
 
 }   
 
+function MatchFound(sessionId){
+    showCustomPopup("game found!", "#00FF00");
+    const href = 'http://' + IPADDR + '/field.html?sessionId='+sessionId;
+    window.location.href = href;
+}
+
 function WaitForOpponent(){
     fetch('http://' + IPADDR + '/api/game/wait_for_opponent', {
         method: 'GET',
@@ -77,10 +83,8 @@ function WaitForOpponent(){
         },
     }).then(async response=>{
         if(response.ok){
-            showCustomPopup("game found!", "#00FF00");
             const data = await response.json();
-            const href = 'http://' + IPADDR + '/field.html?sessionId='+data.sessionId;
-            window.location.href = href;
+            MatchFound(data.sessionId);
         }
     });
 }
@@ -98,7 +102,10 @@ function Enqueue(event) {
         }
         return response.json();
     }).then(function (json){
-        if(json.error_name){
+        if(json.sessionId){
+            return MatchFound(json.sessionId);
+        }
+        if(json.description){
             showCustomPopup("failed to add you to the queue: " + json.description, "#FF0000");
         }
     });
@@ -112,12 +119,35 @@ function Register(event) {
         password: regPass 
     };
 
+    if (data.login.length < 3){
+        showCustomPopup("make sure your login is more than 2 symbols", "#FF0000");
+        return;
+    }
+    if (data.password.length < 6){
+        showCustomPopup("make sure your password is more than 5 symbols", "#FF0000");
+        return;
+    }
+    if (!/\d/.test(data.password)){
+        showCustomPopup("make sure your password has a digit", "#FF0000");
+        return;
+    }
+        
+
     fetch('http://' + IPADDR + '/api/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
+    }).then(response=>{
+        if(response.ok){
+            document.getElementById('logLogin').value = data.login;
+            document.getElementById('logPass').value = data.password;
+            showCustomPopup("success! welcome, " + data.login, "#00FF00");
+            Login(event);
+        }
+        else
+            showCustomPopup("login is taken. please come up with a new username or add a couple of numbers to your nickname like a fucker.", "#00FF00");
     });
 }
 function Login(event) {
@@ -141,6 +171,7 @@ function Login(event) {
             document.getElementById('loginText').textContent = data.login;
             localStorage.setItem('login', data.login);
             localStorage.setItem('password', data.password);
+            document.getElementById('playButton').disabled = false;
             return response.json();
         } else {
             showCustomPopup("login failed. check your data and try again", "#FF0000"); 
@@ -159,6 +190,10 @@ function DOMCL() {
             lt.textContent = 'Guest';
         }
     }
+    if(localStorage.getItem('token'))
+        showCustomPopup("Hi, " +  localStorage.getItem('login') + "! click play!!!", "#00FF00");
+    else
+        document.getElementById('playButton').disabled = true;
 }
 document.getElementById('registerButton').addEventListener('click', Register);
 document.getElementById('logButton').addEventListener('click', Login);

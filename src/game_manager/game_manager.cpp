@@ -25,12 +25,12 @@ namespace game_manager{
     bool GameManager::HasSession(const SessionId& sid){
         return sessions_.contains(sid);
     }
-    bool GameManager::HasPlayer(const um::Uuid& uuid) {
+    std::optional<SessionId> GameManager::HasPlayer(const um::Uuid& uuid) {
         for(std::pair<SessionId, Session> pair : sessions_){
             if (pair.second.HasPlayer(uuid))
-                return true;
+                return pair.first;
         }
-        return false;
+        return std::nullopt;
     }
     std::optional<bool> GameManager::HasPlayer(const um::Uuid& uuid, const SessionId& sessionId){
         if (!sessions_.contains(sessionId))

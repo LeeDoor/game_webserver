@@ -72,8 +72,11 @@ namespace http_handler{
     void SendCantEnqueue(SessionData rns) {
         Send(rns, status::ok, serializer::SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)"));
     }
-    void SendInTheMatch(SessionData rns) {
-        Send(rns, status::bad_request, serializer::SerializeError("in_the_match", "error happened while enqueuing player (already in the match)"));
+    void SendInTheMatch(SessionData rns, const gm::SessionId& sid) {
+        Send(rns, status::bad_request, serializer::SerializeMap({
+            {"error_name", "in_the_match"},
+            {"sessionId", sid}
+        }));
     }
     void SendCantLogin(SessionData rns) {
         Send(rns, status::service_unavailable, serializer::SerializeError("login_error", "unable to add token to database."));

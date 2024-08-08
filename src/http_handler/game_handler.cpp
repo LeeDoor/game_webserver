@@ -36,8 +36,8 @@ namespace http_handler{
     void GameHandler::ApiEnqueue(SessionData&& rns, const RequestData& rd){
         um::Uuid uuid = rd.uuid;
 
-        if(gm_->HasPlayer(uuid))
-            return SendInTheMatch(rns);
+        if(auto sid = gm_->HasPlayer(uuid))
+            return SendInTheMatch(rns, *sid);
             
         bool res = iqm_->EnqueuePlayer(uuid);
         if (!res)
