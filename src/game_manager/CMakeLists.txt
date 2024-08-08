@@ -17,12 +17,14 @@ add_library(${LIBRARY_NAME}
 target_link_libraries(${LIBRARY_NAME} 
     PUBLIC user_manager
     PUBLIC session_manager
+    PUBLIC http_handler
 
     PRIVATE notification_system
 )
 target_include_directories(${LIBRARY_NAME} 
     PUBLIC "../user_manager"
     PUBLIC "../session_manager"
+    PUBLIC "../http_handler"
 
     PRIVATE "../notification_system"
 )

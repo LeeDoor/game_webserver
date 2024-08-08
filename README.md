@@ -17,6 +17,8 @@ cd hex_chess_backend/scripts
 ```
 port is 8080 by default
 
+also you can launch my app inside docker container. [see](docker.md)
+
 # uml diagrams
 while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)
 
