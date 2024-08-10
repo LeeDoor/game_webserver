@@ -42,7 +42,7 @@ namespace game_manager{
     }
     void from_json(const json& j, State& v) {
         j.at("players").get_to(v.players);
-        obj_from_json(j.at("objects"), v.objects, v);
+        j.at("objects").get_to(v.objects);
         j.at("terrain").get_to(v.terrain);
         j.at("now_turn").get_to(v.now_turn);
         j.at("map_size").get_to(v.map_size);
@@ -72,6 +72,7 @@ namespace game_manager{
     void from_json(const json& j, MapSize& v) {
         if(!j.at("width").is_number_unsigned() ||
            !j.at("height").is_number_unsigned())
+            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
         j.at("width").get_to(v.width);
         j.at("height").get_to(v.height);
     }
@@ -82,31 +83,27 @@ namespace game_manager{
         j["type"] = "object";
         j["owner"] = v->owner;
 
-        Bomb* bomb = dynamic_cast<Bomb*>(v.get());
+        Bomb::Ptr bomb = dynamic_pointer_cast<Bomb>(v);
         if(bomb) {
             j["type"] = "bomb";
             j["ticks_left"] = bomb->ticks_left;
         }
     }
-    void obj_from_json(const json& j, State::Objects& v, State& state) {
-        for (auto it : j){
-            if(!it.at("posX").is_number_unsigned() ||
-                !it.at("posY").is_number_unsigned())
-                throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
+    void from_json(const json& it, Object::Ptr& v) {
+        if(!it.at("posX").is_number_unsigned() ||
+            !it.at("posY").is_number_unsigned())
+            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
 
-            std::shared_ptr<Object> obj;
-            if(it.at("type") == "bomb"){
-                Bomb::Ptr bomb = std::make_shared<Bomb>(to_string(it.at("owner")), state);
-                it.at("ticks_left").get_to(bomb->ticks_left);
-                obj = bomb;
-            }
-            else{
-                throw std::runtime_error("object type not implemented: " + to_string(it.at("type")));
-            }
-            it.at("posX").get_to(obj->posX);
-            it.at("posY").get_to(obj->posY);
-            v.emplace_back(obj);
+        if(it.at("type") == "bomb"){
+            Bomb::Ptr bomb = std::make_shared<Bomb>(it.at("owner").get<std::string>());
+            it.at("ticks_left").get_to(bomb->ticks_left);
+            v = bomb;
         }
+        else{
+            throw std::runtime_error("object type not implemented: " + it.at("type").get<std::string>());
+        }
+        it.at("posX").get_to(v->posX);
+        it.at("posY").get_to(v->posY);
     }
 
     void to_json(json& j, const Session::WalkData& v) {

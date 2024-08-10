@@ -62,7 +62,7 @@ namespace game_manager{
             return GameApiStatus::WrongMove;
         
         
-        PlaceObject(std::make_shared<Bomb>(player.login, *state_), move_data.posX, move_data.posY);
+        PlaceObject(std::make_shared<Bomb>(player.login, state_), move_data.posX, move_data.posY);
 
         AfterMove();
         return GameApiStatus::Ok;

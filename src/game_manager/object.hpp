@@ -9,10 +9,13 @@ namespace game_manager{
     public:
         using Ptr = std::shared_ptr<Object>;
         using OwnerType = Player::Login;
-        using StateType = State&;
+        using StateType = std::shared_ptr<State>;
 
         Object(OwnerType owner, StateType state);
+        Object(OwnerType owner);
         virtual ~Object();
+        virtual bool operator==(Object::Ptr obj) const;
+        void SetState(StateType state);
 
         virtual void Place(Dimention posX, Dimention posY);
         virtual bool UpdateTick() = 0;
@@ -20,6 +23,6 @@ namespace game_manager{
         Dimention posX, posY;
         OwnerType owner;
     protected:
-        StateType& state_;
+        StateType state_;
     };
 }

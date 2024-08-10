@@ -21,6 +21,10 @@ namespace game_manager {
     };
 
     struct MapSize{
+        bool operator == (const MapSize& other)const {
+            return width == other.width && height == other.height;
+        }
+
         unsigned width;
         unsigned height;
     };
@@ -33,11 +37,14 @@ namespace game_manager {
         using Ptr = std::shared_ptr<State>;
         using CPtr = std::shared_ptr<const State>;
         using OptCPtr = std::optional<CPtr>;
-
-        bool operator == (const State& state)const {
-            return players == state.players && terrain == state.terrain && now_turn == state.now_turn;
+        
+        bool operator==(const State& s) const {
+            return players == s.players && 
+                terrain == s.terrain && 
+                now_turn == s.now_turn && 
+                map_size == s.map_size &&
+                std::equal(objects.begin(), objects.end(), s.objects.begin(), [](Object::Ptr a, Object::Ptr b){return *a == b;});
         }
-
         Players players;
         Objects objects;
         Terrain terrain;

@@ -239,7 +239,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {3,3,gm::Obstacle::Type::Wall}
         };
         example.map_size = {15,15};
-        auto bomb = std::make_shared<game_manager::Bomb>("owner", example);
+        auto bomb = std::make_shared<game_manager::Bomb>("owner");
         bomb->Place(5,5);
         example.objects = {bomb};
         std::string given_str;
@@ -295,7 +295,9 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {2,1,gm::Obstacle::Type::Wall},
             {89,12222555,gm::Obstacle::Type::Wall}
         };
-        auto bomb = std::make_shared<game_manager::Bomb>("NIGGER", example);
+        example.map_size = {15,15};
+        auto bomb = std::make_shared<game_manager::Bomb>("NIGGER");
+        bomb->ticks_left = 5;
         bomb->Place(1,1);
         example.objects = {bomb};
         j = given;

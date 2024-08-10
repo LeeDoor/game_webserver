@@ -7,6 +7,8 @@ namespace game_manager{
         using Ptr = std::shared_ptr<Bomb>;
 
         Bomb(OwnerType owner, StateType state);
+        Bomb(OwnerType owner);
+        bool operator==(Object::Ptr obj) const override;
 
         bool UpdateTick() override;
 
