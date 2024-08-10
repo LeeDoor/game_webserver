@@ -1,9 +1,8 @@
 #initializer's dependencies
-set(LIBRARY_NAME psql_connection_pool)
+set(LIBRARY_NAME vt_game_structs)
 #creating library
 add_library(${LIBRARY_NAME}
-    postgres_connection_pool.hpp
-    postgres_connection_pool.cpp
+    bomb.cpp
+    object.cpp
 )
-
 target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

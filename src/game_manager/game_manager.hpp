@@ -25,6 +25,7 @@ namespace game_manager{
 
         //ingame api
         std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
+        std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceBombData& data); 
         
     private:
         bool FinishSession(const SessionId& sid);

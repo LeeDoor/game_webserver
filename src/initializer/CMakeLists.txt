@@ -16,12 +16,4 @@ target_link_libraries(${LIBRARY_NAME}
     PRIVATE session_manager
     PRIVATE notification_system
 )
-target_include_directories(${LIBRARY_NAME} 
-    PRIVATE "../server"
-    PRIVATE "../user_manager" 
-    PRIVATE "../token_manager" 
-    PRIVATE "../queue_manager" 
-    PRIVATE "../game_manager" 
-    PRIVATE "../session_manager"
-    PRIVATE "../notification_system"
-)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

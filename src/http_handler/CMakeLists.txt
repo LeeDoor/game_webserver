@@ -48,13 +48,4 @@ target_link_libraries(${LIBRARY_NAME}
     PRIVATE notification_system
     PRIVATE serializer
 )
-target_include_directories(${LIBRARY_NAME} 
-    PUBLIC "../token_manager" 
-    PUBLIC "../user_manager"
-    PUBLIC "../queue_manager"
-    PUBLIC "../session_manager"
-    PUBLIC "../game_manager"
-
-    PRIVATE "../notification_system"
-    PRIVATE "../serializer"
-)
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

@@ -125,13 +125,22 @@ namespace http_handler{
             return SendWrongBodyData(rns);
         std::optional<Status> status;
         switch (*pmt){
-        case Type::Walk:
+        case Type::Walk:{
             std::optional<gm::Session::WalkData> data 
-                = serializer::DeserializePlayerWalk(rns.request.body());
+                = serializer::DeserializeWalkData(rns.request.body());
             if(!data.has_value())
                 return SendWrongBodyData(rns);
             status = gm_->ApiWalk(uuid, sid, *data);
             break;
+        }
+        case Type::PlaceBomb:{
+            std::optional<gm::Session::PlaceBombData> data 
+                = serializer::DeserializePlaceBombData(rns.request.body());
+            if(!data.has_value())
+                return SendWrongBodyData(rns);
+            status = gm_->ApiPlaceBomb(uuid, sid, *data);
+            break;
+        }
         }
         if(!status)
             return DefineSessionState(rns, sid);

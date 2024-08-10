@@ -3,6 +3,7 @@
 #include "public_user.hpp"
 #include "session.hpp"
 #include "session_data.hpp"
+#include "object.hpp"
 using json = nlohmann::json;
 
 namespace http_handler {
@@ -31,8 +32,14 @@ namespace game_manager{
     void to_json(json& j, const MapSize& v);
     void from_json(const json& j, MapSize& v);
 
+    void to_json(json& j, const Object::Ptr& v);
+    void obj_from_json(const json& j, State::Objects& v, State& state);
+
     void to_json(json& j, const Session::WalkData& v);
     void from_json(const json& j, Session::WalkData& v);
+
+    void to_json(json& j, const Session::PlaceBombData& v);
+    void from_json(const json& j, Session::PlaceBombData& v);
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},
@@ -40,6 +47,7 @@ namespace game_manager{
 
     NLOHMANN_JSON_SERIALIZE_ENUM( Session::MoveType, {
         {Session::MoveType::Walk, "walk"},
+        {Session::MoveType::PlaceBomb, "place_bomb"},
     })
 }
 

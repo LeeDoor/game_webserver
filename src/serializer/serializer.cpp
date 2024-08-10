@@ -10,6 +10,7 @@
 
 
 namespace serializer{
+    // BASIC //
     std::string SerializeEmpty() {
         return EMPTY_JSON;
     }
@@ -27,6 +28,21 @@ namespace serializer{
         return obj.dump();
     } 
     
+    std::optional<std::map<std::string, std::string>> DeserializeMap(const std::string& json_str) {
+        std::map<std::string, std::string> map;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            for(auto pair : j.items()){
+                map[pair.key()] = pair.value();
+            }
+        }
+        catch(std::exception ex){
+            return std::nullopt;
+        }
+        return map;
+    }
+
+    // HTTP //
     std::string Serialize(const hh::RegistrationData& rd) {
         nlohmann::json json = rd;
         return json.dump();
@@ -35,7 +51,30 @@ namespace serializer{
         nlohmann::json json = pud;
         return json.dump();
     }
-    
+    std::optional<hh::PublicUser>       DeserializePublicUser(const std::string& json_str) {
+        hh::PublicUser pud;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            pud = j.template get<hh::PublicUser>();
+        }
+        catch(std::exception ex){
+            return std::nullopt;
+        }
+        return pud;
+    }
+    std::optional<hh::RegistrationData> DeserializeRegData(const std::string& json_str) {
+        hh::RegistrationData rd;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            rd = j.template get<hh::RegistrationData>();
+        }
+        catch(std::exception ex){
+            return std::nullopt;
+        }
+        return rd;
+    }
+ 
+    // USER //
     std::string Serialize(const um::User& ud) {
         nlohmann::json json = ud;
         return json.dump();
@@ -55,60 +94,7 @@ namespace serializer{
         return obj.dump();
     }
     
-    std::string Serialize(const gm::State& state) {
-        nlohmann::json obj(state);
-        return obj.dump();
-    }
-    std::string Serialize(const gm::Session::WalkData& wd) {
-        nlohmann::json obj(wd);
-        obj["move_type"] = "walk";
-        return obj.dump();
-    }
-    
-    std::string Serialize(const session_manager::PublicSessionData& data) {
-        nlohmann::json obj(data);
-        return obj.dump();
-    }
-
-
-    std::optional<std::map<std::string, std::string>>       DeserializeMap(const std::string& json_str) {
-        std::map<std::string, std::string> map;
-        try{
-            nlohmann::json j = nlohmann::json::parse(json_str);
-            for(auto pair : j.items()){
-                map[pair.key()] = pair.value();
-            }
-        }
-        catch(std::exception ex){
-            return std::nullopt;
-        }
-        return map;
-    }
-
-    std::optional<hh::PublicUser>                           DeserializePublicUser(const std::string& json_str) {
-        hh::PublicUser pud;
-        try{
-            nlohmann::json j = nlohmann::json::parse(json_str);
-            pud = j.template get<hh::PublicUser>();
-        }
-        catch(std::exception ex){
-            return std::nullopt;
-        }
-        return pud;
-    }
-    std::optional<hh::RegistrationData>                     DeserializeRegData(const std::string& json_str) {
-        hh::RegistrationData rd;
-        try{
-            nlohmann::json j = nlohmann::json::parse(json_str);
-            rd = j.template get<hh::RegistrationData>();
-        }
-        catch(std::exception ex){
-            return std::nullopt;
-        }
-        return rd;
-    }
-
-    std::optional<um::User>                                 DeserializeUser(const std::string& json_str) {
+    std::optional<um::User>              DeserializeUser(const std::string& json_str) {
         um::User ud;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
@@ -119,7 +105,7 @@ namespace serializer{
         }
         return ud;
     }
-    std::optional<std::vector<um::Uuid>>                    DeserializeUuids(const std::string& json_str) {
+    std::optional<std::vector<um::Uuid>> DeserializeUuids(const std::string& json_str) {
         std::vector<um::Uuid> res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
@@ -131,7 +117,23 @@ namespace serializer{
         return res;
     }
 
-    std::optional<gm::State>                                DeserializeSessionState(const std::string& json_str) {
+    // GAME // 
+    std::string Serialize(const gm::State& state) {
+        nlohmann::json obj(state);
+        return obj.dump();
+    }
+    std::string Serialize(const gm::Session::WalkData& wd) {
+        nlohmann::json obj(wd);
+        obj["move_type"] = "walk";
+        return obj.dump();
+    }
+    std::string Serialize(const gm::Session::PlaceBombData& pbd) {
+        nlohmann::json obj(pbd);
+        obj["move_type"] = "place_bomb";
+        return obj.dump();
+    }
+    
+    std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {
         gm::State res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
@@ -142,7 +144,7 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::Session::MoveType>                    DefinePlayerMove(const std::string& json_str) {
+    std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json_str) {
         gm::Session::MoveType res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
@@ -153,7 +155,7 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::Session::WalkData>                    DeserializePlayerWalk(const std::string& json_str) {
+    std::optional<gm::Session::WalkData> DeserializeWalkData(const std::string& json_str) {
         gm::Session::WalkData res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
@@ -164,8 +166,25 @@ namespace serializer{
         }
         return res;
     }
+    std::optional<gm::Session::PlaceBombData> DeserializePlaceBombData(const std::string& json_str) {
+        gm::Session::PlaceBombData res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            j.get_to(res);
+        }
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
+    }
 
-    bool                                                    DefineSessionState(const std::string& json_str) {
+    // SESSION //
+    std::string Serialize(const session_manager::PublicSessionData& data) {
+        nlohmann::json obj(data);
+        return obj.dump();
+    }
+
+    bool                                              DefineSessionState(const std::string& json_str) {
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             return j["state"] == "playing";
@@ -175,7 +194,7 @@ namespace serializer{
         }
         return false;
     }
-    std::optional<session_manager::PublicSessionData>       DeserializePublicSessionData(const std::string& json_str) {
+    std::optional<session_manager::PublicSessionData> DeserializePublicSessionData(const std::string& json_str) {
         session_manager::PublicSessionData res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);

@@ -1,24 +1,11 @@
 #pragma once
-#include "user.hpp"
+#include "player.hpp"
+#include "object.hpp"
 #include <vector>
 #include <memory>
 #include <optional>
 
 namespace game_manager {
-    using Dimention = unsigned;
-
-    struct Player{
-        using Login = um::Login;
-
-        bool operator == (const Player& other)const {
-            return posX == other.posX && posY == other.posY && login == other.login;
-        }
-
-        Login login;
-        Dimention posX;
-        Dimention posY;
-    };
-
     struct Obstacle {
         enum Type{
             Wall,
@@ -40,6 +27,7 @@ namespace game_manager {
 
     struct State{
         using Players = std::vector<Player>;
+        using Objects = std::vector<Object::Ptr>;
         using Terrain = std::vector<Obstacle>;
         using NowTurn = Player::Login;
         using Ptr = std::shared_ptr<State>;
@@ -51,6 +39,7 @@ namespace game_manager {
         }
 
         Players players;
+        Objects objects;
         Terrain terrain;
         NowTurn now_turn;
         MapSize map_size;

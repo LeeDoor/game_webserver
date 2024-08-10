@@ -1,5 +1,4 @@
 #initializer's dependencies
-set(DEPENDENCIES user_manager)
 set(LIBRARY_NAME queue_manager)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -8,7 +7,4 @@ add_library(${LIBRARY_NAME}
     queue_manager_redis.cpp
 )
 
-#including and linking dependencies
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

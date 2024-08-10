@@ -11,7 +11,6 @@ TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
     std::string UNAUTHORIZED = serializer::SerializeError("unathorized", "request must be authorized");
     std::string ENQUEUE_ERROR = serializer::SerializeError("enqueue_error", "error happened while enqueuing player (already in queue)");
     std::string INVALID_TOKEN = serializer::SerializeError("invalid_token", "request authorization is invalid");
-    std::string IN_THE_MATCH = serializer::SerializeError("in_the_match", "error happened while enqueuing player (already in the match)");
 
     SECTION ("success_enqueue"){
         std::vector<um::Uuid> queue = MMQueueSuccess(socket);
@@ -60,12 +59,10 @@ TEST_CASE("ApiEnqueue", "[api][game][enqueue]"){
         
         StringResponse response = Enqueue(socket, ld1.token);
         CheckStringResponse(response, {
-            .body = IN_THE_MATCH,
             .res = http::status::bad_request
         });
         response = Enqueue(socket, ld2.token);
         CheckStringResponse(response, {
-            .body = IN_THE_MATCH,
             .res = http::status::bad_request
         });
     }

@@ -28,6 +28,4 @@ add_executable(test_application
 
 #including and linking dependencies
 target_link_libraries(test_application ${DEPENDENCIES} ${CONAN_LIBS_CATCH2})
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(test_application PRIVATE "../src/${dir}")
-endforeach ()
+target_include_directories(test_application PRIVATE ${DIRECTORIES})

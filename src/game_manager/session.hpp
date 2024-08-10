@@ -23,7 +23,8 @@ namespace game_manager{
 
         enum MoveType{
             Walk,
-            Resign
+            Resign,
+            PlaceBomb,
         };
         
         enum GameApiStatus{
@@ -43,12 +44,17 @@ namespace game_manager{
 
         GameApiStatus ApiResign(const um::Uuid& player_id);
 
+        struct PlaceBombData : public MoveData{};
+        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, const PlaceBombData& move_data);
     private:
         void FinishSession(bool firstWinner);
 
         void InitSessionState(const um::Login& login1, const um::Login& login2);
         void AfterMove();
         bool ValidCell(unsigned posX, unsigned posY);
+
+        void PlaceObject(Object::Ptr obj, Dimention posX, Dimention posY);
+        void RemoveObject(Object::Ptr obj);
 
         State::Ptr state_;
 
@@ -57,6 +63,7 @@ namespace game_manager{
 
         Results results_;
 
+        State::Objects& objects(){return state_->objects;}
         Player& player1(){return state_->players[0];}
         Player& player2(){return state_->players[1];}
         um::Login& nowTurn(){return state_->now_turn;}

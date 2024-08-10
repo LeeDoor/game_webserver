@@ -8,6 +8,7 @@
 #include "public_user.hpp"
 #include "token.hpp"
 #include "type_serializer.hpp"
+#include "bomb.hpp"
 #include <nlohmann/json.hpp>
 
 
@@ -238,8 +239,12 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {3,3,gm::Obstacle::Type::Wall}
         };
         example.map_size = {15,15};
+        auto bomb = std::make_shared<game_manager::Bomb>("owner", example);
+        bomb->Place(5,5);
+        example.objects = {bomb};
         std::string given_str;
         REQUIRE_NOTHROW(given_str = serializer::Serialize(std::move(example)));
+        INFO(given_str);
         REQUIRE_NOTHROW(j = json::parse(given_str));
         REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
@@ -268,7 +273,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         REQUIRE(example == given);
     }
     SECTION("Deserialize"){
-        std::string given_str = "{\"map_size\":{\"width\":15,\"height\":15},\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
+        std::string given_str = "{\"map_size\":{\"width\":15,\"height\":15},\"objects\":[{\"type\":\"bomb\", \"posX\":1,\"posY\":1,\"ticks_left\": 5, \"owner\":\"NIGGER\"}],\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
         auto opt = serializer::DeserializeSessionState(given_str);
         REQUIRE(opt.has_value());
         REQUIRE_NOTHROW(given = *opt);
@@ -290,6 +295,9 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {2,1,gm::Obstacle::Type::Wall},
             {89,12222555,gm::Obstacle::Type::Wall}
         };
+        auto bomb = std::make_shared<game_manager::Bomb>("NIGGER", example);
+        bomb->Place(1,1);
+        example.objects = {bomb};
         j = given;
         INFO(j.dump());
         REQUIRE(given == example);

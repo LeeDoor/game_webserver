@@ -1,5 +1,4 @@
 #initializer's dependencies
-set(DEPENDENCIES user_manager)
 set(LIBRARY_NAME token_manager)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -13,6 +12,4 @@ add_library(${LIBRARY_NAME}
 
 #including and linking dependencies
 target_link_libraries(${LIBRARY_NAME} PUBLIC user_manager)
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

@@ -1,5 +1,4 @@
 #initializer's dependencies
-set(DEPENDENCIES user_manager game_manager psql_connection_pool)
 set(LIBRARY_NAME session_manager)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -14,6 +13,4 @@ add_library(${LIBRARY_NAME}
 target_link_libraries(${LIBRARY_NAME} 
     PUBLIC psql_connection_pool
 )
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

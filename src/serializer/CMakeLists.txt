@@ -1,5 +1,4 @@
 #initializer's dependencies
-set(DEPENDENCIES user_manager http_handler token_manager game_manager session_manager)
 set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
@@ -14,7 +13,6 @@ add_library(${LIBRARY_NAME}
     type_serializer.hpp
 )
 
-#including and linking dependencies
-foreach (dir IN ITEMS ${DEPENDENCIES})
-    target_include_directories(${LIBRARY_NAME} PUBLIC "../${dir}")
-endforeach ()
+target_link_libraries(${LIBRARY_NAME} PRIVATE vt_game_structs)
+
+target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

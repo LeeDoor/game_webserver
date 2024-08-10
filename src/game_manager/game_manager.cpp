@@ -63,6 +63,14 @@ namespace game_manager{
             notif::SessionStateNotifier::GetInstance()->Notify(sid);
         return status;
     }
+    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceBombData& data) {
+        if (!sessions_.contains(sid))
+            return std::nullopt;
+        auto status = sessions_.at(sid).ApiPlaceBomb(uuid, data);
+        if (status == Session::GameApiStatus::Ok)
+            notif::SessionStateNotifier::GetInstance()->Notify(sid);
+        return status;
+    }
 
     bool GameManager::FinishSession(const SessionId& sid) {
         if (!sessions_.contains(sid))

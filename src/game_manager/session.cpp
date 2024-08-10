@@ -1,4 +1,5 @@
 #include "session.hpp"
+#include "bomb.hpp"
 #include "spdlog/spdlog.h"
 #include <algorithm>
 #include <cmath>
@@ -46,6 +47,26 @@ namespace game_manager{
         AfterMove();
         return GameApiStatus::Ok;
     }
+    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, const PlaceBombData& move_data) {
+        Player& player = player1().login == uuid_to_login_.at(player_id)?
+            player1() : player2();
+
+        if (player.login != nowTurn())
+            return GameApiStatus::NotYourMove;
+
+        if (std::abs(short(player.posX - move_data.posX)) > 1 ||
+            std::abs(short(player.posY - move_data.posY)) > 1){
+            return GameApiStatus::WrongMove;
+        } // cell is near the player
+        if (!ValidCell(move_data.posX, move_data.posY))
+            return GameApiStatus::WrongMove;
+        
+        
+        PlaceObject(std::make_shared<Bomb>(player.login, *state_), move_data.posX, move_data.posY);
+
+        AfterMove();
+        return GameApiStatus::Ok;
+    }
     
     void Session::FinishSession(bool firstWinner) {
         results_ = firstWinner ? 
@@ -80,6 +101,11 @@ namespace game_manager{
     }
 
     void Session::AfterMove(){
+        for(auto obj : objects()){
+            if(!obj->UpdateTick()){
+                RemoveObject(obj);
+            }
+        }
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
     }
 
@@ -103,5 +129,13 @@ namespace game_manager{
         }
 
         return true;
+    }
+
+    void Session::PlaceObject(Object::Ptr obj, Dimention posX, Dimention posY) {
+        objects().emplace_back(obj);
+        obj->Place(posX, posY);
+    }
+    void Session::RemoveObject(Object::Ptr obj) {
+        objects().erase(std::find(objects().begin(), objects().end(), obj));
     }
 }
