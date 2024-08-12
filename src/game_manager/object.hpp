@@ -11,15 +11,18 @@ namespace game_manager{
         using OwnerType = Player::Login;
         using StateType = std::shared_ptr<State>;
 
-        Object(OwnerType owner);
+        Object(OwnerType owner, ActorId id);
         virtual ~Object();
         virtual bool operator==(Object::Ptr obj) const;
         void SetState(StateType state);
 
         virtual void Place(Dimention posX, Dimention posY);
-        virtual bool UpdateTick() = 0;
+        /// @brief updates object's tick
+        /// @return string is an event type, bool = true if object need to be destroyed
+        virtual std::pair<std::string, bool> UpdateTick() = 0;
         
+        ActorId id;
         Dimention posX, posY;
-        OwnerType owner;
+        OwnerType owner;        
     };
 }

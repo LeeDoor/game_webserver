@@ -29,6 +29,7 @@ namespace game_manager{
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         FinishSession(player_id != player1_);
+        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN);
         return GameApiStatus::Ok;
     }
     Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const PlaceData& move_data){
@@ -48,6 +49,7 @@ namespace game_manager{
         
         player.posX = move_data.posX;
         player.posY = move_data.posY;
+        AddEvent(player.id, PLAYER_WALK);
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -67,7 +69,7 @@ namespace game_manager{
             return GameApiStatus::WrongMove;
         
         PlaceBombObject(move_data, player.login);
-
+        AddEvent(player.id, PLAYER_PLACE_BOMB);
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -88,6 +90,9 @@ namespace game_manager{
 
         player2().posX = 3;
         player2().posY = 6;
+
+        player1().id = GetId();
+        player2().id = GetId();
         
         std::vector<std::pair<unsigned, unsigned>> walls = {
             {0,2}, {3,2}, 
@@ -106,13 +111,19 @@ namespace game_manager{
 
     void Session::AfterMove(){
         for(auto it = objects().begin(); it != objects().end(); ++it){
-            if(!(*it)->UpdateTick()){
+            auto tick_res = (*it)->UpdateTick();
+            AddEvent((*it)->id, std::move(tick_res.first));
+            if(tick_res.second){
                 Object::Ptr obj = *it;
                 it--;
                 RemoveObject(obj);
             }
         }
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
+    }
+
+    void Session::AddEvent(ActorId id, std::string event_type) {
+        state_->events.emplace_back(id, std::move(event_type));
     }
 
     bool Session::ValidCell(unsigned posX, unsigned posY){
@@ -140,7 +151,7 @@ namespace game_manager{
     void Session::PlaceBombObject(PlaceData place, Player::Login login) {
         namespace pl = std::placeholders;
         auto sp = this->shared_from_this();
-        Bomb::Ptr obj = std::make_shared<Bomb>(login, (Bomb::ExplodeFunc)std::bind(&Session::Explode, sp, pl::_1, pl::_2));
+        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), (Bomb::ExplodeFunc)std::bind(&Session::Explode, sp, pl::_1, pl::_2));
         obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
     }

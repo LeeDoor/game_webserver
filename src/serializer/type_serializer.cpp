@@ -38,6 +38,7 @@ namespace game_manager{
             {"terrain", v.terrain}, 
             {"now_turn", v.now_turn},
             {"map_size", v.map_size},
+            {"events", v.events},
         };
     }
     void from_json(const json& j, State& v) {
@@ -46,15 +47,17 @@ namespace game_manager{
         j.at("terrain").get_to(v.terrain);
         j.at("now_turn").get_to(v.now_turn);
         j.at("map_size").get_to(v.map_size);
+        j.at("events").get_to(v.events);
     }
 
     void to_json(json& j, const Player& v) {
-        j = json{{"login", v.login}, {"posX", v.posX}, {"posY", v.posY}};
+        j = json{{"login", v.login}, {"posX", v.posX}, {"posY", v.posY}, {"id", v.id}};
     }
     void from_json(const json& j, Player& v) {
         j.at("login").get_to(v.login);
         j.at("posX").get_to(v.posX);
         j.at("posY").get_to(v.posY);
+        j.at("id").get_to(v.id);
     }
 
     void to_json(json& j, const Obstacle& v) {
@@ -82,6 +85,7 @@ namespace game_manager{
         j["posY"] = v->posY;
         j["type"] = "object";
         j["owner"] = v->owner;
+        j["id"] = v->id;
 
         Bomb::Ptr bomb = dynamic_pointer_cast<Bomb>(v);
         if(bomb) {
@@ -95,7 +99,7 @@ namespace game_manager{
             throw std::runtime_error("signed value provided (need unsigned for Session::PlaceData)");
 
         if(it.at("type") == "bomb"){
-            Bomb::Ptr bomb = std::make_shared<Bomb>(it.at("owner").get<std::string>());
+            Bomb::Ptr bomb = std::make_shared<Bomb>(it.at("owner").get<std::string>(), it.at("id").get<ActorId>());
             it.at("ticks_left").get_to(bomb->ticks_left);
             v = bomb;
         }
@@ -104,6 +108,14 @@ namespace game_manager{
         }
         it.at("posX").get_to(v->posX);
         it.at("posY").get_to(v->posY);
+    }
+
+    void to_json(json& j, const Event& v) {
+        j = json{{"event_type", v.event_type}, {"id", v.id}};
+    }
+    void from_json(const json& j, Event& v) {
+        j.at("event_type").get_to(v.event_type);
+        j.at("id").get_to(v.id);
     }
 
     void to_json(json& j, const Session::PlaceData& v) {

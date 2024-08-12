@@ -9,14 +9,18 @@ namespace game_manager{
         Down,
         Left
     };
-
+    using ActorId = int;
     struct Player{
         using Login = um::Login;
 
         bool operator == (const Player& other)const {
-            return posX == other.posX && posY == other.posY && login == other.login;
+            return id == other.id && 
+                posX == other.posX && 
+                posY == other.posY && 
+                login == other.login;
         }
 
+        ActorId id;
         Login login;
         Dimention posX;
         Dimention posY;

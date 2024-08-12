@@ -78,6 +78,10 @@ namespace game_manager{
         void FinishSession(bool firstWinner);
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();
+        /// @brief adds event to the event list. 
+        /// @param id id of the actor
+        /// @param event_type event type, that happened
+        void AddEvent(ActorId id, std::string event_type);
 
         // object placement
 
@@ -111,6 +115,14 @@ namespace game_manager{
         State::Terrain& terrain(){return state_->terrain;}
 
         const std::map<um::Uuid, um::Login> uuid_to_login_;
+
+        ActorId GetId(){return id_counter_++;}
+        // counter to create objects with new id
+        ActorId id_counter_ = 0;
+
+        const std::string PLAYER_WALK = "player_walk";
+        const std::string PLAYER_RESIGN = "player_resign";
+        const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
     };
 }   
 namespace gm = game_manager;

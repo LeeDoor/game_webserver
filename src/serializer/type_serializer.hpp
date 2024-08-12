@@ -35,6 +35,9 @@ namespace game_manager{
     void to_json(json& j, const Object::Ptr& v);
     void from_json(const json& j, Object::Ptr& v);
 
+    void to_json(json& j, const Event& v);
+    void from_json(const json& j, Event& v);
+
     void to_json(json& j, const Session::PlaceData& v);
     void from_json(const json& j, Session::PlaceData& v);
     
