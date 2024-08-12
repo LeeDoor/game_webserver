@@ -334,7 +334,7 @@ function waitForStateChange() {
 
 function walk(){
     const data = {
-        data_type: "walk",
+        move_type: "walk",
         posX: selectedCell.x,
         posY: selectedCell.y
     };
@@ -349,7 +349,7 @@ function walk(){
 
 function placeBomb(){
     const data = {
-        data_type: "place_bomb",
+        move_type: "place_bomb",
         posX: selectedCell.x,
         posY: selectedCell.y
     };

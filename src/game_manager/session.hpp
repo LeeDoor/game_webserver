@@ -2,6 +2,7 @@
 #include <string>
 #include <mutex>
 #include <map>
+#include <variant>
 #include "user.hpp"
 #include "state.hpp"
 
@@ -45,10 +46,18 @@ namespace game_manager{
 
         /// @brief player's move data which have only placing info
         struct PlaceData{
-            unsigned posX;
-            unsigned posY;
+            Dimention posX;
+            Dimention posY;
         };
 
+        /// @brief player's move data which have placing and direction info
+        struct DirectedPlaceData{
+            Direction direction;
+            Dimention posX;
+            Dimention posY;
+        };
+
+        using VariantData = std::variant<bool, PlaceData, DirectedPlaceData>;
         // player's api functions
         
         /// @brief walking api. moves player_id to place_data

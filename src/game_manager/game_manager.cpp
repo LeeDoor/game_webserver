@@ -43,15 +43,24 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetState();
     }
 
+    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantData& data) {
+        using MT = Session::MoveType;
+        switch (mt){
+        case MT::Resign: return ApiResign(uuid, sid);
+        case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, std::get<Session::PlaceData>(data));
+        case MT::Walk: return ApiWalk(uuid, sid, std::get<Session::PlaceData>(data));
+        default: throw std::logic_error("MoveType not implemented in GameManager. see ApiMove");
+        }
+    }
+
     //ingame api
 
-    std::optional<bool> GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
-        auto res = HasPlayer(uuid, sid);
-        if (!res || !res.value())
-            return res;
+    std::optional<Session::GameApiStatus> GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
+        if (!sessions_.contains(sid))
+            return std::nullopt;
         auto status = sessions_.at(sid)->ApiResign(uuid);
         CheckStatus(sid, status);
-        return true;
+        return status;
     }
     std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data){
         if (!sessions_.contains(sid))

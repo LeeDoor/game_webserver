@@ -4,6 +4,7 @@
 #include "serializer_http.hpp"
 #include "serializer_session.hpp"
 
+#include "spdlog/spdlog.h"
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
 #define EMPTY_JSON "{}"
@@ -124,7 +125,6 @@ namespace serializer{
     }
     std::string Serialize(const gm::Session::PlaceData& wd) {
         nlohmann::json obj(wd);
-        obj["data_type"] = "place";
         return obj.dump();
     }
 
@@ -143,7 +143,7 @@ namespace serializer{
         gm::Session::MoveType res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            res = j["data_type"];
+            res = j["move_type"];
         }
         catch(std::exception& ex){
             return std::nullopt;
@@ -160,6 +160,19 @@ namespace serializer{
             return std::nullopt;
         }
         return res;
+    }
+    std::optional<gm::Session::VariantData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
+        using MT = gm::Session::MoveType;
+        switch(mt) {
+        case MT::Resign:
+            return true;
+        case MT::Walk:
+        case MT::PlaceBomb:
+            return DeserializePlaceData(json_str);
+        default:
+            throw std::logic_error("MoveType not implemented in serializer. see DeserialzeMoveData");
+            return std::nullopt;
+        }
     }
 
     // SESSION //

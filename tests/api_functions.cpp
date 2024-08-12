@@ -7,6 +7,8 @@
 #include "serializer_http.hpp"
 #include "serializer_session.hpp"
 #include <sstream>
+#include "nlohmann/json.hpp"
+#include "type_serializer.hpp"
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& params) {
     if (params.empty())
@@ -186,27 +188,21 @@ void MoveSuccess(tcp::socket& socket, std::string&& body, const Token& token, co
 }
 
 StringResponse Walk(tcp::socket& socket, const gm::Session::PlaceData& wd, const Token& token, const gm::SessionId& sid){
-    return Move(socket, serializer::Serialize(wd), token, sid);
+    nlohmann::json j(wd);
+    j["move_type"] = "walk";
+    return Move(socket, j.dump(), token, sid);
 }
 void WalkSuccess(tcp::socket& socket, const gm::Session::PlaceData& wd, const Token& token, const gm::SessionId& sid){
-    return MoveSuccess(socket, serializer::Serialize(wd), token, sid);
+    nlohmann::json j(wd);
+    j["move_type"] = "walk";
+    return MoveSuccess(socket, j.dump(), token, sid);
 }
 
 StringResponse Resign(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
-    std::string target = SetUrlParameters(RESIGN_API, {{"sessionId", sid}});
-    http::request<http::string_body> request{http::verb::post, target, 11};
-
-    SetAuthorizationHeader(request, token);
-    auto response = GetResponseToRequest(false, request, socket);
-    return response;
+    return Move(socket, "{\"move_type\":\"resign\"}", token, sid);
 }
 void ResignSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
-    http::response<http::string_body> response = Resign(socket, token, sid);
-    CheckStringResponse(response, 
-        {
-            .body = "{}",
-            .res = http::status::ok
-        });
+    return MoveSuccess(socket, "{\"move_type\":\"resign\"}", token, sid);
 }
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket& socket, const gm::SessionId& sid, const Token& token) {
     StringResponse response = SessionState(socket, token, sid);

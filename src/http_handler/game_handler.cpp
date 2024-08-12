@@ -8,7 +8,8 @@
 #include "serializer_game.hpp"
 #include "spdlog/spdlog.h"
 
-#define BIND(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2) 
+#define BIND_API(func) (ExecutorFunction)std::bind( func, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2) 
+#define BIND_GAME(func) (ApiGameFunc)std::bind( func, gm_, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3) 
 
 namespace http_handler{
     GameHandler::GameHandler(HandlerParameters handler_parameters)
@@ -25,12 +26,11 @@ namespace http_handler{
     void GameHandler::ApiFunctionsParse() {
         ApiFunctionDirector afd(tm_);
         request_to_executor_ = {
-            {"/api/game/enqueue", afd.GetEnqueue(BIND(&GameHandler::ApiEnqueue))},
-            {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND(&GameHandler::ApiWaitForOpponent))},
-            {"/api/game/session_state", afd.GetSessionState(BIND(&GameHandler::ApiSessionState))},
-            {"/api/game/session_state_change", afd.GetSessionStateChange(BIND(&GameHandler::ApiSessionStateChange))},
-            {"/api/game/move", afd.GetMove(BIND(&GameHandler::ApiMove))},
-            {"/api/game/resign", afd.GetResign(BIND(&GameHandler::ApiResign))},
+            {"/api/game/enqueue", afd.GetEnqueue(BIND_API(&GameHandler::ApiEnqueue))},
+            {"/api/game/wait_for_opponent", afd.GetWaitForOpponent(BIND_API(&GameHandler::ApiWaitForOpponent))},
+            {"/api/game/session_state", afd.GetSessionState(BIND_API(&GameHandler::ApiSessionState))},
+            {"/api/game/session_state_change", afd.GetSessionStateChange(BIND_API(&GameHandler::ApiSessionStateChange))},
+            {"/api/game/move", afd.GetMove(BIND_API(&GameHandler::ApiMove))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData&& rns, const RequestData& rd){
@@ -119,29 +119,17 @@ namespace http_handler{
             return SendAccessDenied(rns);
         
         using Status = gm::Session::GameApiStatus;
-        using Type = gm::Session::MoveType;
-        std::optional<Type> pmt = serializer::DefinePlayerMove(rns.request.body());
-        if(!pmt.has_value())
-            return SendWrongBodyData(rns);
         std::optional<Status> status;
-        switch (*pmt){
-        case Type::Walk:{
-            std::optional<gm::Session::PlaceData> data 
-                = serializer::DeserializePlaceData(rns.request.body());
-            if(!data.has_value())
-                return SendWrongBodyData(rns);
-            status = gm_->ApiWalk(uuid, sid, *data);
-            break;
-        }
-        case Type::PlaceBomb:{
-            std::optional<gm::Session::PlaceData> data 
-                = serializer::DeserializePlaceData(rns.request.body());
-            if(!data.has_value())
-                return SendWrongBodyData(rns);
-            status = gm_->ApiPlaceBomb(uuid, sid, *data);
-            break;
-        }
-        }
+        std::optional<gm::Session::MoveType> mt = serializer::DefinePlayerMove(rns.request.body());
+        if(!mt.has_value())
+            return SendWrongBodyData(rns);
+
+        std::optional<gm::Session::VariantData> vd
+            = serializer::DeserializeMoveData(rns.request.body(), *mt);
+        if(!vd.has_value())
+            return SendWrongBodyData(rns);
+
+        status = gm_->ApiMove(*mt, uuid, sid, *vd);
         if(!status)
             return DefineSessionState(rns, sid);
         switch(*status){
@@ -152,23 +140,6 @@ namespace http_handler{
         case Status::WrongMove:
             return SendWrongMove(rns);
         }
-    }
-
-    void GameHandler::ApiResign(SessionData&& rns, const RequestData& rd) {
-        um::Uuid uuid = rd.uuid;
-        auto sidopt = ParseUrlSessionId(rns.request);
-        if(!sidopt) 
-            return SendWrongUrlParameters(rns);
-        auto sid = *sidopt;
-
-        auto res = gm_->ApiResign(uuid, sid);
-        if(!res.has_value())
-            return DefineSessionState(rns, sid);
-        if(!res.value())
-            return SendAccessDenied(rns);
-
-        return SendSuccess(rns);
-        
     }
 
     std::optional<gm::SessionId> GameHandler::ParseUrlSessionId(const HttpRequest& request) {

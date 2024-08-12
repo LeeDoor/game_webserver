@@ -575,7 +575,7 @@ function tells the game about player's move. sessionId must be passed as URL par
 #### **request body example**
 ```json
 {
-	"data_type":STRING,//"place", "directed_place"
+	"move_type":STRING,//"walk", "resign"
 	"posX":UNSIGNED,
 	"posY":UNISIGNED
 }

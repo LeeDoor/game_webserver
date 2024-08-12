@@ -29,7 +29,6 @@ namespace um = user_manager;
 #define SESSION_STATE_API        "/api/game/session_state"
 #define SESSION_STATE_CHANGE_API "/api/game/session_state_change"
 #define MOVE_API                 "/api/game/move"
-#define RESIGN_API               "/api/game/resign"
 #define PLAYER_TOKENS_API   "/api/debug/player_tokens"
 #define user_API       "/api/debug/user"
 #define MM_QUEUE_API        "/api/debug/matchmaking_queue"

@@ -20,14 +20,14 @@ namespace http_handler{
         void ApiSessionState(SessionData&& rns, const RequestData& rd);
         void ApiSessionStateChange(SessionData&& rns, const RequestData& rd);
         void ApiMove(SessionData&& rns, const RequestData& rd);
-        void ApiResign(SessionData&& rns, const RequestData& rd);
 
     private:
         std::optional<gm::SessionId> ParseUrlSessionId(const HttpRequest& request);
         void DefineSessionState(SessionData rns, const gm::SessionId& sid);
 
-        game_manager::IQueueManager::Ptr iqm_;
         game_manager::GameManager::Ptr gm_;
+
+        game_manager::IQueueManager::Ptr iqm_;
         token_manager::ITokenManager::Ptr tm_;
         sm::ISessionManager::Ptr sm_;
     };

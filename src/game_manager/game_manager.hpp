@@ -21,13 +21,14 @@ namespace game_manager{
         std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
 
-        std::optional<bool> ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
-
-        //ingame api
-        std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
-        std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
+        std::optional<Session::GameApiStatus> ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantData& data);
         
     private:
+        //ingame api
+        std::optional<Session::GameApiStatus> ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
+        std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
+        std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
+
         void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
         bool FinishSession(const SessionId& sid, const Session::Results& results);
 
