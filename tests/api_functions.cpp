@@ -185,10 +185,10 @@ void MoveSuccess(tcp::socket& socket, std::string&& body, const Token& token, co
         });
 }
 
-StringResponse Walk(tcp::socket& socket, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid){
+StringResponse Walk(tcp::socket& socket, const gm::Session::PlaceData& wd, const Token& token, const gm::SessionId& sid){
     return Move(socket, serializer::Serialize(wd), token, sid);
 }
-void WalkSuccess(tcp::socket& socket, const gm::Session::WalkData& wd, const Token& token, const gm::SessionId& sid){
+void WalkSuccess(tcp::socket& socket, const gm::Session::PlaceData& wd, const Token& token, const gm::SessionId& sid){
     return MoveSuccess(socket, serializer::Serialize(wd), token, sid);
 }
 

@@ -50,7 +50,7 @@ classDiagram
 
     class IGameSerializer {
         +(De)Serialize(State) 
-        +(De)Serialize(WalkData) 
+        +(De)Serialize(PlaceData) 
         +DefineSessionState(json)
     }
     

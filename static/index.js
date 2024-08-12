@@ -1,4 +1,5 @@
-IPADDR = '95.220.184.224:8080';
+
+IPADDR = 'localhost:8080';
 const popups = document.getElementById("popups");
 
 function showCustomPopup(text, color) {

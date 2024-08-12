@@ -3,18 +3,12 @@
 #include <algorithm>
 
 namespace game_manager{
-    Object::Object(OwnerType owner, StateType state) 
-        :owner(owner), state_(state){}
-    Object::Object(OwnerType owner) : Object(owner, nullptr){}
+    Object::Object(OwnerType owner) : owner(owner){}
     Object::~Object() = default;
     bool Object::operator==(Object::Ptr obj) const {
         return obj->owner == owner && 
             obj->posX == posX &&
             obj->posY == posY;
-    }
-
-    void Object::SetState(StateType state){
-        state_ = state;
     }
 
     void Object::Place(Dimention posX, Dimention posY){

@@ -14,7 +14,7 @@ namespace game_manager{
         if(!ud1.has_value() || !ud2.has_value()) 
             return false;
 
-        sessions_.emplace(si, Session{player1, ud1->login, player2, ud2->login}); 
+        sessions_.emplace(si, std::make_shared<Session>(player1, ud1->login, player2, ud2->login)); 
         notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
 
@@ -26,8 +26,8 @@ namespace game_manager{
         return sessions_.contains(sid);
     }
     std::optional<SessionId> GameManager::HasPlayer(const um::Uuid& uuid) {
-        for(std::pair<SessionId, Session> pair : sessions_){
-            if (pair.second.HasPlayer(uuid))
+        for(std::pair<SessionId, Session::Ptr> pair : sessions_){
+            if (pair.second->HasPlayer(uuid))
                 return pair.first;
         }
         return std::nullopt;
@@ -35,51 +35,52 @@ namespace game_manager{
     std::optional<bool> GameManager::HasPlayer(const um::Uuid& uuid, const SessionId& sessionId){
         if (!sessions_.contains(sessionId))
             return std::nullopt;
-        return sessions_.at(sessionId).HasPlayer(uuid);
+        return sessions_.at(sessionId)->HasPlayer(uuid);
     }
     State::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(!sessions_.contains(sessionId))
             return std::nullopt;
-        return sessions_.at(sessionId).GetState();
+        return sessions_.at(sessionId)->GetState();
     }
+
+    //ingame api
 
     std::optional<bool> GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
         auto res = HasPlayer(uuid, sid);
         if (!res || !res.value())
             return res;
-        auto status = sessions_.at(sid).ApiResign(uuid);
-        if(status != Session::GameApiStatus::Finish)
-            return false;
-        FinishSession(sid);
+        auto status = sessions_.at(sid)->ApiResign(uuid);
+        CheckStatus(sid, status);
         return true;
     }
-
-    //ingame api
-    std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data){
+    std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data){
         if (!sessions_.contains(sid))
             return std::nullopt;
-        auto status = sessions_.at(sid).ApiWalk(uuid, data);
-        if (status == Session::GameApiStatus::Ok)
-            notif::SessionStateNotifier::GetInstance()->Notify(sid);
+        auto status = sessions_.at(sid)->ApiWalk(uuid, data);
+        CheckStatus(sid, status);
         return status;
     }
-    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceBombData& data) {
+    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data) {
         if (!sessions_.contains(sid))
             return std::nullopt;
-        auto status = sessions_.at(sid).ApiPlaceBomb(uuid, data);
-        if (status == Session::GameApiStatus::Ok)
-            notif::SessionStateNotifier::GetInstance()->Notify(sid);
+        auto status = sessions_.at(sid)->ApiPlaceBomb(uuid, data);
+        CheckStatus(sid, status);
         return status;
     }
 
-    bool GameManager::FinishSession(const SessionId& sid) {
-        if (!sessions_.contains(sid))
-            return false;
-        const Session::Results& players = sessions_.at(sid).GetResults();
-        sm_->AddLine({sid, players.winner, players.loser});
+    void GameManager::CheckStatus(const SessionId& sid, Session::GameApiStatus status) {
+        if (status == Session::GameApiStatus::Ok){
+            notif::SessionStateNotifier::GetInstance()->Notify(sid);
+            if (auto results = sessions_.at(sid)->GetResults()) {
+                FinishSession(sid, *results);
+            }
+        }
+    }
+    bool GameManager::FinishSession(const SessionId& sid, const Session::Results& results) {
+        sm_->AddLine({sid, results.winner, results.loser});
 
-        notif::SessionStateNotifier::GetInstance()->Unsubscribe(players.winner, sid);
-        notif::SessionStateNotifier::GetInstance()->Unsubscribe(players.loser, sid);
+        notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.winner, sid);
+        notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.loser, sid);
 
         sessions_.erase(sid);
         return true;
@@ -91,3 +92,4 @@ namespace game_manager{
     }
 }
 
+ 

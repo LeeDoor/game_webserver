@@ -72,7 +72,7 @@ namespace game_manager{
     void from_json(const json& j, MapSize& v) {
         if(!j.at("width").is_number_unsigned() ||
            !j.at("height").is_number_unsigned())
-            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
+            throw std::runtime_error("signed value provided (need unsigned for Session::PlaceData)");
         j.at("width").get_to(v.width);
         j.at("height").get_to(v.height);
     }
@@ -92,7 +92,7 @@ namespace game_manager{
     void from_json(const json& it, Object::Ptr& v) {
         if(!it.at("posX").is_number_unsigned() ||
             !it.at("posY").is_number_unsigned())
-            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
+            throw std::runtime_error("signed value provided (need unsigned for Session::PlaceData)");
 
         if(it.at("type") == "bomb"){
             Bomb::Ptr bomb = std::make_shared<Bomb>(it.at("owner").get<std::string>());
@@ -106,24 +106,13 @@ namespace game_manager{
         it.at("posY").get_to(v->posY);
     }
 
-    void to_json(json& j, const Session::WalkData& v) {
+    void to_json(json& j, const Session::PlaceData& v) {
         j = json{{"posX", v.posX}, {"posY", v.posY}};
     }
-    void from_json(const json& j, Session::WalkData& v) {
+    void from_json(const json& j, Session::PlaceData& v) {
         if(!j.at("posX").is_number_unsigned() ||
            !j.at("posY").is_number_unsigned())
-            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
-        j.at("posX").get_to(v.posX);
-        j.at("posY").get_to(v.posY);
-    }
-
-    void to_json(json& j, const Session::PlaceBombData& v) {
-        j = json{{"posX", v.posX}, {"posY", v.posY}};
-    }
-    void from_json(const json& j, Session::PlaceBombData& v) {
-        if(!j.at("posX").is_number_unsigned() ||
-           !j.at("posY").is_number_unsigned())
-            throw std::runtime_error("signed value provided (need unsigned for Session::WalkData)");
+            throw std::runtime_error("signed value provided (need unsigned for Session::PlaceData)");
         j.at("posX").get_to(v.posX);
         j.at("posY").get_to(v.posY);
     }

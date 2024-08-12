@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
+#define BIND(func, place, pls, ...) (Bomb::ExplodeFunc)std::bind( func, this->weak_from_this(), pls) 
 namespace game_manager{
 
     Session::Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2) 
@@ -21,15 +22,17 @@ namespace game_manager{
     State::CPtr Session::GetState(){
         return state_;
     }
-    Session::Results Session::GetResults() {
+    std::optional<Session::Results> Session::GetResults() {
         return results_;
     }
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
+        std::lock_guard<std::mutex> locker(move_mutex_);
         FinishSession(player_id != player1_);
-        return GameApiStatus::Finish;
+        return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const WalkData& move_data){
+    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const PlaceData& move_data){
+        std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
 
@@ -42,12 +45,14 @@ namespace game_manager{
         } // cell is near the player
         if (!ValidCell(move_data.posX, move_data.posY))
             return GameApiStatus::WrongMove;
+        
         player.posX = move_data.posX;
         player.posY = move_data.posY;
         AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, const PlaceBombData& move_data) {
+    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, const PlaceData& move_data) {
+        std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
 
@@ -61,8 +66,7 @@ namespace game_manager{
         if (!ValidCell(move_data.posX, move_data.posY))
             return GameApiStatus::WrongMove;
         
-        
-        PlaceObject(std::make_shared<Bomb>(player.login, state_), move_data.posX, move_data.posY);
+        PlaceBombObject(move_data, player.login);
 
         AfterMove();
         return GameApiStatus::Ok;
@@ -101,8 +105,10 @@ namespace game_manager{
     }
 
     void Session::AfterMove(){
-        for(auto obj : objects()){
-            if(!obj->UpdateTick()){
+        for(auto it = objects().begin(); it != objects().end(); ++it){
+            if(!(*it)->UpdateTick()){
+                Object::Ptr obj = *it;
+                it--;
                 RemoveObject(obj);
             }
         }
@@ -131,11 +137,18 @@ namespace game_manager{
         return true;
     }
 
-    void Session::PlaceObject(Object::Ptr obj, Dimention posX, Dimention posY) {
+    void Session::PlaceBombObject(PlaceData place, Player::Login login) {
+        namespace pl = std::placeholders;
+        auto sp = this->shared_from_this();
+        Bomb::Ptr obj = std::make_shared<Bomb>(login, (Bomb::ExplodeFunc)std::bind(&Session::Explode, sp, pl::_1, pl::_2));
+        obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
-        obj->Place(posX, posY);
     }
     void Session::RemoveObject(Object::Ptr obj) {
-        objects().erase(std::find(objects().begin(), objects().end(), obj));
+        objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj2){return *obj == obj2;}));
+    }
+
+    void Session::Explode(Dimention posX, Dimention posY) {
+        state_->terrain.emplace_back(posX, posY, Obstacle::Type::Wall);
     }
 }

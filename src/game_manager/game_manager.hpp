@@ -24,16 +24,17 @@ namespace game_manager{
         std::optional<bool> ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
 
         //ingame api
-        std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::WalkData& data); 
-        std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceBombData& data); 
+        std::optional<Session::GameApiStatus> ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
+        std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data); 
         
     private:
-        bool FinishSession(const SessionId& sid);
+        void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
+        bool FinishSession(const SessionId& sid, const Session::Results& results);
 
         SessionId GenerateSessionId();
 
         sm::ISessionManager::Ptr sm_;
         um::IUserManager::Ptr dm_;
-        std::map<SessionId, Session> sessions_;
+        std::map<SessionId, Session::Ptr> sessions_;
     };
 }

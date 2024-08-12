@@ -1,4 +1,5 @@
-IPADDR = '95.220.184.224:8080'
+
+IPADDR = 'localhost:8080';
 class Cell{
     constructor(x,y,type, selected){
         this.x = x;
@@ -25,6 +26,14 @@ class Element{
     }
 }
 
+class Object {
+    constructor(x, y, type){
+        this.x = x;
+        this.y = y;
+        this.type = type;
+    }
+}
+
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get('sessionId');
 
@@ -45,6 +54,8 @@ let selectedCell; // highlighted celected cell
 
 let now_turn = true;
 let validCells = [];
+
+let objects = [];
 
 // creates cells for grid
 function initGrid(){
@@ -136,11 +147,26 @@ function drawGrid(){
     }
 }
 
+function drawObjects(){
+    for(obj of objects) {
+        const element = elementData(obj.x, obj.y);
+        switch(obj.type){
+            case 'bomb':
+                ctx.fillStyle = "rgb(255 255 255)";
+                ctx.beginPath();
+                ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
+                ctx.fill();
+                break;
+        }
+    }
+}
+
 // draws all objects on scene
 function drawScene(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid();
     drawPlayers();
+    drawObjects();
 }
 
 // makes given cell a wall
@@ -188,12 +214,21 @@ async function loadScene(){
     updateScene();
 }
 
+function updateObjects(objects_){
+    objects = [];
+    for (obj of objects_){
+        objects.push(new Object(obj.posX, obj.posY, obj.type));
+    }
+}
+
 // updates all objects on scene
 function updateScene(){
     const terrain = lastSessionState.terrain;
     const players = lastSessionState.players;
+    const objects = lastSessionState.objects;
     updateTerrain(terrain);
     updatePlayers(players);
+    updateObjects(objects);
     gridSize == lastSessionState.map_size.width ? context.clearRect(0, 0, canvas.width, canvas.height) : null;
     now_turn = lastSessionState.now_turn == localStorage.getItem('login');
     DefineWalkValidCell();
@@ -228,11 +263,23 @@ function getCell(coordinates) {
 }
 
 // click event
-function onClick(event) {
-    if(walk()){
-        playerUs.x = selectedCell.x;
-        playerUs.y = selectedCell.y;
-        drawScene();
+function onClick(e) {
+
+    if ("which" in e)  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+        isRightMB = e.which == 3; 
+    else if ("button" in e)  // IE, Opera 
+        isRightMB = e.button == 2; 
+    if(isRightMB){
+        if(walk()){
+            playerUs.x = selectedCell.x;
+            playerUs.y = selectedCell.y;
+            drawScene();
+        }
+    }
+    else{
+        if(placeBomb()){
+            drawScene();
+        }
     }
 }
 
@@ -287,13 +334,29 @@ function waitForStateChange() {
 
 function walk(){
     const data = {
-        move_type: "move",
+        data_type: "walk",
         posX: selectedCell.x,
         posY: selectedCell.y
     };
     if(!now_turn)
         return false;
     if(Math.abs(data.posX - playerUs.x) + Math.abs(data.posY - playerUs.y) != 1)
+        return false;
+
+    move(data);
+    return true;
+}
+
+function placeBomb(){
+    const data = {
+        data_type: "place_bomb",
+        posX: selectedCell.x,
+        posY: selectedCell.y
+    };
+    if(!now_turn)
+        return false;
+    if( Math.abs(data.posX - playerUs.x) > 1 &&
+        Math.abs(data.posY - playerUs.y) > 1)
         return false;
 
     move(data);
@@ -317,6 +380,7 @@ function move(data){
         console.log(json);
     });
 }
+
 
 function resign(){
     fetch('http://' + IPADDR + '/api/game/resign?sessionId='+sessionId, 

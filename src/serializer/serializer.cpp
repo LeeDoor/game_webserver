@@ -122,17 +122,12 @@ namespace serializer{
         nlohmann::json obj(state);
         return obj.dump();
     }
-    std::string Serialize(const gm::Session::WalkData& wd) {
+    std::string Serialize(const gm::Session::PlaceData& wd) {
         nlohmann::json obj(wd);
-        obj["move_type"] = "walk";
+        obj["data_type"] = "place";
         return obj.dump();
     }
-    std::string Serialize(const gm::Session::PlaceBombData& pbd) {
-        nlohmann::json obj(pbd);
-        obj["move_type"] = "place_bomb";
-        return obj.dump();
-    }
-    
+
     std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {
         gm::State res;
         try{
@@ -148,26 +143,15 @@ namespace serializer{
         gm::Session::MoveType res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            res = j["move_type"];
+            res = j["data_type"];
         }
         catch(std::exception& ex){
             return std::nullopt;
         }
         return res;
     }
-    std::optional<gm::Session::WalkData> DeserializeWalkData(const std::string& json_str) {
-        gm::Session::WalkData res;
-        try{
-            nlohmann::json j = nlohmann::json::parse(json_str);
-            j.get_to(res);
-        }
-        catch(std::exception& ex){
-            return std::nullopt;
-        }
-        return res;
-    }
-    std::optional<gm::Session::PlaceBombData> DeserializePlaceBombData(const std::string& json_str) {
-        gm::Session::PlaceBombData res;
+    std::optional<gm::Session::PlaceData> DeserializePlaceData(const std::string& json_str) {
+        gm::Session::PlaceData res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             j.get_to(res);

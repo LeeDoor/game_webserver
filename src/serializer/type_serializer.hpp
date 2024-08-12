@@ -35,11 +35,8 @@ namespace game_manager{
     void to_json(json& j, const Object::Ptr& v);
     void from_json(const json& j, Object::Ptr& v);
 
-    void to_json(json& j, const Session::WalkData& v);
-    void from_json(const json& j, Session::WalkData& v);
-
-    void to_json(json& j, const Session::PlaceBombData& v);
-    void from_json(const json& j, Session::PlaceBombData& v);
+    void to_json(json& j, const Session::PlaceData& v);
+    void from_json(const json& j, Session::PlaceData& v);
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},
@@ -47,6 +44,7 @@ namespace game_manager{
 
     NLOHMANN_JSON_SERIALIZE_ENUM( Session::MoveType, {
         {Session::MoveType::Walk, "walk"},
+        {Session::MoveType::Resign, "resign"},
         {Session::MoveType::PlaceBomb, "place_bomb"},
     })
 }

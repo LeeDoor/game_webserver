@@ -11,7 +11,6 @@ namespace game_manager{
         using OwnerType = Player::Login;
         using StateType = std::shared_ptr<State>;
 
-        Object(OwnerType owner, StateType state);
         Object(OwnerType owner);
         virtual ~Object();
         virtual bool operator==(Object::Ptr obj) const;
@@ -22,7 +21,5 @@ namespace game_manager{
         
         Dimention posX, posY;
         OwnerType owner;
-    protected:
-        StateType state_;
     };
 }
