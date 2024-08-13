@@ -28,8 +28,8 @@ namespace game_manager{
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
-        FinishSession(player_id != player1_);
         AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN);
+        FinishSession(player_id != player1_);
         return GameApiStatus::Ok;
     }
     Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const PlaceData& move_data){
@@ -78,6 +78,7 @@ namespace game_manager{
         results_ = firstWinner ? 
               Results{.winner=player1_, .loser=player2_} 
             : Results{.winner=player2_, .loser=player1_};
+        AddEvent(firstWinner ? player1().id : player2().id, PLAYER_WON);
     }
 
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
@@ -160,6 +161,15 @@ namespace game_manager{
     }
 
     void Session::Explode(Dimention posX, Dimention posY) {
-        state_->terrain.emplace_back(posX, posY, Obstacle::Type::Wall);
+        for(Dimention x = std::max(0, int(posX) - 1); x <= std::min(state_->map_size.width - 1, posX + 1); ++x){
+            for(Dimention y = std::max(0, int(posY) - 1); y <= std::min(state_->map_size.height - 1, posY + 1); ++y){
+                if(player1().posX == x && player1().posY == y){
+                    return FinishSession(false);
+                }
+                if(player2().posX == x && player2().posY == y){
+                    return FinishSession(true);
+                }
+            }
+        }
     }
 }

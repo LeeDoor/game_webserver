@@ -1,40 +1,54 @@
-body {
-    background-color: lightgreen;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+body{
+    background-color: #C5FFFB;
+}
+
+.canvas-div{
+    background-color: #c7ffd5;
+    margin: auto auto;
+    width: 80vmin;
+    height: 80vmin;
 }
 
 #canvas {
-    justify-content: center;
-    width: min(90vh, 90vw);
-    height: min(90vh, 90vw);
-    margin: 0;
-}
-
-
-#resign-button {
-    width: 100px;
-    background-color: blueviolet;
-    margin: 20px;
-    position: relative;
-}
-
-#resign-button::before {
-    content: '';
-    display: block;
-    padding-top: 100%; /* This makes the height equal to the width */
-}
-
-#resign-button::after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    background-color: blueviolet;
+}
+
+.menu {
+    width: 80vmin;
+    display: flex;
+    justify-content: space-between;
+    margin: auto;
+    color: white;
+    font-family: arial;
+    flex-direction: row;
+}
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+    background-color: #FFAEAE;
+    margin: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 30px;
+}
+
+.selected {
+    background-color: #ff8a8a;
+}
+
+.unselected {
+    background-color: #ffb9b9;
+}
+
+@media (max-width: 500px) {
+    .button{
+        width: 50px;
+        height: 50px;
+        font-size: 12px;
+    }
 }

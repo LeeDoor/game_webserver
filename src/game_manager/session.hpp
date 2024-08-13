@@ -123,6 +123,7 @@ namespace game_manager{
         const std::string PLAYER_WALK = "player_walk";
         const std::string PLAYER_RESIGN = "player_resign";
         const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
+        const std::string PLAYER_WON = "player_won";
     };
 }   
 namespace gm = game_manager;
