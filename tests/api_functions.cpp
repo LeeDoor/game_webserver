@@ -146,6 +146,7 @@ http::response<http::string_body> SessionState(tcp::socket& socket, const Token&
 
     SetAuthorizationHeader(request, token);
     auto response = GetResponseToRequest(false, request, socket);
+
     return response;
 }
 gm::State SessionStateSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {

@@ -147,7 +147,7 @@ namespace serializer{
         gm::Session::MoveType res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
-            res = j["move_type"];
+            res = j.at("move_type");
         }
         catch(std::exception& ex){
             return std::nullopt;

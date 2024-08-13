@@ -277,7 +277,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         REQUIRE(example == given);
     }
     SECTION("Deserialize"){
-        std::string given_str = "{\"map_size\":{\"width\":15,\"height\":15},\"objects\":[{\"type\":\"bomb\", \"posX\":1,\"posY\":1,\"ticks_left\": 5, \"owner\":\"NIGGER\", \"id\":1}],\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2, \"id\":315156},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6, \"id\":315156}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
+        std::string given_str = "{\"state\":\"playing\", \"move_number\":2, \"map_size\":{\"width\":15,\"height\":15},\"objects\":[{\"type\":\"bomb\", \"posX\":1,\"posY\":1,\"ticks_left\": 5, \"owner\":\"NIGGER\", \"id\":1}],\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2, \"id\":315156},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6, \"id\":315156}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
         auto opt = serializer::DeserializeSessionState(given_str);
         REQUIRE(opt.has_value());
         REQUIRE_NOTHROW(given = *opt);
@@ -302,6 +302,7 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             {89,12222555,gm::Obstacle::Type::Wall}
         };
         example.map_size = {15,15};
+        example.move_number = 4;
         auto bomb = std::make_shared<game_manager::Bomb>("NIGGER", 1);
         bomb->ticks_left = 5;
         bomb->Place(1,1);
@@ -309,6 +310,5 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         j = given;
         INFO(j.dump());
         REQUIRE(given == example);
-
     }
 }   

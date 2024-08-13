@@ -17,6 +17,7 @@ namespace notification_system{
     }
     void SessionStateNotifier::Init(gm::GameManager::Ptr gm) {
         std::lock_guard<std::mutex> lock(mutex_);
+        //private constructor, need to create manually
         pinstance_ = std::shared_ptr<SessionStateNotifier>(new SessionStateNotifier(gm));
     }
 

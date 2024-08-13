@@ -200,7 +200,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
 
         nlohmann::json obj(gm::PlaceData{0,0});
         obj["move_type"] = "walk";
-        obj["posX"] = -1;
+        obj["posX"] = "nigger";
 
         response = Move(socket, obj.dump(), ld.token, sid);
         CheckStringResponse(response, 
