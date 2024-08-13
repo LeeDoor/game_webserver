@@ -7,39 +7,26 @@
 using json = nlohmann::json;
 
 namespace http_handler {
-    void to_json(json& j, const RegistrationData& v);
-    void from_json(const json& j, RegistrationData& v);
-    
-    void to_json(json& j, const PublicUser& v);
-    void from_json(const json& j, PublicUser& v);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RegistrationData, login, password);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PublicUser, login, password);
 } 
 
 namespace user_manager {
-    void to_json(json& j, const User& v);
-    void from_json(const json& j, User& v);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(User, uuid, login, password);
 }
 
 namespace game_manager{
     void to_json(json& j, const State& v);
     void from_json(const json& j, State& v);
-
-    void to_json(json& j, const Player& v);
-    void from_json(const json& j, Player& v);
-
-    void to_json(json& j, const Obstacle& v);
-    void from_json(const json& j, Obstacle& v);
-
-    void to_json(json& j, const MapSize& v);
-    void from_json(const json& j, MapSize& v);
-
     void to_json(json& j, const Object::Ptr& v);
     void from_json(const json& j, Object::Ptr& v);
-
+    void to_json(json& j, const VariantData& v);
     void to_json(json& j, const Event& v);
-    void from_json(const json& j, Event& v);
-
-    void to_json(json& j, const Session::PlaceData& v);
-    void from_json(const json& j, Session::PlaceData& v);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Player, login, posX, posY, id);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Obstacle, posX, posY, type);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MapSize, width, height);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PlaceData, posX, posY);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DirectedPlaceData, posX, posY, direction);
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},
@@ -49,6 +36,13 @@ namespace game_manager{
         {Session::MoveType::Walk, "walk"},
         {Session::MoveType::Resign, "resign"},
         {Session::MoveType::PlaceBomb, "place_bomb"},
+    })
+
+    NLOHMANN_JSON_SERIALIZE_ENUM(Direction, {
+        {Direction::Up, "up"},
+        {Direction::Right, "right"},
+        {Direction::Down, "down"},
+        {Direction::Left, "left"},
     })
 }
 

@@ -124,7 +124,7 @@ namespace http_handler{
         if(!mt.has_value())
             return SendWrongBodyData(rns);
 
-        std::optional<gm::Session::VariantData> vd
+        std::optional<gm::VariantData> vd
             = serializer::DeserializeMoveData(rns.request.body(), *mt);
         if(!vd.has_value())
             return SendWrongBodyData(rns);

@@ -13,6 +13,9 @@ add_library(${LIBRARY_NAME}
     player.hpp
     bomb.hpp
     object.hpp
+    event_manager.hpp
+    event_manager.cpp
+    session_func_data.hpp
 )
 
 #including and linking dependencies

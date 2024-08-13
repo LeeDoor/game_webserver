@@ -22,13 +22,17 @@ namespace game_manager{
     State::CPtr Session::GetState(){
         return state_;
     }
+    EventManager::Vec Session::GetEvents(int from_move) {
+        return event_manager_.GetEvents(from_move);
+    }
+
     std::optional<Session::Results> Session::GetResults() {
         return results_;
     }
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
-        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN);
+        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, VARIANT_DATA_EMPTY);
         FinishSession(player_id != player1_);
         return GameApiStatus::Ok;
     }
@@ -49,7 +53,7 @@ namespace game_manager{
         
         player.posX = move_data.posX;
         player.posY = move_data.posY;
-        AddEvent(player.id, PLAYER_WALK);
+        AddEvent(player.id, PLAYER_WALK, std::move(move_data));
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -69,7 +73,7 @@ namespace game_manager{
             return GameApiStatus::WrongMove;
         
         PlaceBombObject(move_data, player.login);
-        AddEvent(player.id, PLAYER_PLACE_BOMB);
+        AddEvent(player.id, PLAYER_PLACE_BOMB, std::move(move_data));
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -78,7 +82,7 @@ namespace game_manager{
         results_ = firstWinner ? 
               Results{.winner=player1_, .loser=player2_} 
             : Results{.winner=player2_, .loser=player1_};
-        AddEvent(firstWinner ? player1().id : player2().id, PLAYER_WON);
+        AddEvent(firstWinner ? player1().id : player2().id, PLAYER_WON, VARIANT_DATA_EMPTY);
     }
 
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
@@ -113,7 +117,7 @@ namespace game_manager{
     void Session::AfterMove(){
         for(auto it = objects().begin(); it != objects().end(); ++it){
             auto tick_res = (*it)->UpdateTick();
-            AddEvent((*it)->id, std::move(tick_res.first));
+            AddEvent((*it)->id, std::move(tick_res.first), VARIANT_DATA_EMPTY);
             if(tick_res.second){
                 Object::Ptr obj = *it;
                 it--;
@@ -123,8 +127,8 @@ namespace game_manager{
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
     }
 
-    void Session::AddEvent(ActorId id, std::string event_type) {
-        state_->events.emplace_back(id, std::move(event_type));
+    void Session::AddEvent(ActorId actor_id, std::string event_type, VariantData&& data) {
+        event_manager_.AddEvent(Event{state_->move_number, actor_id, std::move(event_type), std::move(data)});
     }
 
     bool Session::ValidCell(unsigned posX, unsigned posY){

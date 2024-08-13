@@ -5,8 +5,11 @@
 #include <variant>
 #include "user.hpp"
 #include "state.hpp"
+#include "event_manager.hpp"
 
 namespace game_manager{
+    class Event;
+
     using SessionId = std::string;
     class Session : public std::enable_shared_from_this<game_manager::Session>{
     public:
@@ -20,6 +23,10 @@ namespace game_manager{
         /// @brief get state of the session
         /// @return const pointer to state object
         State::CPtr GetState();
+
+        /// @brief get event list from given move
+        /// @return returns all events happened from given move (including).
+        EventManager::Vec GetEvents(int from_move);
 
         /// @brief game result data about finished session
         struct Results{
@@ -44,20 +51,6 @@ namespace game_manager{
             NotYourMove,
         };
 
-        /// @brief player's move data which have only placing info
-        struct PlaceData{
-            Dimention posX;
-            Dimention posY;
-        };
-
-        /// @brief player's move data which have placing and direction info
-        struct DirectedPlaceData{
-            Direction direction;
-            Dimention posX;
-            Dimention posY;
-        };
-
-        using VariantData = std::variant<bool, PlaceData, DirectedPlaceData>;
         // player's api functions
         
         /// @brief walking api. moves player_id to place_data
@@ -79,9 +72,10 @@ namespace game_manager{
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();
         /// @brief adds event to the event list. 
-        /// @param id id of the actor
+        /// @param actor_id id of the actor
         /// @param event_type event type, that happened
-        void AddEvent(ActorId id, std::string event_type);
+        /// @param data data about happened move. VARIANT_DATA_EMPTY if no data provided
+        void AddEvent(ActorId actor_id, std::string event_type, VariantData&& data);
 
         // object placement
 
@@ -115,6 +109,8 @@ namespace game_manager{
         State::Terrain& terrain(){return state_->terrain;}
 
         const std::map<um::Uuid, um::Login> uuid_to_login_;
+        
+        EventManager event_manager_;
 
         ActorId GetId(){return id_counter_++;}
         // counter to create objects with new id

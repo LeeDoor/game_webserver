@@ -34,7 +34,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         std::optional<um::Login> prev_turn = std::nullopt;
-        std::optional<gm::Session::PlaceData> new_wd = std::nullopt;
+        std::optional<gm::PlaceData> new_wd = std::nullopt;
         for(int i = 0; i < 10; ++i){
             gm::State state = SessionStateSuccess(socket, ld1.token, sid);
             REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
@@ -52,7 +52,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
                 CHECK(waiting_player.posY == new_wd->posY);
             }
 
-            std::vector<gm::Session::PlaceData> wds{
+            std::vector<gm::PlaceData> wds{
                 {player.posX + 1, player.posY},
                 {player.posX, player.posY + 1},
                 {player.posX - 1, player.posY},
@@ -123,7 +123,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
         gm::Player& player = state.players[0].login == now_turn ? state.players[1] : state.players[0];
 
-        std::vector<gm::Session::PlaceData> wds{
+        std::vector<gm::PlaceData> wds{
             {player.posX + 1, player.posY},
             {player.posX, player.posY + 1},
             {player.posX - 1, player.posY},
@@ -198,7 +198,7 @@ TEST_CASE("ApiMove", "[api][game][move]"){
                 .res = http::status::bad_request
             });
 
-        nlohmann::json obj(gm::Session::PlaceData{0,0});
+        nlohmann::json obj(gm::PlaceData{0,0});
         obj["move_type"] = "walk";
         obj["posX"] = -1;
 

@@ -28,16 +28,6 @@ namespace game_manager {
         unsigned width;
         unsigned height;
     };
-
-    struct Event {
-        bool operator == (const Event& other) const {
-            return id == other.id && event_type == other.event_type;
-        }
-
-        ActorId id;
-        std::string event_type;
-    };
-
     struct State{
         using Players = std::vector<Player>;
         using Objects = std::vector<Object::Ptr>;
@@ -46,7 +36,6 @@ namespace game_manager {
         using Ptr = std::shared_ptr<State>;
         using CPtr = std::shared_ptr<const State>;
         using OptCPtr = std::optional<CPtr>;
-        using Events = std::vector<Event>;
         
         bool operator==(const State& s) const {
             return players == s.players && 
@@ -55,12 +44,12 @@ namespace game_manager {
                 map_size == s.map_size &&
                 std::equal(objects.begin(), objects.end(), s.objects.begin(), [](Object::Ptr a, Object::Ptr b){return *a == b;});
         }
+        int move_number = 1;
         Players players;
         Objects objects;
         Terrain terrain;
         NowTurn now_turn;
         MapSize map_size;
-        Events events;
     };
 
 }

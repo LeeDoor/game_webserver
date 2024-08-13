@@ -43,12 +43,12 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetState();
     }
 
-    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantData& data) {
+    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const VariantData& data) {
         using MT = Session::MoveType;
         switch (mt){
         case MT::Resign: return ApiResign(uuid, sid);
-        case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, std::get<Session::PlaceData>(data));
-        case MT::Walk: return ApiWalk(uuid, sid, std::get<Session::PlaceData>(data));
+        case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, std::get<PlaceData>(data));
+        case MT::Walk: return ApiWalk(uuid, sid, std::get<PlaceData>(data));
         default: throw std::logic_error("MoveType not implemented in GameManager. see ApiMove");
         }
     }
@@ -62,14 +62,14 @@ namespace game_manager{
         CheckStatus(sid, status);
         return status;
     }
-    std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data){
+    std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data){
         if (!sessions_.contains(sid))
             return std::nullopt;
         auto status = sessions_.at(sid)->ApiWalk(uuid, data);
         CheckStatus(sid, status);
         return status;
     }
-    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const Session::PlaceData& data) {
+    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data) {
         if (!sessions_.contains(sid))
             return std::nullopt;
         auto status = sessions_.at(sid)->ApiPlaceBomb(uuid, data);

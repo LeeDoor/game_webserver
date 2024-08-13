@@ -123,7 +123,7 @@ namespace serializer{
         nlohmann::json obj(state);
         return obj.dump();
     }
-    std::string Serialize(const gm::Session::PlaceData& wd) {
+    std::string Serialize(const gm::PlaceData& wd) {
         nlohmann::json obj(wd);
         return obj.dump();
     }
@@ -150,8 +150,8 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::Session::PlaceData> DeserializePlaceData(const std::string& json_str) {
-        gm::Session::PlaceData res;
+    std::optional<gm::PlaceData> DeserializePlaceData(const std::string& json_str) {
+        gm::PlaceData res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             j.get_to(res);
@@ -161,7 +161,7 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::Session::VariantData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
+    std::optional<gm::VariantData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
         using MT = gm::Session::MoveType;
         switch(mt) {
         case MT::Resign:
