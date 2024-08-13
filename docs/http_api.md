@@ -525,13 +525,13 @@ sequenceDiagram
 	Player1 ->> Server: session_state_change
 	Player2 ->> Server: session_state_change
 	Player1 ->> Server: makes a move
-	Server --> Player1: edited_game_state
-	Server --> Player2: edited_game_state
+	Server --> Player1: updated_event_list
+	Server --> Player2: updated_event_list
 	Player1 ->> Server: session_state_change
 	Player2 ->> Server: session_state_change
 	Player2 ->> Server: makes a move
-	Server --> Player1: edited_game_state
-	Server --> Player2: edited_game_state
+	Server --> Player1: updated_event_list
+	Server --> Player2: updated_event_list
 	
 ```
 #### **allowed methods**
@@ -539,13 +539,21 @@ sequenceDiagram
 #### **request target**  
 _/api/game/session_state_change?sessionId=SESSION_ID_
 
+#### **request body example**
+
+```js
+{
+	"from_move": 3
+}
+```
+
 #### **function description**
-Long-Poll function hangs until some action happens in the session. once it is, poller gets response with new game state. to get next notification send this function again. if game state happens before you resend poller, you still get LAST game state, immediately.
+Long-Poll function hangs until some action happens in the session. once it is, poller gets response with new event_list. pass from_move parameter in body to get list INCLUDING the move you started on and later ones.
 
 #### **responses**
 * `200 OK`  
 *response body:*
-	SEE [[session_state]]
+	SEE [[event_list]]
 * `422 url_parameters_error`
 ```json
 {

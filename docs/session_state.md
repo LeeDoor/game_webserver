@@ -16,41 +16,51 @@
 	**unique parameters**:
 	* **bomb**:
 		* *ticks_left* - how many player moves remained to explode 
-	
-* **events** - every event happened in the match staged here. it can be player's action, objects' action, game ending. 
 ```json
 {
-	"state": "playing",
-	"players": 
-	[
-		{
-			"id": INT,
-			"login": STRING,
-			"posX": UNSIGNED_INT,
-			"posY": UNSIGNED_INT,
-		},
-		// same description for second player
-	],
-	"terrain":
-	[
-		{
-			"posX": UNSIGNED_INT,
-			"posY": UNSIGNED_INT,
-			"type": STRING// ["wall"]
-		},
-		// all other walls etc.
-	],
-	"objects":
-	[
-		{
-			"type": STRING, // bomb, gun etc.
-			"id": INT, // unique actor id
-			"posX": UNSIGNED,
-			"posY": UNSIGNED,
-			"owner": STRING // login of the owner
-		}
-	],
-	"now_turn":STRING// player's login
+  "map_size": {
+    "height": 15,
+    "width": 15
+  },
+  "move_number": 1,
+  "now_turn": "a2668ee3a84a3429",
+  "objects": [
+    {
+      "type": "bomb",
+      "posX": 1,
+      "posY": 1,
+      "ticks_left": 5,
+      "owner": "NIGGER",
+      "actor_id": 1
+    }
+],
+  "players": [
+    {
+      "id": 0,
+      "login": "a2668ee3a84a3429",
+      "posX": 4,
+      "posY": 1
+    },
+    {
+      "id": 1,
+      "login": "894fa62d011c19de",
+      "posX": 3,
+      "posY": 6
+    }
+  ],
+  "state": "playing",
+  "terrain": [
+    {
+      "posX": 0,
+      "posY": 2,
+      "type": "wall"
+    },
+    {
+      "posX": 3,
+      "posY": 2,
+      "type": "wall"
+    }
+  ]
 }
 ```
 # example with state: finished
