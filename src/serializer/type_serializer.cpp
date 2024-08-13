@@ -11,6 +11,7 @@ namespace game_manager{
             {"terrain", v.terrain}, 
             {"now_turn", v.now_turn},
             {"map_size", v.map_size},
+            {"move_number", v.move_number},
         };
     }
     void from_json(const json& j, State& v) {
@@ -19,6 +20,7 @@ namespace game_manager{
         j.at("terrain").get_to(v.terrain);
         j.at("now_turn").get_to(v.now_turn);
         j.at("map_size").get_to(v.map_size);
+        j.at("move_number").get_to(v.move_number);
     }
     
     void to_json(json& j, const Object::Ptr& v) {
@@ -58,10 +60,10 @@ namespace game_manager{
     }
     void to_json(json& j, const VariantData& v) {
         if(std::holds_alternative<PlaceData>(v)){
-            j["data"] = std::get<PlaceData>(v);
+            j = std::get<PlaceData>(v);
         }
         if(std::holds_alternative<DirectedPlaceData>(v)){
-            j["data"] = std::get<DirectedPlaceData>(v);
+            j = std::get<DirectedPlaceData>(v);
         }
     }
 }

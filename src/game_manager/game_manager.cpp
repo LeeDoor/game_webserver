@@ -42,6 +42,11 @@ namespace game_manager{
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
+    std::optional<EventListWrapper::CPtr> GameManager::GetEvents(const SessionId& sessionId) {
+        if(!sessions_.contains(sessionId))
+            return std::nullopt;
+        return sessions_.at(sessionId)->GetEvents();
+    }
 
     std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const VariantData& data) {
         using MT = Session::MoveType;

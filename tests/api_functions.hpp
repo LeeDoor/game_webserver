@@ -82,7 +82,7 @@ game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token)
 http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
 gm::State SessionStateSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
-http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& token, const gm::SessionId& sid);
+http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& token, const gm::SessionId& sid, int from_move);
 
 http::response<http::string_body> Move(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);

@@ -41,6 +41,9 @@ namespace http_handler{
     void SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) {
         Send(rns, status::ok, serializer::Serialize(data));
     }
+    void SendEvents(SessionData rns, const gm::EventListWrapper& events, int from_move) {
+        Send(rns, status::ok, serializer::Serialize(events.FromMove(from_move)));
+    }
 
     void SendWrongApiFunction(SessionData rns) {
         Send(rns, status::bad_request, serializer::SerializeError("api_error", "wrong api function"));
@@ -103,6 +106,7 @@ namespace http_handler{
     void SendWrongUrlParameters(SessionData rns) {
         Send(rns, status::unprocessable_entity, serializer::SerializeError("url_parameters_error", "this api function requires url parameters"));
     }
+
 
     void HandleApiError(ApiStatus status, const ApiFunctionExecutor& executor, SessionData rns) {
         switch(status) {

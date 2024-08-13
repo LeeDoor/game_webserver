@@ -20,6 +20,7 @@ namespace game_manager{
         std::optional<SessionId> HasPlayer(const um::Uuid& uuid);
         std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
+        std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
         std::optional<Session::GameApiStatus> ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const VariantData& data);
         

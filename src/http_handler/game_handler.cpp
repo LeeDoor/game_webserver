@@ -82,15 +82,22 @@ namespace http_handler{
         if(!sidopt)
             return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
+
+        std::optional<int> from_move = serializer::DeserializeFromMove(rns.request.body());
+        if(!from_move)
+            return SendWrongBodyData(rns);
+
         if(!gm_->HasSession(sid)) 
             return DefineSessionState(rns, sid);
 
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(uuid, sid, 
-        [rns = std::move(rns),sid,sm = sm_](Notif::PollStatus status, gm::State::OptCPtr state){
+        [rns = std::move(rns),sid,sm = sm_, from_move=*from_move](Notif::PollStatus status, gm::EventListWrapper::OptCPtr events){
+            if(status == Notif::PollStatus::Ok && !events)
+                status = Notif::PollStatus::NotRelevant; 
             switch(status){
             case Notif::PollStatus::Ok:
-                    SendGameState(rns, **state);    
+                    SendEvents(rns, **events, from_move);    
                 break;
             case Notif::PollStatus::NotRelevant:
                 if(std::optional<session_manager::PublicSessionData> sd = sm->GetPublicLine(sid))

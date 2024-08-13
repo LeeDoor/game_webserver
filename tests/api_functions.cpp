@@ -157,11 +157,18 @@ gm::State SessionStateSuccess(tcp::socket& socket, const Token& token, const gm:
     REQUIRE(state_opt);
     return *state_opt;
 }
-http::response<http::string_body> SessionStateChange(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+http::response<http::string_body> SessionStateChange(tcp::socket& socket, const Token& token, const gm::SessionId& sid, int from_move) {
     std::string target = SetUrlParameters(SESSION_STATE_CHANGE_API, {{"sessionId", sid}});
     http::request<http::string_body> request{http::verb::get, target, 11};
 
     SetAuthorizationHeader(request, token);
+
+    nlohmann::json j;
+    j["from_move"] = from_move;
+
+    request.body() = j.dump();
+    request.prepare_payload();
+
     http::write(socket, request);
     beast::flat_buffer buffer;
     http::response<http::string_body> response;

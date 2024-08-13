@@ -11,7 +11,8 @@ namespace game_manager{
         :player1_(std::move(player1)), 
         player2_(std::move(player2)), 
         uuid_to_login_{{player1_, login1},{player2_, login2}},
-        state_(std::make_shared<State>()){
+        state_(std::make_shared<State>()),
+        events_wrapper_(std::make_shared<EventListWrapper>()){
         InitSessionState(login1, login2);
     }
 
@@ -22,8 +23,8 @@ namespace game_manager{
     State::CPtr Session::GetState(){
         return state_;
     }
-    EventManager::Vec Session::GetEvents(int from_move) {
-        return event_manager_.GetEvents(from_move);
+    EventListWrapper::CPtr Session::GetEvents() {
+        return events_wrapper_;
     }
 
     std::optional<Session::Results> Session::GetResults() {
@@ -125,10 +126,11 @@ namespace game_manager{
             }
         }
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
+        ++state_->move_number;
     }
 
     void Session::AddEvent(ActorId actor_id, std::string event_type, VariantData&& data) {
-        event_manager_.AddEvent(Event{state_->move_number, actor_id, std::move(event_type), std::move(data)});
+        events_wrapper_->AddEvent(Event{state_->move_number, actor_id, std::move(event_type), std::move(data)});
     }
 
     bool Session::ValidCell(unsigned posX, unsigned posY){

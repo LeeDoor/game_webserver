@@ -127,6 +127,10 @@ namespace serializer{
         nlohmann::json obj(wd);
         return obj.dump();
     }
+    std::string Serialize(const gm::EventListWrapper::Vec& elwv) {
+        nlohmann::json obj(elwv);
+        return obj.dump();
+    }
 
     std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {
         gm::State res;
@@ -173,6 +177,17 @@ namespace serializer{
             throw std::logic_error("MoveType not implemented in serializer. see DeserialzeMoveData");
             return std::nullopt;
         }
+    }
+    std::optional<int> DeserializeFromMove(const std::string& json) {
+        int res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json);
+            j.at("from_move").get_to(res);
+        }       
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
     }
 
     // SESSION //

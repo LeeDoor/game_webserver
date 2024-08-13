@@ -4,7 +4,35 @@
 #include "serializer_game.hpp"
 #include "session.hpp"
 #include <thread>
+#include "nlohmann/json.hpp"
+#include "type_serializer.hpp"
 
+using json = nlohmann::json;
+
+void ValidateEvents(json j){
+    REQUIRE(j.is_array());
+    nlohmann::json event;
+    for(int i = 0; i < j.size(); ++i){
+        REQUIRE_NOTHROW(event = j[i]);
+        REQUIRE(event.contains("actor_id"));
+        REQUIRE(event.contains("data"));
+        REQUIRE(event.contains("event_type"));
+        REQUIRE(event.contains("move_number"));
+    }
+}
+void ValidateEvents(json j, gm::ActorId actor_id, std::string event_type, int move_number, int id = 0){
+    REQUIRE(j.is_array());
+    CHECK(j.size() > id);
+    nlohmann::json event;
+    REQUIRE_NOTHROW(event = j[id]);
+    REQUIRE(event.contains("actor_id"));
+    CHECK(event.at("actor_id") == 0); // now it means that first player moved. feel free change it in the future
+    REQUIRE(event.contains("data"));
+    REQUIRE(event.contains("event_type"));
+    CHECK(event.at("event_type") == "player_walk"); 
+    REQUIRE(event.contains("move_number"));
+    CHECK(event.at("move_number") == 1); 
+}
 
 TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]"){
 	net::io_context ioc;
@@ -40,11 +68,11 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
                     future2 = promise2.get_future();
         StringResponse response1, response2;
         std::thread thread1 ([&]{
-            response1 = SessionStateChange(socket, ld1.token, sid);
+            response1 = SessionStateChange(socket, ld1.token, sid, state.move_number);
             promise1.set_value();
         });
         std::thread thread2 ([&]{
-            response2 = SessionStateChange(socket2, ld2.token, sid);
+            response2 = SessionStateChange(socket2, ld2.token, sid, state.move_number);
             promise2.set_value();
         });
 
@@ -65,13 +93,13 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         CheckStringResponse(response2, {
             .res = http::status::ok
         });
+        using json = nlohmann::json;
+        json j1 = json::parse(response1.body()), j2 = json::parse(response2.body());
+        INFO(j1.dump());
+        INFO(j2.dump());
+        CHECK(j1 == j2);
 
-        gm::State state1, state2;
-        INFO(response1.body());
-        INFO(response2.body());
-        REQUIRE_NOTHROW(state1 = *serializer::DeserializeSessionState(response1.body()));
-        REQUIRE_NOTHROW(state2 = *serializer::DeserializeSessionState(response2.body()));
-        CHECK(state1 == state2);
+        ValidateEvents(j1, 0, "player_walk", 1);
 
         thread1.join();
         thread2.join();
@@ -93,12 +121,12 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         StringResponse response1, response2;
 
         std::thread th1 ([&]{
-            response1 = SessionStateChange(socket, ld1.token, sid);
+            response1 = SessionStateChange(socket, ld1.token, sid, state.move_number);
             p1.set_value();
         });
         std::thread th2 ([&]{
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            response2 = SessionStateChange(socket2, ld1.token, sid);
+            response2 = SessionStateChange(socket2, ld1.token, sid, state.move_number);
             p2.set_value();
         });
         f1.wait();
@@ -107,7 +135,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             .res = http::status::conflict
         });
         std::thread th3 ([&]{
-            response1 = SessionStateChange(socket, ld2.token, sid);
+            response1 = SessionStateChange(socket, ld2.token, sid, state.move_number);
             p3.set_value();
         });
 
@@ -127,9 +155,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         CheckStringResponse(response2,{
             .res = http::status::ok
         });
-
-        gm::State state2 = *serializer::DeserializeSessionState(response1.body());
-        CHECK(state != state2);
+        
         th1.join();
         th2.join();
         th3.join();
@@ -145,7 +171,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
-        StringResponse response = SessionStateChange(socket2, ld2.token, "ABOBUSSS");
+        StringResponse response = SessionStateChange(socket2, ld2.token, "ABOBUSSS", state.move_number);
         CheckStringResponse(response, {
             .body = WRONG_SESSIONID,
             .res = http::status::bad_request
@@ -174,5 +200,49 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             .body = URL_PARAMETERS_ERROR,
             .res = http::status::unprocessable_entity
         });
+    }
+
+    SECTION("multiple_moves_passed"){
+        if(MMQueueSuccess(socket).size() == 1)
+            EnqueueNewPlayer(socket);
+        LoginData ld1 = EnqueueNewPlayer(socket);
+        LoginData ld2 = EnqueueNewPlayer(socket);
+        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
+        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
+        
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
+
+        um::Login& now_turn = state.now_turn;
+        for(int i = 0; i < 4; ++i){
+            state = SessionStateSuccess(socket, ld1.token, sid);
+            um::Login& now_turn = state.now_turn;
+            LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
+            gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+            WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
+        }
+
+        auto response = SessionStateChange(socket, ld1.token, sid, 1);
+        INFO(response.body());
+        json j = json::parse(response.body());
+        ValidateEvents(j);
+        bool res = j[0].at("actor_id") ==  j[2].at("actor_id") && j[1].at("actor_id") ==  j[3].at("actor_id") && j[0].at("actor_id") !=  j[1].at("actor_id");
+        INFO("!!! checking changing actor_id");
+        CHECK(res);
+        res = j[0].at("move_number") == 1 && j[1].at("move_number") == 2 && j[2].at("move_number") == 3 && j[3].at("move_number") == 4;
+        INFO("!!! checking changing move_number");
+        CHECK(res);
+
+        response = SessionStateChange(socket, ld1.token, sid, 3);
+        INFO(response.body());
+        j = json::parse(response.body());
+        ValidateEvents(j);
+        REQUIRE(j.size() == 2);
+        res = j[0].at("actor_id") !=  j[1].at("actor_id");
+        INFO("!!! checking changing actor_id");
+        CHECK(res);
+        res = j[0].at("move_number") == 3 && j[1].at("move_number") == 4;
+        INFO("!!! checking changing move_number");
+        CHECK(res);
     }
 }

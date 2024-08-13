@@ -43,31 +43,31 @@ namespace notification_system{
         std::vector<um::Uuid>& pw = sessions_[sid].poll_waiting;
         const std::vector<um::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
+            responser(PollStatus::Ok, GetEvents(sid));
             spdlog::info("{} player got call about {} using poll waiting", uuid, sid);
-            responser(PollStatus::Ok, GetGameState(sid));
             pw.erase(it);
             return true;
         }
 
         if (sessions_[sid].users_responser[uuid].has_value()){
             //breaking previous poll if it is
-            spdlog::info("{} player got call about CLOSING {}", uuid, sid);
             (*sessions_[sid].users_responser[uuid])(PollStatus::PollClosed, std::nullopt);
+            spdlog::info("{} player got call about CLOSING {}", uuid, sid);
         }
 
         sessions_[sid].users_responser[uuid] = std::move(responser);
         return true;
     }
     bool SessionStateNotifier::Notify(const gm::SessionId& sid) {
-        gm::State::OptCPtr state = GetGameState(sid);
+        gm::EventListWrapper::OptCPtr events = GetEvents(sid);
         for(const std::pair<um::Uuid, ResponserOpt>& pair : sessions_[sid].users_responser){
             if(!pair.second.has_value()){
-                spdlog::info("{} player got added to poll waiting of {}", pair.first, sid);
                 sessions_[sid].poll_waiting.push_back(pair.first);
+                spdlog::info("{} player got added to poll waiting of {}", pair.first, sid);
                 continue;
             }
+            (*pair.second)(PollStatus::Ok, events);
             spdlog::info("{} player got call about {} using standard Notify()", pair.first, sid);
-            (*pair.second)(PollStatus::Ok, state);
             sessions_[sid].users_responser[pair.first] = std::nullopt;
         }
         return true;
@@ -78,7 +78,7 @@ namespace notification_system{
         return true;
     }
 
-    gm::State::OptCPtr SessionStateNotifier::GetGameState(const gm::SessionId& sid){
-        return gm_->GetState(sid);
+    gm::EventListWrapper::OptCPtr SessionStateNotifier::GetEvents(const gm::SessionId& sid){
+        return gm_->GetEvents(sid);
     }
 }

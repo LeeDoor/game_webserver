@@ -16,7 +16,7 @@ namespace notification_system{
             NotRelevant,
             PollClosed
         };
-        using Responser = std::function<void(PollStatus, gm::State::OptCPtr)>; // long poll responser
+        using Responser = std::function<void(PollStatus, std::optional<gm::EventListWrapper::CPtr>)>; // long poll responser
         using ResponserOpt = std::optional<Responser>; // optional responser
         using UsersResponser = std::map<um::Uuid, ResponserOpt>; // user's polls to response
         using PollWaiting = std::vector<um::Uuid>; // vector of users who didnt update poll
@@ -43,7 +43,7 @@ namespace notification_system{
         static SessionStateNotifier::Ptr pinstance_;
         static std::mutex mutex_;
         
-        gm::State::OptCPtr GetGameState(const gm::SessionId& sid);
+        gm::EventListWrapper::OptCPtr GetEvents(const gm::SessionId& sid);
 
         SessionSubs sessions_;
         gm::GameManager::Ptr gm_;

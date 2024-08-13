@@ -14,4 +14,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${DIRECTORIES})
 #link conan libraries
 target_link_libraries(${PROJECT_NAME} ${DEPENDENCIES} ${CONAN_LIBS}) 
 
-target_compile_options(${PROJECT_NAME} PRIVATE -frtti)
+target_compile_options(${PROJECT_NAME} PRIVATE -frtti -Wall -Wextra -Wpedantic -Werror)

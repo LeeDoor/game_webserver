@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <list>
+#include <optional>
+#include <memory>
 #include "player.hpp"
 #include "session_func_data.hpp"
 namespace game_manager{
@@ -18,16 +21,18 @@ namespace game_manager{
         VariantData data;
     };
 
-    class EventManager{
+    class EventListWrapper{
     public:
-        using Vec = std::vector<Event>;
-
-        bool AddEvent(Event&& event);
-        Vec GetEvents();
-        Vec GetEvents(int from_move);
-
+        using Ptr = std::shared_ptr<EventListWrapper>;
+        using CPtr = std::shared_ptr<const EventListWrapper>;
+        using OptCPtr = std::optional<CPtr>;
+        using Vec = std::list<Event>;
+        const Vec& Value() const;
+        
+        void AddEvent(Event&& event);
+        Vec FromMove(int move_number) const;
     private:
-        std::vector<Vec::iterator> from_move_;
-        Vec events_;
+        std::vector<int> from_move_;
+        Vec value_;
     };
 }

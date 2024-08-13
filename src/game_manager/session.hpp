@@ -26,7 +26,7 @@ namespace game_manager{
 
         /// @brief get event list from given move
         /// @return returns all events happened from given move (including).
-        EventManager::Vec GetEvents(int from_move);
+        EventListWrapper::CPtr GetEvents();
 
         /// @brief game result data about finished session
         struct Results{
@@ -110,7 +110,7 @@ namespace game_manager{
 
         const std::map<um::Uuid, um::Login> uuid_to_login_;
         
-        EventManager event_manager_;
+        EventListWrapper::Ptr events_wrapper_;
 
         ActorId GetId(){return id_counter_++;}
         // counter to create objects with new id
