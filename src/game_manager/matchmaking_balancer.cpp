@@ -20,6 +20,7 @@ namespace game_manager{
         return true;
     }
     void MatchmakingBalancer::Notify(IQueueManager::EventType event_type) {
+        std::lock_guard<std::mutex> locker(mutex_);
         switch (event_type){
         case IQueueManager::EventType::OnEnqueue:
             Ballance();

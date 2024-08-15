@@ -44,6 +44,12 @@ class Bomb {
         this.ticks_left = ticks_left;
     }
 }
+class Effect{
+    constructor(type, cell){
+        this.type = type;
+        this.cell=cell;
+    }
+}
 let current_move_action = "walk";
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -73,4 +79,4 @@ let validCells = [];
 let objects = [];
 let last_move = 0;
 
-
+let effects = [];

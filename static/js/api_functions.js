@@ -24,7 +24,6 @@ function walk(){
         return false;
 
     move(data);
-    walkPlayer(playerUs, data.posX, data.posY);
     return true;
 }
 
@@ -59,7 +58,7 @@ function waitForStateChange() {
         },
     }).then(response=>{
         if (!response.ok)
-            throw "response in non-ok";
+            window.location.href = 'http://' + IPADDR + '/session_state.html?sessionId='+sessionId;
         return response.json();
     }).then(async json=>{
         await handleEvents(json);

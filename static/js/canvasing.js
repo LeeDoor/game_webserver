@@ -16,8 +16,6 @@ const qualMult = 5;
 async function resizeCanvas() {
     canvas.width = parseFloat(getComputedStyle(canvas).width) * qualMult;
     canvas.height = parseFloat(getComputedStyle(canvas).height) * qualMult;
-
-    drawScene();
 }
 
 // returns mouse position in the canvas
@@ -45,13 +43,10 @@ function onClick(e) {
         if(walk()){
             playerUs.posX = selectedCell.posX;
             playerUs.posY = selectedCell.posY;
-            drawScene();
         }
     }
     else if (current_move_action == "bomb"){
-        if(placeBomb()){
-            drawScene();
-        }
+        placeBomb();
     }
 }
 
@@ -71,13 +66,11 @@ function onMouseOver(event){
     if (!cell) return;
     cell.selected = true;
     selectedCell = cell;
-    drawScene();
 }
 
 // mouse out event
 function onMouseOut(event){
     dropSelectedCell();
-    drawScene();
 }
 
 
@@ -94,7 +87,6 @@ function radioButtons(){
             b.classList.add('unselected');
         }
     }
-    drawScene();
 }
 window.addEventListener('resize', resizeCanvas, false);
 canvas.addEventListener('click', onClick, false);

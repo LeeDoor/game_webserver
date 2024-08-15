@@ -50,6 +50,9 @@ namespace game_manager{
 
     std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantApiData& data) {
         using MT = Session::MoveType;
+        if (!sessions_.contains(sid))
+            return std::nullopt;
+        std::unique_lock<std::mutex> locker (session_mutex_[sid]);
         switch (mt){
         case MT::Resign: return ApiResign(uuid, sid);
         case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, std::get<PlaceData>(data));
@@ -60,23 +63,17 @@ namespace game_manager{
 
     //ingame api
 
-    std::optional<Session::GameApiStatus> GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
-        if (!sessions_.contains(sid))
-            return std::nullopt;
+    Session::GameApiStatus GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
         auto status = sessions_.at(sid)->ApiResign(uuid);
         CheckStatus(sid, status);
         return status;
     }
-    std::optional<Session::GameApiStatus> GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data){
-        if (!sessions_.contains(sid))
-            return std::nullopt;
+    Session::GameApiStatus GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data){
         auto status = sessions_.at(sid)->ApiWalk(uuid, data);
         CheckStatus(sid, status);
         return status;
     }
-    std::optional<Session::GameApiStatus> GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data) {
-        if (!sessions_.contains(sid))
-            return std::nullopt;
+    Session::GameApiStatus GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data) {
         auto status = sessions_.at(sid)->ApiPlaceBomb(uuid, data);
         CheckStatus(sid, status);
         return status;
@@ -97,6 +94,8 @@ namespace game_manager{
         notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.loser, sid);
 
         sessions_.erase(sid);
+        session_mutex_[sid].unlock();
+        session_mutex_.erase(sid);
         return true;
     }
 

@@ -44,6 +44,7 @@ namespace game_manager{
         std::lock_guard<std::mutex> locker(move_mutex_);
         AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, EmptyData{});
         FinishSession(player_id != player1_);
+        AfterMove();
         return GameApiStatus::Ok;
     }
     Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const PlaceData& move_data){

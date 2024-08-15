@@ -15,7 +15,7 @@
 namespace http_handler{
     void Send(SessionData rns, status stat, std::string body) {
         ResponseBuilder<http::string_body> builder;
-        spdlog::info("SENT [{}] to {}", static_cast<int>(stat), rns.request.target().to_string());  
+        spdlog::info("SENT [{}] to {}: {}", static_cast<int>(stat), rns.request.target().to_string(), body);  
         StringResponse response = builder.BodyText(std::move(body), rns.request.method()).Status(stat).GetProduct();
         rns.session_functions.send_string(std::move(response));
     }

@@ -115,6 +115,25 @@ function drawObjects(){
     }
 }
 
+function drawHighlighter(cell){
+    const element = elementData(cell.posX, cell.posY);
+    ctx.beginPath();
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 20;
+    ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
+    ctx.stroke();
+}
+
+function drawEffects(){
+    for(effect of effects){
+        switch(effect.type){
+        case "highlighter":
+            drawHighlighter(effect.cell);
+            break;
+        }
+    }
+}
+
 // draws all objects on scene
 function drawScene(){
     DefineValidCell();
@@ -122,6 +141,7 @@ function drawScene(){
     drawGrid();
     drawPlayers();
     drawObjects();
+    drawEffects();
 }
 
 function getCellByActor(actor_id){
@@ -135,24 +155,16 @@ function getCellByActor(actor_id){
     return grid[obj.posX][obj.posY];
 }
 
-function drawHighlighter(element){
-    ctx.beginPath();
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 20;
-    ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
-    ctx.stroke();
-}
 
 async function highlightActor(actor_id, repeat = 3){
     const cell = getCellByActor(actor_id);
-    const element = elementData(cell.posX, cell.posY);
     const delay = 1000 / repeat;
-    
-    drawScene();
     for(i = 0; i < repeat; ++i){
-        drawHighlighter(element);
+        const eff = new Effect("highlighter", cell);
+        effects.push(eff);
         await new Promise(r => setTimeout(r, delay));
-        drawScene();
+        const index = effects.indexOf(eff);
+        effects.splice(index, 1);         
         await new Promise(r => setTimeout(r, delay));
     }
 }
