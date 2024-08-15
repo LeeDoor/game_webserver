@@ -6,6 +6,7 @@
 #include "user.hpp"
 #include "state.hpp"
 #include "event_manager.hpp"
+#include "bomb.hpp"
 
 namespace game_manager{
     class Event;
@@ -29,13 +30,13 @@ namespace game_manager{
         EventListWrapper::CPtr GetEvents();
 
         /// @brief game result data about finished session
-        struct Results{
+        struct ResultsUuid{
             um::Uuid winner;
             um::Uuid loser;
         };
 
         /// @brief get session result data object if finished (std::nullopt overwise)
-        std::optional<Results> GetResults();
+        std::optional<ResultsUuid> GetResults();
 
         /// @brief type of player's move
         enum MoveType{
@@ -52,6 +53,7 @@ namespace game_manager{
         };
 
         // player's api functions
+        using VariantApiData = std::variant<EmptyData, PlaceData, DirectedPlaceData>;
         
         /// @brief walking api. moves player_id to place_data
         GameApiStatus ApiWalk(const um::Uuid& player_id, const PlaceData& place_data);
@@ -75,12 +77,12 @@ namespace game_manager{
         /// @param actor_id id of the actor
         /// @param event_type event type, that happened
         /// @param data data about happened move. VARIANT_DATA_EMPTY if no data provided
-        void AddEvent(ActorId actor_id, std::string event_type, VariantData&& data);
+        void AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data);
 
         // object placement
 
         /// @brief places bomb on given place as passed player
-        void PlaceBombObject(PlaceData place, Player::Login login);
+        Bomb::Ptr PlaceBombObject(PlaceData place, Player::Login login);
         /// @brief removes given object from scene.
         void RemoveObject(Object::Ptr obj);
 
@@ -100,7 +102,8 @@ namespace game_manager{
         um::Uuid player1_;
         um::Uuid player2_;
 
-        std::optional<Results> results_;
+        // doesnt require free()
+        std::vector<Player*> scoreboard_;   
 
         State::Objects& objects(){return state_->objects;}
         Player& player1(){return state_->players[0];}

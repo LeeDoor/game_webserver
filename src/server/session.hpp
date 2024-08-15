@@ -54,8 +54,6 @@ namespace http_server {
         std::shared_ptr<beast::tcp_stream> stream_;
 
         http_handler::HttpHandler request_handler_;
-
-        std::chrono::seconds expiry_time_ = 30s;
     };
 
 }

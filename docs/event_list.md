@@ -10,7 +10,7 @@ list of events contains an array of events. each event share common properties. 
 	* player_place_bomb - player places bomb on provided `PlaceData`.
 	* player_resign - player resigns. no data.
 	* player_won - player wins the game. no data.
-	* bomb_tick - bomb ticks and getting ready to explode. no data.
+	* bomb_ticking - bomb ticks and getting ready to explode. no data.
 	* bomb_explode - bomb explodes and kills everyone nearby 1 cell. no data.
 	* #TODO
 

@@ -20,13 +20,16 @@ namespace game_manager{
     void from_json(const json& j, State& v);
     void to_json(json& j, const Object::Ptr& v);
     void from_json(const json& j, Object::Ptr& v);
-    void to_json(json& j, const VariantData& v);
+    void to_json(json& j, const VariantEventData& v);
     void to_json(json& j, const Event& v);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Player, login, posX, posY, id);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Obstacle, posX, posY, type);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MapSize, width, height);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PlaceData, posX, posY);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DirectedPlaceData, posX, posY, direction);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(NewObject, actor_id);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BombData, place, new_object, ticks_left);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(WalkData, place);
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},

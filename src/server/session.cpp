@@ -13,7 +13,7 @@ namespace http_server {
 
     void Session::Read() {
         request_ = {};
-        stream_->expires_after(expiry_time_);
+        //stream_->expires_after(expiry_time_);
         http::async_read(*stream_, buffer_, request_,
             beast::bind_front_handler(&Session::OnRead, GetSharedThis()));
     }
@@ -53,6 +53,5 @@ namespace http_server {
     }
     void Session::Close() {
         stream_->socket().close();
-        
     }
 }

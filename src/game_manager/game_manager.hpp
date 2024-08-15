@@ -22,7 +22,7 @@ namespace game_manager{
         State::OptCPtr GetState(const SessionId& sessionId);
         std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
-        std::optional<Session::GameApiStatus> ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const VariantData& data);
+        std::optional<Session::GameApiStatus> ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantApiData& data);
         
     private:
         //ingame api
@@ -31,7 +31,7 @@ namespace game_manager{
         std::optional<Session::GameApiStatus> ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, const PlaceData& data); 
 
         void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
-        bool FinishSession(const SessionId& sid, const Session::Results& results);
+        bool FinishSession(const SessionId& sid, const Session::ResultsUuid& results);
 
         SessionId GenerateSessionId();
 

@@ -11,9 +11,7 @@ namespace game_manager {
             Wall,
         };
 
-        bool operator == (const Obstacle& other)const {
-            return posX == other.posX && posY == other.posY && type == other.type;
-        }
+        bool operator == (const Obstacle& other) const = default;
 
         Dimention posX;
         Dimention posY;
@@ -21,9 +19,7 @@ namespace game_manager {
     };
 
     struct MapSize{
-        bool operator == (const MapSize& other)const {
-            return width == other.width && height == other.height;
-        }
+        bool operator == (const MapSize& other) const = default;
 
         unsigned width;
         unsigned height;

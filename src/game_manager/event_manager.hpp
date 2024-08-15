@@ -18,7 +18,7 @@ namespace game_manager{
         int move_number;
         ActorId actor_id;
         std::string event_type;
-        VariantData data;
+        VariantEventData data;
     };
 
     class EventListWrapper{

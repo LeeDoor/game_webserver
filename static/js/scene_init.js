@@ -4,7 +4,7 @@ function makeWall(cell){
 }
 
 // updates all obstacle objects by server's data
-function updateTerrain(terrain){
+function initTerrain(terrain){
     for(i = 0; i < terrain.length; ++i){
         let block = terrain[i];
         makeWall(grid[block.posX][block.posY]);
@@ -12,9 +12,9 @@ function updateTerrain(terrain){
 }
 
 // updates all player objects by server's data
-function updatePlayers(players){
+function initPlayers(players){
     let dataUs, dataEnemy;
-    if (players[0].login == localStorage.getItem('login')){
+    if (players[0].login == login){
         dataUs = players[0];
         dataEnemy = players[1];
     }
@@ -22,32 +22,35 @@ function updatePlayers(players){
         dataUs = players[1];
         dataEnemy = players[0];
     }
-    playerUs.x = dataUs.posX;
-    playerUs.y = dataUs.posY;
+    playerUs.posX = dataUs.posX;
+    playerUs.posY = dataUs.posY;
+    playerUs.actor_id = dataUs.id;
 
-    playerEnemy.x = dataEnemy.posX;
-    playerEnemy.y = dataEnemy.posY;
+    playerEnemy.posX = dataEnemy.posX;
+    playerEnemy.posY = dataEnemy.posY;
+    playerEnemy.actor_id = dataEnemy.id;
 }
 
 
 
-function updateObjects(objects_){
+function initObjects(objects_){
     objects = [];
     for (obj of objects_){
-        objects.push(new Object(obj.posX, obj.posY, obj.type));
+        placeBombPlayer(obj.posX, obj.posY, obj.actor_id, obj.owner, obj.ticks_left);
     }
 }
 
 // updates all objects on scene
-function updateScene(){
+function initScene(){
     const terrain = lastSessionState.terrain;
     const players = lastSessionState.players;
     const objects = lastSessionState.objects;
-    updateTerrain(terrain);
-    updatePlayers(players);
-    updateObjects(objects);
+    initTerrain(terrain);
+    initPlayers(players);
+    initObjects(objects);
     gridSize == lastSessionState.map_size.width ? context.clearRect(0, 0, canvas.width, canvas.height) : null;
-    now_turn = lastSessionState.now_turn == localStorage.getItem('login');
+    now_turn = lastSessionState.now_turn == login;
+    last_move = lastSessionState.move_number + 1;
     drawScene();
 }
 // loads and updates information from the server immediately
@@ -61,5 +64,5 @@ async function loadScene(){
             },
         });
     lastSessionState = await stateResponse.json();
-    updateScene();
+    initScene();
 } 

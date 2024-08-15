@@ -26,5 +26,24 @@ namespace game_manager{
         Dimention posX;
         Dimention posY;
     };
-    using VariantData = std::variant<bool, PlaceData, DirectedPlaceData>;
+    struct NewObject{
+        bool operator == (const NewObject& other) const = default;
+
+        ActorId actor_id;
+    };
+
+    struct EmptyData{ 
+        bool operator==(const EmptyData& other)const = default;
+    };
+    struct WalkData{
+        bool operator==(const WalkData& other)const = default;
+        PlaceData place;
+    };
+    struct BombData{
+        bool operator==(const BombData& other)const = default;
+        PlaceData place;
+        NewObject new_object;
+        unsigned ticks_left; 
+    };
+    using VariantEventData = std::variant<EmptyData, WalkData, BombData>;
 }

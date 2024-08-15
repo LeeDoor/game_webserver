@@ -13,12 +13,7 @@ namespace game_manager{
     struct Player{
         using Login = um::Login;
 
-        bool operator == (const Player& other)const {
-            return id == other.id && 
-                posX == other.posX && 
-                posY == other.posY && 
-                login == other.login;
-        }
+        bool operator == (const Player& other) const = default;
 
         ActorId id;
         Login login;

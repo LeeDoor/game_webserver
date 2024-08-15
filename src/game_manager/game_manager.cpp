@@ -48,7 +48,7 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetEvents();
     }
 
-    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const VariantData& data) {
+    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, const Session::VariantApiData& data) {
         using MT = Session::MoveType;
         switch (mt){
         case MT::Resign: return ApiResign(uuid, sid);
@@ -90,7 +90,7 @@ namespace game_manager{
             }
         }
     }
-    bool GameManager::FinishSession(const SessionId& sid, const Session::Results& results) {
+    bool GameManager::FinishSession(const SessionId& sid, const Session::ResultsUuid& results) {
         sm_->AddLine({sid, results.winner, results.loser});
 
         notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.winner, sid);

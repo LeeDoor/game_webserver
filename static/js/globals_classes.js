@@ -1,19 +1,18 @@
-
-IPADDR = '95.220.176.106:8080';
 class Cell{
-    constructor(x,y,type, selected){
-        this.x = x;
-        this.y = y;
+    constructor(posX,posY,type, selected){
+        this.posX = posX;
+        this.posY = posY;
         this.type = type;
         this.selected = selected;
     }
 }
 
 class Player{
-    constructor(x,y,us){
-        this.x = x;
-        this.y = y;
+    constructor(posX,posY,us, actor_id){
+        this.posX = posX;
+        this.posY = posY;
         this.us = us;
+        this.actor_id = actor_id;
     }
 }
 
@@ -27,17 +26,31 @@ class Element{
 }
 
 class Object {
-    constructor(x, y, type){
-        this.x = x;
-        this.y = y;
-        this.type = type;
+    constructor(posX, posY, actor_id, parent_aid){
+        this.posX = posX;
+        this.posY = posY;
+        this.type = "object";
+        this.actor_id = actor_id;
+        this.parent_aid = parent_aid;
     }
 }
-
+class Bomb {
+    constructor(posX, posY, actor_id, parent_aid, ticks_left){
+        this.posX = posX;
+        this.posY = posY;
+        this.type = "bomb";
+        this.actor_id = actor_id;
+        this.parent_aid = parent_aid;
+        this.ticks_left = ticks_left;
+    }
+}
 let current_move_action = "walk";
 
 const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get('sessionId');
+const login = localStorage.getItem('login');
+
+const DEFAULT_TICKS_LEFT = 3;
 
 const canvas = document.getElementById('canvas'); // canvas
 const ctx = canvas.getContext('2d'); // canvas context
@@ -49,8 +62,8 @@ let grid = []; // two-dimentional array of cells
 
 let lastSessionState; // last state response from server
 
-let playerUs = new Player(0,0, true); // our player object
-let playerEnemy = new Player(0,0, false); // enemy player object
+let playerUs = new Player(0,0, true, 0); // our player object
+let playerEnemy = new Player(0,0, false, 0); // enemy player object
 
 let selectedCell; // highlighted celected cell
 
@@ -58,3 +71,6 @@ let now_turn = true;
 let validCells = [];
 
 let objects = [];
+let last_move = 0;
+
+

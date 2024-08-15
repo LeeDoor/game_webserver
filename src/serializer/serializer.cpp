@@ -165,11 +165,11 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::VariantData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
+    std::optional<gm::Session::VariantApiData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
         using MT = gm::Session::MoveType;
         switch(mt) {
         case MT::Resign:
-            return true;
+            return gm::EmptyData{};
         case MT::Walk:
         case MT::PlaceBomb:
             return DeserializePlaceData(json_str);

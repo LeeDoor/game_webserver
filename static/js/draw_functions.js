@@ -24,7 +24,7 @@ function elementData(x, y){
 
 //draws one cell
 function drawCell(cell){
-    const element = elementData(cell.x, cell.y);
+    const element = elementData(cell.posX, cell.posY);
     switch(cell.type){
         case "grass":
             if (validCells.includes(cell))
@@ -43,7 +43,7 @@ function drawCell(cell){
 
 // draws player
 function drawPlayer(player){
-    const element = elementData(player.x, player.y);
+    const element = elementData(player.posX, player.posY);
     
     if(player.us)
         ctx.drawImage(usImg, element.l, element.t, element.w, element.h);
@@ -60,7 +60,7 @@ function drawPlayers(){
 function ValidCell(x, y){
     return x >= 0 && x < gridSize &&
         y >= 0 && y < gridSize 
-        && !(playerEnemy.x == x && playerEnemy.y == y)
+        && !(playerEnemy.posX == x && playerEnemy.posY == y)
         && grid[x][y].type == "grass"; 
 }
 
@@ -81,7 +81,7 @@ function AddAxialCells(x, y, validCells){
 function DefineValidCell() {
     validCells = [];
     if(!now_turn) return;
-    let x = playerUs.x, y = playerUs.y;
+    let x = playerUs.posX, y = playerUs.posY;
     switch(current_move_action) {
     case "bomb":
         AddSideCells(x, y, validCells);
@@ -103,7 +103,7 @@ function drawGrid(){
 
 function drawObjects(){
     for(obj of objects) {
-        const element = elementData(obj.x, obj.y);
+        const element = elementData(obj.posX, obj.posY);
         switch(obj.type){
             case 'bomb':
                 ctx.fillStyle = "rgb(255 255 255)";
@@ -122,4 +122,37 @@ function drawScene(){
     drawGrid();
     drawPlayers();
     drawObjects();
+}
+
+function getCellByActor(actor_id){
+    if (actor_id == playerUs.actor_id){
+        return grid[playerUs.posX][playerUs.posY];
+    }
+    if (actor_id == playerEnemy.actor_id){
+        return grid[playerEnemy.posX][playerEnemy.posY];
+    }
+    const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+    return grid[obj.posX][obj.posY];
+}
+
+function drawHighlighter(element){
+    ctx.beginPath();
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 20;
+    ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
+    ctx.stroke();
+}
+
+async function highlightActor(actor_id, repeat = 3){
+    const cell = getCellByActor(actor_id);
+    const element = elementData(cell.posX, cell.posY);
+    const delay = 1000 / repeat;
+    
+    drawScene();
+    for(i = 0; i < repeat; ++i){
+        drawHighlighter(element);
+        await new Promise(r => setTimeout(r, delay));
+        drawScene();
+        await new Promise(r => setTimeout(r, delay));
+    }
 }

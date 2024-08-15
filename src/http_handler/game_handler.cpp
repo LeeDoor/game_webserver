@@ -77,22 +77,24 @@ namespace http_handler{
 
     void GameHandler::ApiSessionStateChange(SessionData&& rns, const RequestData& rd){
         um::Uuid uuid = rd.uuid;
-
-        auto sidopt = ParseUrlSessionId(rns.request);
-        if(!sidopt)
+        auto url = ParseUrlParameters(rns.request);
+        if(url.size() != 2 || !url.contains("from_move") || !url.contains("sessionId"))
             return SendWrongUrlParameters(rns);
-        auto sid = *sidopt;
-
-        std::optional<int> from_move = serializer::DeserializeFromMove(rns.request.body());
-        if(!from_move)
-            return SendWrongBodyData(rns);
+        gm::SessionId sid = url.at("sessionId");
+        int from_move;
+        try{
+            from_move = std::stoi(url.at("from_move"));
+        }
+        catch(std::exception& ex){
+            return SendWrongUrlParameters(rns);
+        }
 
         if(!gm_->HasSession(sid)) 
             return DefineSessionState(rns, sid);
 
         using Notif = notif::SessionStateNotifier;
         Notif::GetInstance()->ChangePoll(uuid, sid, 
-        [rns = std::move(rns),sid,sm = sm_, from_move=*from_move](Notif::PollStatus status, gm::EventListWrapper::OptCPtr events){
+        [rns = std::move(rns),sid,sm = sm_, from_move](Notif::PollStatus status, gm::EventListWrapper::OptCPtr events){
             if(status == Notif::PollStatus::Ok && !events)
                 status = Notif::PollStatus::NotRelevant; 
             switch(status){
@@ -131,7 +133,7 @@ namespace http_handler{
         if(!mt.has_value())
             return SendWrongBodyData(rns);
 
-        std::optional<gm::VariantData> vd
+        std::optional<gm::Session::VariantApiData> vd
             = serializer::DeserializeMoveData(rns.request.body(), *mt);
         if(!vd.has_value())
             return SendWrongBodyData(rns);

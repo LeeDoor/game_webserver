@@ -1,5 +1,4 @@
 #include "session.hpp"
-#include "bomb.hpp"
 #include "spdlog/spdlog.h"
 #include <algorithm>
 #include <cmath>
@@ -27,13 +26,23 @@ namespace game_manager{
         return events_wrapper_;
     }
 
-    std::optional<Session::Results> Session::GetResults() {
-        return results_;
+    std::optional<Session::ResultsUuid> Session::GetResults() {
+        if(scoreboard_.empty())
+            return std::nullopt;
+        if(uuid_to_login_.at(player1_) == scoreboard_[0]->login)
+            return Session::ResultsUuid {
+                player1_, player2_
+            };
+        else
+            return Session::ResultsUuid {
+                player2_, player1_
+            };
+
     }
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
-        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, VARIANT_DATA_EMPTY);
+        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, EmptyData{});
         FinishSession(player_id != player1_);
         return GameApiStatus::Ok;
     }
@@ -54,7 +63,7 @@ namespace game_manager{
         
         player.posX = move_data.posX;
         player.posY = move_data.posY;
-        AddEvent(player.id, PLAYER_WALK, std::move(move_data));
+        AddEvent(player.id, PLAYER_WALK, WalkData{std::move(move_data)});
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -73,17 +82,21 @@ namespace game_manager{
         if (!ValidCell(move_data.posX, move_data.posY))
             return GameApiStatus::WrongMove;
         
-        PlaceBombObject(move_data, player.login);
-        AddEvent(player.id, PLAYER_PLACE_BOMB, std::move(move_data));
+        Bomb::Ptr bomb = PlaceBombObject(move_data, player.login);
+        AddEvent(player.id, PLAYER_PLACE_BOMB, BombData{std::move(move_data), {bomb->id}, bomb->ticks_left});
         AfterMove();
         return GameApiStatus::Ok;
     }
     
     void Session::FinishSession(bool firstWinner) {
-        results_ = firstWinner ? 
-              Results{.winner=player1_, .loser=player2_} 
-            : Results{.winner=player2_, .loser=player1_};
-        AddEvent(firstWinner ? player1().id : player2().id, PLAYER_WON, VARIANT_DATA_EMPTY);
+        if(firstWinner){
+            scoreboard_.push_back(&player1());
+            scoreboard_.push_back(&player2());
+        }
+        else{
+            scoreboard_.push_back(&player2());
+            scoreboard_.push_back(&player1());
+        }
     }
 
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
@@ -117,19 +130,23 @@ namespace game_manager{
 
     void Session::AfterMove(){
         for(auto it = objects().begin(); it != objects().end(); ++it){
+            if(!scoreboard_.empty()) break;
+
             auto tick_res = (*it)->UpdateTick();
-            AddEvent((*it)->id, std::move(tick_res.first), VARIANT_DATA_EMPTY);
+            AddEvent((*it)->id, std::move(tick_res.first), EmptyData{});
             if(tick_res.second){
                 Object::Ptr obj = *it;
                 it--;
                 RemoveObject(obj);
             }
         }
+        if(!scoreboard_.empty())
+            return AddEvent(scoreboard_[0]->id, PLAYER_WON, EmptyData{});
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
         ++state_->move_number;
     }
 
-    void Session::AddEvent(ActorId actor_id, std::string event_type, VariantData&& data) {
+    void Session::AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data) {
         events_wrapper_->AddEvent(Event{state_->move_number, actor_id, std::move(event_type), std::move(data)});
     }
 
@@ -155,12 +172,13 @@ namespace game_manager{
         return true;
     }
 
-    void Session::PlaceBombObject(PlaceData place, Player::Login login) {
+    Bomb::Ptr Session::PlaceBombObject(PlaceData place, Player::Login login) {
         namespace pl = std::placeholders;
         auto sp = this->shared_from_this();
         Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), (Bomb::ExplodeFunc)std::bind(&Session::Explode, sp, pl::_1, pl::_2));
         obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
+        return obj;
     }
     void Session::RemoveObject(Object::Ptr obj) {
         objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj2){return *obj == obj2;}));

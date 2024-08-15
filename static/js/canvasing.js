@@ -24,15 +24,15 @@ async function resizeCanvas() {
 function getMousePos(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
+        posX: event.clientX - rect.left,
+        posY: event.clientY - rect.top,
     };
 }
 
 // returns cell which is mouse hovered on
 function getCell(coordinates) {
-    const x = Math.floor(coordinates.x/(canvas.width / qualMult /gridSize));
-    const y = Math.floor(coordinates.y/(canvas.height / qualMult/gridSize));
+    const x = Math.floor(coordinates.posX/(canvas.width / qualMult /gridSize));
+    const y = Math.floor(coordinates.posY/(canvas.height / qualMult/gridSize));
     const fit = x >= 0 && x < gridSize && y >= 0 && y < gridSize;
     if(fit)
         return grid[x][y];
@@ -43,8 +43,8 @@ function getCell(coordinates) {
 function onClick(e) {
     if(current_move_action == "walk"){
         if(walk()){
-            playerUs.x = selectedCell.x;
-            playerUs.y = selectedCell.y;
+            playerUs.posX = selectedCell.posX;
+            playerUs.posY = selectedCell.posY;
             drawScene();
         }
     }

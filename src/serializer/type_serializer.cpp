@@ -58,12 +58,12 @@ namespace game_manager{
         j["event_type"] = v.event_type;
         j["data"] = v.data;
     }
-    void to_json(json& j, const VariantData& v) {
-        if(std::holds_alternative<PlaceData>(v)){
-            j = std::get<PlaceData>(v);
+    void to_json(json& j, const VariantEventData& v) {
+        if(std::holds_alternative<WalkData>(v)){
+            j = std::get<WalkData>(v);
         }
-        if(std::holds_alternative<DirectedPlaceData>(v)){
-            j = std::get<DirectedPlaceData>(v);
+        if(std::holds_alternative<BombData>(v)){
+            j = std::get<BombData>(v);
         }
     }
 }
