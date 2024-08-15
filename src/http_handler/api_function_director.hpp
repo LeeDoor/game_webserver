@@ -22,6 +22,7 @@ namespace http_handler {
         ApiFunctionExecutor GetPlayerTokens(ExecutorFunction&& afe);
         ApiFunctionExecutor GetUser(ExecutorFunction&& afe);
         ApiFunctionExecutor GetMatchmakingQueue(ExecutorFunction&& afe);
+        ApiFunctionExecutor GetSetState(ExecutorFunction&& afe);
 
     private:
         ApiFunctionBuilder afb_;

@@ -1,8 +1,6 @@
 #include "socket_functions.hpp"
 #include "api_functions.hpp"
-
 #include "user.hpp"
-
 
 TEST_CASE("ApiMMQueue", "[api][debug][matchmaking_queue]"){
 	net::io_context ioc;

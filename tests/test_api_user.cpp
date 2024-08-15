@@ -114,7 +114,7 @@ TEST_CASE("ApiUser", "[api][debug][user]") {
     SECTION ("admin verification tests"){ 
 		hh::RegistrationData rd = RegisterSuccess(socket);
 	    SECTION ("server returns error when body is mess"){
-	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(user_API, {{"login", rd.login}, {"password", rd.password}}), 11};
+	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(USER_API, {{"login", rd.login}, {"password", rd.password}}), 11};
 
 		    req.body() = "wrong admin credentials";
 		    req.prepare_payload();
@@ -126,7 +126,7 @@ TEST_CASE("ApiUser", "[api][debug][user]") {
 		    });
 		}
 	    SECTION ("server returns error when body is json, but wrong headers"){
-	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(user_API, {{"login", rd.login}, {"password", rd.password}}), 11};
+	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(USER_API, {{"login", rd.login}, {"password", rd.password}}), 11};
 
 		    req.body() = "{\"header1\":\"value1\",\"header2\",\"value2\"}";
 		    req.prepare_payload();
@@ -159,7 +159,7 @@ TEST_CASE("ApiUser", "[api][debug][user]") {
 		    });
 		}
 	    SECTION ("server returns error when body is empty json"){
-	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(user_API, {{"login", rd.login}, {"password", rd.password}}), 11};;
+	    	http::request<http::string_body> req{http::verb::get, SetUrlParameters(USER_API, {{"login", rd.login}, {"password", rd.password}}), 11};;
 
 		    req.body() = "{}";
 		    req.prepare_payload();

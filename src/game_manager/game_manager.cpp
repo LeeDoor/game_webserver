@@ -42,6 +42,13 @@ namespace game_manager{
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
+    bool GameManager::SetState(const SessionId& sessionId, State state) {
+        if(!sessions_.contains(sessionId))
+            return false;
+    
+        sessions_.at(sessionId)->SetState(std::move(state));
+        return true;
+    }
     std::optional<EventListWrapper::CPtr> GameManager::GetEvents(const SessionId& sessionId) {
         if(!sessions_.contains(sessionId))
             return std::nullopt;

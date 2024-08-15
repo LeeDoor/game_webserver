@@ -22,6 +22,10 @@ namespace game_manager{
     State::CPtr Session::GetState(){
         return state_;
     }
+    void Session::SetState(State&& state) {
+        *state_ = std::move(state);
+        events_wrapper_->Clear();
+    }
     EventListWrapper::CPtr Session::GetEvents() {
         return events_wrapper_;
     }

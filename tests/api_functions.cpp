@@ -243,7 +243,7 @@ StringResponse User(
     const um::Login& Usrlogin, 
     const um::Password& Usrpassword) {
 
-    std::string target = SetUrlParameters(user_API, {{"login", Usrlogin}, {"password", Usrpassword}});
+    std::string target = SetUrlParameters(USER_API, {{"login", Usrlogin}, {"password", Usrpassword}});
     http::request<http::string_body> req{http::verb::get, target, 11};;
     req.body() = serializer::Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
@@ -256,7 +256,7 @@ StringResponse User(
     const std::string& Admpassword,
     const um::Password& Usruuid) {
     
-    std::string target = SetUrlParameters(user_API, {{"uuid", Usruuid}});
+    std::string target = SetUrlParameters(USER_API, {{"uuid", Usruuid}});
     http::request<http::string_body> req{http::verb::get, target, 11};
     req.body() = serializer::Serialize(hh::RegistrationData{Admlogin, Admpassword});
     req.prepare_payload();
@@ -296,4 +296,24 @@ std::vector<um::Uuid> MMQueueSuccess(tcp::socket& socket){
     INFO(response.body());
     REQUIRE(given_vector.has_value());
     return *given_vector;
+}
+
+StringResponse SetState(tcp::socket& socket, std::string login, std::string password, const gm::State& state, const gm::SessionId& sid) {
+    std::string target = SetUrlParameters(SET_STATE_API, {{"sessionId", sid}});
+    http::request<http::string_body> request{http::verb::post, target, 11};
+
+    nlohmann::json j_state(state), j_admin(hh::RegistrationData(login, password));
+    j_state.update(j_admin);
+
+    request.body() = j_state.dump();
+    request.prepare_payload();
+
+    return GetResponseToRequest(false, request, socket);
+}
+void SetStateSuccess(tcp::socket& socket, const gm::State& state, const gm::SessionId& sid) {
+    StringResponse response = SetState(socket, ADMIN_LOGIN, ADMIN_PASSWORD, state, sid);
+    CheckStringResponse(response, {
+        .body = serializer::SerializeEmpty(),
+        .res=http::status::ok
+    });
 }

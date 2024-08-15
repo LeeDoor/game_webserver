@@ -3,6 +3,11 @@
 #include <stdexcept>
 
 namespace game_manager{
+    void EventListWrapper::Clear(){
+        from_move_.clear();
+        value_.clear();
+    }
+
     const EventListWrapper::Vec& EventListWrapper::Value()const {
         return value_;
     }

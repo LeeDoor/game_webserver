@@ -29,6 +29,7 @@ namespace game_manager{
         using Vec = std::list<Event>;
         const Vec& Value() const;
         
+        void Clear();
         void AddEvent(Event&& event);
         Vec FromMove(int move_number) const;
     private:

@@ -42,4 +42,7 @@ namespace http_handler{
     ApiFunctionExecutor ApiFunctionDirector::GetMatchmakingQueue(ExecutorFunction&& afe){
         return afb_.ForDebug().GetHead().ExecFunc(std::move(afe)).GetProduct();
     }
+    ApiFunctionExecutor ApiFunctionDirector::GetSetState(ExecutorFunction&& afe){
+        return afb_.ForDebug().Post().ExecFunc(std::move(afe)).GetProduct();
+    }
 }

@@ -24,6 +24,7 @@ namespace game_manager{
         /// @brief get state of the session
         /// @return const pointer to state object
         State::CPtr GetState();
+        void SetState(State&& state);
 
         /// @brief get event list from given move
         /// @return returns all events happened from given move (including).

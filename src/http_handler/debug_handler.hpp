@@ -13,10 +13,12 @@ namespace http_handler{
         void ApiGetPlayerTokens(SessionData&& rns, const RequestData& rd);
         void ApiGetUser(SessionData&& rns, const RequestData& rd);
         void ApiGetMMQueue(SessionData&& rns, const RequestData& rd);
+        void ApiSetState(SessionData&& rns, const RequestData& rd);
 
         user_manager::IUserManager::Ptr dm_;
         token_manager::ITokenManager::Ptr tm_;
         game_manager::IQueueManager::Ptr qm_;
+        game_manager::GameManager::Ptr gm_;
     };
 }
 

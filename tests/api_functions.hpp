@@ -29,9 +29,12 @@ namespace um = user_manager;
 #define SESSION_STATE_API        "/api/game/session_state"
 #define SESSION_STATE_CHANGE_API "/api/game/session_state_change"
 #define MOVE_API                 "/api/game/move"
-#define PLAYER_TOKENS_API   "/api/debug/player_tokens"
-#define user_API       "/api/debug/user"
+#define PLAYER_TOKENS_API        "/api/debug/player_tokens"
+
+#define USER_API            "/api/debug/user"
 #define MM_QUEUE_API        "/api/debug/matchmaking_queue"
+#define MM_QUEUE_API        "/api/debug/matchmaking_queue"
+#define SET_STATE_API        "/api/debug/set_state"
 
 #define VALID_PASS      "01Veterduet2000"
 #define INVALID_PASS    "qweqwe"
@@ -115,3 +118,6 @@ um::User UserSuccess(tcp::socket&, const um::Uuid& uuid);
 
 StringResponse MMQueue(tcp::socket&, std::string login, std::string password);
 std::vector<um::Uuid> MMQueueSuccess(tcp::socket&);
+
+StringResponse SetState(tcp::socket&, std::string login, std::string password, const gm::State& state, const gm::SessionId& sid);
+void SetStateSuccess(tcp::socket&, const gm::State& state, const gm::SessionId& sid);

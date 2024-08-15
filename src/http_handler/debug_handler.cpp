@@ -2,6 +2,7 @@
 #include "api_function_director.hpp"
 #include "serializer_user.hpp"
 #include "serializer_basic.hpp"
+#include "serializer_game.hpp"
 #include "send_manager.hpp"
 #include "send_manager_um.hpp"
 
@@ -12,6 +13,7 @@ namespace http_handler{
     DebugHandler::DebugHandler(HandlerParameters handler_parameters)
     :dm_(handler_parameters.user_manager),
     tm_(handler_parameters.token_manager),
+    gm_(handler_parameters.game_manager),
     qm_(handler_parameters.queue_manager){}
     
     void DebugHandler::Init() {
@@ -23,6 +25,7 @@ namespace http_handler{
             {"/api/debug/player_tokens", afd.GetPlayerTokens(BIND(&DebugHandler::ApiGetPlayerTokens))},
             {"/api/debug/user", afd.GetUser(BIND(&DebugHandler::ApiGetUser))},
             {"/api/debug/matchmaking_queue", afd.GetMatchmakingQueue(BIND(&DebugHandler::ApiGetMMQueue))},
+            {"/api/debug/set_state", afd.GetSetState(BIND(&DebugHandler::ApiSetState))},
         };
     }
     
@@ -56,5 +59,17 @@ namespace http_handler{
         const std::vector<um::Uuid>& queue = qm_->GetQueue();
         std::string queue_string = serializer::Serialize(queue);
         return Send(rns, status::ok, queue_string);
+    }
+
+    void DebugHandler::ApiSetState(SessionData&& rns, const RequestData& rd) {
+        std::map<std::string, std::string> map = ParseUrlParameters(rns.request);
+        if(map.size() != 1 || !map.contains("sessionId"))
+            return SendWrongUrlParameters(rns);
+        auto state = serializer::DeserializeSessionState(rns.request.body());
+        if(!state)
+            return SendWrongBodyData(rns);
+        if(!gm_->SetState(map.at("sessionId"), *state))
+            return SendWrongSessionId(rns);
+        return SendSuccess(rns);
     }
 }
