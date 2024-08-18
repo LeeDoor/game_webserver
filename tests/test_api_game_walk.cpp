@@ -267,6 +267,32 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
         INFO("A can walk right");
         WalkSuccess(socket, {1, 1}, sd.l1.token, sd.sid);
+
+        INFO("event list contains player moves");
+        {
+            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
+            nlohmann::json j = nlohmann::json::parse(events_resp.body());
+            INFO(j.dump());
+            REQUIRE(j.is_array());
+            REQUIRE(j.size() == 3);
+            CHECK(j[0]["event_type"] == "player_walk");
+            CHECK(j[0]["actor_id"] == 0);
+            CHECK(j[0]["move_number"] == 1);
+            CHECK(j[0]["data"]["place"]["posX"] == 0);
+            CHECK(j[0]["data"]["place"]["posY"] == 1);
+
+            CHECK(j[1]["event_type"] == "player_walk");
+            CHECK(j[1]["actor_id"] == 1);
+            CHECK(j[1]["move_number"] == 2);
+            CHECK(j[1]["data"]["place"]["posX"] == 0);
+            CHECK(j[1]["data"]["place"]["posY"] == 0);
+
+            CHECK(j[2]["event_type"] == "player_walk");
+            CHECK(j[2]["actor_id"] == 0);
+            CHECK(j[2]["move_number"] == 3);
+            CHECK(j[2]["data"]["place"]["posX"] == 1);
+            CHECK(j[2]["data"]["place"]["posY"] == 1);
+        }
     }
     SECTION("prepared_room_walls") {
         SessionData sd = CreateNewMatch(socket);
@@ -392,5 +418,57 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
         INFO("B can walk left");
         WalkSuccess(socket, {0, 0}, sd.l2.token, sd.sid);
+
+        // * * * * * * *
+        // * B *   *   *
+        // * * * * * * *
+        // *   * W *   *
+        // * * * * * * *
+        // *   *   * A *
+        // * * * * * * *
+
+        INFO("event list contains player moves");
+        {
+            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
+            nlohmann::json j = nlohmann::json::parse(events_resp.body());
+            INFO(j.dump());
+            REQUIRE(j.is_array());
+            REQUIRE(j.size() == 6);
+            CHECK(j[0]["event_type"] == "player_walk");
+            CHECK(j[0]["actor_id"] == 0);
+            CHECK(j[0]["move_number"] == 1);
+            CHECK(j[0]["data"]["place"]["posX"] == 0);
+            CHECK(j[0]["data"]["place"]["posY"] == 2);
+
+            CHECK(j[1]["event_type"] == "player_walk");
+            CHECK(j[1]["actor_id"] == 1);
+            CHECK(j[1]["move_number"] == 2);
+            CHECK(j[1]["data"]["place"]["posX"] == 2);
+            CHECK(j[1]["data"]["place"]["posY"] == 0);
+
+            CHECK(j[2]["event_type"] == "player_walk");
+            CHECK(j[2]["actor_id"] == 0);
+            CHECK(j[2]["move_number"] == 3);
+            CHECK(j[2]["data"]["place"]["posX"] == 1);
+            CHECK(j[2]["data"]["place"]["posY"] == 2);
+
+            CHECK(j[3]["event_type"] == "player_walk");
+            CHECK(j[3]["actor_id"] == 1);
+            CHECK(j[3]["move_number"] == 4);
+            CHECK(j[3]["data"]["place"]["posX"] == 1);
+            CHECK(j[3]["data"]["place"]["posY"] == 0);
+
+            CHECK(j[4]["event_type"] == "player_walk");
+            CHECK(j[4]["actor_id"] == 0);
+            CHECK(j[4]["move_number"] == 5);
+            CHECK(j[4]["data"]["place"]["posX"] == 2);
+            CHECK(j[4]["data"]["place"]["posY"] == 2);
+
+            CHECK(j[5]["event_type"] == "player_walk");
+            CHECK(j[5]["actor_id"] == 1);
+            CHECK(j[5]["move_number"] == 6);
+            CHECK(j[5]["data"]["place"]["posX"] == 0);
+            CHECK(j[5]["data"]["place"]["posY"] == 0);
+        }
     }
 }

@@ -20,11 +20,27 @@ TEST_CASE("ApiResign", "[api][game][move][resign]"){
         um::Login& now_turn = sd.state.now_turn;
         LoginData& ld = sd.l1.login == now_turn ? sd.l1 : sd.l2;
         ResignSuccess(socket, ld.token, sd.sid);
-        INFO("resign is successful");
         sm::PublicSessionData psd = PublicSessionDataSuccess(socket, sd.sid, sd.l1.token);
         CHECK(psd == PublicSessionDataSuccess(socket, sd.sid, sd.l2.token));
         CHECK(*psd.winner != *psd.loser);
         CHECK(*psd.loser == ld.login);
+
+
+        INFO("event list contains resign and match end");
+        {
+            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
+            nlohmann::json j = nlohmann::json::parse(events_resp.body());
+            INFO(j.dump());
+            REQUIRE(j.is_array());
+            REQUIRE(j.size() == 2);
+            CHECK(j[0]["event_type"] == "player_resign");
+            CHECK(j[0]["actor_id"] == 0);
+            CHECK(j[0]["move_number"] == 1);
+
+            CHECK(j[1]["event_type"] == "player_won");
+            CHECK(j[1]["actor_id"] == 1);
+            CHECK(j[1]["move_number"] == 1);
+        }
     }
     SECTION("success_when_not_our_move"){
         SessionData sd = CreateNewMatch(socket);

@@ -48,6 +48,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
     ConnectSocket(ioc3, socket3);
 
     
+    std::string SESSION_FINISHED = serializer::SerializeError("session_finished", "session is finished");
     std::string WRONG_SESSIONID = serializer::SerializeError("wrong_sessionId", "no session with such sessionId");
     std::string URL_PARAMETERS_ERROR = serializer::SerializeError("url_parameters_error", "this api function requires url parameters");
     std::string POLL_CLOSED = serializer::SerializeError("poll_closed", "SessionStateNotifier poll replaced by other");
@@ -244,5 +245,35 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         res = j[0].at("move_number") == 3 && j[1].at("move_number") == 4;
         INFO("!!! checking changing move_number");
         CHECK(res);
+    }
+    SECTION("after_end") {
+        SessionData sd = CreateNewMatch(socket);
+        StringResponse response;
+        std::thread t ([&]{
+            response = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
+        });
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        ResignSuccess(socket2, sd.l1.token, sd.sid);
+        // get as first. polled before match ended. we should get latest data
+        t.join();
+        CheckStringResponse(response, {
+            .res = http::status::ok
+        });
+        json j = json::parse(response.body());
+        CHECK(j.is_array());
+        CHECK(j.size() == 2);
+        // get as first. already got latest data. should throw
+        response = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
+        CheckStringResponse(response, {
+            .body = SESSION_FINISHED,
+            .res = http::status::bad_request
+        });
+
+        // get as second. didnt poll before match ended. should get latest data
+        response = SessionStateChange(socket, sd.l2.token, sd.sid, 1);
+        CheckStringResponse(response, {
+            .res = http::status::ok
+        });
+        CHECK(j == json::parse(response.body()));
     }
 }
