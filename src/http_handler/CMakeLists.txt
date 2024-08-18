@@ -1,4 +1,3 @@
-set(DEPENDENCIES token_manager user_manager queue_manager session_manager game_manager notification_system serializer)
 set(LIBRARY_NAME http_handler)
 #creating library
 add_library(${LIBRARY_NAME}

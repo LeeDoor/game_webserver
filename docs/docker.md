@@ -1,5 +1,22 @@
 # setup
 so you are here to launch the server inside docker container. but first, you need some dependencies installed on your server.
+## Machine
+if you are running application on your home machine you probably need to edit firewall settings on your machine and in the router.
+### Linux ufw
+to edit linux firewall settings, you can use ufw software. we need to add exception for port we are running on. there is an example for port 8080:
+```bash
+sudo ufw allow from any to any port 8080
+```
+check changes using:
+```bash
+sudo ufw status
+Status: active
+
+To        Action  From
+--        ------  ----
+8080      ALLOW   Anywhere                 
+8080 (v6) ALLOW   Anywhere (v6)
+```
 ## **PostgreSQL**
 install postgresql and make sure it is working. you need to change some configs. cd to `/etc/postgresql/<VERSION>/main`
  * `postgresql.conf`:  find line *listen_addresses*, edit and uncomment it like that: `listen_addresses = '*'		# what IP address(es) to listen on;`

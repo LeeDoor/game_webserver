@@ -1,3 +1,23 @@
+- [CLI parameters](#cli-parameters)
+   * [required](#required)
+      + [CLI static_path](#cli-static_path)
+         - [**description**](#description)
+         - [**example**](#example)
+      + [CLI postgres_credentials](#cli-postgres_credentials)
+         - [**description**](#description-1)
+         - [**example**](#example-1)
+   * [not required](#not-required)
+      + [CLI test](#cli-test)
+         - [**description**](#description-2)
+         - [**example**](#example-2)
+      + [CLI redis_credentials](#cli-redis_credentials)
+         - [**description**](#description-3)
+         - [**example**](#example-3)
+
+<!-- TOC end -->
+
+
+
 # CLI parameters
 ## required
 these parameters must be specified to run the program.

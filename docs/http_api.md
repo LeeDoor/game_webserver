@@ -1,3 +1,26 @@
+- [http request API](#http%20request%20api)
+   * [static files](#static%20files)
+- [API](#api)
+   * [Function Tags](#function%20tags)
+      + [Requires Authorization ](#requires%20authorization)
+      + [Long Poll](#long-poll)
+   * [Debug API](#debug%20api)
+      + [API player_tokens](#api%20player_tokens)
+      + [API user](#api%20user)
+      + [API matchmaking_queue](#api%20matchmaking_queue)
+   * [User API](#user%20api)
+      + [API register](#api%20register)
+      + [API login](#api%20login)
+      + [API profile](#api%20profile)
+   * [Game API](#game%20api)
+      + [API enqueue](#api%20enqueue)
+      + [API wait_for_opponent](#api%20wait_for_opponent)
+      + [API session_state](#api%20session_state)
+      + [API session_state_change](#api%20session_state_change)
+      + [API move](#api%20move)
+      + [API resign](#api%20resign)
+
+
 # http request API
 ## static files
 to request static file from server, set relative path to root folder in request target like this: 

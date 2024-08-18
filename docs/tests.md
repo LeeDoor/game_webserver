@@ -6,6 +6,5 @@ cd scripts
 ./run_tests.sh [api]
 ```
 run_tests.sh script takes parameters and passes it to catch2's executable. also run_tests.sh launches application before tests and kills it after even if you press Ctrl+C. 
-eter.
 
 more info about Catch2 command line flags see [here](https://github.com/catchorg/Catch2/blob/devel/docs/command-line.md)

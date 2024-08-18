@@ -15,42 +15,57 @@ list of events contains an array of events. each event share common properties. 
 	* #TODO
 
 * **move_number** - number of the move, starts with 1 and increments by 1 each player's move.
+> the information is written manually for a visual example of each type of event.
 ```json
 [
   {
+    "event_type": "player_place_bomb",
     "actor_id": 0,
     "data": {
-      "posX": 5,
-      "posY": 1
+      "new_object": {
+        "actor_id": 2
+      },
+      "place": {
+        "posX": 1,
+        "posY": 0
+      },
+      "ticks_left": 3
     },
-    "event_type": "player_walk",
     "move_number": 1
   },
   {
+    "event_type": "bomb_ticking",
+    "actor_id": 2,
+    "data": null,
+    "move_number": 1
+  },
+  {
+    "event_type": "player_walk",
     "actor_id": 1,
     "data": {
-      "posX": 4,
-      "posY": 6
+      "place": {
+        "posX": 2,
+        "posY": 2
+      }
     },
-    "event_type": "player_walk",
     "move_number": 2
   },
   {
-    "actor_id": 0,
-    "data": {
-      "posX": 6,
-      "posY": 1
-    },
-    "event_type": "player_walk",
+    "event_type": "bomb_explode",
+    "actor_id": 2,
+    "data": null,
     "move_number": 3
   },
   {
+    "event_type": "player_resign",
+    "actor_id": 0,
+    "data": null,
+    "move_number": 4
+  },
+  {
+    "event_type": "player_won",
     "actor_id": 1,
-    "data": {
-      "posX": 5,
-      "posY": 6
-    },
-    "event_type": "player_walk",
+    "data": null,
     "move_number": 4
   }
 ]
