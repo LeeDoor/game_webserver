@@ -89,12 +89,9 @@ namespace http_handler{
             return SendWrongUrlParameters(rns);
         }
 
-        if(!gm_->HasSession(sid)) 
-            return DefineSessionState(rns, sid);
-
         using Notif = notif::SessionStateNotifier;
-        Notif::GetInstance()->ChangePoll(uuid, sid, 
-        [rns = std::move(rns),sid,sm = sm_, from_move](Notif::PollStatus status, gm::EventListWrapper::OptCPtr events){
+        bool res = Notif::GetInstance()->ChangePoll(uuid, sid, 
+        [rns,sid,sm = sm_, from_move](Notif::PollStatus status, gm::EventListWrapper::OptCPtr events){
             if(status == Notif::PollStatus::Ok && !events)
                 status = Notif::PollStatus::NotRelevant; 
             switch(status){
@@ -113,6 +110,8 @@ namespace http_handler{
                 break;
             }
         });
+        if(!res)
+            return DefineSessionState(rns, sid);
     }
 
     void GameHandler::ApiMove(SessionData&& rns, const RequestData& rd) {

@@ -22,26 +22,48 @@ namespace notification_system{
     }
 
     bool SessionStateNotifier::Subscribe(const um::Uuid& uuid, const gm::SessionId& sid) {
-        if (sessions_[sid].users_responser.contains(uuid)){
+        sessions_[sid]; // creating session with sid
+        if (sessions_.at(sid).users_responser.contains(uuid)){
             return false;
         }
-        sessions_[sid].users_responser[uuid] = std::nullopt;
+        sessions_.at(sid).users_responser[uuid] = std::nullopt;
         spdlog::info("{} subscribed to {}", uuid, sid);
         return true;
     }
-    bool SessionStateNotifier::Unsubscribe(const um::Uuid& uuid, const gm::SessionId& sid) {
-        if(!sessions_[sid].users_responser.contains(uuid))
+    bool SessionStateNotifier::Unsubscribe(const gm::SessionId& sid) {
+        if(!sessions_.contains(sid))
             return false;
-        if(!sessions_[sid].users_responser[uuid].has_value())
-            return false;
-        (*sessions_[sid].users_responser[uuid])(PollStatus::NotRelevant, std::nullopt);
+        // everyone who we are waiting for, are moved to send_and_close_
+        auto pw = sessions_.at(sid).poll_waiting;
+        for(auto uuid : pw){
+            send_and_close_[{sid, uuid}] = GetEvents(sid);
+        }
+
+        // everyone who is waiting for response, gets NOT_RELEVANT
+        auto ur = sessions_.at(sid).users_responser;
+        for(auto pair : ur){
+            if(pair.second.has_value()) {
+                (*pair.second)(PollStatus::NotRelevant, std::nullopt);
+            }
+        }
+        sessions_.erase(sid);
         return true;
     }
     bool SessionStateNotifier::ChangePoll(const um::Uuid& uuid, const gm::SessionId& sid, Responser&& responser) {
-        if(!sessions_[sid].users_responser.contains(uuid))
+        if(send_and_close_.contains({sid, uuid})){
+            auto events = send_and_close_.at({sid, uuid});
+            responser(PollStatus::Ok, events);
+            send_and_close_.erase({sid, uuid});
+            return true;
+        }
+
+        if(!sessions_.contains(sid))
+            return false;
+
+        if(!sessions_.at(sid).users_responser.contains(uuid))
             Subscribe(uuid, sid);
 
-        std::vector<um::Uuid>& pw = sessions_[sid].poll_waiting;
+        std::vector<um::Uuid>& pw = sessions_.at(sid).poll_waiting;
         const std::vector<um::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
             auto events = GetEvents(sid);
@@ -51,26 +73,33 @@ namespace notification_system{
             return true;
         }
 
-        if (sessions_[sid].users_responser[uuid].has_value()){
+        if (sessions_.at(sid).users_responser.at(uuid).has_value()){
             //breaking previous poll if it is
-            (*sessions_[sid].users_responser[uuid])(PollStatus::PollClosed, std::nullopt);
+            (*sessions_.at(sid).users_responser.at(uuid))(PollStatus::PollClosed, std::nullopt);
             spdlog::info("{} player got call about CLOSING {}", uuid, sid);
         }
 
-        sessions_[sid].users_responser[uuid] = std::move(responser);
+        sessions_.at(sid).users_responser.at(uuid) = std::move(responser);
         return true;
     }
     bool SessionStateNotifier::Notify(const gm::SessionId& sid) {
+        if(!sessions_.contains(sid))
+            return false;
         gm::EventListWrapper::OptCPtr events = GetEvents(sid);
-        for(const std::pair<um::Uuid, ResponserOpt>& pair : sessions_[sid].users_responser){
+        for(const std::pair<um::Uuid, ResponserOpt>& pair : sessions_.at(sid).users_responser){
             if(!pair.second.has_value()){
-                sessions_[sid].poll_waiting.push_back(pair.first);
+                auto& pw = sessions_.at(sid).poll_waiting;
+                auto it = std::find(pw.begin(), pw.end(), pair.first);
+                if(it != pw.end())
+                    continue;
+
+                sessions_.at(sid).poll_waiting.push_back(pair.first);
                 spdlog::info("{} player got added to poll waiting of {}", pair.first, sid);
                 continue;
             }
             (*pair.second)(PollStatus::Ok, events);
             spdlog::info("{} player got call about {} using standard Notify()", pair.first, sid);
-            sessions_[sid].users_responser[pair.first] = std::nullopt;
+            sessions_.at(sid).users_responser[pair.first] = std::nullopt;
         }
         return true;
     }

@@ -193,6 +193,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
             {
                 StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
                 nlohmann::json j = nlohmann::json::parse(events_resp.body());
+                INFO(j.dump());
                 REQUIRE(j.is_array());
                 REQUIRE(j.size() == 8);
                 CHECK(j[0]["event_type"] == "player_place_bomb");

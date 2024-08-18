@@ -233,7 +233,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         INFO("!!! checking changing move_number");
         CHECK(res);
 
-        response = SessionStateChange(socket, ld1.token, sid, 3);
+        response = SessionStateChange(socket, ld2.token, sid, 3);
         INFO(response.body());
         j = json::parse(response.body());
         ValidateEvents(j);

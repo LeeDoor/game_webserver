@@ -97,8 +97,7 @@ namespace game_manager{
     bool GameManager::FinishSession(const SessionId& sid, const Session::ResultsUuid& results) {
         sm_->AddLine({sid, results.winner, results.loser});
 
-        notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.winner, sid);
-        notif::SessionStateNotifier::GetInstance()->Unsubscribe(results.loser, sid);
+        notif::SessionStateNotifier::GetInstance()->Unsubscribe(sid);
 
         sessions_.erase(sid);
         session_mutex_[sid].unlock();
