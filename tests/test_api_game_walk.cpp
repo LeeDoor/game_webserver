@@ -6,15 +6,6 @@
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
 
-
-bool ValidCell(const gm::State& state, unsigned x, unsigned y){
-    auto& terrain = state.terrain;
-    
-    auto it = std::find_if(terrain.begin(), terrain.end(), 
-        [&](const gm::Obstacle& o){return o.posX == x && o.posY == y;});
-    return it == terrain.end();
-}
-
 TEST_CASE("ApiMove", "[api][game][move][walk]"){
 	net::io_context ioc;
     tcp::socket socket{ioc};
@@ -218,6 +209,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         state.players[0].posY = 0;
         state.players[1].posX = 1;
         state.players[1].posY = 0;
+        state.terrain = {};
         SetStateSuccess(socket, state, sd.sid);
         // XXXXXXXXXX
         //Y * * * * *
@@ -275,5 +267,130 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
         INFO("A can walk right");
         WalkSuccess(socket, {1, 1}, sd.l1.token, sd.sid);
+    }
+    SECTION("prepared_room_walls") {
+        SessionData sd = CreateNewMatch(socket);
+        gm::State state = sd.state;
+        state.map_size = {3,3};
+        state.now_turn = sd.l1.login;
+        state.players[0].posX = 0;
+        state.players[0].posY = 1;
+        state.players[1].posX = 2;
+        state.players[1].posY = 1;
+        state.terrain = {gm::Obstacle{1,1,gm::Obstacle::Type::Wall}};
+        SetStateSuccess(socket, state, sd.sid);
+
+        // * * * * * * *
+        // *   *   *   *
+        // * * * * * * *
+        // * A * W * B *
+        // * * * * * * *
+        // *   *   *   *
+        // * * * * * * *
+
+        INFO("A cant walk into the wall");
+        StringResponse response = Walk(socket, {1, 1}, sd.l1.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("A can walk down");
+        WalkSuccess(socket, {0, 2}, sd.l1.token, sd.sid);
+
+        // * * * * * * *
+        // *   *   *   *
+        // * * * * * * *
+        // *   * W * B *
+        // * * * * * * *
+        // * A *   *   *
+        // * * * * * * *
+
+        INFO("B cant walk into the wall");
+        response = Walk(socket, {1, 1}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("B cant walk on non-near cells");
+        response = Walk(socket, {1, 0}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+        response = Walk(socket, {1, 2}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+        response = Walk(socket, {0, 0}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+        response = Walk(socket, {0, 2}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+        response = Walk(socket, {0, 1}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("B can walk up");
+        WalkSuccess(socket, {2, 0}, sd.l2.token, sd.sid);
+
+        // * * * * * * *
+        // *   *   * B *
+        // * * * * * * *
+        // *   * W *   *
+        // * * * * * * *
+        // * A *   *   *
+        // * * * * * * *
+
+        INFO("A cant walk on diagonal wall");
+        response = Walk(socket, {1, 1}, sd.l1.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("A can walk right");
+        WalkSuccess(socket, {1, 2}, sd.l1.token, sd.sid);
+
+
+        INFO("B cant walk on diagonal wall");
+        response = Walk(socket, {1, 1}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("B can walk left");
+        WalkSuccess(socket, {1, 0}, sd.l2.token, sd.sid);
+
+
+        INFO("A cant walk on wall");
+        response = Walk(socket, {1, 1}, sd.l1.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("A can walk right");
+        WalkSuccess(socket, {2, 2}, sd.l1.token, sd.sid);
+
+        INFO("B cant walk on diagonal wall");
+        response = Walk(socket, {1, 1}, sd.l2.token, sd.sid);
+        CheckStringResponse(response,{
+            .body=WRONG_MOVE,
+            .res=http::status::bad_request
+        });
+
+        INFO("B can walk left");
+        WalkSuccess(socket, {0, 0}, sd.l2.token, sd.sid);
     }
 }

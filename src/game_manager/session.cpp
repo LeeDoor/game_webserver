@@ -180,7 +180,10 @@ namespace game_manager{
     Bomb::Ptr Session::PlaceBombObject(PlaceData place, Player::Login login) {
         namespace pl = std::placeholders;
         auto sp = this->shared_from_this();
-        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), (Bomb::ExplodeFunc)std::bind(&Session::Explode, sp, pl::_1, pl::_2));
+        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), 
+            [&](Dimention x, Dimention y){
+                Explode(x, y);
+            });
         obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
         return obj;

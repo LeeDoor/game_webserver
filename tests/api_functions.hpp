@@ -55,6 +55,7 @@ struct SessionData{
     gm::State state;
 };
 
+bool ValidCell(const gm::State& state, unsigned x, unsigned y);
 // **Success functions does not require checking for validness of the answer and possibility to call.
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
@@ -95,6 +96,9 @@ void WalkSuccess(tcp::socket&, const gm::PlaceData& wd, const Token& token, cons
 
 StringResponse Resign(tcp::socket&, const Token& token, const gm::SessionId& sid);
 void ResignSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
+
+StringResponse PlaceBomb(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
+void PlaceBombSuccess(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
 
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, const gm::SessionId& sid, const Token& token);
 /// DEBUG METHODS ///

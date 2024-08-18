@@ -19,6 +19,7 @@ add_executable(test_application
     test_api_game_session_state_change.cpp
     test_api_game_walk.cpp
     test_api_game_resign.cpp
+    test_api_game_place_bomb.cpp
     
     test_api_player_tokens.cpp
     test_api_user.cpp

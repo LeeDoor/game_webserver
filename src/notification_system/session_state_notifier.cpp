@@ -44,7 +44,8 @@ namespace notification_system{
         std::vector<um::Uuid>& pw = sessions_[sid].poll_waiting;
         const std::vector<um::Uuid>::iterator& it = std::find(pw.begin(), pw.end(), uuid);
         if (it != pw.end()){ // found in poll_waiting
-            responser(PollStatus::Ok, GetEvents(sid));
+            auto events = GetEvents(sid);
+            responser(PollStatus::Ok, events);
             spdlog::info("{} player got call about {} using poll waiting", uuid, sid);
             pw.erase(it);
             return true;

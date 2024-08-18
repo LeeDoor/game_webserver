@@ -10,6 +10,14 @@
 #include "nlohmann/json.hpp"
 #include "type_serializer.hpp"
 
+bool ValidCell(const gm::State& state, unsigned x, unsigned y){
+    auto& terrain = state.terrain;
+    
+    auto it = std::find_if(terrain.begin(), terrain.end(), 
+        [&](const gm::Obstacle& o){return o.posX == x && o.posY == y;});
+    return it == terrain.end();
+}
+
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& params) {
     if (params.empty())
         return url;
@@ -153,6 +161,7 @@ gm::State SessionStateSuccess(tcp::socket& socket, const Token& token, const gm:
     http::response<http::string_body> response = SessionState(socket, token, sid);
     CheckStringResponse(response, 
         {.res = http::status::ok});
+    INFO(response.body());
     REQUIRE(serializer::DefineSessionState(response.body()));
     std::optional<gm::State> state_opt = serializer::DeserializeSessionState(response.body());
     REQUIRE(state_opt);
@@ -206,6 +215,18 @@ StringResponse Resign(tcp::socket& socket, const Token& token, const gm::Session
 void ResignSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
     return MoveSuccess(socket, "{\"move_type\":\"resign\"}", token, sid);
 }
+
+StringResponse PlaceBomb(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j(wd);
+    j["move_type"] = "place_bomb";
+    return Move(socket, j.dump(), token, sid);
+}
+void PlaceBombSuccess(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j(wd);
+    j["move_type"] = "place_bomb";
+    return MoveSuccess(socket, j.dump(), token, sid);
+}
+
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket& socket, const gm::SessionId& sid, const Token& token) {
     StringResponse response = SessionState(socket, token, sid);
     CheckStringResponse(response, 
