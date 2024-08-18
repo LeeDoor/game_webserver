@@ -46,6 +46,7 @@ namespace game_manager{
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
+        ++state_->move_number;
         AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, EmptyData{});
         FinishSession(player_id != player1_);
         AfterMove();
@@ -68,6 +69,7 @@ namespace game_manager{
         
         player.posX = move_data.posX;
         player.posY = move_data.posY;
+        ++state_->move_number;
         AddEvent(player.id, PLAYER_WALK, WalkData{std::move(move_data)});
         AfterMove();
         return GameApiStatus::Ok;
@@ -88,6 +90,7 @@ namespace game_manager{
             return GameApiStatus::WrongMove;
         
         Bomb::Ptr bomb = PlaceBombObject(move_data, player.login);
+        ++state_->move_number;
         AddEvent(player.id, PLAYER_PLACE_BOMB, BombData{std::move(move_data), {bomb->id}, bomb->ticks_left});
         AfterMove();
         return GameApiStatus::Ok;
@@ -148,7 +151,6 @@ namespace game_manager{
         if(!scoreboard_.empty())
             return AddEvent(scoreboard_[0]->id, PLAYER_WON, EmptyData{});
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
-        ++state_->move_number;
     }
 
     void Session::AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data) {

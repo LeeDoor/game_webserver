@@ -40,7 +40,7 @@ namespace game_manager {
                 map_size == s.map_size &&
                 std::equal(objects.begin(), objects.end(), s.objects.begin(), [](Object::Ptr a, Object::Ptr b){return *a == b;});
         }
-        int move_number = 1;
+        int move_number = 0;
         Players players;
         Objects objects;
         Terrain terrain;
