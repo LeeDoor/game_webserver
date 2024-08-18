@@ -78,6 +78,10 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
                 CHECK(j[0]["event_type"] == "player_place_bomb");
                 CHECK(j[0]["actor_id"] == 0);
                 CHECK(j[0]["move_number"] == 1);
+                CHECK(j[0]["data"]["place"]["posX"] == 1);
+                CHECK(j[0]["data"]["place"]["posY"] == 0);
+                CHECK(j[0]["data"]["new_object"]["actor_id"] == 2);
+                CHECK(j[0]["data"]["ticks_left"] == BOMB_TICKS_DEFAULT);
 
                 CHECK(j[1]["event_type"] == "bomb_ticking");
                 CHECK(j[1]["actor_id"] == 2);
