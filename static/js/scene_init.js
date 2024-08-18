@@ -36,7 +36,7 @@ function initPlayers(players){
 function initObjects(objects_){
     objects = [];
     for (obj of objects_){
-        placeBombPlayer(obj.posX, obj.posY, obj.actor_id, obj.owner, obj.ticks_left);
+        placeBombPlayer(obj.posX, obj.posY, obj.id, obj.owner, obj.ticks_left);
     }
 }
 

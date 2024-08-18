@@ -11,13 +11,24 @@ async function gameEnded(){
     window.location.href = 'http://' + IPADDR + '/session_state.html?sessionId='+sessionId;
 }
 
+function defineDir(player, x){
+    if(player.posX == x)
+        return "";
+    if(player.posX < x)
+        return "right";
+    return "left";
+}
+
 async function handleEvent(ev){
+    let player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
     switch(ev.event_type){
     case "player_walk":
-        let player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
+        await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.data.place.posX), 3);
         walkPlayer(player, ev.data.place.posX, ev.data.place.posY);
+        await SetStateFor(player, ["jump", "idle"], "", 3);
         break;
     case "player_place_bomb":
+        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.data.place.posX), 2);
         placeBombPlayer(ev.data.place.posX, ev.data.place.posY, ev.data.new_object.actor_id, ev.actor_id, ev.data.ticks_left);
         break;
     case "player_won":

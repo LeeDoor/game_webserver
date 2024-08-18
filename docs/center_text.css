@@ -1,0 +1,9 @@
+ .canvas-node-content:not(.is-loaded) {
+  text-align: center;
+} 
+.theme-light, .theme-dark {
+  --link-decoration: none;
+  --link-decoration-hover: none;
+}
+
+/* move me to .obsidian/snippets and enable snippet in settings-appearance */

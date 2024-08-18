@@ -13,6 +13,9 @@ class Player{
         this.posY = posY;
         this.us = us;
         this.actor_id = actor_id;
+        this.state = "idle";
+        this.dir = "left";
+        this.style = us? "green_dino" : "red_dino";
     }
 }
 

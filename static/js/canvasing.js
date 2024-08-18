@@ -40,10 +40,7 @@ function getCell(coordinates) {
 // click event
 function onClick(e) {
     if(current_move_action == "walk"){
-        if(walk()){
-            playerUs.posX = selectedCell.posX;
-            playerUs.posY = selectedCell.posY;
-        }
+        walk();
     }
     else if (current_move_action == "bomb"){
         placeBomb();

@@ -1,9 +1,34 @@
-usImg = new Image();
-usImg.src = "../images/Untitled.svg";
-enemyImg = new Image();
-enemyImg.src = "../images/player2.png"
+class Sprite {
+    constructor(imagePath) {
+        this.image = new Image();
+        this.image.src = imagePath;
+    }
+}
 
-enemyImg.onload = ()=>{drawPlayers();};
+class PlayerSpriteGroup {
+    constructor(dirPath) {
+        this.idle = new Sprite(dirPath + "idle.svg");
+        this.jump = new Sprite(dirPath + "jump.svg");
+        this.swing = new Sprite(dirPath + "swing.svg");
+        this.throw = new Sprite(dirPath + "throw.svg");
+    }
+}
+
+class PlayerSprites{
+    constructor(dirPath){
+        this.left = new PlayerSpriteGroup(dirPath + "left/");
+        this.right = new PlayerSpriteGroup(dirPath + "right/");
+    }
+}
+
+class PlayersSprites{
+    constructor(dirPath){
+        this.green_dino = new PlayerSprites(dirPath + "green_dino/");
+        this.red_dino = new PlayerSprites(dirPath + "red_dino/");
+    }
+}
+const IMAGE_DIR = "images/";
+const players_sprites = new PlayersSprites(IMAGE_DIR + "players/");
 
 // returns cell rectangle to draw
 function elementData(x, y){
@@ -44,11 +69,8 @@ function drawCell(cell){
 // draws player
 function drawPlayer(player){
     const element = elementData(player.posX, player.posY);
-    
-    if(player.us)
-        ctx.drawImage(usImg, element.l, element.t, element.w, element.h);
-    else
-        ctx.drawImage(enemyImg, element.l, element.t, element.w, element.h);
+    const sprite = players_sprites[player.style][player.dir][player.state];
+    ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
 }
 
 // draws all players
@@ -168,3 +190,15 @@ async function highlightActor(actor_id, repeat = 3){
         await new Promise(r => setTimeout(r, delay));
     }
 }
+
+async function SetStateFor(player, states, dir, repeat){
+    if(dir != "")
+        player.dir = dir;
+    const dur = 1000/repeat/states.length;
+    for(i = 0; i < repeat; ++i){
+        for(let state of states){
+            player.state = state;
+            await new Promise(r => setTimeout(r, dur));
+        }
+    }
+} 
