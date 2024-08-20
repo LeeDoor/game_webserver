@@ -38,6 +38,7 @@ async function handleEvent(ev){
         await tickBomb(ev.actor_id);
         break;
     case "bomb_explode":
+        explodeAnimation(ev.actor_id);
         await tickBomb(ev.actor_id);
         const index = objects.map(obj => obj.actor_id).indexOf(ev.actor_id);
         if (index > -1) {

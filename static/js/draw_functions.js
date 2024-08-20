@@ -31,10 +31,10 @@ const IMAGE_DIR = "images/";
 const TERRAIN_DIR = IMAGE_DIR + "terrain/";
 const OBJECTS_DIR = IMAGE_DIR + "objects/";
 const PLAYERS_DIR = IMAGE_DIR + "players/";
+const EFFECTS_DIR = IMAGE_DIR + "effects/";
 const players_sprites = new PlayersSprites(PLAYERS_DIR); 
 const terrain_sprites = {
     grass: new Sprite(TERRAIN_DIR + "grass.svg"),
-    fire: new Sprite(TERRAIN_DIR + "fire.svg"),
     wall: new Sprite(TERRAIN_DIR + "rock.svg"),
 };
 const object_sprites = {
@@ -45,15 +45,18 @@ const object_sprites = {
         new Sprite(OBJECTS_DIR + "bomb4.svg"),
     ]
 };
+const effect_sprites = {
+    fire: new Sprite(EFFECTS_DIR + "fire.svg")
+}
 
 // returns cell rectangle to draw
 function cellElementData(x, y){
     let res = new Element(0,0,0,0);
-
-    res.w = canvas.width/gridSize;
-    res.h = canvas.height/gridSize;
-    res.t = y * res.h;
-    res.l = x * res.w;
+    const space = 0;//canvas.width/gridSize/2;
+    res.w = (canvas.width - space)/gridSize;
+    res.h = (canvas.height - space)/gridSize;
+    res.t = y * res.h + space / 2;
+    res.l = x * res.w + space / 2;
 
     res.t += cellMarginpx;
     res.l += cellMarginpx;
@@ -157,22 +160,13 @@ function drawObjects(){
     }
 }
 
-function drawHighlighter(cell){
-    const element = cellElementData(cell.posX, cell.posY);
-    ctx.beginPath();
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 20;
-    ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
-    ctx.stroke();
-}
+
 
 function drawEffects(){
-    for(effect of effects){
-        switch(effect.type){
-        case "highlighter":
-            drawHighlighter(effect.cell);
-            break;
-        }
+    for(effect of effects){ 
+        const sprite = effect_sprites[effect.type];
+        const element = cellElementData(effect.cell.posX, effect.cell.posY);
+        ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
     }
 }
 
@@ -195,20 +189,6 @@ function getCellByActor(actor_id){
     }
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
     return grid[obj.posX][obj.posY];
-}
-
-
-async function highlightActor(actor_id, repeat = 3){
-    const cell = getCellByActor(actor_id);
-    const delay = 1000 / repeat;
-    for(i = 0; i < repeat; ++i){
-        const eff = new Effect("highlighter", cell);
-        effects.push(eff);
-        await new Promise(r => setTimeout(r, delay));
-        const index = effects.indexOf(eff);
-        effects.splice(index, 1);         
-        await new Promise(r => setTimeout(r, delay));
-    }
 }
 
 async function SetStateFor(player, states, dir, repeat){
@@ -234,4 +214,33 @@ async function tickBomb(actor_id) {
         await new Promise(r => setTimeout(r, dur));
     }
     --obj.ticks_left;
+}
+
+async function explodeAnimation(actor_id) {
+    const dur = 500;
+    const repeat = 3;
+    const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+    let cellsToExplode = [];
+    for(let x = obj.posX - 1; x <= obj.posX + 1; ++x){
+        if (x < 0) continue;
+        if (x >= gridSize) continue;
+        for(let y = obj.posY - 1; y <= obj.posY + 1; ++y){
+            if (y < 0) continue;
+            if (y >= gridSize) continue;
+            if (grid[x][y].type == "wall") continue;
+            cellsToExplode.push(grid[x][y]);
+        }
+    }
+    for(let i = 0; i < repeat; ++i){
+        for(let cell of cellsToExplode){
+            const eff = new Effect("fire", cell);
+            effects.push(eff);
+        }
+        await new Promise(r => setTimeout(r, dur));
+        for(let cell of cellsToExplode){
+            const index = effects.indexOf(effects.filter(eff => eff.cell == cell));
+            effects.splice(index, 1);         
+        }
+        await new Promise(r => setTimeout(r, dur));
+    }
 }

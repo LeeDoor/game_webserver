@@ -10,12 +10,17 @@ function initGrid(){
     }
 }
 
-const qualMult = 5;
+let qualMult = 3;
 
 // event for resizing canvas to keep with normal size
 async function resizeCanvas() {
-    canvas.width = parseFloat(getComputedStyle(canvas).width) * qualMult;
-    canvas.height = parseFloat(getComputedStyle(canvas).height) * qualMult;
+    const style = getComputedStyle(canvas);
+    const width = parseFloat(style.width);
+    const height = parseFloat(style.height);
+    if(width < 500) qualMult = 5;
+    else qualMult = 2;
+    canvas.width = parseFloat(width) * qualMult;
+    canvas.height = parseFloat(height) * qualMult;
 }
 
 // returns mouse position in the canvas

@@ -7,7 +7,7 @@ async function mainLoop(){
 async function main(){
     initGrid();
     await loadScene();
-    resizeCanvas();
+    await resizeCanvas();
     waitForStateChange();
     radioButtons();
     
