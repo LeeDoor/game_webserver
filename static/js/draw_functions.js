@@ -28,10 +28,26 @@ class PlayersSprites{
     }
 }
 const IMAGE_DIR = "images/";
-const players_sprites = new PlayersSprites(IMAGE_DIR + "players/");
+const TERRAIN_DIR = IMAGE_DIR + "terrain/";
+const OBJECTS_DIR = IMAGE_DIR + "objects/";
+const PLAYERS_DIR = IMAGE_DIR + "players/";
+const players_sprites = new PlayersSprites(PLAYERS_DIR); 
+const terrain_sprites = {
+    grass: new Sprite(TERRAIN_DIR + "grass.svg"),
+    fire: new Sprite(TERRAIN_DIR + "fire.svg"),
+    wall: new Sprite(TERRAIN_DIR + "rock.svg"),
+};
+const object_sprites = {
+    bomb: [
+        new Sprite(OBJECTS_DIR + "bomb1.svg"),
+        new Sprite(OBJECTS_DIR + "bomb2.svg"),
+        new Sprite(OBJECTS_DIR + "bomb3.svg"),
+        new Sprite(OBJECTS_DIR + "bomb4.svg"),
+    ]
+};
 
 // returns cell rectangle to draw
-function elementData(x, y){
+function cellElementData(x, y){
     let res = new Element(0,0,0,0);
 
     res.w = canvas.width/gridSize;
@@ -47,28 +63,38 @@ function elementData(x, y){
     return res;
 }
 
+function objElementData(x, y){
+    let res = cellElementData(x,y);
+
+    res.l -= res.w / 2;
+    res.t -= res.h;
+    res.w *= 2;
+    res.h *= 2;
+
+    return res;
+}
+
+
 //draws one cell
 function drawCell(cell){
-    const element = elementData(cell.posX, cell.posY);
-    switch(cell.type){
-        case "grass":
-            if (validCells.includes(cell))
-                ctx.fillStyle = "rgb(135, 181, 255)";
-            else if (cell.selected)
-                ctx.fillStyle = "rgb(129 255 170)";
-            else
-                ctx.fillStyle = "rgb(79 255 170)";
-            break;
-        case "wall":
-            ctx.fillStyle = "rgb(131 195 190)";
-            break;
+    const element = cellElementData(cell.posX, cell.posY);
+    const sprite = terrain_sprites[cell.type];
+    ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
+
+    if(cell.selected){
+        ctx.fillStyle = "rgba(51, 255, 0, 0.4)";
+        ctx.fillRect(element.l, element.t, element.w, element.h);
     }
-    ctx.fillRect(element.l, element.t, element.w, element.h);
+
+    if(validCells.includes(cell)){
+        ctx.fillStyle = "rgba(0, 238, 255, 0.4)";
+        ctx.fillRect(element.l, element.t, element.w, element.h);
+    }
 }
 
 // draws player
 function drawPlayer(player){
-    const element = elementData(player.posX, player.posY);
+    const element = objElementData(player.posX, player.posY);
     const sprite = players_sprites[player.style][player.dir][player.state];
     ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
 }
@@ -125,20 +151,14 @@ function drawGrid(){
 
 function drawObjects(){
     for(obj of objects) {
-        const element = elementData(obj.posX, obj.posY);
-        switch(obj.type){
-            case 'bomb':
-                ctx.fillStyle = "rgb(255 255 255)";
-                ctx.beginPath();
-                ctx.arc(element.l + element.w/2, element.t + element.h/2, element.h/2, 0, 2 * Math.PI);
-                ctx.fill();
-                break;
-        }
+        const element = objElementData(obj.posX, obj.posY);
+        const sprite = object_sprites[obj.type][3 - obj.ticks_left];
+        ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
     }
 }
 
 function drawHighlighter(cell){
-    const element = elementData(cell.posX, cell.posY);
+    const element = cellElementData(cell.posX, cell.posY);
     ctx.beginPath();
     ctx.strokeStyle = "red";
     ctx.lineWidth = 20;
@@ -202,3 +222,16 @@ async function SetStateFor(player, states, dir, repeat){
         }
     }
 } 
+
+async function tickBomb(actor_id) {
+    const dur = 300;
+    const repeat = 5;
+    const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+    for(let i = 0; i < repeat; ++i){
+        --obj.ticks_left;
+        await new Promise(r => setTimeout(r, dur));
+        ++obj.ticks_left;
+        await new Promise(r => setTimeout(r, dur));
+    }
+    --obj.ticks_left;
+}

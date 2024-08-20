@@ -62,6 +62,8 @@ async function loadScene(){
                 'Authorization':'Bearer ' + localStorage.getItem('token')
             },
         });
+    if (!stateResponse.ok)
+        window.location.href = 'http://' + IPADDR + '/session_state.html?sessionId='+sessionId;
     lastSessionState = await stateResponse.json();
     initScene();
 } 

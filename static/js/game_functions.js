@@ -20,7 +20,7 @@ function defineDir(player, x){
 }
 
 async function handleEvent(ev){
-    let player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
+    const player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
     switch(ev.event_type){
     case "player_walk":
         await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.data.place.posX), 3);
@@ -35,10 +35,10 @@ async function handleEvent(ev){
         await gameEnded();
         break;
     case "bomb_ticking":
-        await highlightActor(ev.actor_id);
+        await tickBomb(ev.actor_id);
         break;
     case "bomb_explode":
-        await highlightActor(ev.actor_id, 5);
+        await tickBomb(ev.actor_id);
         const index = objects.map(obj => obj.actor_id).indexOf(ev.actor_id);
         if (index > -1) {
             objects.splice(index, 1); 
