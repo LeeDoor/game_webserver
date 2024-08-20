@@ -1,43 +1,39 @@
-# hex_chess_backend
-backend part of pet-project Hexagonal Chess written on C++.
+![[docs/media/header.Png]]
+# Dinozavriki
+Meet the best turn-based strategy about dinosaurs battle! In this game, you face a difficult task: defeat the enemy using bombs, guns, whiskers, paws and tail.
+## How to play?
+Click on the link and go to the game page. Enter your username and password in the registration field. After the message about the successful registration, click **play**! You will end up in the waiting queue of the opponent.
+## Gameplay 
+On the battlefield, you can use different things that will help you win. Select the action on the button at the bottom. 
+You will see blue cells that you can use an action on. For example, you can only walk up, down, left and right, and put a bomb anywhere around you. You can't walk on the stones, you can't put bombs on them either ((.
 
-# build and run
-to run server on your machine, you need to have conan 1.60 (**conan 2.0 and newer wouldn't fit**) and cmake installed (also compilers etc).
+Walk across the field and look around by selecting the walk button and clicking on the blue cell next to it!
+> If there is no blue cells near you, wait for opponent's move!
 
-```sh
-pip install conan==1.*
-sudo apt install cmake
-```
-to build application there are several useful scripts in special folder. for example you can build_with_tests.sh or build_no_tests.sh:
-```sh
-git clone https://github.com/LeeDoor/hex_chess_backend
-cd hex_chess_backend/scripts
-./build_no_tests.sh
-./run_app.sh
-```
-port is 8080 by default
+![[docs/media/walk_video.Webm]]
 
-also you can launch my app inside docker container. [see](docker.md)
+Now, when you get close to the enemy, drop a bomb on his head!
+![[docs/media/bomb_video.Webm]]
+And that is how to win on the battlefield! Good luck! 
+# Application
+If you want to launch this webserver on your machine, follow [docker](docs/docker.Md) guide. 
 
-# uml diagrams
-while reading docs you can see beatiful diagrams and schemas. framework called [mermaid](https://www.mermaidchart.com)
-
-# documentation
-NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
-as i write my code i also try to documentate it. here is the list of readmes for each module:
-* [new module creation](docs/new_module_creation.md)
-* [initializer](docs/initializer.md)
-* [server](docs/server.md)
-* [http_handler](docs/http_handler.md)
-* [serializer(JSON)](docs/serializer.md)
-* [user_manager](docs/user_manager.md)
-* [token_manager](docs/token_manager.md)
-* [queue_manager](queue_manager.md)
-* [game_manager](docs/game_manager.md)
-* [session_manager](docs/session_manager.md)
-* [notification_system](docs/notification_system.md)
-* [API](docs/http_api.md)
-* [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)
-* [session state](docs/session_state.md)
-* [SQL table init](docs/database%20sql%20tables.md)
-how to write tests, naming rules etc. [here](docs/tests.md)
+# Documentation
+Note: I will try to change and supplement the structure of the code immediately along with the documentation.
+As I write my code I also try to documentate it. Here is the list of readmes for each module:
+* [new module creation](docs/new_module_creation.Md)
+* [initializer](docs/initializer.Md)
+* [server](docs/server.Md)
+* [http_handler](docs/http_handler.Md)
+* [serializer(json)](docs/serializer.Md)
+* [user_manager](docs/user_manager.Md)
+* [token_manager](docs/token_manager.Md)
+* [queue_manager](queue_manager.Md)
+* [game_manager](docs/game_manager.Md)
+* [session_manager](docs/session_manager.Md)
+* [notification_system](docs/notification_system.Md)
+* [api](docs/http_api.Md)
+* [cli parameters to executable](docs/cli%20parameters%20to%20executable.Md)
+* [session state](docs/session_state.Md)
+* [sql table init](docs/database%20sql%20tables.Md)
+How to write tests, naming rules etc. [here](docs/tests.Md)

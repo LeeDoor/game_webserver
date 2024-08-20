@@ -1,21 +1,21 @@
-# list of events
-list of events contains an array of events. each event share common properties. list is being filled with other events after each player's move. subscribe to `session_state_change` to get event_list as soon as it changes.
+# List of events
+list of events contains an array of events. Each event share common properties. List is being filled with other events after each player's move. Subscribe to `session_state_change` to get event_list as soon as it changes.
 **Fields**:
-* **actor_id** - id of actor who did the action. it can be player's id or object's id. 
+* **actor_id** - id of actor who did the action. It can be player's id or object's id. 
 * **data** - data is optional and has different values depend on **event_type**.
 	* PlaceData - position X and Y of the place where action happened.
-	* DirectedPlaceData - position X and Y and direction where action happened. direction is enum `"up", "right", "down", "left"`.
-* **event_type** - type of the event. defines what actually happened in the game. 
-	* player_walk - player walks to a position. data contains `PlaceData`.
+	* DirectedPlaceData - position X and Y and direction where action happened. Direction is enum `"up", "right", "down", "left"`.
+* **event_type** - type of the event. Defines what actually happened in the game. 
+	* player_walk - player walks to a position. Data contains `PlaceData`.
 	* player_place_bomb - player places bomb on provided `PlaceData`.
-	* player_resign - player resigns. no data.
-	* player_won - player wins the game. no data.
-	* bomb_ticking - bomb ticks and getting ready to explode. no data.
-	* bomb_explode - bomb explodes and kills everyone nearby 1 cell. no data.
+	* player_resign - player resigns. No data.
+	* player_won - player wins the game. No data.
+	* bomb_ticking - bomb ticks and getting ready to explode. No data.
+	* bomb_explode - bomb explodes and kills everyone nearby 1 cell. No data.
 	* #TODO
 
 * **move_number** - number of the move, starts with 1 and increments by 1 each player's move.
-> the information is written manually for a visual example of each type of event.
+> The information is written manually for a visual example of each type of event.
 ```json
 [
   {

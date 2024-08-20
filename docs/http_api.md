@@ -21,14 +21,14 @@
       + [API resign](#api%20resign)
 
 
-# http request API
-## static files
-to request static file from server, set relative path to root folder in request target like this: 
+# Http request API
+## Static files
+To request static file from server, set relative path to root folder in request target like this: 
 ```
 127.0.0.1/folder1/index.html
 ```
-this url will return index.html file in folder1.
-to get main index.html file it is not required to write file name. these two lines of request will get same response:
+This url will return index. Html file in folder 1.
+To get main index. Html file it is not required to write file name. These two lines of request will get same response:
 ```
 127.0.0.1/index.html
 127.0.0.1/
@@ -36,7 +36,7 @@ to get main index.html file it is not required to write file name. these two lin
 
 # API
 
-all non-ok responses have same body type. for example:
+All non-ok responses have same body type. For example:
  
 ```js
 {
@@ -46,29 +46,29 @@ all non-ok responses have same body type. for example:
 ```
 ## Function Tags
 ### Requires Authorization 
-means that request must be authorized with `Authorization` header. example:
+means that request must be authorized with `Authorization` header. Example:
 ```HTTP
 Authorization: Bearer FFAADDDDEE12161753563
 ```
 **includes these errors: **
-1. status: ***`UNAUTHORIZED`***
-given request does not have Authorization header.
+1. Status: ***`UNAUTHORIZED`***
+Given request does not have Authorization header.
 ```json
 {
 	"error_name":"unathorized",
 	"description":"request must be authorized"
 }
 ```
-2. status: ***`UNAUTHORIZED`***
-given request has Authorization header but with wrong token.
+2. Status: ***`UNAUTHORIZED`***
+Given request has Authorization header but with wrong token.
 ```json
 {
 	"error_name":"invalid_token",
 	"description":"request authorization is invalid"
 }
 ```
-2. status: ***`UNAUTHORIZED`***
-given request has Authorization header with valid-formed token but not addressing to anybody.
+2. Status: ***`UNAUTHORIZED`***
+Given request has Authorization header with valid-formed token but not addressing to anybody.
 ```json
 {
 	"error_name":"person_removed",
@@ -76,10 +76,10 @@ given request has Authorization header with valid-formed token but not addressin
 }
 ```
 ### Long-Poll
-means that request is Long-Poll. response will not arrive immediately, you should wait for response for a while.
+Means that request is Long-Poll. Response will not arrive immediately, you should wait for response for a while.
 **includes these errors: **
-1. status: ***`CONFLICT`***
-this poll is closed and replaced with the other one.
+1. Status: ***`CONFLICT`***
+This poll is closed and replaced with the other one.
 ```json
 {
 	"error_name":"poll_closed",
@@ -87,9 +87,9 @@ this poll is closed and replaced with the other one.
 }
 ```
 ## Debug API
-debug api is required to get data from app structures. to execute them you need to send admin login and password.
+Debug api is required to get data from app structures. To execute them you need to send admin login and password.
 
-example:
+Example:
 ```js
 { 
 	"login": "very_login", 
@@ -105,7 +105,7 @@ if admin credentials not provided, you get this errror: ***`UNAUTHORIZED`***
 ```
 ### API player_tokens
 #### **description**
-debug function for getting users' authentication tokens and uuids.
+Debug function for getting users' authentication tokens and uuids.
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**
@@ -120,8 +120,8 @@ debug function for getting users' authentication tokens and uuids.
 ```
 
 #### **responses**
-* `200 OK`\
-    tokens sent successfully
+* `200 OK` \
+    Tokens sent successfully
     *response body example:*
     ```js
     {
@@ -133,13 +133,13 @@ debug function for getting users' authentication tokens and uuids.
 ---
 ### API user
 #### **description**
-debug function for getting users' profile info like login and password.
+Debug function for getting users' profile info like login and password.
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**
-*/api/debug/user?uuid=USER_UUID*
+*/api/debug/user? Uuid=USER_UUID*
 **OR**
-*/api/debug/user?login=USER_LOGIN&password=USER_PASS*
+*/api/debug/user? Login=USER_LOGIN&password=USER_PASS*
 
 #### **request body example**
 ```js
@@ -150,8 +150,8 @@ debug function for getting users' profile info like login and password.
 ```
 
 #### **responses**
-* `200 OK`\
-    user sent successfully
+* `200 OK` \
+    User sent successfully
     *response body example:*
     ```js
     {
@@ -163,7 +163,7 @@ debug function for getting users' profile info like login and password.
 ---
 ### API matchmaking_queue
 #### **description**
-debug function for getting queue of users' uuids
+Debug function for getting queue of users' uuids
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**
@@ -172,20 +172,20 @@ debug function for getting queue of users' uuids
 #### **request body example**
 ```js
     {
-        "login": "admin2009",
-        "password": "nadejni_parol2"
+        "login": "admin 2009",
+        "password": "nadejni_parol 2"
     }
 ```
 
 #### **responses**
 * `200 OK`\
-    matchmaking queue sent successfully
+    Matchmaking queue sent successfully
     *response body example:*
     ```js
     {
-        "UUID123",
-        "UUID124",
-        "UUID125"
+        "UUID 123",
+        "UUID 124",
+        "UUID 125"
     }
     ```
 
@@ -195,18 +195,18 @@ debug function for getting queue of users' uuids
 ```mermaid
 ---
 
-title: api registger diagram
+Title: api registger diagram
 
 ---
 
   
 
-sequenceDiagram
-actor User
+SequenceDiagram
+Actor User
 
 ApiHandler->>Serializer: deserialize body data
 
-serializer::>ApiHandler: returns login and password from body
+Serializer::>ApiHandler: returns login and password from body
 
   
 
@@ -228,22 +228,22 @@ ApiHandler->>User: send registration state
 */api/register*
 
 #### **function description**
-by given login and password in body, creates account. data stored in db, you cant register with same login more than once. after registration you need to login to play the game and use other features. 
+By given login and password in body, creates account. Data stored in db, you cant register with same login more than once. After registration you need to login to play the game and use other features. 
 
 #### **request body example**
 ```js
     {
         "login": "very_login",
-        "password": "abcde12345"
+        "password": "abcde 12345"
     }
 ```
 #### **login and password criteria**
-- login size more or equal to **3**
-- password size more or equal to **6**. must contain at least 1 digit
+- Login size more or equal to **3**
+- Password size more or equal to **6**. Must contain at least 1 digit
 
 #### **responses**
 * `200 OK`\
-    registration is ok, user added
+    Registration is ok, user added
 
     *response body:*
     ```js
@@ -251,14 +251,14 @@ by given login and password in body, creates account. data stored in db, you can
     ```
     
 * `400 bad_request`\
-    body data is wrong or login and password are invalid
+    Body data is wrong or login and password are invalid
 
     **error_name meanings**
     - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
     - **body_data_error**: body data is incorrect (watch example above)
 
 * `409 conflict`\
-    there is already a user with given login
+    There is already a user with given login
 
     **error_name meanings**
     - **login_taken**: login already taken
@@ -269,18 +269,18 @@ by given login and password in body, creates account. data stored in db, you can
 ```mermaid
 ---
 
-title: api login diagram
+Title: api login diagram
 
 ---
 
   
 
-sequenceDiagram
-actor User
+SequenceDiagram
+Actor User
 
 ApiHandler->>Serializer: deserialize body data
 
-serializer->>ApiHandler: returns login and password from body
+Serializer->>ApiHandler: returns login and password from body
 
   
 
@@ -307,32 +307,32 @@ ApiHandler->>User: send login state and token
 */api/login*
 
 #### **function description**
-by given login and password in body, logins to get authorization token, which is required to play. only registered user can login.
+By given login and password in body, logins to get authorization token, which is required to play. Only registered user can login.
 
 #### **body example**
 ```js
     {
         "login": "very_login",
-        "password": "abcde12345"
+        "password": "abcde 12345"
     }
 ```
 
 #### **responses**
 * `200 OK`\
-    login is successful, token returned
+    Login is successful, token returned
     
     *response body"*
     ```js
     {
-        "token": "aabbbccc123"
+        "token": "aabbbccc 123"
     }
     ```
     **login and password criteria**
-    - login size more or equal to **3**
-    - password size more or equal to **6**. must contain at least 1 digit
+    - Login size more or equal to **3**
+    - Password size more or equal to **6**. Must contain at least 1 digit
 
 * `400 bad_request`\
-    body data is wrong or login and password doesnt match to any registered user
+    Body data is wrong or login and password doesnt match to any registered user
 
     **error_name meanings**
     - **body_data_error**: body data is incorrect (watch example above)
@@ -345,10 +345,10 @@ by given login and password in body, logins to get authorization token, which is
 #### **action diagram**
 ```mermaid
 ---
-title: api profile diagram
+Title: api profile diagram
 ---
-sequenceDiagram
-actor User
+SequenceDiagram
+Actor User
 ApiHandler->>ApiHandler: gets Authorization token
 ApiHandler->>TokenManager: gets user's uuid by token
 TokenManager->>ApiHandler: user's uuid
@@ -364,23 +364,23 @@ ApiHandler->>User: send user data
 */api/profile*
 
 #### **function description**
-requires authorization token. by this token gets profile information from db.
+Requires authorization token. By this token gets profile information from db.
 
 #### **responses**
 * `200 OK`\
-    authorization is correct, send profile data in response
+    Authorization is correct, send profile data in response
     *response body"*
     ```js
     {
         "login": "loginlogin",
-        "password": "pass123123"
+        "password": "pass 123123"
     }
     ```
 ---
 ## Game API
-some of game API functions are declared to some `session`. it's id should be passed as url parameter (see each function's description). this entails the possibility of the following errors:
+Some of game API functions are declared to some `session`. It's id should be passed as url parameter (see each function's description). This entails the possibility of the following errors:
 * `400 no_such_session`
-session you are trying to get access to does not exist.
+Session you are trying to get access to does not exist.
 ```json
 {
 	"error_name": "wrong_sessionId",
@@ -388,7 +388,7 @@ session you are trying to get access to does not exist.
 }
 ```
 * `400 session_finished`
-session you are trying to get access is already finished. see the game's stats.
+Session you are trying to get access is already finished. See the game's stats.
 ```json
 {
 	"error_name": "session_finished",
@@ -402,15 +402,15 @@ session you are trying to get access is already finished. see the game's stats.
 ```mermaid
 ---
 
-title: api profile diagram
+Title: api profile diagram
 
 ---
 
   
 
-sequenceDiagram
+SequenceDiagram
 
-actor User
+Actor User
 
 ApiHandler->>ApiHandler: gets Authorization token
 
@@ -436,10 +436,10 @@ ApiHandler->>User: send enqueue status
 _/api/game/enqueue_
 
 #### **function description**
-to start a game, you need to add yourself to the queue. you will be added to queue to search for an opponent by this api function execution. call wait_for_opponent immediately after that.
+To start a game, you need to add yourself to the queue. You will be added to queue to search for an opponent by this api function execution. Call wait_for_opponent immediately after that.
 
 #### **request body example**
-body must be empty
+Body must be empty
 
 #### **responses**
 * `200 OK`  
@@ -460,21 +460,21 @@ body must be empty
 #### **action diagram**
 ```mermaid
 ---
-title: api registger diagram
+Title: api registger diagram
 ---
-sequenceDiagram
-actor User1
-participant Server
-actor User2
+SequenceDiagram
+Actor User 1
+Participant Server
+Actor User 2
 
-User1->>Server: enqueue
-User1->>Server: wait_for_opponent
+User 1->>Server: enqueue
+User 1->>Server: wait_for_opponent
 Server-->Server: enqueuing
-User2->>Server: enqueue
-User2->>Server: wait_for_opponent
+User 2->>Server: enqueue
+User 2->>Server: wait_for_opponent
 Server-->Server: enqueuing
-Server->>User1: opponent_found
-Server->>User2: opponent_found
+Server->>User 1: opponent_found
+Server->>User 2: opponent_found
 
 ```
 
@@ -485,7 +485,7 @@ Server->>User2: opponent_found
 _api/game/wait_for_opponent_
 
 #### **function description**
-long-poll function to read data about future session. use it after enqueuing to the game and wait for response until enemy is found. when found, returns session ID to join the game.
+Long-poll function to read data about future session. Use it after enqueuing to the game and wait for response until enemy is found. When found, returns session ID to join the game.
 
 #### **request body example**
 
@@ -496,11 +496,11 @@ long-poll function to read data about future session. use it after enqueuing to 
 #### **responses**
 
 * `200 success`
-opponent found if body contains SessionId.
+Opponent found if body contains SessionId.
 *response body:*
 ```js
 {
-	"sessionid": "ADD124558846"
+	"sessionid": "ADD 124558846"
 }
 ```
 ---
@@ -511,10 +511,10 @@ opponent found if body contains SessionId.
 ***`GET/HEAD`***
 
 #### **request target**  
-_/api/game/session_state?sessionId=SESSION_ID_
+_/api/game/session_state? SessionId=SESSION_ID_
 
 #### **function description**
-request to get session state. session id should be passed as URL parameter.
+Request to get session state. Session id should be passed as URL parameter.
 
 #### **responses**
 * `200 OK`  
@@ -523,12 +523,12 @@ request to get session state. session id should be passed as URL parameter.
 * `422 url_parameters_error`
 ```json
 {
-	"error_name":"url_parameters_error"
-	"description":"this api function requires url parameters"
+	"error_name": "url_parameters_error"
+	"description": "this api function requires url parameters"
 }
 ```
 * `400 no_such_session`
-session you are trying to get access to does not exist.
+Session you are trying to get access to does not exist.
 ```json
 {
 	"error_name": "wrong_sessionId",
@@ -541,26 +541,26 @@ session you are trying to get access to does not exist.
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **action diagram**
 ```mermaid
-sequenceDiagram
-	actor Player1
-	participant Server
-	actor Player2
-	Player1 ->> Server: session_state_change
-	Player2 ->> Server: session_state_change
-	Player1 ->> Server: makes a move
-	Server --> Player1: updated_event_list
-	Server --> Player2: updated_event_list
-	Player1 ->> Server: session_state_change
-	Player2 ->> Server: session_state_change
-	Player2 ->> Server: makes a move
-	Server --> Player1: updated_event_list
-	Server --> Player2: updated_event_list
+SequenceDiagram
+	Actor Player 1
+	Participant Server
+	Actor Player 2
+	Player 1 ->> Server: session_state_change
+	Player 2 ->> Server: session_state_change
+	Player 1 ->> Server: makes a move
+	Server --> Player 1: updated_event_list
+	Server --> Player 2: updated_event_list
+	Player 1 ->> Server: session_state_change
+	Player 2 ->> Server: session_state_change
+	Player 2 ->> Server: makes a move
+	Server --> Player 1: updated_event_list
+	Server --> Player 2: updated_event_list
 	
 ```
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**  
-_/api/game/session_state_change?sessionId=SESSION_ID_
+_/api/game/session_state_change? SessionId=SESSION_ID_
 
 #### **request body example**
 
@@ -571,7 +571,7 @@ _/api/game/session_state_change?sessionId=SESSION_ID_
 ```
 
 #### **function description**
-Long-Poll function hangs until some action happens in the session. once it is, poller gets response with new event_list. pass from_move parameter in body to get list INCLUDING the move you started on and later ones.
+Long-Poll function hangs until some action happens in the session. Once it is, poller gets response with new event_list. Pass from_move parameter in body to get list INCLUDING the move you started on and later ones.
 
 #### **responses**
 * `200 OK`  
@@ -580,12 +580,12 @@ Long-Poll function hangs until some action happens in the session. once it is, p
 * `422 url_parameters_error`
 ```json
 {
-	"error_name":"url_parameters_error"
-	"description":"this api function requires url parameters"
+	"error_name": "url_parameters_error"
+	"description": "this api function requires url parameters"
 }
 ```
 * `400 no_such_session`
-session you are trying to get access to does not exist.
+Session you are trying to get access to does not exist.
 ```json
 {
 	"error_name": "wrong_sessionId",
@@ -598,16 +598,16 @@ session you are trying to get access to does not exist.
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
-_/api/game/move?sessionId=SESSION_ID_
+_/api/game/move? SessionId=SESSION_ID_
 
 #### **function description**
-function tells the game about player's move. sessionId must be passed as URL parameter, body should contain move information.
+Function tells the game about player's move. SessionId must be passed as URL parameter, body should contain move information.
 
 #### **request body example**
 ```json
 {
-	"move_type":STRING,//"walk", "resign"
-	"posX":UNSIGNED,
+	"move_type": STRING,//"walk", "resign"
+	"posX": UNSIGNED,
 	"posY":UNISIGNED
 }
 ```
@@ -615,9 +615,9 @@ function tells the game about player's move. sessionId must be passed as URL par
 #### **responses**
 
 * `200 OK`  
-everything is ok, now opponent is moving
+Everything is ok, now opponent is moving
 * `400 wrong_move`
-according to the game rules, player cant make such move.
+According to the game rules, player cant make such move.
 ```json
 {
 	"error_name": "wrong_move",
@@ -625,7 +625,7 @@ according to the game rules, player cant make such move.
 }
 ```
 * `400 not_your_move`
-now there is an enemy's move, you cant do anything.
+Now there is an enemy's move, you cant do anything.
 ```json
 {
 	"error_name": "not_your_move",
@@ -633,7 +633,7 @@ now there is an enemy's move, you cant do anything.
 }
 ```
 * `400 access_denied`
-you don't have access to make a move in this match. probably you are not the player.
+You don't have access to make a move in this match. Probably you are not the player.
 ```json
 {
 	"error_name": "access_denied",
@@ -641,7 +641,7 @@ you don't have access to make a move in this match. probably you are not the pla
 }
 ```
 * `400 wrong_body_data`
-body data is messed up. check the example above.
+Body data is messed up. Check the example above.
 ```json
 {
 	"error_name": "body_data_error",
@@ -655,15 +655,15 @@ body data is messed up. check the example above.
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
-_/api/game/resign?sessionId=SESSION_ID_
+_/api/game/resign? SessionId=SESSION_ID_
 
 #### **function description**
-function calls about your resign and ends the game. url parameter should contain sessionId, where you are resigning. body is empty.
+Function calls about your resign and ends the game. Url parameter should contain sessionId, where you are resigning. Body is empty.
 
 #### **responses**
 * `200 OK`  
 * `400 access_denied`
-you cant resign with this login token. you should be one of the players.
+You cant resign with this login token. You should be one of the players.
 ```json
 {
 	"error_name": "access_denied",

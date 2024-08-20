@@ -1,2 +1,0 @@
-# startup
-initially players spawn on symmetric map with walls and two players: <span style="color: blue;">you</span> and <span style="color: red;">enemy</span>. on the sidebar you can notice #TODO 3 buttons: resign, walk and bomb. pressing resign stops the game with your failure. pressing bomb and walk you are selecting your action in the game.
