@@ -11,10 +11,12 @@ You will see blue cells that you can use an action on. for example, you can only
 Walk across the field and look around by selecting the walk button and clicking on the blue cell next to it!
 > if there is no blue cells near you, wait for opponent's move!
 
-![[docs/media/walk_video.gif]]
+![there should be a video...](docs/media/walk_video.gif) 
 
 Now, when you get close to the enemy, drop a bomb on his head!
-![[docs/media/bomb_video.gif]]
+
+![there should be a video...](docs/media/bomb_video.gif)
+
 and that is how to win on the battlefield! good luck! 
 # application
 if you want to launch this webserver on your machine, follow [docker](docs/docker.md) guide. 
