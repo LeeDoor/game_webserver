@@ -27,7 +27,7 @@ namespace game_manager{
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MapSize, width, height);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PlaceData, posX, posY);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DirectedPlaceData, posX, posY, dir);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(NewObject, actor_id);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Objectdata, actor_id);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(BombData, place, new_object, ticks_left);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(WalkData, place);
     

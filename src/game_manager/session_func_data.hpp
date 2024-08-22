@@ -26,8 +26,8 @@ namespace game_manager{
         Dimention posY;
         Direction dir;
     };
-    struct NewObject{
-        bool operator == (const NewObject& other) const = default;
+    struct Objectdata{
+        bool operator == (const Objectdata& other) const = default;
 
         ActorId actor_id;
     };
@@ -42,7 +42,7 @@ namespace game_manager{
     struct BombData{
         bool operator==(const BombData& other)const = default;
         PlaceData place;
-        NewObject new_object;
+        Objectdata new_object;
         unsigned ticks_left; 
     };
     using VariantEventData = std::variant<EmptyData, WalkData, BombData>;

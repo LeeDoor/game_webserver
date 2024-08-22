@@ -4,7 +4,7 @@ namespace game_manager{
     Gun::Gun(OwnerType owner, ActorId actor_id) 
         : ObjectDirected(owner, actor_id){}
     Gun::Gun(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : ObjectDirected(owner, actor_id), methods_(std::move(methods)){}
+        : shoot_(std::move(methods.shoot)), ObjectDirected(owner, actor_id, std::move(methods)){}
 
     bool Gun::operator==(Object::Ptr obj) const {
         Gun::Ptr d = std::dynamic_pointer_cast<Gun>(obj);
@@ -19,18 +19,18 @@ namespace game_manager{
         j["shots_left"] = shots_left;
     }
 
-    std::string Gun::UpdateTick() {
+    Object::EventsType Gun::UpdateTick(int move_number) {
         --ticks_to_shot;
         if(!ticks_to_shot) {
             ticks_to_shot = shot_cooldown_;
-            methods_.shoot(shared_from_this());
+            shoot_(shared_from_this());
             --shots_left;
             if(!shots_left){
-                methods_.destroy(actor_id);
-                return GUN_SHOT_DESTROY;
+                destroy_(actor_id);
+                return {CreateEvent(move_number, GUN_SHOT_DESTROY)};
             }
-            return GUN_SHOT;
+            return {CreateEvent(move_number, GUN_SHOT)};
         }
-        return GUN_WAITING;
+        return {CreateEvent(move_number, GUN_WAITING)};
     }
 }

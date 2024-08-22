@@ -1,7 +1,10 @@
 #include "object_directed.hpp"
 
 namespace game_manager{
-    ObjectDirected::ObjectDirected(OwnerType owner, ActorId id) : ObjectPlaced(owner, id){}
+    ObjectDirected::ObjectDirected(OwnerType owner, ActorId id) 
+        : ObjectPlaced(owner, id){}
+    ObjectDirected::ObjectDirected(OwnerType owner, ActorId id, Methods&& methods)
+        : ObjectPlaced(owner, id, std::move(methods)){}
     ObjectDirected::~ObjectDirected() = default;
     bool ObjectDirected::operator==(Object::Ptr obj) const {
         ObjectDirected::Ptr d = std::dynamic_pointer_cast<ObjectDirected>(obj);

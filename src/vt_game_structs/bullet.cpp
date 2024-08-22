@@ -4,7 +4,7 @@ namespace game_manager{
     Bullet::Bullet(OwnerType owner, ActorId actor_id) 
         : ObjectDirected(owner, actor_id){}
     Bullet::Bullet(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : ObjectDirected(owner, actor_id), methods_(std::move(methods)){}
+        : ObjectDirected(owner, actor_id, std::move(methods)){}
 
     bool Bullet::operator==(Object::Ptr obj) const {
         Bullet::Ptr d = std::dynamic_pointer_cast<Bullet>(obj);
@@ -15,7 +15,7 @@ namespace game_manager{
         j["type"] = "bullet";
     }
 
-    std::string Bullet::UpdateTick() {
+    Object::EventsType Bullet::UpdateTick(int move_number) {
         int mX = 0, mY = 0; // x and y modifiers.
         switch(dir){
         case Direction::Up:
@@ -36,6 +36,6 @@ namespace game_manager{
 
         // collision detection
 
-        return BULLET_FLY;
+        return {CreateEvent(move_number, BULLET_FLY)};
     }
 }

@@ -8,6 +8,7 @@ namespace game_manager{
         using Ptr = std::shared_ptr<ObjectDirected>;
 
         ObjectDirected(OwnerType owner, ActorId id);
+        ObjectDirected(OwnerType owner, ActorId id, Methods&& methods);
         virtual ~ObjectDirected();
         virtual bool operator==(Object::Ptr obj) const;
         virtual void tojson(nlohmann::json& j) const;

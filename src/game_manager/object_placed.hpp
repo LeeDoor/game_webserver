@@ -8,6 +8,7 @@ namespace game_manager{
         using Ptr = std::shared_ptr<ObjectPlaced>;
 
         ObjectPlaced(OwnerType owner, ActorId id);
+        ObjectPlaced(OwnerType owner, ActorId id, Methods&& methods);
         virtual ~ObjectPlaced();
         virtual bool operator==(Object::Ptr obj) const;
         virtual void tojson(nlohmann::json& j) const;

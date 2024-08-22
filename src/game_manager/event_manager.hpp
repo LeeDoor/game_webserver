@@ -31,6 +31,7 @@ namespace game_manager{
         
         void Clear();
         void AddEvent(Event&& event);
+        void AddEvents(Vec&& events);
         Vec FromMove(int move_number) const;
     private:
         std::vector<int> from_move_;

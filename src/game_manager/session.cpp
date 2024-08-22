@@ -142,8 +142,8 @@ namespace game_manager{
 
             std::advance(it_n, 1);
 
-            std::string event = (*it)->UpdateTick();
-            AddEvent((*it)->actor_id, std::move(event), EmptyData{});
+            Object::EventsType events = (*it)->UpdateTick(state_->move_number);
+            events_wrapper_->AddEvents(std::move(events));
 
             it = it_n;
         }

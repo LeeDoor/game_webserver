@@ -22,6 +22,12 @@ namespace game_manager{
         
         value_.push_back(std::move(event));
     }
+    void EventListWrapper::AddEvents(Vec&& events) {
+        for(auto event : events){
+            // no SPLICE, from_move_ needs to be edited
+            AddEvent(std::move(event));
+        }
+    }
     EventListWrapper::Vec EventListWrapper::FromMove(int from_move) const {
         // from_move starts from zero, need to decrement
         return Vec(std::next(value_.begin(), from_move_[from_move - 1]), value_.end());

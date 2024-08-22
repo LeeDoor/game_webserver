@@ -4,7 +4,7 @@ namespace game_manager{
     Bomb::Bomb(OwnerType owner, ActorId id) 
         : ObjectPlaced(owner, id){}
     Bomb::Bomb(OwnerType owner, ActorId id, Methods&& methods) 
-        : ObjectPlaced(owner, id), methods_(std::move(methods)){}
+        : explode_(std::move(methods.explode)), ObjectPlaced(owner, id, std::move(methods)) {}
     bool Bomb::operator==(Object::Ptr obj) const {
         Bomb::Ptr d = std::dynamic_pointer_cast<Bomb>(obj);
         return ObjectPlaced::operator==(obj) 
@@ -17,12 +17,12 @@ namespace game_manager{
         j["ticks_left"] = ticks_left;
     }
 
-    std::string Bomb::UpdateTick() {
+    Object::EventsType Bomb::UpdateTick(int move_number) {
         --ticks_left;
         if(ticks_left)
-            return BOMB_TICKING;
-        methods_.explode(posX, posY);
-        methods_.destroy(actor_id);
-        return BOMB_EXPLODE;
+            return {CreateEvent(move_number, BOMB_TICKING)};
+        explode_(posX, posY);
+        destroy_(actor_id);
+        return {CreateEvent(move_number, BOMB_EXPLODE)};
     }
 }
