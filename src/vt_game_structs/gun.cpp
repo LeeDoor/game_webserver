@@ -20,5 +20,17 @@ namespace game_manager{
     }
 
     std::string Gun::UpdateTick() {
+        --ticks_to_shot;
+        if(!ticks_to_shot) {
+            ticks_to_shot = shot_cooldown_;
+            methods_.shoot(shared_from_this());
+            --shots_left;
+            if(!shots_left){
+                methods_.destroy(actor_id);
+                return GUN_SHOT_DESTROY;
+            }
+            return GUN_SHOT;
+        }
+        return GUN_WAITING;
     }
 }

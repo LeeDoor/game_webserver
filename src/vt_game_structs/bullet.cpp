@@ -16,6 +16,26 @@ namespace game_manager{
     }
 
     std::string Bullet::UpdateTick() {
-        
+        int mX = 0, mY = 0; // x and y modifiers.
+        switch(dir){
+        case Direction::Up:
+            mY = -1;
+            break;
+        case Direction::Left:
+            mX = 1;
+            break;
+        case Direction::Down:
+            mY = 1;
+            break;
+        case Direction::Right:
+            mX = -1;
+            break;
+        }
+        posX += mX;
+        posY += mY;
+
+        // collision detection
+
+        return BULLET_FLY;
     }
 }

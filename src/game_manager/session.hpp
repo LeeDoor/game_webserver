@@ -7,14 +7,17 @@
 #include "state.hpp"
 #include "event_manager.hpp"
 #include "bomb.hpp"
+#include "gun.hpp"
+#include "bullet.hpp"
 
 namespace game_manager{
     class Event;
 
     using SessionId = std::string;
-    class Session : public std::enable_shared_from_this<game_manager::Session>{
+    class Session {
     public:
         using Ptr = std::shared_ptr<Session>;
+
         Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2);
 
         /// @brief check if given player is in the session
@@ -81,17 +84,17 @@ namespace game_manager{
         void AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data);
 
         // object placement
-
-        /// @brief places bomb on given place as passed player
-        Bomb::Ptr PlaceBombObject(PlaceData place, Player::Login login);
+        Bomb::Ptr PlaceBombObject(PlaceData place, Object::OwnerType login);
+        Gun::Ptr PlaceGunObject(DirectedPlaceData place, Object::OwnerType login);
+        Bullet::Ptr PlaceBulletObject(DirectedPlaceData place, Object::OwnerType login);
+        
         /// @brief removes given object from scene.
         void RemoveObject(ActorId actor_id) ;
 
         // object acting
-        
-        /// @brief handles exploding bomb on given position
         void Explode(Dimention posX, Dimention posY);
-
+        void ShootBullet(Gun::Ptr gun);
+        
         // assisting functions
 
         /// @brief returns true if given cell is valid to walk on or to place an object.

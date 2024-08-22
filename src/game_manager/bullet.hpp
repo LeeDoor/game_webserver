@@ -7,11 +7,9 @@ namespace game_manager{
     public: 
         using Ptr = std::shared_ptr<Bullet>;
         using DestroyFunc = std::function<void(ActorId)>;
-        using FlyFunc = std::function<void(Direction)>;
 
         struct Methods{
             DestroyFunc destroy;
-            FlyFunc fly;
         };
 
         Bullet(OwnerType owner, ActorId actor_id);

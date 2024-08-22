@@ -19,12 +19,12 @@ namespace game_manager{
     /// @brief player's move data which have placing and direction info
     struct DirectedPlaceData{
         bool operator == (const DirectedPlaceData& other) const {
-            return posX == other.posX && posY == other.posY && direction == other.direction;
+            return posX == other.posX && posY == other.posY && dir == other.dir;
         }
 
-        Direction direction;
         Dimention posX;
         Dimention posY;
+        Direction dir;
     };
     struct NewObject{
         bool operator == (const NewObject& other) const = default;

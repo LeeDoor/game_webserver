@@ -7,12 +7,12 @@ namespace game_manager{
     public:
         using Ptr = std::shared_ptr<Bomb>;
 
-        using DestroyFunc = std::function<void(ActorId)>;
         using ExplodeFunc = std::function<void(Dimention, Dimention)>;
+        using DestroyFunc = std::function<void(ActorId)>;
 
         struct Methods{
-            ExplodeFunc explode;
             DestroyFunc destroy;
+            ExplodeFunc explode;
         };
 
         Bomb(OwnerType owner, ActorId id);

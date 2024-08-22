@@ -3,11 +3,11 @@
 #include <functional>
 
 namespace game_manager{
-    class Gun : public ObjectDirected {
+    class Gun : public ObjectDirected, public std::enable_shared_from_this<Gun> {
     public: 
         using Ptr = std::shared_ptr<Gun>;
         using DestroyFunc = std::function<void(ActorId)>;
-        using ShootFunc = std::function<void(Direction)>;
+        using ShootFunc = std::function<void(Gun::Ptr)>;
 
         struct Methods{
             DestroyFunc destroy;

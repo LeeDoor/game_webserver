@@ -178,21 +178,44 @@ namespace game_manager{
         return true;
     }
 
-    Bomb::Ptr Session::PlaceBombObject(PlaceData place, Player::Login login) {
-        namespace pl = std::placeholders;
-        auto sp = this->shared_from_this();
+    Bomb::Ptr Session::PlaceBombObject(PlaceData place, Object::OwnerType login) {
         Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), Bomb::Methods{
-            [&](Dimention x, Dimention y){
-                Explode(x, y);
-            },
             [&](ActorId actor_id){
                 RemoveObject(actor_id);
+            },
+            [&](Dimention x, Dimention y){
+                Explode(x, y);
             },
         });
         obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
         return obj;
     }
+    Gun::Ptr Session::PlaceGunObject(DirectedPlaceData place, Object::OwnerType login) {
+        Gun::Ptr obj = std::make_shared<Gun>(login, GetId(), Gun::Methods{
+            [&](ActorId actor_id){
+                RemoveObject(actor_id);
+            },
+            [&](Gun::Ptr gun){
+                ShootBullet(gun);
+            },
+        });
+        obj->Place(place.posX, place.posY, place.dir);
+        objects().emplace_back(obj);
+        return obj;
+    }
+
+    Bullet::Ptr Session::PlaceBulletObject(DirectedPlaceData place, Object::OwnerType login) {
+        Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId(), Bullet::Methods{
+            [&](ActorId actor_id){
+                RemoveObject(actor_id);
+            },
+        });
+        obj->Place(place.posX, place.posY, place.dir);
+        objects().emplace_back(obj);
+        return obj;
+    }
+
     void Session::RemoveObject(ActorId actor_id) {
         objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj){return obj->actor_id == actor_id;}));
     }
@@ -209,4 +232,9 @@ namespace game_manager{
             }
         }
     }
+
+    void Session::ShootBullet(Gun::Ptr gun){
+        PlaceBulletObject(DirectedPlaceData{gun->posX, gun->posY, gun->dir}, gun->owner);
+    }
+
 }
