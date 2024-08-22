@@ -3,12 +3,13 @@
 #include <list>
 #include "player.hpp"
 #include "event_manager.hpp"
+#include "i_shootable.hpp"
 #include "nlohmann/json.hpp"
 
 namespace game_manager{
     struct State;
     
-    class Object{
+    class Object : public IShootable{
     public:
         using Ptr = std::shared_ptr<Object>;
         using OwnerType = Player::Login;
@@ -28,6 +29,8 @@ namespace game_manager{
         virtual void tojson(nlohmann::json& j) const;
         virtual EventsType UpdateTick(int move_number) = 0;
         
+        EventListWrapper::Vec GetShot(int move_number, std::shared_ptr<Bullet> bullet) override;
+
         ActorId actor_id;
         OwnerType owner;        
 

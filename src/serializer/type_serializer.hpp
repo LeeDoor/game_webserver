@@ -6,6 +6,8 @@
 #include "object.hpp"
 using json = nlohmann::json;
 
+
+
 namespace http_handler {
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RegistrationData, login, password);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PublicUser, login, password);
@@ -52,4 +54,64 @@ namespace game_manager{
 namespace session_manager{
     void to_json(json& j, const PublicSessionData& v);
     void from_json(const json& j, PublicSessionData& v);
+}
+
+namespace nlohmann {
+    template <typename T>
+    struct adl_serializer<std::shared_ptr<T>> {
+        static void to_json(json& j, const std::shared_ptr<T>& value) {
+            if (value.get()) {
+                j = *value;
+            } else {
+                j = nullptr;
+            }
+        }
+        
+        static void from_json(const json& j, std::shared_ptr<T>& value) {
+            if (j.is_null()) {
+                value = nullptr;
+            } else {
+                value = std::make_shared<T>(j.template get<T>());
+            }
+        }
+    };
+    template <>
+    struct adl_serializer<std::shared_ptr<game_manager::Object>> {
+        static void to_json(json& j, const std::shared_ptr<game_manager::Object>& v) {
+            v->tojson(j);
+        }
+        
+        static void from_json(const json& it, std::shared_ptr<game_manager::Object>& v) {
+            namespace gm = game_manager;
+
+            gm::Object::OwnerType owner;
+            gm::ActorId actor_id;
+            owner = it.at("owner").get<gm::Object::OwnerType>();
+            actor_id = it.at("actor_id").get<gm::ActorId>();
+            if(it.at("type") == "bomb"){
+                gm::Bomb::Ptr bomb = std::make_shared<gm::Bomb>(owner, actor_id);
+                it.at("ticks_left").get_to(bomb->ticks_left);
+                bomb->Place(it.at("posX").get<gm::Dimention>(), it.at("posY").get<gm::Dimention>());
+                v = bomb;
+                return;
+            }
+            if(it.at("type" == "gun")){
+                gm::Gun::Ptr gun = std::make_shared<gm::Gun>(owner, actor_id);
+                it.at("ticks_to_shot").get_to(gun->ticks_to_shot);
+                it.at("shots_left").get_to(gun->shots_left);
+                gun->Place(it.at("posX").get<gm::Dimention>(), it.at("posY").get<gm::Dimention>(), it.at("dir").get<gm::Direction>()); 
+                v = gun;
+                return;
+            }
+            if(it.at("type" == "bullet")){
+                gm::Bullet::Ptr bullet = std::make_shared<gm::Bullet>(owner, actor_id);
+                bullet->Place(it.at("posX").get<gm::Dimention>(), it.at("posY").get<gm::Dimention>(), it.at("dir").get<gm::Direction>());
+                v = bullet;
+                return;
+            }
+            else{
+                throw std::runtime_error("object type not implemented: " + it.at("type").get<std::string>());
+            } 
+        }
+    };
 }

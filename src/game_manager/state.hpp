@@ -1,22 +1,33 @@
 #pragma once
 #include "player.hpp"
 #include "object.hpp"
+#include "i_shootable.hpp"
 #include <vector>
 #include <list>
 #include <memory>
 #include <optional>
 
 namespace game_manager {
-    struct Obstacle {
+    class Obstacle : public IShootable {
+    public:
+        using Ptr = std::shared_ptr<Obstacle>;
+
         enum Type{
             Wall,
         };
 
-        bool operator == (const Obstacle& other) const = default;
+        Obstacle(){}
+        Obstacle(Dimention posX, Dimention posY, Type type):
+            posX(posX), posY(posY), type(type){}
 
-        Dimention posX;
-        Dimention posY;
-        Type type;
+        bool operator == (const Obstacle& other) const {
+            return posX == other.posX && posY == other.posY && type == other.type;
+        }
+        EventListWrapper::Vec GetShot(int move_number, std::shared_ptr<Bullet>) override {return {};} 
+
+        Dimention posX = 0;
+        Dimention posY = 0;
+        Type type = Type::Wall;
     };
 
     struct MapSize{
@@ -25,18 +36,19 @@ namespace game_manager {
         unsigned width;
         unsigned height;
     };
+
     struct State{
-        using Players = std::vector<Player>;
+        using Players = std::vector<Player::Ptr>;
         using Objects = std::list<Object::Ptr>;
-        using Terrain = std::vector<Obstacle>;
+        using Terrain = std::list<Obstacle::Ptr>;
         using NowTurn = Player::Login;
         using Ptr = std::shared_ptr<State>;
         using CPtr = std::shared_ptr<const State>;
         using OptCPtr = std::optional<CPtr>;
         
         bool operator==(const State& s) const {
-            return players == s.players && 
-                terrain == s.terrain && 
+            return std::equal(players.begin(), players.end(), s.players.begin(), [](Player::Ptr a, Player::Ptr b){return *a == *b;}) && 
+                std::equal(terrain.begin(), terrain.end(), s.terrain.begin(), [](Obstacle::Ptr a, Obstacle::Ptr b){return *a == *b;}) && 
                 now_turn == s.now_turn && 
                 map_size == s.map_size &&
                 std::equal(objects.begin(), objects.end(), s.objects.begin(), [](Object::Ptr a, Object::Ptr b){return *a == b;});

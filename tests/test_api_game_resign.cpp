@@ -100,8 +100,8 @@ TEST_CASE("ApiResign", "[api][game][move][resign]"){
         CHECK(*psd.winner != *psd.loser);
         CHECK(*psd.loser == ld.login);
         
-        gm::Player& player1 = sd.state.players[0].login == sd.l1.login ? sd.state.players[0] : sd.state.players[1];
-        gm::Player& player2 = sd.state.players[1].login == sd.l1.login ? sd.state.players[0] : sd.state.players[1]; 
+        gm::Player& player1 = *(sd.state.players.front()->login == sd.l1.login ? sd.state.players.front(): sd.state.players.back());
+        gm::Player& player2 = *(sd.state.players.back()->login == sd.l1.login ? sd.state.players.front(): sd.state.players.back()); 
 
         StringResponse response = Walk(socket, {player1.posX + 1, player1.posY}, sd.l1.token, sd.sid);
         CheckStringResponse(response, {

@@ -79,7 +79,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
 
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+        gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
         INFO(player.posX << " " << player.posY);
 
@@ -142,7 +142,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
 
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+        gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
         WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
 
         f2.wait();
@@ -219,7 +219,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             state = SessionStateSuccess(socket, ld1.token, sid);
             um::Login& now_turn = state.now_turn;
             LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-            gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+            gm::Player& player = * (state.players.front()->login == now_turn ? state.players.front() : state.players.back());
             WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
         }
 

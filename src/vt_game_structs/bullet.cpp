@@ -4,7 +4,7 @@ namespace game_manager{
     Bullet::Bullet(OwnerType owner, ActorId actor_id) 
         : ObjectDirected(owner, actor_id){}
     Bullet::Bullet(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : ObjectDirected(owner, actor_id, std::move(methods)){}
+        : get_shootables_(std::move(methods.get_shootables)), ObjectDirected(owner, actor_id, std::move(methods)){}
 
     bool Bullet::operator==(Object::Ptr obj) const {
         Bullet::Ptr d = std::dynamic_pointer_cast<Bullet>(obj);
@@ -34,8 +34,18 @@ namespace game_manager{
         posX += mX;
         posY += mY;
 
-        // collision detection
+        std::optional<IShootable::Arr> shootables = get_shootables_(shared_from_this());
+        if(!shootables) 
+            return {CreateEvent(move_number, BULLET_DESTROY)};
+        Object::EventsType events = {CreateEvent(move_number, BULLET_FLY)};
+        
+        for(IShootable::Ptr shootable : *shootables){
+            events.splice(events.end(), shootable->GetShot(move_number, shared_from_this()));
+        }
 
-        return {CreateEvent(move_number, BULLET_FLY)};
+        if(shootables->size() > 0) {
+            events.push_back(CreateEvent(move_number, BULLET_DESTROY));
+        }
+        return events;
     }
 }

@@ -94,7 +94,8 @@ namespace game_manager{
         // object acting
         void Explode(Dimention posX, Dimention posY);
         void ShootBullet(Gun::Ptr gun);
-        
+        std::optional<IShootable::Arr> GetShootableObjects(Bullet::Ptr bullet);
+
         // assisting functions
 
         /// @brief returns true if given cell is valid to walk on or to place an object.
@@ -110,8 +111,8 @@ namespace game_manager{
         std::vector<Player*> scoreboard_;   
 
         State::Objects& objects(){return state_->objects;}
-        Player& player1(){return state_->players[0];}
-        Player& player2(){return state_->players[1];}
+        Player& player1(){return *state_->players.front();}
+        Player& player2(){return *state_->players.back();}
         um::Login& nowTurn(){return state_->now_turn;}
         State::Terrain& terrain(){return state_->terrain;}
 

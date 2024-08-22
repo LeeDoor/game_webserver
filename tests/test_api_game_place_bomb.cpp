@@ -24,11 +24,11 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::State state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
-        state.players[0].posX = 0;
-        state.players[0].posY = 1;
-        state.players[1].posX = 2;
-        state.players[1].posY = 1;
-        state.terrain = {gm::Obstacle{1,1,gm::Obstacle::Type::Wall}};
+        state.players.front()->posX = 0;
+        state.players.front()->posY = 1;
+        state.players.back()->posX = 2;
+        state.players.back()->posY = 1;
+        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{1,1,gm::Obstacle::Type::Wall})};
         SetStateSuccess(socket, state, sd.sid);
         StringResponse response;
         
@@ -250,7 +250,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
 
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[1] : state.players[0];
+        gm::Player& player = *(state.players.front()->login == ld.login ? state.players.front(): state.players.back());
 
         std::vector<gm::PlaceData> wds{
             {player.posX + 1, player.posY},

@@ -32,13 +32,13 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
             um::Login& now_turn = state.now_turn;
             LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-            gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+            gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
             if(prev_turn)
                 CHECK(*prev_turn != now_turn);
 
             if(new_wd){
-                gm::Player& waiting_player = state.players[1].login == now_turn ? state.players[0] : state.players[1];
+                gm::Player& waiting_player = *(state.players.back()->login == now_turn ? state.players.front() : state.players.back());
                 CHECK(waiting_player.posX == new_wd->posX);
                 CHECK(waiting_player.posY == new_wd->posY);
             }
@@ -75,7 +75,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[0] : state.players[1];
+        gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
         std::vector<StringResponse> responses = {
             Walk(socket, {player.posX + 2, player.posY + 3}, ld.token, sid),
@@ -112,7 +112,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
-        gm::Player& player = state.players[0].login == now_turn ? state.players[1] : state.players[0];
+        gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
         std::vector<gm::PlaceData> wds{
             {player.posX + 1, player.posY},
@@ -205,10 +205,10 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::State state = sd.state;
         state.map_size = {2,2};
         state.now_turn = sd.l1.login;
-        state.players[0].posX = 0;
-        state.players[0].posY = 0;
-        state.players[1].posX = 1;
-        state.players[1].posY = 0;
+        state.players.front()->posX = 0;
+        state.players.front()->posY = 0;
+        state.players.back()->posX = 1;
+        state.players.back()->posY = 0;
         state.terrain = {};
         SetStateSuccess(socket, state, sd.sid);
         // XXXXXXXXXX
@@ -299,11 +299,11 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::State state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
-        state.players[0].posX = 0;
-        state.players[0].posY = 1;
-        state.players[1].posX = 2;
-        state.players[1].posY = 1;
-        state.terrain = {gm::Obstacle{1,1,gm::Obstacle::Type::Wall}};
+        state.players.front()->posX = 0;
+        state.players.front()->posY = 1;
+        state.players.back()->posX = 2;
+        state.players.back()->posY = 1;
+        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{1,1,gm::Obstacle::Type::Wall})};
         SetStateSuccess(socket, state, sd.sid);
 
         // * * * * * * *

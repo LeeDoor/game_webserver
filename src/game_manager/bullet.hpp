@@ -3,11 +3,13 @@
 #include <functional>
 
 namespace game_manager{
-    class Bullet : public ObjectDirected {
+    class Bullet : public ObjectDirected, public std::enable_shared_from_this<Bullet> {
     public: 
         using Ptr = std::shared_ptr<Bullet>;
+        using GetShootablesFunc = std::function<std::optional<IShootable::Arr>(Bullet::Ptr)>;
 
         struct Methods : public Object::Methods{
+            GetShootablesFunc get_shootables;
         };
 
         Bullet(OwnerType owner, ActorId actor_id);
@@ -17,7 +19,7 @@ namespace game_manager{
 
         EventsType UpdateTick(int move_number) override;
     private:
-        //methods
+        GetShootablesFunc get_shootables_;
 
         const std::string BULLET_DESTROY = "bullet_destroy";
         const std::string BULLET_FLY = "bullet_fly";

@@ -28,7 +28,7 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         REQUIRE(state.players.size() == 2);
-        bool now_turn_match = state.now_turn == state.players[0].login || state.now_turn == state.players[1].login;
+        bool now_turn_match = state.now_turn == state.players[0]->login || state.now_turn == state.players.back()->login;
         REQUIRE(now_turn_match);
 
         hh::RegistrationData rd = RegisterSuccess(socket);
@@ -62,8 +62,8 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
             um::Login& nt = state.now_turn;
             gm::State::Players& players = state.players;
             REQUIRE(players.size() == 2);
-            gm::Player& player1 = players[0];
-            gm::Player& player2 = players[1];
+            gm::Player& player1 = *players.front();
+            gm::Player& player2 = *players.back();
             REQUIRE(player1 != player2);
             // now_turn fits first player
             bool now_turn_fit = nt == player1.login;

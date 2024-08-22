@@ -14,7 +14,7 @@ bool ValidCell(const gm::State& state, unsigned x, unsigned y){
     auto& terrain = state.terrain;
     
     auto it = std::find_if(terrain.begin(), terrain.end(), 
-        [&](const gm::Obstacle& o){return o.posX == x && o.posY == y;});
+        [&](gm::Obstacle::Ptr o){return o->posX == x && o->posY == y;});
     return it == terrain.end();
 }
 

@@ -20,4 +20,8 @@ namespace game_manager{
     Event Object::CreateEvent(int move_number, std::string event_type, VariantEventData&& data) {
         return {move_number, actor_id, std::move(event_type), std::move(data)};
     }
+
+    EventListWrapper::Vec Object::GetShot(int move_number, std::shared_ptr<Bullet> bullet) {
+        return {};
+    }
 }

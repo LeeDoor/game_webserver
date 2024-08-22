@@ -109,6 +109,10 @@ namespace game_manager{
 
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
         state_->players.resize(2);
+        state_->players = {
+            std::make_shared<Player>(),
+            std::make_shared<Player>(),
+        };
         player1().login = login1;
         player2().login = login2;
 
@@ -127,9 +131,8 @@ namespace game_manager{
             {1,4}, {3,4},
             {4,5}, {7,5}
         };
-        terrain().reserve(walls.size());
         for(auto& pair : walls){
-            terrain().emplace_back(pair.first, pair.second, Obstacle::Type::Wall);
+            terrain().push_back(std::make_shared<Obstacle>(pair.first, pair.second, Obstacle::Type::Wall));
         }
 
         nowTurn() = login1;
@@ -163,7 +166,7 @@ namespace game_manager{
         }
 
         auto it = std::find_if(terrain().begin(), terrain().end(), 
-            [&](const Obstacle& v){return v.posX == posX && v.posY == posY;});
+            [&](Obstacle::Ptr v){return v->posX == posX && v->posY == posY;});
         if(it != terrain().end()){
             spdlog::warn("cell is invalid: on the obstacle [{},{}]", posX, posY);
             return false;
@@ -237,4 +240,17 @@ namespace game_manager{
         PlaceBulletObject(DirectedPlaceData{gun->posX, gun->posY, gun->dir}, gun->owner);
     }
 
+    std::optional<IShootable::Arr> Session::GetShootableObjects(Bullet::Ptr bullet) {
+        if(bullet->posX < 0 || bullet->posY < 0 || 
+            bullet->posX >= state_->map_size.width || 
+            bullet->posY >= state_->map_size.height)
+            return std::nullopt;
+
+        IShootable::Arr res;
+
+        std::copy(terrain().begin(), terrain().end(), std::back_inserter(res));
+        std::copy(objects().begin(), objects().end(), std::back_inserter(res));
+
+        return res;
+    }
 }

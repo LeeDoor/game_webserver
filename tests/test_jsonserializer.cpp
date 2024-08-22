@@ -223,22 +223,22 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
     SECTION("Serialize"){
         example.now_turn = "login1";
         example.players = {
-            {
+            std::make_shared<gm::Player>(
                 6171467,
                 "login1",
                 5,
                 5      
-            },
-            {
+            ),
+            std::make_shared<gm::Player>(
                 315156,
                 "login2",
                 1,
                 1
-            }
+            )
         };
         example.terrain = {
-            {2,2,gm::Obstacle::Type::Wall},
-            {3,3,gm::Obstacle::Type::Wall}
+            std::make_shared<gm::Obstacle>(2,2,gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(3,3,gm::Obstacle::Type::Wall)
         };
         example.map_size = {15,15};
         auto bomb = std::make_shared<game_manager::Bomb>("owner", 1);
@@ -254,22 +254,22 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         example.map_size = {0,0};
         example.now_turn = "";
         example.players = {
-            {
+            std::make_shared<gm::Player>(
                 1112,
                 "",
                 0,
                 0      
-            },
-            {
+            ),
+            std::make_shared<gm::Player>(
                 315156,
                 "",
                 0,
                 0
-            }
+            )
         };
         example.terrain = {
-            {0,0,gm::Obstacle::Type::Wall},
-            {0,0,gm::Obstacle::Type::Wall}
+            std::make_shared<gm::Obstacle>(0,0,gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(0,0,gm::Obstacle::Type::Wall)
         };
         REQUIRE_NOTHROW(given_str = serializer::Serialize(example));
         REQUIRE_NOTHROW(j = json::parse(given_str));
@@ -283,23 +283,23 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         REQUIRE_NOTHROW(given = *opt);
         example.now_turn = "login number one";
         example.players = {
-            {
+            std::make_shared<gm::Player>(
                 315156,
                 "login number one",
                 1,
                 2      
-            },
-            {
+            ),
+            std::make_shared<gm::Player>(
                 315156,
                 "login number twoo",
                 5,
                 6
-            }
+            )
         };
         example.terrain = {
-            {3,4,gm::Obstacle::Type::Wall},
-            {2,1,gm::Obstacle::Type::Wall},
-            {89,12222555,gm::Obstacle::Type::Wall}
+            std::make_shared<gm::Obstacle>(3,4,gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(2,1,gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(89,12222555,gm::Obstacle::Type::Wall)
         };
         example.map_size = {15,15};
         example.move_number = 4;
