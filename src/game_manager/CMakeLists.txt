@@ -16,6 +16,8 @@ add_library(${LIBRARY_NAME}
     event_manager.hpp
     event_manager.cpp
     session_func_data.hpp
+    gun.hpp
+    bullet.hpp
 )
 
 #including and linking dependencies

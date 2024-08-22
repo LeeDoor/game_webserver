@@ -1,6 +1,8 @@
 #include "type_serializer.hpp"
 #include "spdlog/spdlog.h"
 #include "bomb.hpp"
+#include "gun.hpp"
+#include "bullet.hpp"
 
 namespace game_manager{
     void to_json(json& j, const State& v) {
@@ -24,33 +26,37 @@ namespace game_manager{
     }
     
     void to_json(json& j, const Object::Ptr& v) {
-        j["posX"] = v->posX;
-        j["posY"] = v->posY;
-        j["type"] = "object";
-        j["owner"] = v->owner;
-        j["id"] = v->id;
-
-        Bomb::Ptr bomb = dynamic_pointer_cast<Bomb>(v);
-        if(bomb) {
-            j["type"] = "bomb";
-            j["ticks_left"] = bomb->ticks_left;
-        }
+        v->tojson(j);
     }
     void from_json(const json& it, Object::Ptr& v) {
-        if(!it.at("posX").is_number_unsigned() ||
-            !it.at("posY").is_number_unsigned())
-            throw std::runtime_error("signed value provided (need unsigned for PlaceData)"); 
-
+        Object::OwnerType owner;
+        ActorId actor_id;
+        owner = it.at("owner").get<Object::OwnerType>();
+        actor_id = it.at("actor_id").get<ActorId>();
         if(it.at("type") == "bomb"){
-            Bomb::Ptr bomb = std::make_shared<Bomb>(it.at("owner").get<std::string>(), it.at("id").get<ActorId>());
+            Bomb::Ptr bomb = std::make_shared<Bomb>(owner, actor_id);
             it.at("ticks_left").get_to(bomb->ticks_left);
+            bomb->Place(it.at("posX").get<Dimention>(), it.at("posY").get<Dimention>());
             v = bomb;
+            return;
+        }
+        if(it.at("type" == "gun")){
+            Gun::Ptr gun = std::make_shared<Gun>(owner, actor_id);
+            it.at("ticks_to_shot").get_to(gun->ticks_to_shot);
+            it.at("shots_left").get_to(gun->shots_left);
+            gun->Place(it.at("posX").get<Dimention>(), it.at("posY").get<Dimention>(), it.at("dir").get<Direction>());
+            v = gun;
+            return;
+        }
+        if(it.at("type" == "bullet")){
+            Bullet::Ptr bullet = std::make_shared<Bullet>(owner, actor_id);
+            bullet->Place(it.at("posX").get<Dimention>(), it.at("posY").get<Dimention>(), it.at("dir").get<Direction>());
+            v = bullet;
+            return;
         }
         else{
             throw std::runtime_error("object type not implemented: " + it.at("type").get<std::string>());
-        }
-        it.at("posX").get_to(v->posX);
-        it.at("posY").get_to(v->posY);
+        } 
     }
     void to_json(json& j, const Event& v) {
         j["move_number"] = v.move_number;

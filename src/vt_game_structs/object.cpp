@@ -1,19 +1,16 @@
 #include "object.hpp"
-#include "state.hpp"
-#include <algorithm>
 
 namespace game_manager{
-    Object::Object(OwnerType owner, ActorId id) : owner(owner), id(id){}
+    Object::Object(OwnerType owner, ActorId id) : owner(owner), actor_id(id){}
     Object::~Object() = default;
     bool Object::operator==(Object::Ptr obj) const {
         return obj->owner == owner && 
-            obj->posX == posX &&
-            obj->posY == posY &&
-            obj->id == id;
+            obj->actor_id == actor_id;
     }
 
-    void Object::Place(Dimention posX, Dimention posY){
-        this->posX = posX;
-        this->posY = posY;
+    void Object::tojson(nlohmann::json& j) const {
+        j["type"] = "object";
+        j["owner"] = owner;
+        j["actor_id"] = actor_id;
     }
 }

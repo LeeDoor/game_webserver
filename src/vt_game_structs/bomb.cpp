@@ -1,21 +1,28 @@
 #include "bomb.hpp"
-#include "state.hpp"
 
 namespace game_manager{
     Bomb::Bomb(OwnerType owner, ActorId id) 
-        : Object(owner, id){}
-    Bomb::Bomb(OwnerType owner, ActorId id, ExplodeFunc&& explode) 
-        : Object(owner, id), explode_(std::move(explode)){}
+        : ObjectPlaced(owner, id){}
+    Bomb::Bomb(OwnerType owner, ActorId id, Methods&& methods) 
+        : ObjectPlaced(owner, id), methods_(std::move(methods)){}
     bool Bomb::operator==(Object::Ptr obj) const {
-        Bomb::Ptr d = dynamic_pointer_cast<Bomb>(obj);
-        return Object::operator==(obj) && d && id == obj->id && d->ticks_left == ticks_left;
+        Bomb::Ptr d = std::dynamic_pointer_cast<Bomb>(obj);
+        return ObjectPlaced::operator==(obj) 
+            && d 
+            && d->ticks_left == ticks_left;
+    }
+    void Bomb::tojson(nlohmann::json& j) const {
+        ObjectPlaced::tojson(j);
+        j["type"] = "bomb";
+        j["ticks_left"] = ticks_left;
     }
 
-    std::pair<std::string, bool> Bomb::UpdateTick() {
+    std::string Bomb::UpdateTick() {
         --ticks_left;
         if(ticks_left)
-            return {BOMB_TICKING, false};
-        explode_(posX, posY);
-        return {BOMB_EXPLODE, true};
+            return BOMB_TICKING;
+        methods_.explode(posX, posY);
+        methods_.destroy(actor_id);
+        return BOMB_EXPLODE;
     }
 }

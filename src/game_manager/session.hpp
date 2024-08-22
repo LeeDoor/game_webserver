@@ -85,7 +85,7 @@ namespace game_manager{
         /// @brief places bomb on given place as passed player
         Bomb::Ptr PlaceBombObject(PlaceData place, Player::Login login);
         /// @brief removes given object from scene.
-        void RemoveObject(Object::Ptr obj);
+        void RemoveObject(ActorId actor_id) ;
 
         // object acting
         

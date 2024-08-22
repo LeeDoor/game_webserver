@@ -91,7 +91,7 @@ namespace game_manager{
         
         Bomb::Ptr bomb = PlaceBombObject(move_data, player.login);
         ++state_->move_number;
-        AddEvent(player.id, PLAYER_PLACE_BOMB, BombData{std::move(move_data), {bomb->id}, bomb->ticks_left});
+        AddEvent(player.id, PLAYER_PLACE_BOMB, BombData{std::move(move_data), {bomb->actor_id}, bomb->ticks_left});
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -137,16 +137,15 @@ namespace game_manager{
     }
 
     void Session::AfterMove(){
-        for(auto it = objects().begin(); it != objects().end(); ++it){
+        for(auto it = objects().begin(), it_n = it; it != objects().end();){
             if(!scoreboard_.empty()) break;
 
-            auto tick_res = (*it)->UpdateTick();
-            AddEvent((*it)->id, std::move(tick_res.first), EmptyData{});
-            if(tick_res.second){
-                Object::Ptr obj = *it;
-                it--;
-                RemoveObject(obj);
-            }
+            std::advance(it_n, 1);
+
+            std::string event = (*it)->UpdateTick();
+            AddEvent((*it)->actor_id, std::move(event), EmptyData{});
+
+            it = it_n;
         }
         if(!scoreboard_.empty())
             return AddEvent(scoreboard_[0]->id, PLAYER_WON, EmptyData{});
@@ -182,16 +181,20 @@ namespace game_manager{
     Bomb::Ptr Session::PlaceBombObject(PlaceData place, Player::Login login) {
         namespace pl = std::placeholders;
         auto sp = this->shared_from_this();
-        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), 
+        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), Bomb::Methods{
             [&](Dimention x, Dimention y){
                 Explode(x, y);
-            });
+            },
+            [&](ActorId actor_id){
+                RemoveObject(actor_id);
+            },
+        });
         obj->Place(place.posX, place.posY);
         objects().emplace_back(obj);
         return obj;
     }
-    void Session::RemoveObject(Object::Ptr obj) {
-        objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj2){return *obj == obj2;}));
+    void Session::RemoveObject(ActorId actor_id) {
+        objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj){return obj->actor_id == actor_id;}));
     }
 
     void Session::Explode(Dimention posX, Dimention posY) {

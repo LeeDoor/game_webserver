@@ -2,6 +2,7 @@
 #include "player.hpp"
 #include "object.hpp"
 #include <vector>
+#include <list>
 #include <memory>
 #include <optional>
 
@@ -26,7 +27,7 @@ namespace game_manager {
     };
     struct State{
         using Players = std::vector<Player>;
-        using Objects = std::vector<Object::Ptr>;
+        using Objects = std::list<Object::Ptr>;
         using Terrain = std::vector<Obstacle>;
         using NowTurn = Player::Login;
         using Ptr = std::shared_ptr<State>;

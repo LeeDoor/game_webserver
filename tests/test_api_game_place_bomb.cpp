@@ -91,11 +91,12 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
             state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
             INFO("state contains one bomb");
             REQUIRE(state.objects.size() == 1);
-            CHECK(state.objects[0]->posX == 1);
-            CHECK(state.objects[0]->posY == 0);
+            auto iter = state.objects.begin();
             {
-                gm::Bomb::Ptr bomb = dynamic_pointer_cast<gm::Bomb>(state.objects[0]);
+                gm::Bomb::Ptr bomb = dynamic_pointer_cast<gm::Bomb>(*iter);
                 REQUIRE(bomb);
+                CHECK(bomb->posX == 1);
+                CHECK(bomb->posY == 0);
                 CHECK(bomb->ticks_left == BOMB_TICKS_DEFAULT - 1);
                 if(bomb->ticks_left != 2){
                     WARN("!!!!!bomb ticks are changed from 3 to " << bomb->ticks_left + 1 << ". tests deprecated.!!!!!");
