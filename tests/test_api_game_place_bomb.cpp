@@ -24,11 +24,11 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::State state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
-        state.players.front()->posX = 0;
-        state.players.front()->posY = 1;
-        state.players.back()->posX = 2;
-        state.players.back()->posY = 1;
-        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{1,1,gm::Obstacle::Type::Wall})};
+        state.players.front()->position.x = 0;
+        state.players.front()->position.y = 1;
+        state.players.back()->position.x = 2;
+        state.players.back()->position.y = 1;
+        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{{1,1},gm::Obstacle::Type::Wall})};
         SetStateSuccess(socket, state, sd.sid);
         StringResponse response;
         
@@ -67,7 +67,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
             INFO("A can place the bomb above the wall");
             PlaceBombSuccess(socket, {1,0}, sd.l1.token, sd.sid);
 
-            
+            gm::ActorId bomb1AI;
             INFO("event list contains bomb place and bomb tick");
             {
                 StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
@@ -75,16 +75,15 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
                 INFO(j.dump());
                 REQUIRE(j.is_array());
                 REQUIRE(j.size() == 2);
-                CHECK(j[0]["event_type"] == "player_place_bomb");
+                CHECK(j[0]["event"] == "player_place_bomb");
                 CHECK(j[0]["actor_id"] == 0);
                 CHECK(j[0]["move_number"] == 1);
-                CHECK(j[0]["data"]["place"]["posX"] == 1);
-                CHECK(j[0]["data"]["place"]["posY"] == 0);
-                CHECK(j[0]["data"]["new_object"]["actor_id"] == 2);
-                CHECK(j[0]["data"]["ticks_left"] == BOMB_TICKS_DEFAULT);
+                CHECK(j[0]["position"]["x"] == 1);
+                CHECK(j[0]["position"]["y"] == 0);
+                REQUIRE_NOTHROW(bomb1AI = j[0]["new_actor_id"].get<gm::ActorId>());
 
-                CHECK(j[1]["event_type"] == "bomb_ticking");
-                CHECK(j[1]["actor_id"] == 2);
+                CHECK(j[1]["event"] == "bomb_ticking");
+                CHECK(j[1]["actor_id"] == bomb1AI);
                 CHECK(j[1]["move_number"] == 1);
             }
 
@@ -95,8 +94,8 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
             {
                 gm::Bomb::Ptr bomb = dynamic_pointer_cast<gm::Bomb>(*iter);
                 REQUIRE(bomb);
-                CHECK(bomb->posX == 1);
-                CHECK(bomb->posY == 0);
+                CHECK(bomb->position.x == 1);
+                CHECK(bomb->position.y == 0);
                 CHECK(bomb->ticks_left == BOMB_TICKS_DEFAULT - 1);
                 if(bomb->ticks_left != 2){
                     WARN("!!!!!bomb ticks are changed from 3 to " << bomb->ticks_left + 1 << ". tests deprecated.!!!!!");
@@ -155,20 +154,20 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
                 nlohmann::json j = nlohmann::json::parse(events_resp.body());
                 REQUIRE(j.is_array());
                 REQUIRE(j.size() == 4);
-                CHECK(j[0]["event_type"] == "player_walk");
+                CHECK(j[0]["event"] == "player_walk");
                 CHECK(j[0]["actor_id"] == 1);
                 CHECK(j[0]["move_number"] == 2);
 
-                CHECK(j[1]["event_type"] == "bomb_ticking");
-                CHECK(j[1]["actor_id"] == 2);
+                CHECK(j[1]["event"] == "bomb_ticking");
+                CHECK(j[1]["actor_id"] == bomb1AI);
                 CHECK(j[1]["move_number"] == 2);
 
-                CHECK(j[2]["event_type"] == "player_walk");
+                CHECK(j[2]["event"] == "player_walk");
                 CHECK(j[2]["actor_id"] == 0);
                 CHECK(j[2]["move_number"] == 3);
 
-                CHECK(j[3]["event_type"] == "bomb_explode");
-                CHECK(j[3]["actor_id"] == 2);
+                CHECK(j[3]["event"] == "bomb_explode");
+                CHECK(j[3]["actor_id"] == bomb1AI);
                 CHECK(j[3]["move_number"] == 3);
             }
             INFO("bomb exploded on state");
@@ -194,6 +193,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
             INFO("A can place the bomb below himself");
             PlaceBombSuccess(socket, {0,2}, sd.l1.token, sd.sid);
 
+            gm::ActorId bomb1AI, bomb2AI, bomb3AI;
             INFO("event list contains A-place, tick, B-place, tick, tick, A-place, explode, win (8 events)");
             {
                 StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
@@ -201,35 +201,38 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
                 INFO(j.dump());
                 REQUIRE(j.is_array());
                 REQUIRE(j.size() == 8);
-                CHECK(j[0]["event_type"] == "player_place_bomb");
+                CHECK(j[0]["event"] == "player_place_bomb");
                 CHECK(j[0]["actor_id"] == 0);
                 CHECK(j[0]["move_number"] == 1);
+                REQUIRE_NOTHROW(bomb1AI = j[0]["new_actor_id"].get<gm::ActorId>());
 
-                CHECK(j[1]["event_type"] == "bomb_ticking");
-                CHECK(j[1]["actor_id"] == 2);
+                CHECK(j[1]["event"] == "bomb_ticking");
+                CHECK(j[1]["actor_id"] == bomb1AI);
                 CHECK(j[1]["move_number"] == 1);
 
-                CHECK(j[2]["event_type"] == "player_place_bomb");
+                CHECK(j[2]["event"] == "player_place_bomb");
                 CHECK(j[2]["actor_id"] == 1);
                 CHECK(j[2]["move_number"] == 2);
+                REQUIRE_NOTHROW(bomb2AI = j[2]["new_actor_id"].get<gm::ActorId>());
 
-                CHECK(j[3]["event_type"] == "bomb_ticking");
-                CHECK(j[3]["actor_id"] == 2);
+                CHECK(j[3]["event"] == "bomb_ticking");
+                CHECK(j[3]["actor_id"] == bomb1AI);
                 CHECK(j[3]["move_number"] == 2);
 
-                CHECK(j[4]["event_type"] == "bomb_ticking");
-                CHECK(j[4]["actor_id"] == 3);
+                CHECK(j[4]["event"] == "bomb_ticking");
+                CHECK(j[4]["actor_id"] == bomb2AI);
                 CHECK(j[4]["move_number"] == 2);
 
-                CHECK(j[5]["event_type"] == "player_place_bomb");
+                CHECK(j[5]["event"] == "player_place_bomb");
                 CHECK(j[5]["actor_id"] == 0);
                 CHECK(j[5]["move_number"] == 3);
+                REQUIRE_NOTHROW(bomb2AI = j[5]["new_actor_id"].get<gm::ActorId>());
 
-                CHECK(j[6]["event_type"] == "bomb_explode");
-                CHECK(j[6]["actor_id"] == 2);
+                CHECK(j[6]["event"] == "bomb_explode");
+                CHECK(j[6]["actor_id"] == bomb1AI);
                 CHECK(j[6]["move_number"] == 3);
 
-                CHECK(j[7]["event_type"] == "player_won");
+                CHECK(j[7]["event"] == "player_won");
                 CHECK(j[7]["actor_id"] <= 1);
                 CHECK(j[7]["actor_id"] >= 0);
                 CHECK(j[7]["move_number"] == 3);
@@ -252,14 +255,14 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
         gm::Player& player = *(state.players.front()->login == ld.login ? state.players.front(): state.players.back());
 
-        std::vector<gm::PlaceData> wds{
-            {player.posX + 1, player.posY},
-            {player.posX, player.posY + 1},
-            {player.posX - 1, player.posY},
-            {player.posX, player.posY - 1},
+        std::vector<gm::Position> wds{
+            {player.position.x + 1, player.position.y},
+            {player.position.x, player.position.y + 1},
+            {player.position.x - 1, player.position.y},
+            {player.position.x, player.position.y - 1},
         }; 
         for(auto& wd : wds){
-            if (ValidCell(state, wd.posX, wd.posY)){
+            if (ValidCell(state, wd.x, wd.y)){
                 auto response = PlaceBomb(socket, wd, ld.token, sid);
                 CheckStringResponse(response,{
                     .body = NOT_YOUR_MOVE,
@@ -327,9 +330,9 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
                 .res = http::status::bad_request
             });
 
-        nlohmann::json obj(gm::PlaceData{0,0});
+        nlohmann::json obj(gm::Position{0,0});
         obj["move_type"] = "place_bomb";
-        obj["posX"] = "nigger";
+        obj["x"] = "nigger";
 
         response = Move(socket, obj.dump(), ld.token, sid);
         CheckStringResponse(response, 

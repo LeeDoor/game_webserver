@@ -15,8 +15,7 @@ void ValidateEvents(json j){
     for(int i = 0; i < j.size(); ++i){
         REQUIRE_NOTHROW(event = j[i]);
         REQUIRE(event.contains("actor_id"));
-        REQUIRE(event.contains("data"));
-        REQUIRE(event.contains("event_type"));
+        REQUIRE(event.contains("event"));
         REQUIRE(event.contains("move_number"));
     }
 }
@@ -27,9 +26,8 @@ void ValidateEvents(json j, gm::ActorId actor_id, std::string event_type, int mo
     REQUIRE_NOTHROW(event = j[id]);
     REQUIRE(event.contains("actor_id"));
     CHECK(event.at("actor_id") == 0); // now it means that first player moved. feel free change it in the future
-    REQUIRE(event.contains("data"));
-    REQUIRE(event.contains("event_type"));
-    CHECK(event.at("event_type") == "player_walk"); 
+    REQUIRE(event.contains("event"));
+    CHECK(event.at("event") == "player_walk"); 
     REQUIRE(event.contains("move_number"));
     CHECK(event.at("move_number") == 1); 
 }
@@ -81,9 +79,9 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
-        INFO(player.posX << " " << player.posY);
+        INFO(player.position.x << " " << player.position.y);
 
-        WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
+        WalkSuccess(socket3, {player.position.x + 1, player.position.y}, ld.token, sid);
 
         future1.get();
         future2.get();
@@ -143,7 +141,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
         gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
-        WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
+        WalkSuccess(socket3, {player.position.x + 1, player.position.y}, ld.token, sid);
 
         f2.wait();
         f3.wait();
@@ -220,7 +218,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
             um::Login& now_turn = state.now_turn;
             LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
             gm::Player& player = * (state.players.front()->login == now_turn ? state.players.front() : state.players.back());
-            WalkSuccess(socket3, {player.posX + 1, player.posY}, ld.token, sid);
+            WalkSuccess(socket3, {player.position.x + 1, player.position.y}, ld.token, sid);
         }
 
         auto response = SessionStateChange(socket, ld1.token, sid, 1);

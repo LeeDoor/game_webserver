@@ -1,15 +1,15 @@
 #pragma once
-#include <memory>
 #include <list>
-#include "player.hpp"
+#include <functional>
 #include "event_manager.hpp"
-#include "i_shootable.hpp"
+#include "custom_events.hpp"
+#include "i_placeable.hpp"
 #include "nlohmann/json.hpp"
 
 namespace game_manager{
     struct State;
     
-    class Object : public IShootable{
+    class Object : public IPlaceable {
     public:
         using Ptr = std::shared_ptr<Object>;
         using OwnerType = Player::Login;
@@ -24,19 +24,15 @@ namespace game_manager{
         Object(OwnerType owner, ActorId id, Methods&& methods);
         virtual ~Object();
         virtual bool operator==(Object::Ptr obj) const;
+        virtual EventsType UpdateTick(int move_number) = 0;
+
         // Although adding serialization logic to the class itself is undesirable, 
         // it is a convenient way to polymorph object serialization.
         virtual void tojson(nlohmann::json& j) const;
-        virtual EventsType UpdateTick(int move_number) = 0;
-        
-        EventListWrapper::Vec GetShot(int move_number, std::shared_ptr<Bullet> bullet) override;
 
-        ActorId actor_id;
         OwnerType owner;        
 
     protected:
         DestroyFunc destroy_;
-
-        Event CreateEvent(int move_number, std::string event_type, VariantEventData&& data = EmptyData{});
     };
 }

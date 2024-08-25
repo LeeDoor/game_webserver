@@ -11,21 +11,21 @@ namespace game_manager{
     const EventListWrapper::Vec& EventListWrapper::Value()const {
         return value_;
     }
-    void EventListWrapper::AddEvent(Event&& event) {
-        if(event.move_number < (value_.size() ? value_.back().move_number : 1)){
+    void EventListWrapper::AddEvent(Event::Ptr event) {
+        if(event->move_number < (value_.size() ? value_.back()->move_number : 1)){
             throw std::logic_error("each new event's move should be more than or equal to previous(1 if first).");
         }
         
-        if(event.move_number == (value_.size() ? value_.back().move_number + 1 : 1)){
+        if(event->move_number == (value_.size() ? value_.back()->move_number + 1 : 1)){
             from_move_.push_back(value_.size());
         }
         
-        value_.push_back(std::move(event));
+        value_.push_back(event);
     }
     void EventListWrapper::AddEvents(Vec&& events) {
         for(auto event : events){
             // no SPLICE, from_move_ needs to be edited
-            AddEvent(std::move(event));
+            AddEvent(event);
         }
     }
     EventListWrapper::Vec EventListWrapper::FromMove(int from_move) const {

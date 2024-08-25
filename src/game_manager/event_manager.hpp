@@ -5,32 +5,18 @@
 #include <optional>
 #include <memory>
 #include "player.hpp"
-#include "session_func_data.hpp"
+#include "event.hpp"
 namespace game_manager{
-    struct Event {
-        bool operator == (const Event& other) const {
-            return actor_id == other.actor_id && 
-                event_type == other.event_type &&
-                data == other.data && 
-                move_number == other.move_number;
-        }
-
-        int move_number;
-        ActorId actor_id;
-        std::string event_type;
-        VariantEventData data;
-    };
-
     class EventListWrapper{
     public:
         using Ptr = std::shared_ptr<EventListWrapper>;
         using CPtr = std::shared_ptr<const EventListWrapper>;
         using OptCPtr = std::optional<CPtr>;
-        using Vec = std::list<Event>;
+        using Vec = std::list<Event::Ptr>;
         const Vec& Value() const;
         
         void Clear();
-        void AddEvent(Event&& event);
+        void AddEvent(Event::Ptr event);
         void AddEvents(Vec&& events);
         Vec FromMove(int move_number) const;
     private:

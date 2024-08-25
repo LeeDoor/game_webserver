@@ -33,11 +33,11 @@ TEST_CASE("ApiResign", "[api][game][move][resign]"){
             INFO(j.dump());
             REQUIRE(j.is_array());
             REQUIRE(j.size() == 2);
-            CHECK(j[0]["event_type"] == "player_resign");
+            CHECK(j[0]["event"] == "player_resign");
             CHECK(j[0]["actor_id"] == 0);
             CHECK(j[0]["move_number"] == 1);
 
-            CHECK(j[1]["event_type"] == "player_won");
+            CHECK(j[1]["event"] == "player_won");
             CHECK(j[1]["actor_id"] == 1);
             CHECK(j[1]["move_number"] == 1);
         }
@@ -103,13 +103,13 @@ TEST_CASE("ApiResign", "[api][game][move][resign]"){
         gm::Player& player1 = *(sd.state.players.front()->login == sd.l1.login ? sd.state.players.front(): sd.state.players.back());
         gm::Player& player2 = *(sd.state.players.back()->login == sd.l1.login ? sd.state.players.front(): sd.state.players.back()); 
 
-        StringResponse response = Walk(socket, {player1.posX + 1, player1.posY}, sd.l1.token, sd.sid);
+        StringResponse response = Walk(socket, {player1.position.x + 1, player1.position.y}, sd.l1.token, sd.sid);
         CheckStringResponse(response, {
             .body=SESSION_FINISHED,
             .res=http::status::bad_request
         });
 
-        response = Walk(socket, {player2.posX + 1, player2.posY}, sd.l1.token, sd.sid);
+        response = Walk(socket, {player2.position.x + 1, player2.position.y}, sd.l1.token, sd.sid);
         CheckStringResponse(response, {
             .body=SESSION_FINISHED,
             .res=http::status::bad_request

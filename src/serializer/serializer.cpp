@@ -123,7 +123,7 @@ namespace serializer{
         nlohmann::json obj(state);
         return obj.dump();
     }
-    std::string Serialize(const gm::PlaceData& wd) {
+    std::string Serialize(const gm::PosMoveData& wd) {
         nlohmann::json obj(wd);
         return obj.dump();
     }
@@ -154,8 +154,8 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::PlaceData> DeserializePlaceData(const std::string& json_str) {
-        gm::PlaceData res;
+    std::optional<gm::PosMoveData> DeserializePosMoveData(const std::string& json_str) {
+        gm::PosMoveData res;
         try{
             nlohmann::json j = nlohmann::json::parse(json_str);
             j.get_to(res);
@@ -165,18 +165,18 @@ namespace serializer{
         }
         return res;
     }
-    std::optional<gm::Session::VariantApiData> DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
+    gm::MoveData::Ptr DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
         using MT = gm::Session::MoveType;
         switch(mt) {
         case MT::Resign:
-            return gm::EmptyData{};
+            return std::make_shared<gm::MoveData>();
         case MT::Walk:
         case MT::PlaceBomb:
-            return DeserializePlaceData(json_str);
-        default:
-            throw std::logic_error("MoveType not implemented in serializer. see DeserialzeMoveData");
-            return std::nullopt;
+            auto pmd = DeserializePosMoveData(json_str);
+            if(!pmd) return nullptr;
+            return std::make_shared<gm::PosMoveData>(*pmd);
         }
+        throw std::logic_error("MoveType not implemented in serializer. see DeserialzeMoveData");
     }
     std::optional<int> DeserializeFromMove(const std::string& json) {
         int res;

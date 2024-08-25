@@ -607,8 +607,8 @@ Function tells the game about player's move. SessionId must be passed as URL par
 ```json
 {
 	"move_type": STRING,//"walk", "resign"
-	"posX": UNSIGNED,
-	"posY":UNISIGNED
+	"X": UNSIGNED,
+	"Y":UNISIGNED
 }
 ```
 

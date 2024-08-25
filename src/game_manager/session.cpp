@@ -2,6 +2,7 @@
 #include "spdlog/spdlog.h"
 #include <algorithm>
 #include <cmath>
+#include "custom_events.hpp"
 
 #define BIND(func, place, pls, ...) (Bomb::ExplodeFunc)std::bind( func, this->weak_from_this(), pls) 
 namespace game_manager{
@@ -47,12 +48,12 @@ namespace game_manager{
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         ++state_->move_number;
-        AddEvent(player_id == player1_ ? player1().id : player2().id, PLAYER_RESIGN, EmptyData{});
+        events_wrapper_->AddEvent(EmptyEvent({state_->move_number, player_id == player1_ ? player1().actor_id : player2().actor_id, PLAYER_RESIGN}));
         FinishSession(player_id != player1_);
         AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, const PlaceData& move_data){
+    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, PosMoveData move_data){
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
@@ -60,21 +61,21 @@ namespace game_manager{
         if (player.login != nowTurn())
             return GameApiStatus::NotYourMove;
 
-        if (std::abs(short(player.posX - move_data.posX))
-          + std::abs(short(player.posY - move_data.posY)) != 1){
+        if (std::abs(short(player.position.x - move_data.position.x))
+          + std::abs(short(player.position.y - move_data.position.y)) != 1){
             return GameApiStatus::WrongMove;
         } // cell is near the player
-        if (!ValidCell(move_data.posX, move_data.posY))
+        if (!ValidCell(move_data.position))
             return GameApiStatus::WrongMove;
         
-        player.posX = move_data.posX;
-        player.posY = move_data.posY;
+        player.position.x = move_data.position.x;
+        player.position.y = move_data.position.y;
         ++state_->move_number;
-        AddEvent(player.id, PLAYER_WALK, WalkData{std::move(move_data)});
+        events_wrapper_->AddEvent(WalkEvent({{state_->move_number, player.actor_id, PLAYER_WALK}, player.position}));
         AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, const PlaceData& move_data) {
+    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, PosMoveData move_data) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1().login == uuid_to_login_.at(player_id)?
             player1() : player2();
@@ -82,16 +83,16 @@ namespace game_manager{
         if (player.login != nowTurn())
             return GameApiStatus::NotYourMove;
 
-        if (std::abs(short(player.posX - move_data.posX)) > 1 ||
-            std::abs(short(player.posY - move_data.posY)) > 1){
+        if (std::abs(short(player.position.x - move_data.position.x)) > 1 ||
+            std::abs(short(player.position.y - move_data.position.y)) > 1){
             return GameApiStatus::WrongMove;
         } // cell is near the player
-        if (!ValidCell(move_data.posX, move_data.posY))
+        if (!ValidCell(move_data.position))
             return GameApiStatus::WrongMove;
         
-        Bomb::Ptr bomb = PlaceBombObject(move_data, player.login);
+        Bomb::Ptr bomb = PlaceBombObject(move_data.position, player.login);
         ++state_->move_number;
-        AddEvent(player.id, PLAYER_PLACE_BOMB, BombData{std::move(move_data), {bomb->actor_id}, bomb->ticks_left});
+        events_wrapper_->AddEvent(BombEvent({{{state_->move_number, player.actor_id, PLAYER_PLACE_BOMB}, bomb->position}, bomb->actor_id}));
         AfterMove();
         return GameApiStatus::Ok;
     }
@@ -116,23 +117,23 @@ namespace game_manager{
         player1().login = login1;
         player2().login = login2;
 
-        player1().posX = 4;
-        player1().posY = 1;
+        player1().position.x = 4;
+        player1().position.y = 1;
 
-        player2().posX = 3;
-        player2().posY = 6;
+        player2().position.x = 3;
+        player2().position.y = 6;
 
-        player1().id = GetId();
-        player2().id = GetId();
+        player1().actor_id = GetId();
+        player2().actor_id = GetId();
         
-        std::vector<std::pair<unsigned, unsigned>> walls = {
+        std::vector<Position> walls = {
             {0,2}, {3,2}, 
             {4,3}, {6,3},
             {1,4}, {3,4},
             {4,5}, {7,5}
         };
         for(auto& pair : walls){
-            terrain().push_back(std::make_shared<Obstacle>(pair.first, pair.second, Obstacle::Type::Wall));
+            terrain().push_back(std::make_shared<Obstacle>(pair, Obstacle::Type::Wall, GetId()));
         }
 
         nowTurn() = login1;
@@ -151,50 +152,46 @@ namespace game_manager{
             it = it_n;
         }
         if(!scoreboard_.empty())
-            return AddEvent(scoreboard_[0]->id, PLAYER_WON, EmptyData{});
+            return events_wrapper_->AddEvent(EmptyEvent({state_->move_number, scoreboard_[0]->actor_id, PLAYER_WON}));
         nowTurn() = nowTurn() == player1().login? player2().login : player1().login;
     }
 
-    void Session::AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data) {
-        events_wrapper_->AddEvent(Event{state_->move_number, actor_id, std::move(event_type), std::move(data)});
-    }
-
-    bool Session::ValidCell(unsigned posX, unsigned posY){
-        if (state_->map_size.height <= posY || state_->map_size.width <= posX){
-            spdlog::warn("cell is invalid: out of map size [{},{}]. map is {}x{}", posX, posY, state_->map_size.width,state_->map_size.height);
+    bool Session::ValidCell(Position position){
+        if (state_->map_size.height <= position.y || state_->map_size.width <= position.x){
+            spdlog::warn("cell is invalid: out of map size [{},{}]. map is {}x{}", position.x, position.y, state_->map_size.width,state_->map_size.height);
             return false;
         }
 
         auto it = std::find_if(terrain().begin(), terrain().end(), 
-            [&](Obstacle::Ptr v){return v->posX == posX && v->posY == posY;});
+            [&](Obstacle::Ptr v){return v->position.x == position.x && v->position.y == position.y;});
         if(it != terrain().end()){
-            spdlog::warn("cell is invalid: on the obstacle [{},{}]", posX, posY);
+            spdlog::warn("cell is invalid: on the obstacle [{},{}]", position.x, position.y);
             return false;
         }
         
-        if(player1().posX == posX && player1().posY == posY ||
-           player2().posX == posX && player2().posY == posY){
-            spdlog::warn("cell is invalid: on the other player [{},{}]", posX, posY);
+        if(player1().position.x == position.x && player1().position.y == position.y ||
+           player2().position.x == position.x && player2().position.y == position.y){
+            spdlog::warn("cell is invalid: on the other player [{},{}]", position.x, position.y);
             return false;
         }
 
         return true;
     }
 
-    Bomb::Ptr Session::PlaceBombObject(PlaceData place, Object::OwnerType login) {
+    Bomb::Ptr Session::PlaceBombObject(Position position, Object::OwnerType login) {
         Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), Bomb::Methods{
             [&](ActorId actor_id){
                 RemoveObject(actor_id);
             },
-            [&](Dimention x, Dimention y){
-                Explode(x, y);
+            [&](Position position){
+                Explode(position);
             },
         });
-        obj->Place(place.posX, place.posY);
+        obj->Place(position);
         objects().emplace_back(obj);
         return obj;
     }
-    Gun::Ptr Session::PlaceGunObject(DirectedPlaceData place, Object::OwnerType login) {
+    Gun::Ptr Session::PlaceGunObject(Position position, Direction direction, Object::OwnerType login) {
         Gun::Ptr obj = std::make_shared<Gun>(login, GetId(), Gun::Methods{
             [&](ActorId actor_id){
                 RemoveObject(actor_id);
@@ -203,18 +200,18 @@ namespace game_manager{
                 ShootBullet(gun);
             },
         });
-        obj->Place(place.posX, place.posY, place.dir);
+        obj->Place(position, direction);
         objects().emplace_back(obj);
         return obj;
     }
 
-    Bullet::Ptr Session::PlaceBulletObject(DirectedPlaceData place, Object::OwnerType login) {
+    Bullet::Ptr Session::PlaceBulletObject(Position position, Direction direction, Object::OwnerType login) {
         Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId(), Bullet::Methods{
             [&](ActorId actor_id){
                 RemoveObject(actor_id);
             },
         });
-        obj->Place(place.posX, place.posY, place.dir);
+        obj->Place(position, direction);
         objects().emplace_back(obj);
         return obj;
     }
@@ -223,13 +220,13 @@ namespace game_manager{
         objects().erase(std::find_if(objects().begin(), objects().end(), [&](Object::Ptr obj){return obj->actor_id == actor_id;}));
     }
 
-    void Session::Explode(Dimention posX, Dimention posY) {
-        for(Dimention x = std::max(0, int(posX) - 1); x <= std::min(state_->map_size.width - 1, posX + 1); ++x){
-            for(Dimention y = std::max(0, int(posY) - 1); y <= std::min(state_->map_size.height - 1, posY + 1); ++y){
-                if(player1().posX == x && player1().posY == y){
+    void Session::Explode(Position position) {
+        for(Dimention x = std::max(0, int(position.x) - 1); x <= std::min(state_->map_size.width - 1, position.x + 1); ++x){
+            for(Dimention y = std::max(0, int(position.y) - 1); y <= std::min(state_->map_size.height - 1, position.y + 1); ++y){
+                if(player1().position.x == x && player1().position.y == y){
                     return FinishSession(false);
                 }
-                if(player2().posX == x && player2().posY == y){
+                if(player2().position.x == x && player2().position.y == y){
                     return FinishSession(true);
                 }
             }
@@ -237,20 +234,7 @@ namespace game_manager{
     }
 
     void Session::ShootBullet(Gun::Ptr gun){
-        PlaceBulletObject(DirectedPlaceData{gun->posX, gun->posY, gun->dir}, gun->owner);
+        PlaceBulletObject(gun->position, gun->direction, gun->owner);
     }
 
-    std::optional<IShootable::Arr> Session::GetShootableObjects(Bullet::Ptr bullet) {
-        if(bullet->posX < 0 || bullet->posY < 0 || 
-            bullet->posX >= state_->map_size.width || 
-            bullet->posY >= state_->map_size.height)
-            return std::nullopt;
-
-        IShootable::Arr res;
-
-        std::copy(terrain().begin(), terrain().end(), std::back_inserter(res));
-        std::copy(objects().begin(), objects().end(), std::back_inserter(res));
-
-        return res;
-    }
 }

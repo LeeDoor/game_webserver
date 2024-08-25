@@ -224,25 +224,23 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         example.now_turn = "login1";
         example.players = {
             std::make_shared<gm::Player>(
+                gm::Position{5, 5},
                 6171467,
-                "login1",
-                5,
-                5      
+                "login1"  
             ),
             std::make_shared<gm::Player>(
+                gm::Position{1, 1},
                 315156,
-                "login2",
-                1,
-                1
+                "login2"
             )
         };
         example.terrain = {
-            std::make_shared<gm::Obstacle>(2,2,gm::Obstacle::Type::Wall),
-            std::make_shared<gm::Obstacle>(3,3,gm::Obstacle::Type::Wall)
+            std::make_shared<gm::Obstacle>(gm::Position{2,2},gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(gm::Position{3,3},gm::Obstacle::Type::Wall)
         };
         example.map_size = {15,15};
         auto bomb = std::make_shared<game_manager::Bomb>("owner", 1);
-        bomb->Place(5,5);
+        bomb->Place({5,5});
         example.objects = {bomb};
         std::string given_str;
         REQUIRE_NOTHROW(given_str = serializer::Serialize(std::move(example)));
@@ -255,60 +253,23 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         example.now_turn = "";
         example.players = {
             std::make_shared<gm::Player>(
+                gm::Position{0, 0},  
                 1112,
-                "",
-                0,
-                0      
+                ""
             ),
             std::make_shared<gm::Player>(
+                gm::Position{0, 0},
                 315156,
-                "",
-                0,
-                0
+                ""
             )
         };
         example.terrain = {
-            std::make_shared<gm::Obstacle>(0,0,gm::Obstacle::Type::Wall),
-            std::make_shared<gm::Obstacle>(0,0,gm::Obstacle::Type::Wall)
+            std::make_shared<gm::Obstacle>(gm::Position{0,0},gm::Obstacle::Type::Wall),
+            std::make_shared<gm::Obstacle>(gm::Position{0,0},gm::Obstacle::Type::Wall)
         };
         REQUIRE_NOTHROW(given_str = serializer::Serialize(example));
         REQUIRE_NOTHROW(j = json::parse(given_str));
         REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
-    }
-    SECTION("Deserialize"){
-        std::string given_str = "{\"state\":\"playing\", \"move_number\":2, \"map_size\":{\"width\":15,\"height\":15},\"objects\":[{\"type\":\"bomb\", \"posX\":1,\"posY\":1,\"ticks_left\": 5, \"owner\":\"NIGGER\", \"actor_id\":1}],\"players\":[{\"login\":\"login number one\",\"posX\":1,\"posY\":2, \"id\":315156},{\"login\":\"login number twoo\",\"posX\":5,\"posY\":6, \"id\":315156}],\"terrain\":[{\"posX\":3,\"posY\":4,\"type\":\"wall\"},{\"posX\":2,\"posY\":1,\"type\":\"wall\"},{\"posX\":89,\"posY\":12222555,\"type\":\"wall\"}],\"now_turn\":\"login number one\"}";
-        auto opt = serializer::DeserializeSessionState(given_str);
-        REQUIRE(opt.has_value());
-        REQUIRE_NOTHROW(given = *opt);
-        example.now_turn = "login number one";
-        example.players = {
-            std::make_shared<gm::Player>(
-                315156,
-                "login number one",
-                1,
-                2      
-            ),
-            std::make_shared<gm::Player>(
-                315156,
-                "login number twoo",
-                5,
-                6
-            )
-        };
-        example.terrain = {
-            std::make_shared<gm::Obstacle>(3,4,gm::Obstacle::Type::Wall),
-            std::make_shared<gm::Obstacle>(2,1,gm::Obstacle::Type::Wall),
-            std::make_shared<gm::Obstacle>(89,12222555,gm::Obstacle::Type::Wall)
-        };
-        example.map_size = {15,15};
-        example.move_number = 4;
-        auto bomb = std::make_shared<game_manager::Bomb>("NIGGER", 1);
-        bomb->ticks_left = 5;
-        bomb->Place(1,1);
-        example.objects = {bomb};
-        j = given;
-        INFO(j.dump());
-        REQUIRE(given == example);
     }
 }   

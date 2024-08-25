@@ -25,7 +25,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         std::optional<um::Login> prev_turn = std::nullopt;
-        std::optional<gm::PlaceData> new_wd = std::nullopt;
+        std::optional<gm::Position> new_wd = std::nullopt;
         for(int i = 0; i < 10; ++i){
             gm::State state = SessionStateSuccess(socket, ld1.token, sid);
             REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
@@ -39,19 +39,19 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
 
             if(new_wd){
                 gm::Player& waiting_player = *(state.players.back()->login == now_turn ? state.players.front() : state.players.back());
-                CHECK(waiting_player.posX == new_wd->posX);
-                CHECK(waiting_player.posY == new_wd->posY);
+                CHECK(waiting_player.position.x == new_wd->x);
+                CHECK(waiting_player.position.y == new_wd->y);
             }
 
-            std::vector<gm::PlaceData> wds{
-                {player.posX + 1, player.posY},
-                {player.posX, player.posY + 1},
-                {player.posX - 1, player.posY},
-                {player.posX, player.posY - 1},
+            std::vector<gm::Position> wds{
+                {player.position.x + 1, player.position.y},
+                {player.position.x, player.position.y + 1},
+                {player.position.x - 1, player.position.y},
+                {player.position.x, player.position.y - 1},
             }; 
             bool moved = false;
             for(auto& wd : wds){
-                if (ValidCell(state, wd.posX, wd.posY)){
+                if (ValidCell(state, wd.x, wd.y)){
                     WalkSuccess(socket, wd, ld.token, sid);
                     moved = true;
                     break;
@@ -78,18 +78,18 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
         std::vector<StringResponse> responses = {
-            Walk(socket, {player.posX + 2, player.posY + 3}, ld.token, sid),
-            Walk(socket, {player.posX + 1, player.posY + 3}, ld.token, sid),
-            Walk(socket, {player.posX + 1, player.posY + 1}, ld.token, sid),
-            Walk(socket, {player.posX + 2, player.posY}, ld.token, sid),
-            Walk(socket, {player.posX + 3, player.posY}, ld.token, sid),
-            Walk(socket, {player.posX -20, player.posY}, ld.token, sid),
-            Walk(socket, {player.posX -2, player.posY}, ld.token, sid),
-            Walk(socket, {player.posX, player.posY + 2}, ld.token, sid),
-            Walk(socket, {player.posX, player.posY + 3}, ld.token, sid),
-            Walk(socket, {player.posX, player.posY - 20}, ld.token, sid),
-            Walk(socket, {player.posX, player.posY - 2}, ld.token, sid),
-            Walk(socket, {player.posX + 1, player.posY - 1}, ld.token, sid),
+            Walk(socket, {player.position.x + 2, player.position.y + 3}, ld.token, sid),
+            Walk(socket, {player.position.x + 1, player.position.y + 3}, ld.token, sid),
+            Walk(socket, {player.position.x + 1, player.position.y + 1}, ld.token, sid),
+            Walk(socket, {player.position.x + 2, player.position.y}, ld.token, sid),
+            Walk(socket, {player.position.x + 3, player.position.y}, ld.token, sid),
+            Walk(socket, {player.position.x -20, player.position.y}, ld.token, sid),
+            Walk(socket, {player.position.x -2, player.position.y}, ld.token, sid),
+            Walk(socket, {player.position.x, player.position.y + 2}, ld.token, sid),
+            Walk(socket, {player.position.x, player.position.y + 3}, ld.token, sid),
+            Walk(socket, {player.position.x, player.position.y - 20}, ld.token, sid),
+            Walk(socket, {player.position.x, player.position.y - 2}, ld.token, sid),
+            Walk(socket, {player.position.x + 1, player.position.y - 1}, ld.token, sid),
         };
         for(auto& response : responses){
             CheckStringResponse(response,{
@@ -114,14 +114,14 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
         gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
 
-        std::vector<gm::PlaceData> wds{
-            {player.posX + 1, player.posY},
-            {player.posX, player.posY + 1},
-            {player.posX - 1, player.posY},
-            {player.posX, player.posY - 1},
+        std::vector<gm::Position> wds{
+            {player.position.x + 1, player.position.y},
+            {player.position.x, player.position.y + 1},
+            {player.position.x - 1, player.position.y},
+            {player.position.x, player.position.y - 1},
         }; 
         for(auto& wd : wds){
-            if (ValidCell(state, wd.posX, wd.posY)){
+            if (ValidCell(state, wd.x, wd.y)){
                 auto response = Walk(socket, wd, ld.token, sid);
                 CheckStringResponse(response,{
                     .body = NOT_YOUR_MOVE,
@@ -189,9 +189,9 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
                 .res = http::status::bad_request
             });
 
-        nlohmann::json obj(gm::PlaceData{0,0});
+        nlohmann::json obj(gm::Position{0,0});
         obj["move_type"] = "walk";
-        obj["posX"] = "nigger";
+        obj["x"] = "nigger";
 
         response = Move(socket, obj.dump(), ld.token, sid);
         CheckStringResponse(response, 
@@ -205,10 +205,10 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::State state = sd.state;
         state.map_size = {2,2};
         state.now_turn = sd.l1.login;
-        state.players.front()->posX = 0;
-        state.players.front()->posY = 0;
-        state.players.back()->posX = 1;
-        state.players.back()->posY = 0;
+        state.players.front()->position.x = 0;
+        state.players.front()->position.y = 0;
+        state.players.back()->position.x = 1;
+        state.players.back()->position.y = 0;
         state.terrain = {};
         SetStateSuccess(socket, state, sd.sid);
         // XXXXXXXXXX
@@ -275,23 +275,23 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
             INFO(j.dump());
             REQUIRE(j.is_array());
             REQUIRE(j.size() == 3);
-            CHECK(j[0]["event_type"] == "player_walk");
+            CHECK(j[0]["event"] == "player_walk");
             CHECK(j[0]["actor_id"] == 0);
             CHECK(j[0]["move_number"] == 1);
-            CHECK(j[0]["data"]["place"]["posX"] == 0);
-            CHECK(j[0]["data"]["place"]["posY"] == 1);
+            CHECK(j[0]["position"]["x"] == 0);
+            CHECK(j[0]["position"]["y"] == 1);
 
-            CHECK(j[1]["event_type"] == "player_walk");
+            CHECK(j[1]["event"] == "player_walk");
             CHECK(j[1]["actor_id"] == 1);
             CHECK(j[1]["move_number"] == 2);
-            CHECK(j[1]["data"]["place"]["posX"] == 0);
-            CHECK(j[1]["data"]["place"]["posY"] == 0);
+            CHECK(j[1]["position"]["x"] == 0);
+            CHECK(j[1]["position"]["y"] == 0);
 
-            CHECK(j[2]["event_type"] == "player_walk");
+            CHECK(j[2]["event"] == "player_walk");
             CHECK(j[2]["actor_id"] == 0);
             CHECK(j[2]["move_number"] == 3);
-            CHECK(j[2]["data"]["place"]["posX"] == 1);
-            CHECK(j[2]["data"]["place"]["posY"] == 1);
+            CHECK(j[2]["position"]["x"] == 1);
+            CHECK(j[2]["position"]["y"] == 1);
         }
     }
     SECTION("prepared_room_walls") {
@@ -299,11 +299,11 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
         gm::State state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
-        state.players.front()->posX = 0;
-        state.players.front()->posY = 1;
-        state.players.back()->posX = 2;
-        state.players.back()->posY = 1;
-        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{1,1,gm::Obstacle::Type::Wall})};
+        state.players.front()->position.x = 0;
+        state.players.front()->position.y = 1;
+        state.players.back()->position.x = 2;
+        state.players.back()->position.y = 1;
+        state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{{1,1},gm::Obstacle::Type::Wall})};
         SetStateSuccess(socket, state, sd.sid);
 
         // * * * * * * *
@@ -434,41 +434,41 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
             INFO(j.dump());
             REQUIRE(j.is_array());
             REQUIRE(j.size() == 6);
-            CHECK(j[0]["event_type"] == "player_walk");
+            CHECK(j[0]["event"] == "player_walk");
             CHECK(j[0]["actor_id"] == 0);
             CHECK(j[0]["move_number"] == 1);
-            CHECK(j[0]["data"]["place"]["posX"] == 0);
-            CHECK(j[0]["data"]["place"]["posY"] == 2);
+            CHECK(j[0]["position"]["x"] == 0);
+            CHECK(j[0]["position"]["y"] == 2);
 
-            CHECK(j[1]["event_type"] == "player_walk");
+            CHECK(j[1]["event"] == "player_walk");
             CHECK(j[1]["actor_id"] == 1);
             CHECK(j[1]["move_number"] == 2);
-            CHECK(j[1]["data"]["place"]["posX"] == 2);
-            CHECK(j[1]["data"]["place"]["posY"] == 0);
+            CHECK(j[1]["position"]["x"] == 2);
+            CHECK(j[1]["position"]["y"] == 0);
 
-            CHECK(j[2]["event_type"] == "player_walk");
+            CHECK(j[2]["event"] == "player_walk");
             CHECK(j[2]["actor_id"] == 0);
             CHECK(j[2]["move_number"] == 3);
-            CHECK(j[2]["data"]["place"]["posX"] == 1);
-            CHECK(j[2]["data"]["place"]["posY"] == 2);
+            CHECK(j[2]["position"]["x"] == 1);
+            CHECK(j[2]["position"]["y"] == 2);
 
-            CHECK(j[3]["event_type"] == "player_walk");
+            CHECK(j[3]["event"] == "player_walk");
             CHECK(j[3]["actor_id"] == 1);
             CHECK(j[3]["move_number"] == 4);
-            CHECK(j[3]["data"]["place"]["posX"] == 1);
-            CHECK(j[3]["data"]["place"]["posY"] == 0);
+            CHECK(j[3]["position"]["x"] == 1);
+            CHECK(j[3]["position"]["y"] == 0);
 
-            CHECK(j[4]["event_type"] == "player_walk");
+            CHECK(j[4]["event"] == "player_walk");
             CHECK(j[4]["actor_id"] == 0);
             CHECK(j[4]["move_number"] == 5);
-            CHECK(j[4]["data"]["place"]["posX"] == 2);
-            CHECK(j[4]["data"]["place"]["posY"] == 2);
+            CHECK(j[4]["position"]["x"] == 2);
+            CHECK(j[4]["position"]["y"] == 2);
 
-            CHECK(j[5]["event_type"] == "player_walk");
+            CHECK(j[5]["event"] == "player_walk");
             CHECK(j[5]["actor_id"] == 1);
             CHECK(j[5]["move_number"] == 6);
-            CHECK(j[5]["data"]["place"]["posX"] == 0);
-            CHECK(j[5]["data"]["place"]["posY"] == 0);
+            CHECK(j[5]["position"]["x"] == 0);
+            CHECK(j[5]["position"]["y"] == 0);
         }
     }
 }

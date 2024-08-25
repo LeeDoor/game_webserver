@@ -1,5 +1,6 @@
 #pragma once
 #include "session_data.hpp"
+#include <memory>
 
 namespace session_manager{
     class ISessionManager{

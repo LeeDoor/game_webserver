@@ -26,8 +26,8 @@ list of events contains an array of events. Each event share common properties. 
         "actor_id": 2
       },
       "place": {
-        "posX": 1,
-        "posY": 0
+        "X": 1,
+        "Y": 0
       },
       "ticks_left": 3
     },
@@ -44,8 +44,8 @@ list of events contains an array of events. Each event share common properties. 
     "actor_id": 1,
     "data": {
       "place": {
-        "posX": 2,
-        "posY": 2
+        "X": 2,
+        "Y": 2
       }
     },
     "move_number": 2

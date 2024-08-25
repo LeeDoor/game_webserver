@@ -7,8 +7,8 @@
 * **terrain** - all of the obstacles in the match. There is their position and type. For now type can only be the `wall`, means that players cannot pass through it. 
 * **now_turn** - login of the player who is moving now.
 * **objects** - all of the objects in the match. This objects are building the core gameplay, like bombs, guns, bullets etc. Each object has it's unique id and type. Type can be: `bomb`, `bullet`, `gun` etc. Each type share basic parameters as well as their own parameters. **common parameters**:
-	* **posX** - position X of the object.
-	* **posY** - position Y of the object.
+	* **X** - position X of the object.
+	* **Y** - position Y of the object.
 	* **type** - string defines which type of object is it.
 	* **owner** - login of the player who created this object.
 	* **id** - unique ID of each actor. Actor is an object or player which can interact with game field. 1 and 0 ID values are defined for both players.
@@ -27,8 +27,8 @@
   "objects": [
     {
       "type": "bomb",
-      "posX": 1,
-      "posY": 1,
+      "X": 1,
+      "Y": 1,
       "ticks_left": 5,
       "owner": "NIGGER",
       "actor_id": 1
@@ -38,26 +38,26 @@
     {
       "id": 0,
       "login": "a2668ee3a84a3429",
-      "posX": 4,
-      "posY": 1
+      "X": 4,
+      "Y": 1
     },
     {
       "id": 1,
       "login": "894fa62d011c19de",
-      "posX": 3,
-      "posY": 6
+      "X": 3,
+      "Y": 6
     }
   ],
   "state": "playing",
   "terrain": [
     {
-      "posX": 0,
-      "posY": 2,
+      "X": 0,
+      "Y": 2,
       "type": "wall"
     },
     {
-      "posX": 3,
-      "posY": 2,
+      "X": 3,
+      "Y": 2,
       "type": "wall"
     }
   ]

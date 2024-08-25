@@ -9,11 +9,12 @@
 #include "bomb.hpp"
 #include "gun.hpp"
 #include "bullet.hpp"
+#include "move_data.hpp"
+#include "session_id.hpp"
 
 namespace game_manager{
     class Event;
 
-    using SessionId = std::string;
     class Session {
     public:
         using Ptr = std::shared_ptr<Session>;
@@ -55,16 +56,13 @@ namespace game_manager{
             WrongMove,
             NotYourMove,
         };
-
-        // player's api functions
-        using VariantApiData = std::variant<EmptyData, PlaceData, DirectedPlaceData>;
         
         /// @brief walking api. moves player_id to place_data
-        GameApiStatus ApiWalk(const um::Uuid& player_id, const PlaceData& place_data);
+        GameApiStatus ApiWalk(const um::Uuid& player_id, PosMoveData data);
         /// @brief resign api. resign as player_id
         GameApiStatus ApiResign(const um::Uuid& player_id);
         /// @brief place bomb api. places player_id's bomb to place_data
-        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, const PlaceData& place_data);
+        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, PosMoveData data);
     private:
         /// @brief sets map with login and uuid for both players, sets default map settings like obstacles.
         /// doesnt matter who is first and who is second player passed. function declares who is moving first.
@@ -77,29 +75,23 @@ namespace game_manager{
         void FinishSession(bool firstWinner);
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();
-        /// @brief adds event to the event list. 
-        /// @param actor_id id of the actor
-        /// @param event_type event type, that happened
-        /// @param data data about happened move. VARIANT_DATA_EMPTY if no data provided
-        void AddEvent(ActorId actor_id, std::string event_type, VariantEventData&& data);
 
         // object placement
-        Bomb::Ptr PlaceBombObject(PlaceData place, Object::OwnerType login);
-        Gun::Ptr PlaceGunObject(DirectedPlaceData place, Object::OwnerType login);
-        Bullet::Ptr PlaceBulletObject(DirectedPlaceData place, Object::OwnerType login);
+        Bomb::Ptr PlaceBombObject(Position position, Object::OwnerType login);
+        Gun::Ptr PlaceGunObject(Position position, Direction direction, Object::OwnerType login);
+        Bullet::Ptr PlaceBulletObject(Position position, Direction direction, Object::OwnerType login);
         
         /// @brief removes given object from scene.
         void RemoveObject(ActorId actor_id) ;
 
         // object acting
-        void Explode(Dimention posX, Dimention posY);
+        void Explode(Position position);
         void ShootBullet(Gun::Ptr gun);
-        std::optional<IShootable::Arr> GetShootableObjects(Bullet::Ptr bullet);
 
         // assisting functions
 
         /// @brief returns true if given cell is valid to walk on or to place an object.
-        bool ValidCell(unsigned posX, unsigned posY);
+        bool ValidCell(Position position);
 
         std::mutex move_mutex_;
         State::Ptr state_;

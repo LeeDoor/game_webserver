@@ -1,13 +1,12 @@
 #pragma once
-#include "object_placed.hpp"
-#include <functional>
+#include "object.hpp"
 
 namespace game_manager{
-    class Bomb : public ObjectPlaced {
+    class Bomb : public Object {
     public:
         using Ptr = std::shared_ptr<Bomb>;
 
-        using ExplodeFunc = std::function<void(Dimention, Dimention)>;
+        using ExplodeFunc = std::function<void(Position)>;
 
         struct Methods : public Object::Methods{
             ExplodeFunc explode;
@@ -16,9 +15,9 @@ namespace game_manager{
         Bomb(OwnerType owner, ActorId id);
         Bomb(OwnerType owner, ActorId id, Methods&& methods);
         bool operator==(Object::Ptr obj) const override;
-        virtual void tojson(nlohmann::json& j) const;
-
         EventsType UpdateTick(int move_number) override;
+
+        virtual void tojson(nlohmann::json& j) const;
 
         unsigned ticks_left = 3;
 

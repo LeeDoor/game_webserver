@@ -1,25 +1,20 @@
 #pragma once
-#include "user.hpp"
 #include <memory>
+#include "user.hpp"
+#include "i_placeable.hpp"
 
 namespace game_manager{
-    using Dimention = unsigned;
-    enum Direction {
-        Up,
-        Right,
-        Down,
-        Left
-    };
-    using ActorId = int;
-    struct Player{
+    struct Player : public IPlaceable{
         using Ptr = std::shared_ptr<Player>;
         using Login = um::Login;
 
+        Player() {}
+        Player(Position position, ActorId actor_id, Login login) 
+            : IPlaceable(actor_id), login(login){
+            Place(position);
+        }
         bool operator == (const Player& other) const = default;
 
-        ActorId id;
         Login login;
-        Dimention posX;
-        Dimention posY;
     };
 }

@@ -14,7 +14,7 @@ bool ValidCell(const gm::State& state, unsigned x, unsigned y){
     auto& terrain = state.terrain;
     
     auto it = std::find_if(terrain.begin(), terrain.end(), 
-        [&](gm::Obstacle::Ptr o){return o->posX == x && o->posY == y;});
+        [&](gm::Obstacle::Ptr o){return o->position.x == x && o->position.y == y;});
     return it == terrain.end();
 }
 
@@ -198,13 +198,15 @@ void MoveSuccess(tcp::socket& socket, std::string&& body, const Token& token, co
         });
 }
 
-StringResponse Walk(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid){
-    nlohmann::json j(wd);
+StringResponse Walk(tcp::socket& socket, const gm::Position& wd, const Token& token, const gm::SessionId& sid){
+    nlohmann::json j;
+    j["position"] = wd;
     j["move_type"] = "walk";
     return Move(socket, j.dump(), token, sid);
 }
-void WalkSuccess(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid){
-    nlohmann::json j(wd);
+void WalkSuccess(tcp::socket& socket, const gm::Position& wd, const Token& token, const gm::SessionId& sid){
+    nlohmann::json j;
+    j["position"] = wd;
     j["move_type"] = "walk";
     return MoveSuccess(socket, j.dump(), token, sid);
 }
@@ -216,13 +218,15 @@ void ResignSuccess(tcp::socket& socket, const Token& token, const gm::SessionId&
     return MoveSuccess(socket, "{\"move_type\":\"resign\"}", token, sid);
 }
 
-StringResponse PlaceBomb(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid) {
-    nlohmann::json j(wd);
+StringResponse PlaceBomb(tcp::socket& socket, const gm::Position& wd, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j;
+    j["position"] = wd;
     j["move_type"] = "place_bomb";
     return Move(socket, j.dump(), token, sid);
 }
-void PlaceBombSuccess(tcp::socket& socket, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid) {
-    nlohmann::json j(wd);
+void PlaceBombSuccess(tcp::socket& socket, const gm::Position& wd, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j;
+    j["position"] = wd;
     j["move_type"] = "place_bomb";
     return MoveSuccess(socket, j.dump(), token, sid);
 }

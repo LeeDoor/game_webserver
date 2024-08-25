@@ -7,7 +7,7 @@ function makeWall(cell){
 function initTerrain(terrain){
     for(i = 0; i < terrain.length; ++i){
         let block = terrain[i];
-        makeWall(grid[block.posX][block.posY]);
+        makeWall(grid[block.X][block.Y]);
     }
 }
 
@@ -22,12 +22,12 @@ function initPlayers(players){
         dataUs = players[1];
         dataEnemy = players[0];
     }
-    playerUs.posX = dataUs.posX;
-    playerUs.posY = dataUs.posY;
+    playerUs.X = dataUs.X;
+    playerUs.Y = dataUs.Y;
     playerUs.actor_id = dataUs.id;
 
-    playerEnemy.posX = dataEnemy.posX;
-    playerEnemy.posY = dataEnemy.posY;
+    playerEnemy.X = dataEnemy.X;
+    playerEnemy.Y = dataEnemy.Y;
     playerEnemy.actor_id = dataEnemy.id;
 }
 
@@ -36,7 +36,7 @@ function initPlayers(players){
 function initObjects(objects_){
     objects = [];
     for (obj of objects_){
-        placeBombPlayer(obj.posX, obj.posY, obj.id, obj.owner, obj.ticks_left);
+        placeBombPlayer(obj.X, obj.Y, obj.id, obj.owner, obj.ticks_left);
     }
 }
 

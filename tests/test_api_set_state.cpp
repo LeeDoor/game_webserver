@@ -16,11 +16,11 @@ TEST_CASE("ApiSetState", "[api][debug][set_state]"){
         gm::State new_state = sd.state;
         new_state.map_size = {12, 12};
         new_state.move_number = 228;
-        new_state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{1,1,gm::Obstacle::Type::Wall}), std::make_shared<gm::Obstacle>(gm::Obstacle{2,2,gm::Obstacle::Type::Wall})};
-        new_state.players.front()->posX += 2;
-        new_state.players.front()->posY += 2;
-        new_state.players.back()->posX += 2;
-        new_state.players.back()->posY += 2;
+        new_state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{{1,1},gm::Obstacle::Type::Wall}), std::make_shared<gm::Obstacle>(gm::Obstacle{{2,2},gm::Obstacle::Type::Wall})};
+        new_state.players.front()->position.x += 2;
+        new_state.players.front()->position.y += 2;
+        new_state.players.back()->position.x += 2;
+        new_state.players.back()->position.y += 2;
         SetStateSuccess(socket, new_state, sd.sid);
         gm::State changed_state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
         

@@ -15,7 +15,6 @@ add_library(${LIBRARY_NAME}
     object.hpp
     event_manager.hpp
     event_manager.cpp
-    session_func_data.hpp
     gun.hpp
     bullet.hpp
 )

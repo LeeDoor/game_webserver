@@ -1,16 +1,16 @@
 class Cell{
-    constructor(posX,posY,type, selected){
-        this.posX = posX;
-        this.posY = posY;
+    constructor(X,Y,type, selected){
+        this.X = X;
+        this.Y = Y;
         this.type = type;
         this.selected = selected;
     }
 }
 
 class Player{
-    constructor(posX,posY,us, actor_id){
-        this.posX = posX;
-        this.posY = posY;
+    constructor(X,Y,us, actor_id){
+        this.X = X;
+        this.Y = Y;
         this.us = us;
         this.actor_id = actor_id;
         this.state = "idle";
@@ -29,18 +29,18 @@ class Element{
 }
 
 class Object {
-    constructor(posX, posY, actor_id, parent_aid){
-        this.posX = posX;
-        this.posY = posY;
+    constructor(X, Y, actor_id, parent_aid){
+        this.X = X;
+        this.Y = Y;
         this.type = "object";
         this.actor_id = actor_id;
         this.parent_aid = parent_aid;
     }
 }
 class Bomb {
-    constructor(posX, posY, actor_id, parent_aid, ticks_left){
-        this.posX = posX;
-        this.posY = posY;
+    constructor(X, Y, actor_id, parent_aid, ticks_left){
+        this.X = X;
+        this.Y = Y;
         this.type = "bomb";
         this.actor_id = actor_id;
         this.parent_aid = parent_aid;

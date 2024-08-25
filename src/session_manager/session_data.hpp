@@ -1,7 +1,7 @@
 #pragma once
 #include "user.hpp"
 #include <optional>
-#include "../game_manager/session.hpp"
+#include "session_id.hpp"
 
 namespace session_manager{
     struct SessionData{

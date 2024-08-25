@@ -1,6 +1,6 @@
 function walkPlayer(player, x, y){
-    player.posX = x;
-    player.posY = y;
+    player.X = x;
+    player.Y = y;
 }
 
 function placeBombPlayer(x, y, actor_id, parent_aid, ticks_left){
@@ -12,9 +12,9 @@ async function gameEnded(){
 }
 
 function defineDir(player, x){
-    if(player.posX == x)
+    if(player.X == x)
         return "";
-    if(player.posX < x)
+    if(player.X < x)
         return "right";
     return "left";
 }
@@ -23,13 +23,13 @@ async function handleEvent(ev){
     const player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
     switch(ev.event_type){
     case "player_walk":
-        await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.data.place.posX), 3);
-        walkPlayer(player, ev.data.place.posX, ev.data.place.posY);
+        await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.data.place.X), 3);
+        walkPlayer(player, ev.data.place.X, ev.data.place.Y);
         await SetStateFor(player, ["jump", "idle"], "", 3);
         break;
     case "player_place_bomb":
-        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.data.place.posX), 2);
-        placeBombPlayer(ev.data.place.posX, ev.data.place.posY, ev.data.new_object.actor_id, ev.actor_id, ev.data.ticks_left);
+        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.data.place.X), 2);
+        placeBombPlayer(ev.data.place.X, ev.data.place.Y, ev.data.new_object.actor_id, ev.actor_id, ev.data.ticks_left);
         break;
     case "player_won":
         await gameEnded();

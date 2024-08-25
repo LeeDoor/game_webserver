@@ -2,22 +2,22 @@
 
 namespace game_manager{
     Bullet::Bullet(OwnerType owner, ActorId actor_id) 
-        : ObjectDirected(owner, actor_id){}
+        : DirectedObject(owner, actor_id){}
     Bullet::Bullet(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : get_shootables_(std::move(methods.get_shootables)), ObjectDirected(owner, actor_id, std::move(methods)){}
+        : DirectedObject(owner, actor_id, std::move(methods)){}
 
     bool Bullet::operator==(Object::Ptr obj) const {
         Bullet::Ptr d = std::dynamic_pointer_cast<Bullet>(obj);
-        return ObjectDirected::operator==(obj) && d;
+        return DirectedObject::operator==(obj) && d;
     }
     void Bullet::tojson(nlohmann::json& j) const {
-        ObjectDirected::tojson(j);
+        DirectedObject::tojson(j);
         j["type"] = "bullet";
     }
 
     Object::EventsType Bullet::UpdateTick(int move_number) {
         int mX = 0, mY = 0; // x and y modifiers.
-        switch(dir){
+        switch(direction){
         case Direction::Up:
             mY = -1;
             break;
@@ -31,21 +31,9 @@ namespace game_manager{
             mX = -1;
             break;
         }
-        posX += mX;
-        posY += mY;
+        position.x += mX;
+        position.y += mY;
 
-        std::optional<IShootable::Arr> shootables = get_shootables_(shared_from_this());
-        if(!shootables) 
-            return {CreateEvent(move_number, BULLET_DESTROY)};
-        Object::EventsType events = {CreateEvent(move_number, BULLET_FLY)};
-        
-        for(IShootable::Ptr shootable : *shootables){
-            events.splice(events.end(), shootable->GetShot(move_number, shared_from_this()));
-        }
 
-        if(shootables->size() > 0) {
-            events.push_back(CreateEvent(move_number, BULLET_DESTROY));
-        }
-        return events;
     }
 }

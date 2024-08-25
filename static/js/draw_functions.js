@@ -80,7 +80,7 @@ function objElementData(x, y){
 
 //draws one cell
 function drawCell(cell){
-    const element = cellElementData(cell.posX, cell.posY);
+    const element = cellElementData(cell.X, cell.Y);
     const sprite = terrain_sprites[cell.type];
     ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
 
@@ -97,7 +97,7 @@ function drawCell(cell){
 
 // draws player
 function drawPlayer(player){
-    const element = objElementData(player.posX, player.posY);
+    const element = objElementData(player.X, player.Y);
     const sprite = players_sprites[player.style][player.dir][player.state];
     ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
 }
@@ -111,7 +111,7 @@ function drawPlayers(){
 function ValidCell(x, y){
     return x >= 0 && x < gridSize &&
         y >= 0 && y < gridSize 
-        && !(playerEnemy.posX == x && playerEnemy.posY == y)
+        && !(playerEnemy.X == x && playerEnemy.Y == y)
         && grid[x][y].type == "grass"; 
 }
 
@@ -132,7 +132,7 @@ function AddAxialCells(x, y, validCells){
 function DefineValidCell() {
     validCells = [];
     if(!now_turn) return;
-    let x = playerUs.posX, y = playerUs.posY;
+    let x = playerUs.X, y = playerUs.Y;
     switch(current_move_action) {
     case "bomb":
         AddSideCells(x, y, validCells);
@@ -154,7 +154,7 @@ function drawGrid(){
 
 function drawObjects(){
     for(obj of objects) {
-        const element = objElementData(obj.posX, obj.posY);
+        const element = objElementData(obj.X, obj.Y);
         const sprite = object_sprites[obj.type][3 - obj.ticks_left];
         ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
     }
@@ -165,7 +165,7 @@ function drawObjects(){
 function drawEffects(){
     for(effect of effects){ 
         const sprite = effect_sprites[effect.type];
-        const element = cellElementData(effect.cell.posX, effect.cell.posY);
+        const element = cellElementData(effect.cell.X, effect.cell.Y);
         ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
     }
 }
@@ -182,13 +182,13 @@ function drawScene(){
 
 function getCellByActor(actor_id){
     if (actor_id == playerUs.actor_id){
-        return grid[playerUs.posX][playerUs.posY];
+        return grid[playerUs.X][playerUs.Y];
     }
     if (actor_id == playerEnemy.actor_id){
-        return grid[playerEnemy.posX][playerEnemy.posY];
+        return grid[playerEnemy.X][playerEnemy.Y];
     }
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
-    return grid[obj.posX][obj.posY];
+    return grid[obj.X][obj.Y];
 }
 
 async function SetStateFor(player, states, dir, repeat){
@@ -221,10 +221,10 @@ async function explodeAnimation(actor_id) {
     const repeat = 3;
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
     let cellsToExplode = [];
-    for(let x = obj.posX - 1; x <= obj.posX + 1; ++x){
+    for(let x = obj.X - 1; x <= obj.X + 1; ++x){
         if (x < 0) continue;
         if (x >= gridSize) continue;
-        for(let y = obj.posY - 1; y <= obj.posY + 1; ++y){
+        for(let y = obj.Y - 1; y <= obj.Y + 1; ++y){
             if (y < 0) continue;
             if (y >= gridSize) continue;
             if (grid[x][y].type == "wall") continue;

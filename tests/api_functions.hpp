@@ -91,14 +91,14 @@ http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& 
 http::response<http::string_body> Move(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 void MoveSuccess(tcp::socket&, std::string&& body, const Token& token, const gm::SessionId& sid);
 
-StringResponse Walk(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
-void WalkSuccess(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
+StringResponse Walk(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
+void WalkSuccess(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
 
 StringResponse Resign(tcp::socket&, const Token& token, const gm::SessionId& sid);
 void ResignSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
-StringResponse PlaceBomb(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
-void PlaceBombSuccess(tcp::socket&, const gm::PlaceData& wd, const Token& token, const gm::SessionId& sid);
+StringResponse PlaceBomb(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
+void PlaceBombSuccess(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
 
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, const gm::SessionId& sid, const Token& token);
 /// DEBUG METHODS ///

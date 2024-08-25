@@ -1,9 +1,9 @@
 #pragma once
-#include "object_directed.hpp"
+#include "directed_object.hpp"
 #include <functional>
 
 namespace game_manager{
-    class Gun : public ObjectDirected, public std::enable_shared_from_this<Gun> {
+    class Gun : public DirectedObject, public std::enable_shared_from_this<Gun> {
     public: 
         using Ptr = std::shared_ptr<Gun>;
         using ShootFunc = std::function<void(Gun::Ptr)>;
@@ -31,4 +31,4 @@ namespace game_manager{
         const std::string GUN_SHOT = "gun_shot";
         const std::string GUN_SHOT_DESTROY = "gun_shot_destroy";
     };
-}
+}   

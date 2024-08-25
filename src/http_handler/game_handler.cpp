@@ -132,12 +132,12 @@ namespace http_handler{
         if(!mt.has_value())
             return SendWrongBodyData(rns);
 
-        std::optional<gm::Session::VariantApiData> vd
+        gm::MoveData::Ptr md
             = serializer::DeserializeMoveData(rns.request.body(), *mt);
-        if(!vd.has_value())
+        if(!md)
             return SendWrongBodyData(rns);
 
-        status = gm_->ApiMove(*mt, uuid, sid, *vd);
+        status = gm_->ApiMove(*mt, uuid, sid, md);
         if(!status)
             return DefineSessionState(rns, sid);
         switch(*status){
