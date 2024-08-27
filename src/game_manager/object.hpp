@@ -2,6 +2,7 @@
 #include <list>
 #include <functional>
 #include "event_manager.hpp"
+#include "player.hpp"
 #include "custom_events.hpp"
 #include "i_placeable.hpp"
 #include "nlohmann/json.hpp"

@@ -132,20 +132,9 @@ namespace game_manager{
     void Session::InitSessionState(const um::Login& login1, const um::Login& login2){
         state_->players.resize(2);
         state_->players = {
-            std::make_shared<Player>(),
-            std::make_shared<Player>(),
+            std::make_shared<Player>(gm::Position{4, 1}, GetId(), login1, [&](){FinishSession(false);}),
+            std::make_shared<Player>(gm::Position{3, 6}, GetId(), login2, [&](){FinishSession(true);}),
         };
-        player1().login = login1;
-        player2().login = login2;
-
-        player1().position.x = 4;
-        player1().position.y = 1;
-
-        player2().position.x = 3;
-        player2().position.y = 6;
-
-        player1().actor_id = GetId();
-        player2().actor_id = GetId();
         
         std::vector<Position> walls = {
             {0,2}, {3,2}, 
@@ -247,11 +236,14 @@ namespace game_manager{
     void Session::Explode(Position position) {
         for(Dimention x = std::max(0, int(position.x) - 1); x <= std::min(state_->map_size.width - 1, position.x + 1); ++x){
             for(Dimention y = std::max(0, int(position.y) - 1); y <= std::min(state_->map_size.height - 1, position.y + 1); ++y){
-                if(player1().position.x == x && player1().position.y == y){
-                    return FinishSession(false);
+                Position pos {x,y};
+                if(player1().position == pos){
+                    player1().Die(state_->move_number);
+                    return;
                 }
-                if(player2().position.x == x && player2().position.y == y){
-                    return FinishSession(true);
+                if(player2().position == pos){
+                    player2().Die(state_->move_number);
+                    return;
                 }
             }
         }
@@ -268,6 +260,12 @@ namespace game_manager{
 
         std::copy_if(objects().begin(), objects().end(), std::back_inserter(collisions), 
             [&](Object::Ptr o){ return o->position == position && o->actor_id != bullet->actor_id; });
-    return collisions;
+        
+        State::
+        Players& players = state_->players;
+        std::copy_if(players.begin(), players.end(), std::back_inserter(collisions), 
+            [&](Player::Ptr p){ return p->position == position; });
+        
+        return collisions;
     }
 }

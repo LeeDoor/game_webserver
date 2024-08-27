@@ -35,10 +35,17 @@ namespace game_manager{
         position.x += mX;
         position.y += mY;
 
+        EventsType events;
+
         std::optional<std::list<IPlaceable::Ptr>> collisions = get_collisions_(shared_from_this());
         if(collisions) {
             if (collisions->size() == 0){
-                return {EmptyEvent({move_number, actor_id, BULLET_FLY})};
+                events.push_back(EmptyEvent({move_number, actor_id, BULLET_FLY}));
+                return events;
+            }
+
+            for(IPlaceable::Ptr coll : *collisions) {
+                
             }
         }
 

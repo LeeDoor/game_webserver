@@ -4,7 +4,6 @@
 #include <list>
 #include <optional>
 #include <memory>
-#include "player.hpp"
 #include "event.hpp"
 namespace game_manager{
     class EventListWrapper{
