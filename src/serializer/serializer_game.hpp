@@ -13,6 +13,7 @@ namespace serializer{
 
     std::optional<gm::Session::MoveType> DefinePlayerMove(const std::string& json);
     std::optional<gm::PosMoveData> DeserializePosMoveData(const std::string& json);
+    std::optional<gm::DirPosMoveData> DeserializeDirPosMoveData(const std::string& json_str);
     gm::MoveData::Ptr DeserializeMoveData(const std::string& json, gm::Session::MoveType mt);
-    
+
 }

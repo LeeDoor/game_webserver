@@ -68,6 +68,7 @@ hh::RegistrationData RegisterSuccess(tcp::socket& socket);
 http::response<http::string_body> Login(tcp::socket&, const um::Login& login, const um::Password& password);
 LoginData LoginSuccess(tcp::socket&, const um::Login& login);
 
+
 http::response<http::string_body> Profile(tcp::socket&, const Token& token);
 hh::PublicUser ProfileSuccess(tcp::socket&, const Token& token);
 
@@ -99,6 +100,9 @@ void ResignSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
 StringResponse PlaceBomb(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
 void PlaceBombSuccess(tcp::socket&, const gm::Position& wd, const Token& token, const gm::SessionId& sid);
+
+StringResponse PlaceGun(tcp::socket&, const gm::Position& wd, const gm::Direction& d, const Token& token, const gm::SessionId& sid);
+void PlaceGunSuccess(tcp::socket&, const gm::Position& wd, const gm::Direction& d, const Token& token, const gm::SessionId& sid);
 
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket&, const gm::SessionId& sid, const Token& token);
 /// DEBUG METHODS ///

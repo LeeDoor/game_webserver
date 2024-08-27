@@ -64,6 +64,7 @@ namespace game_manager{
         case MT::Resign: return ApiResign(uuid, sid);
         case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, *dynamic_pointer_cast<PosMoveData>(data));
         case MT::Walk: return ApiWalk(uuid, sid, *dynamic_pointer_cast<PosMoveData>(data));
+        case MT::PlaceGun: return ApiPlaceGun(uuid, sid, *dynamic_pointer_cast<DirPosMoveData>(data));
         default: throw std::logic_error("MoveType not implemented in GameManager. see ApiMove");
         }
     }
@@ -82,6 +83,11 @@ namespace game_manager{
     }
     Session::GameApiStatus GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, PosMoveData data) {
         auto status = sessions_.at(sid)->ApiPlaceBomb(uuid, data);
+        CheckStatus(sid, status);
+        return status;
+    }
+    Session::GameApiStatus GameManager::ApiPlaceGun(const um::Uuid& uuid, const SessionId& sid, DirPosMoveData data) {
+        auto status = sessions_.at(sid)->ApiPlaceGun(uuid, data);
         CheckStatus(sid, status);
         return status;
     }

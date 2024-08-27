@@ -231,6 +231,21 @@ void PlaceBombSuccess(tcp::socket& socket, const gm::Position& wd, const Token& 
     return MoveSuccess(socket, j.dump(), token, sid);
 }
 
+StringResponse PlaceGun(tcp::socket& socket, const gm::Position& wd, const gm::Direction& d, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j;
+    j["position"] = wd;
+    j["direction"] = d;
+    j["move_type"] = "place_gun";
+    return Move(socket, j.dump(), token, sid);
+}
+void PlaceGunSuccess(tcp::socket& socket, const gm::Position& wd, const gm::Direction& d, const Token& token, const gm::SessionId& sid) {
+    nlohmann::json j;
+    j["position"] = wd;
+    j["direction"] = d;
+    j["move_type"] = "place_gun";
+    return MoveSuccess(socket, j.dump(), token, sid);
+}
+
 sm::PublicSessionData PublicSessionDataSuccess(tcp::socket& socket, const gm::SessionId& sid, const Token& token) {
     StringResponse response = SessionState(socket, token, sid);
     CheckStringResponse(response, 

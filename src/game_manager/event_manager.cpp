@@ -29,7 +29,11 @@ namespace game_manager{
         }
     }
     EventListWrapper::Vec EventListWrapper::FromMove(int from_move) const {
-        // from_move starts from zero, need to decrement
+        // from_move starts from one, need to decrement
+        if(from_move < 1)
+            return value_;
+        if(from_move > from_move_.size())
+            return {};
         return Vec(std::next(value_.begin(), from_move_[from_move - 1]), value_.end());
     }
 }

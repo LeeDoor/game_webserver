@@ -19,7 +19,7 @@ namespace game_manager{
             return Object::operator==(obj) && ptr &&
                 ptr->direction == direction;
         }
-
+        void tojson(nlohmann::json& j) const;
         Direction direction;
     };
 

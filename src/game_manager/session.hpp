@@ -48,6 +48,7 @@ namespace game_manager{
             Walk,
             Resign,
             PlaceBomb,
+            PlaceGun,
         };
         
         /// @brief player's move status
@@ -63,6 +64,7 @@ namespace game_manager{
         GameApiStatus ApiResign(const um::Uuid& player_id);
         /// @brief place bomb api. places player_id's bomb to place_data
         GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, PosMoveData data);
+        GameApiStatus ApiPlaceGun(const um::Uuid& player_id, DirPosMoveData data);
     private:
         /// @brief sets map with login and uuid for both players, sets default map settings like obstacles.
         /// doesnt matter who is first and who is second player passed. function declares who is moving first.
@@ -86,7 +88,7 @@ namespace game_manager{
 
         // object acting
         void Explode(Position position);
-        void ShootBullet(Gun::Ptr gun);
+        std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet);
 
         // assisting functions
 
@@ -119,6 +121,7 @@ namespace game_manager{
         const std::string PLAYER_WALK = "player_walk";
         const std::string PLAYER_RESIGN = "player_resign";
         const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
+        const std::string PLAYER_PLACE_GUN = "player_place_gun";
         const std::string PLAYER_WON = "player_won";
     };
 }   

@@ -33,6 +33,7 @@ namespace game_manager{
         {Session::MoveType::Walk, "walk"},
         {Session::MoveType::Resign, "resign"},
         {Session::MoveType::PlaceBomb, "place_bomb"},
+        {Session::MoveType::PlaceGun, "place_gun"},
     })
 
     NLOHMANN_JSON_SERIALIZE_ENUM(Direction, {

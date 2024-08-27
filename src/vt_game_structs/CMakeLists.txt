@@ -8,5 +8,6 @@ add_library(${LIBRARY_NAME}
     bullet.cpp 
     event.cpp
     custom_events.cpp
+    directed_object.cpp
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

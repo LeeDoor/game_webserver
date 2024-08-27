@@ -30,6 +30,7 @@ namespace game_manager{
         Session::GameApiStatus ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
         Session::GameApiStatus ApiWalk(const um::Uuid& uuid, const SessionId& sid, PosMoveData data); 
         Session::GameApiStatus ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, PosMoveData data); 
+        Session::GameApiStatus ApiPlaceGun(const um::Uuid& uuid, const SessionId& sid, DirPosMoveData data);
 
         void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
         bool FinishSession(const SessionId& sid, const Session::ResultsUuid& results);

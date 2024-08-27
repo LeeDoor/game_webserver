@@ -165,16 +165,33 @@ namespace serializer{
         }
         return res;
     }
+    std::optional<gm::DirPosMoveData> DeserializeDirPosMoveData(const std::string& json_str) {
+        gm::DirPosMoveData res;
+        try{
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            j.get_to(res);
+        }
+        catch(std::exception& ex){
+            return std::nullopt;
+        }
+        return res;
+    }
     gm::MoveData::Ptr DeserializeMoveData(const std::string& json_str, gm::Session::MoveType mt) {
         using MT = gm::Session::MoveType;
         switch(mt) {
         case MT::Resign:
             return std::make_shared<gm::MoveData>();
         case MT::Walk:
-        case MT::PlaceBomb:
+        case MT::PlaceBomb:{
             auto pmd = DeserializePosMoveData(json_str);
             if(!pmd) return nullptr;
             return std::make_shared<gm::PosMoveData>(*pmd);
+        }
+        case MT::PlaceGun:{
+            auto pmd = DeserializeDirPosMoveData(json_str);
+            if(!pmd) return nullptr;
+            return std::make_shared<gm::DirPosMoveData>(*pmd);
+        }
         }
         throw std::logic_error("MoveType not implemented in serializer. see DeserialzeMoveData");
     }
