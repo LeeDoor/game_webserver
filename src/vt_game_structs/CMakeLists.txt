@@ -10,5 +10,6 @@ add_library(${LIBRARY_NAME}
     custom_events.cpp
     directed_object.cpp
     player.cpp
+    state.cpp
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

@@ -6,16 +6,13 @@
 #include "user.hpp"
 #include "state.hpp"
 #include "event_manager.hpp"
-#include "bomb.hpp"
-#include "gun.hpp"
-#include "bullet.hpp"
 #include "move_data.hpp"
 #include "session_id.hpp"
 
 namespace game_manager{
     class Event;
 
-    class Session {
+    class Session : public std::enable_shared_from_this<Session>{
     public:
         using Ptr = std::shared_ptr<Session>;
 
@@ -66,63 +63,21 @@ namespace game_manager{
         GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, PosMoveData data);
         GameApiStatus ApiPlaceGun(const um::Uuid& player_id, DirPosMoveData data);
     private:
-        /// @brief sets map with login and uuid for both players, sets default map settings like obstacles.
-        /// doesnt matter who is first and who is second player passed. function declares who is moving first.
-        /// @param login1 first player
-        /// @param login2 second player
-        void InitSessionState(const um::Login& login1, const um::Login& login2);
-        /// @brief finishes session and sets value to results_.
-        /// session ending should be handled by game_manager.
-        /// @param firstWinner true if first player won.
-        void FinishSession(bool firstWinner);
-        /// @brief makes changes after each player's move. should be called at the end of API functions.
-        void AfterMove();
-
-        // object placement
-        Bomb::Ptr PlaceBombObject(Position position, Object::OwnerType login);
-        Gun::Ptr PlaceGunObject(Position position, Direction direction, Object::OwnerType login);
-        Bullet::Ptr PlaceBulletObject(Position position, Direction direction, Object::OwnerType login);
+        Player::Ptr player1(){return state_->players.front();}
+        Player::Ptr player2(){return state_->players.back();}
         
-        /// @brief removes given object from scene.
-        void RemoveObject(ActorId actor_id) ;
-
-        // object acting
-        void Explode(Position position);
-        std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet);
-
-        // assisting functions
-
-        /// @brief returns true if given cell is valid to walk on or to place an object.
-        bool ValidCell(Position position);
-
         std::mutex move_mutex_;
         State::Ptr state_;
 
         um::Uuid player1_;
-        um::Uuid player2_;
-
-        // doesnt require free()
-        std::vector<Player*> scoreboard_;   
-
-        State::Objects& objects(){return state_->objects;}
-        Player& player1(){return *state_->players.front();}
-        Player& player2(){return *state_->players.back();}
-        um::Login& nowTurn(){return state_->now_turn;}
-        State::Terrain& terrain(){return state_->terrain;}
-
-        const std::map<um::Uuid, um::Login> uuid_to_login_;
+        um::Uuid player2_; 
         
-        EventListWrapper::Ptr events_wrapper_;
-
-        ActorId GetId(){return id_counter_++;}
-        // counter to create objects with new id
-        ActorId id_counter_ = 0;
+        const std::map<um::Uuid, um::Login> uuid_to_login_;
 
         const std::string PLAYER_WALK = "player_walk";
         const std::string PLAYER_RESIGN = "player_resign";
         const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
         const std::string PLAYER_PLACE_GUN = "player_place_gun";
-        const std::string PLAYER_WON = "player_won";
     };
 }   
 namespace gm = game_manager;
