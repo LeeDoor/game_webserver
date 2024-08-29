@@ -2,6 +2,8 @@
 #include "spdlog/spdlog.h"
 #include "event_manager.hpp"
 
+#define PLAYER_WON "player_won"
+
 namespace game_manager {
     State::State() :
         events_wrapper_(std::make_shared<EventListWrapper>()){}
@@ -63,7 +65,7 @@ namespace game_manager {
             len = objects.size();
         }
         if(!scoreboard_.empty())
-            return events_wrapper_->AddEvent(EmptyEvent({move_number, scoreboard_[0].lock()->actor_id, "player_wono"}));
+            return events_wrapper_->AddEvent(EmptyEvent({move_number, scoreboard_[0].lock()->actor_id, PLAYER_WON}));
         now_turn = now_turn == player1()->login? player2()->login : player1()->login;
     }
 
