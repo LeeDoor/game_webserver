@@ -34,8 +34,8 @@ namespace game_manager {
 
     void State::Init(const um::Login& login1, const um::Login& login2){
         players = {
-            std::make_shared<Player>(gm::Position{4, 1}, GetId(), login1, [&](){FinishSession(false);}),
-            std::make_shared<Player>(gm::Position{3, 6}, GetId(), login2, [&](){FinishSession(true);}),
+            std::make_shared<Player>(gm::Position{4, 1}, GetId(), login1),
+            std::make_shared<Player>(gm::Position{3, 6}, GetId(), login2),
         };
         
         std::vector<Position> walls = {
@@ -102,42 +102,24 @@ namespace game_manager {
     }
 
     Bomb::Ptr State::PlaceBombObject(Position position, Object::OwnerType login) {
-        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId(), Bomb::Methods{
-            [&](ActorId actor_id){
-                RemoveObject(actor_id);
-            },
-            [&](Position position){
-                Explode(position);
-            },
-        });
+        Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId());
         obj->Place(position);
+        obj->SetState(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }
     Gun::Ptr State::PlaceGunObject(Position position, Direction direction, Object::OwnerType login) {
-        Gun::Ptr obj = std::make_shared<Gun>(login, GetId(), Gun::Methods{
-            [&](ActorId actor_id){
-                RemoveObject(actor_id);
-            },
-            [&](Gun::Ptr gun){
-                return PlaceBulletObject(gun->position, gun->direction, gun->owner)->actor_id;
-            },
-        });
+        Gun::Ptr obj = std::make_shared<Gun>(login, GetId());
         obj->Place(position, direction);
+        obj->SetState(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }
 
     Bullet::Ptr State::PlaceBulletObject(Position position, Direction direction, Object::OwnerType login) {
-        Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId(), Bullet::Methods{
-            [&](ActorId actor_id){
-                RemoveObject(actor_id);
-            },
-            [&](Bullet::Ptr bullet){
-                return CollisionsOnCell(bullet);
-            },
-        });
+        Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId());
         obj->Place(position, direction);
+        obj->SetState(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }

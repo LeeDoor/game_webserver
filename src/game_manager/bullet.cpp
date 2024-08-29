@@ -1,11 +1,10 @@
 #include "bullet.hpp"
+#include "state.hpp"
 
 namespace game_manager{
     Bullet::Bullet(OwnerType owner, ActorId actor_id) 
         : DirectedObject(owner, actor_id){}
-    Bullet::Bullet(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : get_collisions_(std::move(methods.get_collisions)), DirectedObject(owner, actor_id, std::move(methods)){}
-
+        
     bool Bullet::operator==(Object::Ptr obj) const {
         Bullet::Ptr d = std::dynamic_pointer_cast<Bullet>(obj);
         return DirectedObject::operator==(obj) && d;
@@ -37,7 +36,7 @@ namespace game_manager{
 
         EventsType events;
 
-        std::optional<std::list<IPlaceable::Ptr>> collisions = get_collisions_(shared_from_this());
+        std::optional<std::list<IPlaceable::Ptr>> collisions = state_->CollisionsOnCell(shared_from_this());
         if(collisions) {
             if (collisions->size() == 0){
                 events.push_back(EmptyEvent({move_number, actor_id, BULLET_FLY}));
@@ -49,7 +48,7 @@ namespace game_manager{
             }
         }
 
-        destroy_(actor_id);
+        state_->RemoveObject(actor_id);
         return {EmptyEvent({move_number, actor_id, BULLET_DESTROY})};
     }
 } 

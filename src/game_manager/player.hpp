@@ -10,20 +10,15 @@ namespace game_manager{
     public:
         using Ptr = std::shared_ptr<Player>;
         using Login = um::Login;
-        using DieFunc = std::function<void()>;
 
         Player();
         Player(Position position, ActorId actor_id, Login login);
-
-        Player(Position position, ActorId actor_id, Login login, DieFunc&& die);
         bool operator == (const Player& other) const;
 
         EventListWrapper::Vec Die(int move_number);
 
         Login login;
     private:
-        DieFunc die_;
-        
         const std::string PLAYER_DEAD = "player_dead";
     };
 }

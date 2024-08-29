@@ -1,14 +1,11 @@
 #include "gun.hpp"
+#include "state.hpp"
 
 namespace game_manager{
     Gun::Gun(OwnerType owner, ActorId actor_id) 
-        : Gun(owner, actor_id, {}){}
-    Gun::Gun(OwnerType owner, ActorId actor_id, Methods&& methods) 
-        : 
+        :  DirectedObject(owner, actor_id),
         shot_cooldown_(3),
-        shot_amount_(3),
-        shoot_(std::move(methods.shoot)), 
-        DirectedObject(owner, actor_id, std::move(methods)){
+        shot_amount_(3){
             ticks_to_shot = shot_cooldown_; 
             shots_left = shot_amount_;
         }
@@ -31,11 +28,11 @@ namespace game_manager{
         --ticks_to_shot;
         if(!ticks_to_shot) {
             ticks_to_shot = shot_cooldown_;
-            ActorId bulletAI = shoot_(shared_from_this());
+            ActorId bulletAI = state_->PlaceBulletObject(position, direction, owner)->actor_id;
             --shots_left;
             events.push_back(BulletEvent({{{{move_number, actor_id, GUN_SHOT}, position},bulletAI},direction}));
             if(!shots_left){
-                destroy_(actor_id);
+                state_->RemoveObject(actor_id);
                 events.push_back(EmptyEvent({move_number, actor_id, GUN_DESTROY}));
                 return events;
             }

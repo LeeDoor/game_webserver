@@ -9,7 +9,6 @@ namespace game_manager{
         using Ptr = std::shared_ptr<DirectedObject>;
 
         DirectedObject(OwnerType owner, ActorId id) : Object(owner, id){}
-        DirectedObject(OwnerType owner, ActorId id, Methods&& methods) : Object(owner, id, std::move(methods)){}
         void Place(Position position, Direction direction) {
             Object::Place(position);
             this->direction = direction;
@@ -20,6 +19,7 @@ namespace game_manager{
                 ptr->direction == direction;
         }
         void tojson(nlohmann::json& j) const;
+        
         Direction direction;
     };
 

@@ -15,14 +15,8 @@ namespace game_manager{
         using Ptr = std::shared_ptr<Object>;
         using OwnerType = Player::Login;
         using EventsType = EventListWrapper::Vec;
-        using DestroyFunc = std::function<void(ActorId)>;
-
-        struct Methods{
-            DestroyFunc destroy;
-        };
 
         Object(OwnerType owner, ActorId id);
-        Object(OwnerType owner, ActorId id, Methods&& methods);
         virtual ~Object();
         virtual bool operator==(Object::Ptr obj) const;
         virtual EventsType UpdateTick(int move_number) = 0;
@@ -31,9 +25,6 @@ namespace game_manager{
         // it is a convenient way to polymorph object serialization.
         virtual void tojson(nlohmann::json& j) const;
 
-        OwnerType owner;        
-
-    protected:
-        DestroyFunc destroy_;
+        OwnerType owner;
     };
 }

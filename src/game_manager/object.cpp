@@ -1,10 +1,8 @@
 #include "object.hpp"
 #include "type_serializer.hpp"
 namespace game_manager{
-    Object::Object(OwnerType owner, ActorId id) 
-        : Object(owner, id, {}){}
-    Object::Object(OwnerType owner, ActorId id, Methods&& methods)
-        : IPlaceable(id), owner(owner), destroy_(std::move(methods.destroy)){}
+    Object::Object(OwnerType owner, ActorId id)
+        : IPlaceable(id), owner(owner){}
     Object::~Object() = default;
     bool Object::operator==(Object::Ptr obj) const {
         return IPlaceable::operator==(*obj) &&
