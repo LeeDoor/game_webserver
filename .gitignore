@@ -5,3 +5,4 @@ cmake-build-debug/
 .obsidian/
 logs/
 dump.rdb
+vcpkg_installed/

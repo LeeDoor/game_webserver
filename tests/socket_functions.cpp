@@ -23,7 +23,7 @@ void CheckContentLength(const StringResponse& given, int content_length) {
         FAIL_CHECK("no content_length header");
         return;
     }
-    int given_content_length = std::stoi(content_length_iter->value().to_string());
+    int given_content_length = std::stoi(static_cast<std::string>(content_length_iter->value()));
     CHECK(given_content_length == content_length);
 }
 void CheckContentType(const StringResponse& given, std::string content_type) {
@@ -32,7 +32,7 @@ void CheckContentType(const StringResponse& given, std::string content_type) {
         FAIL_CHECK("no content_type header");
     }
     else {
-        std::string given_content_type = content_type_iter->value().to_string();
+        std::string given_content_type = static_cast<std::string>(content_type_iter->value());
         CHECK(given_content_type == content_type);
     }
 }
@@ -43,7 +43,7 @@ void CheckAllowed(const StringResponse& given, vecstr allow_expected){
             FAIL_CHECK("no allow header");
         }
         else{
-            std::string allow = allow_iter->value().to_string();
+            std::string allow = static_cast<std::string>(allow_iter->value());
             std::transform(allow.begin(), allow.end(), allow.begin(),
                 [](unsigned char c){ return std::tolower(c); });
             std::vector<std::string> methods;

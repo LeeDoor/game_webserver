@@ -1,0 +1,13 @@
+{
+  "dependencies": [
+    "boost-algorithm",
+    "boost-asio",
+    "boost-beast",
+    "boost-program-options",
+    "catch2",
+    "libpqxx",
+    "nlohmann-json",
+    "redis-plus-plus",
+    "spdlog"
+  ]
+}

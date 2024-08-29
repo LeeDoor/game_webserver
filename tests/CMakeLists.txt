@@ -30,5 +30,11 @@ add_executable(test_application
 
 
 #including and linking dependencies
-target_link_libraries(test_application ${DEPENDENCIES} ${CONAN_LIBS_CATCH2})
+target_link_libraries(test_application ${DEPENDENCIES}
+    game_manager
+
+    Catch2::Catch2WithMain
+    nlohmann_json::nlohmann_json 
+    spdlog::spdlog
+)
 target_include_directories(test_application PRIVATE ${DIRECTORIES})

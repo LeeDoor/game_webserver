@@ -28,8 +28,8 @@ namespace http_server {
         HandleRequest(std::move(request_));
     }
 
-    void Session::HandleRequest(HttpRequest &&request) {
-        spdlog::info("handling request {}", request.target().to_string());
+    void Session::HandleRequest(HttpRequest&& request) {
+        spdlog::info("handling request {}", static_cast<std::string>(request.target()));
         auto fileHandler = [self = this->shared_from_this()](FileResponse &&response) {
             self->Write(std::move(response));
         };

@@ -37,7 +37,7 @@ namespace http_handler {
         if (auth_iter == request.end())
             return ApiStatus::Unauthorized;
 
-        std::optional<tokenm::Token> token = GetTokenFromHeader(auth_iter->value().to_string());
+        std::optional<tokenm::Token> token = GetTokenFromHeader(static_cast<std::string>(auth_iter->value()));
         if(!token)
             return ApiStatus::InvalidToken;
         std::optional<um::Uuid> uuid = tm_.value()->GetUuidByToken(*token);

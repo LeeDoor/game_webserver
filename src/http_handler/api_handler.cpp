@@ -36,7 +36,7 @@ namespace http_handler{
 
     std::map<std::string, std::string> ApiHandler::ParseUrlParameters(const HttpRequest& request){
         std::map<std::string, std::string> res;
-        std::string function = request.target().to_string();
+        std::string function = static_cast<std::string>(request.target());
         std::string::size_type pos = function.find('?');
         if (pos == std::string::npos)
             return res;

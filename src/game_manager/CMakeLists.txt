@@ -17,13 +17,21 @@ add_library(${LIBRARY_NAME}
     event_manager.cpp
     gun.hpp
     bullet.hpp
+    object.cpp
+    bomb.cpp
+    gun.cpp
+    bullet.cpp 
+    event.cpp
+    custom_events.cpp
+    directed_object.cpp
+    player.cpp
+    state.cpp
 )
 
 #including and linking dependencies
 target_link_libraries(${LIBRARY_NAME} 
     PUBLIC session_manager
     PUBLIC http_handler
-    PUBLIC vt_game_structs
 
     PRIVATE notification_system
 )
