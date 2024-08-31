@@ -6,13 +6,13 @@
 #include "move_data.hpp"
 
 namespace game_manager{
-    class SessionApiExecutor {
+    class SessionApiValidator {
     public:
-        SessionApiExecutor();
+        SessionApiValidator();
 
-        class MoveDependant {
+        class MoveDependent {
         public:
-            MoveDependant(bool depends_move);
+            MoveDependent(bool depends_move = true);
             bool operator()(const um::Login& now_turn, const um::Login& actor) const;
         private:
             bool depends_move_;
@@ -49,13 +49,14 @@ namespace game_manager{
             Dimention distance_;
         };
 
-        void SetMoveDependant(MoveDependant&& md);
+        void SetMoveDependent(MoveDependent&& md);
         void SetCellSpread(CellSpread&& cs);
         void SetCellRestrictor(CellRestrictor&& cr);
         void SetDistanceValidator(DistanceValidator&& dv);
 
+        bool operator()(State::Ptr state, Player::Ptr player, MoveData md);
     private:
-        std::optional<MoveDependant> move_dependant_;
+        MoveDependent move_dependent_;
         std::optional<CellSpread> cell_spread_;
         std::optional<CellRestrictor> cell_restrictor_;
         std::optional<DistanceValidator> distance_validator_;

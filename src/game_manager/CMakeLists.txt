@@ -26,8 +26,12 @@ add_library(${LIBRARY_NAME}
     directed_object.cpp
     player.cpp
     state.cpp
-    session_api_executor.hpp
-    session_api_executor.cpp
+    session_api_validator.cpp
+    session_api_validator.hpp
+    session_api_builder.cpp
+    session_api_builder.hpp
+    session_api_director.cpp
+    session_api_director.hpp
 )
 
 #including and linking dependencies

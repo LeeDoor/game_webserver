@@ -8,7 +8,7 @@
 #include "event_manager.hpp"
 #include "move_data.hpp"
 #include "session_id.hpp"
-#include "session_api_executor.hpp"
+#include "session_api_validator.hpp"
 
 namespace game_manager{
     class Event;
@@ -18,6 +18,8 @@ namespace game_manager{
         using Ptr = std::shared_ptr<Session>;
 
         Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2);
+
+        static void InitApi();
 
         /// @brief check if given player is in the session
         /// @param uuid given uuid 
@@ -51,12 +53,12 @@ namespace game_manager{
         GameApiStatus ApiMove(const um::Uuid& player_id, MoveData md);
     private:
         /// @brief walking api. moves player_id to place_data
-        GameApiStatus ApiWalk(const um::Uuid& player_id, MoveData md);
+        GameApiStatus ApiWalk(Player::Ptr player, MoveData md);
         /// @brief resign api. resign as player_id
-        GameApiStatus ApiResign(const um::Uuid& player_id, MoveData md);
+        GameApiStatus ApiResign(Player::Ptr player, MoveData md);
         /// @brief place bomb api. places player_id's bomb to place_data
-        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, MoveData md);
-        GameApiStatus ApiPlaceGun(const um::Uuid& player_id, MoveData md);
+        GameApiStatus ApiPlaceBomb(Player::Ptr player, MoveData md);
+        GameApiStatus ApiPlaceGun(Player::Ptr player, MoveData md);
 
         Player::Ptr player1(){return state_->players.front();}
         Player::Ptr player2(){return state_->players.back();}
@@ -68,7 +70,7 @@ namespace game_manager{
         um::Uuid player2_; 
         
         const std::map<um::Uuid, um::Login> uuid_to_login_;
-        const static std::map<MoveType, SessionApiExecutor> session_api_;
+        static std::map<MoveType, SessionApiValidator> api_validator_;
 
         const std::string PLAYER_WALK = "player_walk";
         const std::string PLAYER_RESIGN = "player_resign";
