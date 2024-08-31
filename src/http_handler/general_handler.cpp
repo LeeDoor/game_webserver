@@ -22,10 +22,15 @@ namespace http_handler {
     void GeneralHandler::ApiFunctionsParse () {
         ApiFunctionDirector afd(tm_);
         request_to_executor_ = {
+            {"/api/ping", afd.GetPing(BIND(&GeneralHandler::ApiPing))},
             {"/api/register", afd.GetRegister(BIND(&GeneralHandler::ApiRegister))},
             {"/api/login", afd.GetLogin(BIND(&GeneralHandler::ApiLogin))},
             {"/api/profile", afd.GetProfile(BIND(&GeneralHandler::ApiGetProfileData))},
         };
+    }
+
+    void GeneralHandler::ApiPing(SessionData&& rns, const RequestData& rd) {
+        return SendSuccess(rns);
     }
 
     void GeneralHandler::ApiRegister(SessionData&& rns, const RequestData& rd) {

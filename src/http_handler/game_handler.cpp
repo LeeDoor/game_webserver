@@ -128,16 +128,12 @@ namespace http_handler{
         
         using Status = gm::Session::GameApiStatus;
         std::optional<Status> status;
-        std::optional<gm::Session::MoveType> mt = serializer::DefinePlayerMove(rns.request.body());
-        if(!mt.has_value())
-            return SendWrongBodyData(rns);
 
-        gm::MoveData::Ptr md
-            = serializer::DeserializeMoveData(rns.request.body(), *mt);
+        std::optional<gm::MoveData> md = serializer::DeserializeMoveData(rns.request.body());
         if(!md)
             return SendWrongBodyData(rns);
 
-        status = gm_->ApiMove(*mt, uuid, sid, md);
+        status = gm_->ApiMove(uuid, sid, *md);
         if(!status)
             return DefineSessionState(rns, sid);
         switch(*status){

@@ -39,14 +39,6 @@ namespace game_manager{
 
         /// @brief get session result data object if finished (std::nullopt overwise)
         std::optional<ResultsUuid> GetResults();
-
-        /// @brief type of player's move
-        enum MoveType{
-            Walk,
-            Resign,
-            PlaceBomb,
-            PlaceGun,
-        };
         
         /// @brief player's move status
         enum GameApiStatus{
@@ -54,15 +46,17 @@ namespace game_manager{
             WrongMove,
             NotYourMove,
         };
-        
-        /// @brief walking api. moves player_id to place_data
-        GameApiStatus ApiWalk(const um::Uuid& player_id, PosMoveData data);
-        /// @brief resign api. resign as player_id
-        GameApiStatus ApiResign(const um::Uuid& player_id);
-        /// @brief place bomb api. places player_id's bomb to place_data
-        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, PosMoveData data);
-        GameApiStatus ApiPlaceGun(const um::Uuid& player_id, DirPosMoveData data);
+
+        GameApiStatus ApiMove(const um::Uuid& player_id, MoveData md);
     private:
+        /// @brief walking api. moves player_id to place_data
+        GameApiStatus ApiWalk(const um::Uuid& player_id, MoveData md);
+        /// @brief resign api. resign as player_id
+        GameApiStatus ApiResign(const um::Uuid& player_id, MoveData md);
+        /// @brief place bomb api. places player_id's bomb to place_data
+        GameApiStatus ApiPlaceBomb(const um::Uuid& player_id, MoveData md);
+        GameApiStatus ApiPlaceGun(const um::Uuid& player_id, MoveData md);
+
         Player::Ptr player1(){return state_->players.front();}
         Player::Ptr player2(){return state_->players.back();}
         

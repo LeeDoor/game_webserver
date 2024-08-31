@@ -3,7 +3,7 @@ set(LIBRARY_NAME serializer)
 #creating library
 add_library(${LIBRARY_NAME}
     json_type_converter.hpp
-    serializer.cpp
+    serializer.cpp  
     serializer_basic.hpp
     serializer_game.hpp
     serializer_user.hpp

@@ -24,6 +24,22 @@ namespace game_manager{
         j.at("map_size").get_to(v.map_size);
         j.at("move_number").get_to(v.move_number);
     }
+
+    void to_json(json& j, const MoveData& v) {
+        j = json{
+            {"move_type", v.move_type}, 
+            {"position", v.position}, 
+            {"direction", v.direction}
+        };
+    }
+    void from_json(const json& j, MoveData& v) {
+        v = MoveData{};
+        j.at("move_type").get_to(v.move_type);
+        if(j.contains("position"))
+            j.at("position").get_to(v.position);
+        if(j.contains("direction"))
+            j.at("direction").get_to(v.direction);
+    }
 }
 
 namespace session_manager{

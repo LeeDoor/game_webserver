@@ -14,6 +14,7 @@ namespace http_handler {
         void ApiFunctionsParse();
         
         // api functions
+        void ApiPing(SessionData&& rns, const RequestData& rd);
         void ApiRegister(SessionData&& rns, const RequestData& rd);
         void ApiLogin(SessionData&& rns, const RequestData& rd);
         void ApiGetProfileData(SessionData&& rns, const RequestData& rd);

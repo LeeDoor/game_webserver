@@ -273,3 +273,40 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         REQUIRE(example == given);
     }
 }   
+
+TEST_CASE("movedata", "[jsonserializer]"){
+    using namespace game_manager;
+    json j;
+    MoveData md{
+        MoveType::PlaceGun,
+        Position{5,16},
+        Direction::Right,
+    };
+
+    std::string jstr = serializer::Serialize(md);
+    j = md;
+    CHECK(json::parse(jstr) == j);
+
+    jstr = "{\"direction\":\"left\", \"move_type\":\"walk\"}";
+    std::optional<MoveData> mdopt;
+    mdopt = serializer::DeserializeMoveData(jstr);
+    REQUIRE(mdopt);
+    md = *mdopt;
+    CHECK(md.direction == Direction::Left);
+    CHECK(md.position == Position{0,0});
+    CHECK(md.move_type == MoveType::Walk);
+
+    jstr = "{\"move_type\":\"walk\"}";
+    mdopt = serializer::DeserializeMoveData(jstr);
+    REQUIRE(mdopt);
+    md = *mdopt;
+    CHECK(md.direction == static_cast<Direction>(0));
+    CHECK(md.position == Position{0,0});
+    CHECK(md.move_type == MoveType::Walk);
+
+    jstr = "{}";
+    REQUIRE(!serializer::DeserializeMoveData(jstr).has_value());
+
+    jstr = "{\"direction\":\"left\", \"position\":{\"x\":124,\"y\":115}}";
+    REQUIRE(!serializer::DeserializeMoveData(jstr).has_value());
+}

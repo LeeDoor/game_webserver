@@ -23,15 +23,9 @@ namespace game_manager{
         bool SetState(const SessionId& sessionId, State state);
         std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
-        std::optional<Session::GameApiStatus> ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, MoveData::Ptr move_data);
+        std::optional<Session::GameApiStatus> ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData move_data);
         
     private:
-        //ingame api
-        Session::GameApiStatus ApiResign(const um::Uuid& uuid, const gm::SessionId& sid);
-        Session::GameApiStatus ApiWalk(const um::Uuid& uuid, const SessionId& sid, PosMoveData data); 
-        Session::GameApiStatus ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, PosMoveData data); 
-        Session::GameApiStatus ApiPlaceGun(const um::Uuid& uuid, const SessionId& sid, DirPosMoveData data);
-
         void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
         bool FinishSession(const SessionId& sid, const Session::ResultsUuid& results);
 

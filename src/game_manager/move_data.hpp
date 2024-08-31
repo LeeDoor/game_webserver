@@ -4,15 +4,15 @@
 #include <memory>
 
 namespace game_manager{
-
+    enum MoveType{
+        Walk,
+        Resign,
+        PlaceBomb,
+        PlaceGun,
+    };
     struct MoveData{
-        using Ptr = std::shared_ptr<MoveData>;
-        virtual ~MoveData() = default;
-    };
-    struct PosMoveData : public MoveData{
+        MoveType move_type;
         Position position;
-    };
-    struct DirPosMoveData : public PosMoveData{
         Direction direction;
     };
 }

@@ -55,39 +55,11 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetEvents();
     }
 
-    std::optional<Session::GameApiStatus> GameManager::ApiMove(Session::MoveType mt, const um::Uuid& uuid, const gm::SessionId& sid, MoveData::Ptr data) {
-        using MT = Session::MoveType;
+    std::optional<Session::GameApiStatus> GameManager::ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData data) {
         if (!sessions_.contains(sid))
             return std::nullopt;
         std::unique_lock<std::mutex> locker (session_mutex_[sid]);
-        switch (mt){
-        case MT::Resign: return ApiResign(uuid, sid);
-        case MT::PlaceBomb: return ApiPlaceBomb(uuid, sid, *dynamic_pointer_cast<PosMoveData>(data));
-        case MT::Walk: return ApiWalk(uuid, sid, *dynamic_pointer_cast<PosMoveData>(data));
-        case MT::PlaceGun: return ApiPlaceGun(uuid, sid, *dynamic_pointer_cast<DirPosMoveData>(data));
-        default: throw std::logic_error("MoveType not implemented in GameManager. see ApiMove");
-        }
-    }
-
-    //ingame api
-
-    Session::GameApiStatus GameManager::ApiResign(const um::Uuid& uuid, const gm::SessionId& sid) {
-        auto status = sessions_.at(sid)->ApiResign(uuid);
-        CheckStatus(sid, status);
-        return status;
-    }
-    Session::GameApiStatus GameManager::ApiWalk(const um::Uuid& uuid, const SessionId& sid, PosMoveData data){
-        auto status = sessions_.at(sid)->ApiWalk(uuid, data);
-        CheckStatus(sid, status);
-        return status;
-    }
-    Session::GameApiStatus GameManager::ApiPlaceBomb(const um::Uuid& uuid, const SessionId& sid, PosMoveData data) {
-        auto status = sessions_.at(sid)->ApiPlaceBomb(uuid, data);
-        CheckStatus(sid, status);
-        return status;
-    }
-    Session::GameApiStatus GameManager::ApiPlaceGun(const um::Uuid& uuid, const SessionId& sid, DirPosMoveData data) {
-        auto status = sessions_.at(sid)->ApiPlaceGun(uuid, data);
+        auto status = sessions_.at(sid)->ApiMove(uuid, data);
         CheckStatus(sid, status);
         return status;
     }

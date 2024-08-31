@@ -7,33 +7,34 @@
 using json = nlohmann::json;
 
 namespace http_handler {
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RegistrationData, login, password);
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PublicUser, login, password);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(RegistrationData, login, password)
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PublicUser, login, password)
 } 
 
 namespace user_manager {
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(User, uuid, login, password);
+    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(User, uuid, login, password)
 }
 
 namespace game_manager{
     void to_json(json& j, const State& v);
     void from_json(const json& j, State& v);
+
+    void to_json(json& j, const MoveData& v);
+    void from_json(const json& j, MoveData& v);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Position, x, y)
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Player, login, position, actor_id)
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Obstacle, actor_id, position, type)
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MapSize, width, height)
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(PosMoveData, position)
-    NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(DirPosMoveData, position, direction)
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},
     })
 
-    NLOHMANN_JSON_SERIALIZE_ENUM( ::gm::Session::MoveType, {
-        {Session::MoveType::Walk, "walk"},
-        {Session::MoveType::Resign, "resign"},
-        {Session::MoveType::PlaceBomb, "place_bomb"},
-        {Session::MoveType::PlaceGun, "place_gun"},
+    NLOHMANN_JSON_SERIALIZE_ENUM( MoveType, {
+        {MoveType::Walk, "walk"},
+        {MoveType::Resign, "resign"},
+        {MoveType::PlaceBomb, "place_bomb"},
+        {MoveType::PlaceGun, "place_gun"},
     })
 
     NLOHMANN_JSON_SERIALIZE_ENUM(Direction, {

@@ -4,6 +4,9 @@ namespace http_handler{
     ApiFunctionDirector::ApiFunctionDirector(token_manager::ITokenManager::Ptr tm)
         : tm_(tm){}
 
+    ApiFunctionExecutor ApiFunctionDirector::GetPing(ExecutorFunction&& afe){
+        return afb_.GetHead().ExecFunc(std::move(afe)).GetProduct();
+    }
     ApiFunctionExecutor ApiFunctionDirector::GetRegister(ExecutorFunction&& afe){
         return afb_.Post().ExecFunc(std::move(afe)).GetProduct();
     }

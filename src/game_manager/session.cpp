@@ -45,7 +45,20 @@ namespace game_manager{
 
     }
 
-    Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id) {
+    Session::GameApiStatus Session::ApiMove(const um::Uuid& player_id, MoveData md) {
+        switch(md.move_type){
+        case MoveType::Walk:
+            return ApiWalk(player_id, md);
+        case MoveType::Resign:
+            return ApiResign(player_id, md);
+        case MoveType::PlaceBomb:
+            return ApiPlaceBomb(player_id, md);
+        case MoveType::PlaceGun:
+            return ApiPlaceGun(player_id, md);
+        }
+    }
+
+    Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id, MoveData md) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         ++state_->move_number;
         state_->events_wrapper_->AddEvent(EmptyEvent({state_->move_number, player_id == player1_ ? player1()->actor_id : player2()->actor_id, PLAYER_RESIGN}));
@@ -53,7 +66,7 @@ namespace game_manager{
         state_->AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, PosMoveData move_data){
+    Session::GameApiStatus Session::ApiWalk(const um::Uuid& player_id, MoveData md){
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1()->login == uuid_to_login_.at(player_id)?
             *player1() : *player2();
@@ -61,21 +74,21 @@ namespace game_manager{
         if (player.login != state_->now_turn)
             return GameApiStatus::NotYourMove;
 
-        if (std::abs(short(player.position.x - move_data.position.x))
-          + std::abs(short(player.position.y - move_data.position.y)) != 1){
+        if (std::abs(short(player.position.x - md.position.x))
+          + std::abs(short(player.position.y - md.position.y)) != 1){
             return GameApiStatus::WrongMove;
         } // cell is near the player
-        if (!state_->ValidCell(move_data.position))
+        if (!state_->ValidCell(md.position))
             return GameApiStatus::WrongMove;
         
-        player.position.x = move_data.position.x;
-        player.position.y = move_data.position.y;
+        player.position.x = md.position.x;
+        player.position.y = md.position.y;
         ++state_->move_number;
         state_->events_wrapper_->AddEvent(WalkEvent({{state_->move_number, player.actor_id, PLAYER_WALK}, player.position}));
         state_->AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, PosMoveData move_data) {
+    Session::GameApiStatus Session::ApiPlaceBomb(const um::Uuid& player_id, MoveData md) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1()->login == uuid_to_login_.at(player_id)?
             *player1() : *player2();
@@ -83,20 +96,20 @@ namespace game_manager{
         if (player.login != state_->now_turn)
             return GameApiStatus::NotYourMove;
 
-        if (std::abs(short(player.position.x - move_data.position.x)) > 1 ||
-            std::abs(short(player.position.y - move_data.position.y)) > 1){
+        if (std::abs(short(player.position.x - md.position.x)) > 1 ||
+            std::abs(short(player.position.y - md.position.y)) > 1){
             return GameApiStatus::WrongMove;
         } // cell is near the player
-        if (!state_->ValidCell(move_data.position))
+        if (!state_->ValidCell(md.position))
             return GameApiStatus::WrongMove;
         
-        Bomb::Ptr bomb = state_->PlaceBombObject(move_data.position, player.login);
+        Bomb::Ptr bomb = state_->PlaceBombObject(md.position, player.login);
         ++state_->move_number;
         state_->events_wrapper_->AddEvent(BombEvent({{{state_->move_number, player.actor_id, PLAYER_PLACE_BOMB}, bomb->position}, bomb->actor_id}));
         state_->AfterMove();
         return GameApiStatus::Ok;
     }
-    Session::GameApiStatus Session::ApiPlaceGun(const um::Uuid& player_id, DirPosMoveData move_data) {
+    Session::GameApiStatus Session::ApiPlaceGun(const um::Uuid& player_id, MoveData md) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player& player = player1()->login == uuid_to_login_.at(player_id)?
             *player1() : *player2();
@@ -104,16 +117,16 @@ namespace game_manager{
         if (player.login != state_->now_turn)
             return GameApiStatus::NotYourMove;
 
-        if (std::abs(short(player.position.x - move_data.position.x)) > 1 ||
-            std::abs(short(player.position.y - move_data.position.y)) > 1){
+        if (std::abs(short(player.position.x - md.position.x)) > 1 ||
+            std::abs(short(player.position.y - md.position.y)) > 1){
             return GameApiStatus::WrongMove;
         } // cell is near the player
-        if (!state_->ValidCell(move_data.position))
+        if (!state_->ValidCell(md.position))
             return GameApiStatus::WrongMove;
         
-        Gun::Ptr gun = state_->PlaceGunObject(move_data.position, move_data.direction, player.login);
+        Gun::Ptr gun = state_->PlaceGunObject(md.position, md.direction, player.login);
         ++state_->move_number;
-        state_->events_wrapper_->AddEvent(GunEvent({{{{state_->move_number, player.actor_id, PLAYER_PLACE_GUN}, move_data.position}, gun->actor_id}, move_data.direction}));
+        state_->events_wrapper_->AddEvent(GunEvent({{{{state_->move_number, player.actor_id, PLAYER_PLACE_GUN}, md.position}, gun->actor_id}, md.direction}));
         state_->AfterMove();
         return GameApiStatus::Ok;
     }
