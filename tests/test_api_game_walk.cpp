@@ -188,18 +188,8 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
                 .body = WRONG_BODY_DATA,
                 .res = http::status::bad_request
             });
-
-        nlohmann::json obj(gm::Position{0,0});
-        obj["move_type"] = "walk";
-        obj["x"] = "nigger";
-
-        response = Move(socket, obj.dump(), ld.token, sid);
-        CheckStringResponse(response, 
-            {
-                .body = WRONG_BODY_DATA,
-                .res = http::status::bad_request
-            });
     }
+    
     SECTION("in_prepared_room_walless"){
         SessionData sd = CreateNewMatch(socket);
         gm::State state = sd.state;

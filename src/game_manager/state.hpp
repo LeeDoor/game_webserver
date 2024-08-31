@@ -16,8 +16,8 @@ namespace game_manager {
     struct MapSize{
         bool operator == (const MapSize& other) const = default;
 
-        unsigned width;
-        unsigned height;
+        Dimention width;
+        Dimention height;
     };
 
     class State : public std::enable_shared_from_this<State>{

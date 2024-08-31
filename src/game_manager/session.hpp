@@ -8,6 +8,7 @@
 #include "event_manager.hpp"
 #include "move_data.hpp"
 #include "session_id.hpp"
+#include "session_api_executor.hpp"
 
 namespace game_manager{
     class Event;
@@ -67,6 +68,7 @@ namespace game_manager{
         um::Uuid player2_; 
         
         const std::map<um::Uuid, um::Login> uuid_to_login_;
+        const static std::map<MoveType, SessionApiExecutor> session_api_;
 
         const std::string PLAYER_WALK = "player_walk";
         const std::string PLAYER_RESIGN = "player_resign";

@@ -6,6 +6,9 @@
 
 #define BIND(func, place, pls, ...) (Bomb::ExplodeFunc)std::bind( func, this->weak_from_this(), pls) 
 namespace game_manager{
+    /*const std::map<MoveType, SessionApiExecutor> Session::session_api_ = {
+        
+    };*/
 
     Session::Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2) 
         :player1_(std::move(player1)), 
@@ -56,6 +59,7 @@ namespace game_manager{
         case MoveType::PlaceGun:
             return ApiPlaceGun(player_id, md);
         }
+        throw std::runtime_error("MoveType not implemented in Session::ApiMove");
     }
 
     Session::GameApiStatus Session::ApiResign(const um::Uuid& player_id, MoveData md) {

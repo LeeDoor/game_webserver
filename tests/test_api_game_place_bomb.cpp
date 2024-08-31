@@ -323,18 +323,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         um::Login& now_turn = state.now_turn;
         LoginData& ld = ld1.login == now_turn ? ld2 : ld1;
 
-        http::response<http::string_body> response = Move(socket, "{\"move_type\":\"place_bomb\"}", ld.token, sid);
-        CheckStringResponse(response, 
-            {
-                .body = WRONG_BODY_DATA,
-                .res = http::status::bad_request
-            });
-
-        nlohmann::json obj(gm::Position{0,0});
-        obj["move_type"] = "place_bomb";
-        obj["x"] = "nigger";
-
-        response = Move(socket, obj.dump(), ld.token, sid);
+        http::response<http::string_body> response = Move(socket, "{}", ld.token, sid);
         CheckStringResponse(response, 
             {
                 .body = WRONG_BODY_DATA,

@@ -32,6 +32,7 @@ namespace game_manager{
 
     NLOHMANN_JSON_SERIALIZE_ENUM( MoveType, {
         {MoveType::Walk, "walk"},
+        {MoveType::Walk, "walk"},
         {MoveType::Resign, "resign"},
         {MoveType::PlaceBomb, "place_bomb"},
         {MoveType::PlaceGun, "place_gun"},

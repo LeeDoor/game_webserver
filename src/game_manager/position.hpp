@@ -1,6 +1,6 @@
 #pragma once
 namespace game_manager{
-    using Dimention = unsigned;
+    using Dimention = int;
     struct Position {
         bool operator==(const Position& other) const = default;
         Position() : Position(0,0){}

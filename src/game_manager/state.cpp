@@ -129,8 +129,8 @@ namespace game_manager {
     }
 
     void State::Explode(Position position) {
-        for(Dimention x = std::max(0, int(position.x) - 1); x <= std::min(map_size.width - 1, position.x + 1); ++x){
-            for(Dimention y = std::max(0, int(position.y) - 1); y <= std::min(map_size.height - 1, position.y + 1); ++y){
+        for(Dimention x = std::max(0, position.x - 1); x <= std::min(map_size.width - 1, position.x + 1); ++x){
+            for(Dimention y = std::max(0, position.y - 1); y <= std::min(map_size.height - 1, position.y + 1); ++y){
                 Position pos {x,y};
                 if(player1()->position == pos){
                     player1()->Die(move_number);
