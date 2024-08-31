@@ -6,7 +6,9 @@
 
 namespace game_manager {
     State::State() :
-        events_wrapper_(std::make_shared<EventListWrapper>()){}
+        events_wrapper_(std::make_shared<EventListWrapper>()){
+        events_wrapper_->SetMoveNumber(move_number);
+    }
 
     template<template <typename> typename Container, typename Type>
     bool comp_cont(Container<std::shared_ptr<Type>> c1, Container<std::shared_ptr<Type>> c2){
@@ -59,14 +61,19 @@ namespace game_manager {
             std::advance(it, i);
             if(!scoreboard_.empty()) break;
 
-            Object::EventsType events = (*it)->UpdateTick(move_number);
+            Object::EventsType events = (*it)->UpdateTick();
             events_wrapper_->AddEvents(std::move(events));
             if(len > objects.size()) --i;
             len = objects.size();
         }
         if(!scoreboard_.empty())
-            return events_wrapper_->AddEvent(EmptyEvent({move_number, scoreboard_[0].lock()->actor_id, PLAYER_WON}));
+            return events_wrapper_->AddEvent(EmptyEvent({scoreboard_[0].lock()->actor_id, PLAYER_WON}));
         now_turn = now_turn == player1()->login? player2()->login : player1()->login;
+    }
+
+    void State::IncreaseMoveNumber() {
+        ++move_number;
+        events_wrapper_->SetMoveNumber(move_number);
     }
 
     bool State::ValidCell(Position position){
@@ -133,11 +140,11 @@ namespace game_manager {
             for(Dimention y = std::max(0, position.y - 1); y <= std::min(map_size.height - 1, position.y + 1); ++y){
                 Position pos {x,y};
                 if(player1()->position == pos){
-                    player1()->Die(move_number);
+                    player1()->Die();
                     return;
                 }
                 if(player2()->position == pos){
-                    player2()->Die(move_number);
+                    player2()->Die();
                     return;
                 }
             }

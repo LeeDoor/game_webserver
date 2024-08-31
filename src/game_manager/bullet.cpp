@@ -14,7 +14,7 @@ namespace game_manager{
         j["type"] = "bullet";
     }
 
-    Object::EventsType Bullet::UpdateTick(int move_number) {
+    Object::EventsType Bullet::UpdateTick() {
         int mX = 0, mY = 0; // x and y modifiers.
         switch(direction){
         case Direction::Up:
@@ -39,7 +39,7 @@ namespace game_manager{
         std::optional<std::list<IPlaceable::Ptr>> collisions = state_->CollisionsOnCell(shared_from_this());
         if(collisions) {
             if (collisions->size() == 0){
-                events.push_back(EmptyEvent({move_number, actor_id, BULLET_FLY}));
+                events.push_back(EmptyEvent({actor_id, BULLET_FLY}));
                 return events;
             }
 
@@ -49,6 +49,6 @@ namespace game_manager{
         }
 
         state_->RemoveObject(actor_id);
-        return {EmptyEvent({move_number, actor_id, BULLET_DESTROY})};
+        return {EmptyEvent({actor_id, BULLET_DESTROY})};
     }
 } 

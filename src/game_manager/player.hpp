@@ -15,7 +15,7 @@ namespace game_manager{
         Player(Position position, ActorId actor_id, Login login);
         bool operator == (const Player& other) const;
 
-        EventListWrapper::Vec Die(int move_number);
+        EventListWrapper::Vec Die();
 
         Login login;
     private:

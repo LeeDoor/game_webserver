@@ -126,7 +126,7 @@ namespace http_handler{
         if (!res.value())
             return SendAccessDenied(rns);
         
-        using Status = gm::Session::GameApiStatus;
+        using Status = gm::GameApiStatus;
         std::optional<Status> status;
 
         std::optional<gm::MoveData> md = serializer::DeserializeMoveData(rns.request.body());

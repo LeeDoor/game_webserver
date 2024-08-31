@@ -23,10 +23,10 @@ namespace game_manager{
         bool SetState(const SessionId& sessionId, State state);
         std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
-        std::optional<Session::GameApiStatus> ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData move_data);
+        std::optional<GameApiStatus> ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData move_data);
         
     private:
-        void CheckStatus(const SessionId& sid, Session::GameApiStatus status);
+        void CheckStatus(const SessionId& sid, GameApiStatus status);
         bool FinishSession(const SessionId& sid, const Session::ResultsUuid& results);
 
         SessionId GenerateSessionId();

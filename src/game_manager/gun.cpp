@@ -23,21 +23,21 @@ namespace game_manager{
         j["shots_left"] = shots_left;
     }
 
-    Object::EventsType Gun::UpdateTick(int move_number) {
+    Object::EventsType Gun::UpdateTick() {
         EventsType events;
         --ticks_to_shot;
         if(!ticks_to_shot) {
             ticks_to_shot = shot_cooldown_;
             ActorId bulletAI = state_->PlaceBulletObject(position, direction, owner)->actor_id;
             --shots_left;
-            events.push_back(BulletEvent({{{{move_number, actor_id, GUN_SHOT}, position},bulletAI},direction}));
+            events.push_back(BulletEvent({{{{actor_id, GUN_SHOT}, position},bulletAI},direction}));
             if(!shots_left){
                 state_->RemoveObject(actor_id);
-                events.push_back(EmptyEvent({move_number, actor_id, GUN_DESTROY}));
+                events.push_back(EmptyEvent({actor_id, GUN_DESTROY}));
                 return events;
             }
             return events;
         }
-        return {EmptyEvent({move_number, actor_id, GUN_WAITING})};
+        return {EmptyEvent({actor_id, GUN_WAITING})};
     }
 }

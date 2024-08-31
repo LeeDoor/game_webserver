@@ -17,12 +17,12 @@ namespace game_manager{
         j["ticks_left"] = ticks_left;
     } 
 
-    Object::EventsType Bomb::UpdateTick(int move_number) {
+    Object::EventsType Bomb::UpdateTick() {
         --ticks_left;
         if(ticks_left)
-            return {EmptyEvent({move_number, actor_id, BOMB_TICKING})};
+            return {EmptyEvent({actor_id, BOMB_TICKING})};
         state_->Explode(position);
         state_->RemoveObject(actor_id);
-        return {EmptyEvent({move_number, actor_id, BOMB_EXPLODE})};
+        return {EmptyEvent({actor_id, BOMB_EXPLODE})};
     }
 }

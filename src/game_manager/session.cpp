@@ -14,6 +14,7 @@ namespace game_manager{
         uuid_to_login_{{player1_, login1},{player2_, login2}},
         state_(std::make_shared<State>()){
         state_->Init(login1, login2);
+        events_wrapper_ = state_->events_wrapper_;
     }
 
     void Session::InitApi() {
@@ -36,7 +37,9 @@ namespace game_manager{
     void Session::SetState(State&& state) {
         *state_ = std::move(state);
         state_->UpdateStatePointers();
-        state_->events_wrapper_->Clear();
+        events_wrapper_->Clear();
+        state_->id_counter_ = 2;
+        state_->events_wrapper_ = events_wrapper_;
     }
     EventListWrapper::CPtr Session::GetEvents() {
         return state_->events_wrapper_;
@@ -56,11 +59,12 @@ namespace game_manager{
 
     }
 
-    Session::GameApiStatus Session::ApiMove(const um::Uuid& player_id, MoveData md) {
+    GameApiStatus Session::ApiMove(const um::Uuid& player_id, MoveData md) {
         std::lock_guard<std::mutex> locker(move_mutex_);
         Player::Ptr player =  player1()->login == uuid_to_login_.at(player_id)? player1() : player2();
-        if(!api_validator_.at(md.move_type)(state_, player, md))
-            return GameApiStatus::WrongMove; // fix
+        if(GameApiStatus status = api_validator_.at(md.move_type)(state_, player, md); status != GameApiStatus::Ok)
+            return status; // fix
+        state_->IncreaseMoveNumber();
         switch(md.move_type){
         case MoveType::Walk:
             ApiWalk(player, md);
@@ -75,39 +79,29 @@ namespace game_manager{
             ApiPlaceGun(player, md);
             break;
         }
-        ++state_->move_number;
-        switch(md.move_type){
-        case MoveType::Walk:
-            state_->events_wrapper_->AddEvent(WalkEvent({{state_->move_number, player->actor_id, PLAYER_WALK}, player->position}));
-            break;
-        case MoveType::Resign:
-            state_->events_wrapper_->AddEvent(EmptyEvent({state_->move_number, player_id == player1_ ? player1()->actor_id : player2()->actor_id, PLAYER_RESIGN}));
-            break;
-        case MoveType::PlaceBomb:
-            state_->events_wrapper_->AddEvent(BombEvent({{{state_->move_number, player->actor_id, PLAYER_PLACE_BOMB}, bomb->position}, bomb->actor_id}));
-            break;
-        case MoveType::PlaceGun:
-            state_->events_wrapper_->AddEvent(GunEvent({{{{state_->move_number, player->actor_id, PLAYER_PLACE_GUN}, md.position}, gun->actor_id}, md.direction}));
-            break;
-        }
-        state_->AfterMove();
+        AfterMove();
+        return GameApiStatus::Ok;
     }
 
-    Session::GameApiStatus Session::ApiResign(Player::Ptr player, MoveData md) {
-        state_->FinishSession(player_id != player1_);
-        return GameApiStatus::Ok;
+    void Session::ApiResign(Player::Ptr player, MoveData md) {
+        state_->FinishSession(player1()->actor_id != player->actor_id);
+        events_wrapper_->AddEvent(EmptyEvent({player->actor_id, PLAYER_RESIGN}));
     }
-    Session::GameApiStatus Session::ApiWalk(Player::Ptr player, MoveData md){
+    void Session::ApiWalk(Player::Ptr player, MoveData md){
         player->position.x = md.position.x;
         player->position.y = md.position.y;
-        return GameApiStatus::Ok;
+        events_wrapper_->AddEvent(WalkEvent({{player->actor_id, PLAYER_WALK}, player->position}));
     }
-    Session::GameApiStatus Session::ApiPlaceBomb(Player::Ptr player, MoveData md) {
+    void Session::ApiPlaceBomb(Player::Ptr player, MoveData md) {
         Bomb::Ptr bomb = state_->PlaceBombObject(md.position, player->login);
-        return GameApiStatus::Ok;
+        events_wrapper_->AddEvent(BombEvent({{{player->actor_id, PLAYER_PLACE_BOMB}, bomb->position}, bomb->actor_id}));
     }
-    Session::GameApiStatus Session::ApiPlaceGun(Player::Ptr player, MoveData md) {
+    void Session::ApiPlaceGun(Player::Ptr player, MoveData md) {
         Gun::Ptr gun = state_->PlaceGunObject(md.position, md.direction, player->login);
-        return GameApiStatus::Ok;
+        events_wrapper_->AddEvent(GunEvent({{{{player->actor_id, PLAYER_PLACE_GUN}, gun->position}, gun->actor_id}, gun->direction}));
+    }
+
+    void Session::AfterMove() {
+        state_->AfterMove();
     }
 }

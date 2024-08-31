@@ -19,7 +19,7 @@ namespace game_manager{
         Object(OwnerType owner, ActorId id);
         virtual ~Object();
         virtual bool operator==(Object::Ptr obj) const;
-        virtual EventsType UpdateTick(int move_number) = 0;
+        virtual EventsType UpdateTick() = 0;
 
         // Although adding serialization logic to the class itself is undesirable, 
         // it is a convenient way to polymorph object serialization.

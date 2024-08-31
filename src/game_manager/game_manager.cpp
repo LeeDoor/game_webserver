@@ -57,7 +57,7 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetEvents();
     }
 
-    std::optional<Session::GameApiStatus> GameManager::ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData data) {
+    std::optional<GameApiStatus> GameManager::ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData data) {
         if (!sessions_.contains(sid))
             return std::nullopt;
         std::unique_lock<std::mutex> locker (session_mutex_[sid]);
@@ -66,8 +66,8 @@ namespace game_manager{
         return status;
     }
 
-    void GameManager::CheckStatus(const SessionId& sid, Session::GameApiStatus status) {
-        if (status == Session::GameApiStatus::Ok){
+    void GameManager::CheckStatus(const SessionId& sid, GameApiStatus status) {
+        if (status == GameApiStatus::Ok){
             notif::SessionStateNotifier::GetInstance()->Notify(sid);
             if (auto results = sessions_.at(sid)->GetResults()) {
                 FinishSession(sid, *results);

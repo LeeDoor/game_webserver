@@ -60,7 +60,7 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
         }
         
         INFO("can place gun at the top, looking right");
-        PlaceGunSuccess(socket, {0,0}, gm::Direction::Right, sd.l1.token, sd.sid);
+        PlaceGunSuccess(socket, {0,0}, gm::Direction::Right, sd.l1.token, sd.sid); // 1
 
         gm::ActorId gunAI, bulletAI;
         INFO("event list contains gun place and gun waiting");
@@ -77,6 +77,8 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
             CHECK(j[0]["position"]["y"] == 0);
             CHECK(j[0]["direction"] == "right");
             REQUIRE_NOTHROW(gunAI = j[0]["new_actor_id"].get<gm::ActorId>());
+            CHECK(gunAI != 0); 
+            CHECK(gunAI != 1);
 
             CHECK(j[1]["event"] == "gun_waiting");
             CHECK(j[1]["actor_id"] == gunAI);
@@ -110,8 +112,8 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
         // > - direction of gun
 
         INFO("A & B walks below");
-        WalkSuccess(socket, {2,2}, sd.l2.token, sd.sid);
-        WalkSuccess(socket, {0,2}, sd.l1.token, sd.sid);
+        WalkSuccess(socket, {2,2}, sd.l2.token, sd.sid); // 2
+        WalkSuccess(socket, {0,2}, sd.l1.token, sd.sid); // 3
 
         INFO("walk, tick, walk, shoot, bullet_fly");
         {
@@ -166,8 +168,8 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
         // * * * * * * *
 
         INFO("A & B walks up");
-        WalkSuccess(socket, {2,1}, sd.l2.token, sd.sid);
-        WalkSuccess(socket, {0,1}, sd.l1.token, sd.sid);
+        WalkSuccess(socket, {2,1}, sd.l2.token, sd.sid); // 4
+        WalkSuccess(socket, {0,1}, sd.l1.token, sd.sid); // 5
 
         INFO("walk, tick, fly, walk, tick, destroy");
         {
@@ -213,17 +215,17 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
         // * * * * * * *
 
         INFO("B - up, A - below, B gets shot");
-        WalkSuccess(socket, {2,0}, sd.l2.token, sd.sid);
+        WalkSuccess(socket, {2,0}, sd.l2.token, sd.sid); //6 
         response = Walk(socket, {0,0}, sd.l1.token, sd.sid);
         CheckStringResponse(response, {
             .body = WRONG_MOVE,
             .res = http::status::bad_request
         });
-        WalkSuccess(socket, {0,2}, sd.l1.token, sd.sid);
+        WalkSuccess(socket, {0,2}, sd.l1.token, sd.sid); // 7
 
         INFO("walk, shot, fly, walk, tick, destroy, player_won");
         {
-            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 7);
+            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 6);
             nlohmann::json j = nlohmann::json::parse(events_resp.body());
             INFO(j.dump());
             REQUIRE(j.is_array());

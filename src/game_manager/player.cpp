@@ -11,8 +11,8 @@ namespace game_manager{
         return IPlaceable::operator==(other) && login == other.login;
     }
 
-    EventListWrapper::Vec Player::Die(int move_number){
+    EventListWrapper::Vec Player::Die(){
         state_->FinishSession(actor_id == 1);
-        return {EmptyEvent({move_number, actor_id, PLAYER_DEAD})};
+        return {EmptyEvent({actor_id, PLAYER_DEAD})};
     }
 }

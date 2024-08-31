@@ -11,7 +11,7 @@ namespace game_manager{
         bool operator==(Object::Ptr obj) const override;
         virtual void tojson(nlohmann::json& j) const;
 
-        EventsType UpdateTick(int move_number) override;
+        EventsType UpdateTick() override;
     private:
         const std::string BULLET_DESTROY = "bullet_destroy";
         const std::string BULLET_FLY = "bullet_fly";

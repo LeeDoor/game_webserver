@@ -47,21 +47,21 @@ namespace game_manager{
     SessionApiValidator::CellRestrictor::CellRestrictor(Restrictions rest)
         : restrictions_(rest){}
     bool SessionApiValidator::CellRestrictor::operator ()(State::Ptr state, Position cell_pos) const{
-        if(restrictions_.object){
+        if(!restrictions_.object){
             auto obj_iter = std::find_if(state->objects.begin(), state->objects.end(), [&](Object::Ptr obj){
                 return obj->position == cell_pos;
             });
             if(obj_iter != state->objects.end())
                 return false;
         }
-        if(restrictions_.player){
+        if(!restrictions_.player){
             auto p_iter = std::find_if(state->players.begin(), state->players.end(), [&](Player::Ptr p){
                 return p->position == cell_pos;
             });
             if(p_iter != state->players.end())
                 return false;
         }
-        if(restrictions_.wall){
+        if(!restrictions_.wall){
             auto o_iter = std::find_if(state->terrain.begin(), state->terrain.end(), [&](Obstacle::Ptr o){
                 return o->type == Obstacle::Type::Wall && o->position == cell_pos;
             });
@@ -78,12 +78,13 @@ namespace game_manager{
                std::abs(player_pos.y - cell_pos.y) <= distance_;
     }
 
-    bool SessionApiValidator::operator()(State::Ptr state, Player::Ptr player, MoveData md) {
-        if(!move_dependent_(state->now_turn, player->login)) return false;
-        if(!cell_spread_) return true;
-        if(!(*cell_spread_)(player->position, md.position)) return false;
-        if(!(*cell_restrictor_)(state, md.position)) return false;
-        if(!(*distance_validator_)(player->position, md.position)) return false;
-        return true;
+    GameApiStatus SessionApiValidator::operator()(State::Ptr state, Player::Ptr player, MoveData md) {
+        if(!move_dependent_(state->now_turn, player->login)) return GameApiStatus::NotYourMove;
+        if(cell_spread_) {
+            if(!(*cell_spread_)(player->position, md.position)) return GameApiStatus::WrongMove;
+            if(!(*cell_restrictor_)(state, md.position)) return GameApiStatus::WrongMove;
+            if(!(*distance_validator_)(player->position, md.position)) return GameApiStatus::WrongMove;
+        }
+        return GameApiStatus::Ok;
     }
 }

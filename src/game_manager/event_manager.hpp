@@ -18,7 +18,10 @@ namespace game_manager{
         void AddEvent(Event::Ptr event);
         void AddEvents(Vec&& events);
         Vec FromMove(int move_number) const;
+        void SetMoveNumber(int mn);
     private:
+        int move_number_ = 0;
+
         std::vector<int> from_move_;
         Vec value_;
     };

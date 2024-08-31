@@ -8,7 +8,7 @@ namespace game_manager{
 
         Bomb(OwnerType owner, ActorId id);
         bool operator==(Object::Ptr obj) const override;
-        EventsType UpdateTick(int move_number) override;
+        EventsType UpdateTick() override;
 
         virtual void tojson(nlohmann::json& j) const;
 

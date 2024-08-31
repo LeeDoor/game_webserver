@@ -4,7 +4,7 @@ namespace game_manager{
     SessionApiBuilder::SessionApiBuilder(){}
 
     SessionApiBuilder& SessionApiBuilder::SetMoveIndependent() {
-        product_.SetMoveDependent({true});
+        product_.SetMoveDependent({false});
         return *this;
     }
     SessionApiBuilder& SessionApiBuilder::SetCellSpread(SessionApiValidator::CellSpread::Type type) {

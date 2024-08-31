@@ -42,23 +42,18 @@ namespace game_manager{
 
         /// @brief get session result data object if finished (std::nullopt overwise)
         std::optional<ResultsUuid> GetResults();
-        
-        /// @brief player's move status
-        enum GameApiStatus{
-            Ok,
-            WrongMove,
-            NotYourMove,
-        };
 
         GameApiStatus ApiMove(const um::Uuid& player_id, MoveData md);
     private:
         /// @brief walking api. moves player_id to place_data
-        GameApiStatus ApiWalk(Player::Ptr player, MoveData md);
+        void ApiWalk(Player::Ptr player, MoveData md);
         /// @brief resign api. resign as player_id
-        GameApiStatus ApiResign(Player::Ptr player, MoveData md);
+        void ApiResign(Player::Ptr player, MoveData md);
         /// @brief place bomb api. places player_id's bomb to place_data
-        GameApiStatus ApiPlaceBomb(Player::Ptr player, MoveData md);
-        GameApiStatus ApiPlaceGun(Player::Ptr player, MoveData md);
+        void ApiPlaceBomb(Player::Ptr player, MoveData md);
+        void ApiPlaceGun(Player::Ptr player, MoveData md);
+
+        void AfterMove();
 
         Player::Ptr player1(){return state_->players.front();}
         Player::Ptr player2(){return state_->players.back();}
@@ -68,6 +63,8 @@ namespace game_manager{
 
         um::Uuid player1_;
         um::Uuid player2_; 
+
+        EventListWrapper::Ptr events_wrapper_;
         
         const std::map<um::Uuid, um::Login> uuid_to_login_;
         static std::map<MoveType, SessionApiValidator> api_validator_;

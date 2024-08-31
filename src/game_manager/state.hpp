@@ -45,6 +45,8 @@ namespace game_manager {
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();
 
+        void IncreaseMoveNumber();
+
         /// @brief returns true if given cell is valid to walk on or to place an object.
         bool ValidCell(Position position);
 
