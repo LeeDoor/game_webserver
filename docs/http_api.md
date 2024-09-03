@@ -190,6 +190,22 @@ Debug function for getting queue of users' uuids
     ```
 
 ## User API
+### API ping
+#### **allowed methods**
+***`GET/HEAD`*** 
+#### **request target**  
+_/api/ping_
+
+#### **function description**
+Returns success.
+
+#### **request body example**
+```js
+{}
+```
+
+#### **responses**
+* `200 OK`  
 ### API register
 #### **action diagram**
 ```mermaid
