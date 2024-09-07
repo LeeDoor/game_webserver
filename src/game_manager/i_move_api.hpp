@@ -20,9 +20,9 @@ namespace game_manager{
         virtual EventListWrapper::CPtr GetEvents() = 0;
         virtual std::optional<Results> GetResults() = 0;
     protected:
-        virtual GameApiStatus ApiWalk(Player::Ptr player, MoveData md) = 0;
-        virtual GameApiStatus ApiResign(Player::Ptr player, MoveData md) = 0;
-        virtual GameApiStatus ApiPlaceBomb(Player::Ptr player, MoveData md) = 0;
-        virtual GameApiStatus ApiPlaceGun(Player::Ptr player, MoveData md) = 0;
+        virtual void ApiWalk(Player::Ptr player, MoveData md) = 0;
+        virtual void ApiResign(Player::Ptr player, MoveData md) = 0;
+        virtual void ApiPlaceBomb(Player::Ptr player, MoveData md) = 0;
+        virtual void ApiPlaceGun(Player::Ptr player, MoveData md) = 0;
     };
 }

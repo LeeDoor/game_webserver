@@ -6,6 +6,7 @@
 #include "i_interaction_api.hpp"
 #include "game_api_status.hpp"
 #include <vector>
+#include "session_api_director.hpp"
 namespace gm = game_manager;
 
 namespace game_manager {
@@ -28,9 +29,12 @@ namespace game_manager {
         using OptCPtr = std::optional<CPtr>;
         
         State();
+        State(State&& other);
+        State& operator=(State&&);
         bool operator==(const State& s) const;
 
         void UpdateStatePointers();
+        static void InitApi();
 
         std::string tojson() const;
         void fromjson(const std::string& str); 
@@ -46,18 +50,10 @@ namespace game_manager {
         bool HasPlayer(um::Uuid id) override;
         std::optional<Results> GetResults() override;
         GameApiStatus ApiMove(um::Uuid uuid, MoveData md) override;
-        GameApiStatus ApiWalk(Player::Ptr player, MoveData md) override;
-        GameApiStatus ApiResign(Player::Ptr player, MoveData md) override;
-        GameApiStatus ApiPlaceBomb(Player::Ptr player, MoveData md) override;
-        GameApiStatus ApiPlaceGun(Player::Ptr player, MoveData md) override;
-
-        /// @brief makes changes after each player's move. should be called at the end of API functions.
-        void AfterMove();
-
-        void IncreaseMoveNumber();
-
-        /// @brief returns true if given cell is valid to walk on or to place an object.
-        bool ValidCell(Position position);
+        void ApiWalk(Player::Ptr player, MoveData md) override;
+        void ApiResign(Player::Ptr player, MoveData md) override;
+        void ApiPlaceBomb(Player::Ptr player, MoveData md) override;
+        void ApiPlaceGun(Player::Ptr player, MoveData md) override;
 
         void FinishSession(bool firstWinner) override;
         Bomb::Ptr PlaceBombObject(Position position, Object::OwnerType login) override;
@@ -68,15 +64,18 @@ namespace game_manager {
         void Explode(Position position) override;
         std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet) override;
 
+        void AfterMove();
+        void IncreaseMoveNumber();
+        bool ValidCell(Position position);
+
         Player::Ptr player1(){return players.front();}
         Player::Ptr player2(){return players.back();}
 
         ActorId GetId(){return id_counter_++;}
-        // counter to create objects with new id
         ActorId id_counter_ = 0;
 
-        // doesnt require free()
         std::vector<std::weak_ptr<Player>> scoreboard_;  
+        EventListWrapper::Ptr events_wrapper_;
 
         int move_number = 0;
         Players players;
@@ -85,7 +84,13 @@ namespace game_manager {
         NowTurn now_turn;
         MapSize map_size;
         
-        EventListWrapper::Ptr events_wrapper_;
+
+        static std::map<MoveType, SessionApiValidator> api_validator_; 
+
+        const std::string PLAYER_WALK = "player_walk";
+        const std::string PLAYER_RESIGN = "player_resign";
+        const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
+        const std::string PLAYER_PLACE_GUN = "player_place_gun";
     };
 
 }

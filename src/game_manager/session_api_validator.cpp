@@ -1,4 +1,5 @@
 #include "session_api_validator.hpp"
+#include "state.hpp"
 
 namespace game_manager{
     SessionApiValidator::SessionApiValidator(){}

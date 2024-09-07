@@ -7,9 +7,29 @@
 #define PLAYER_WON "player_won"
 
 namespace game_manager {
+    std::map<MoveType, SessionApiValidator> State::api_validator_ = {};
     State::State() :
         events_wrapper_(std::make_shared<EventListWrapper>()){
         events_wrapper_->SetMoveNumber(move_number);
+    }
+
+    State::State(State&& other) {
+        players = std::move(other.players);
+        objects = std::move(other.objects);
+        terrain = std::move(other.terrain);
+        now_turn = std::move(other.now_turn);
+        map_size = std::move(other.map_size);
+        move_number = std::move(other.move_number);
+    }
+
+    State& State::operator=(State&& other) {
+        players = std::move(other.players);
+        objects = std::move(other.objects);
+        terrain = std::move(other.terrain);
+        now_turn = std::move(other.now_turn);
+        map_size = std::move(other.map_size);
+        move_number = std::move(other.move_number);
+        return *this;
     }
 
     template<template <typename> typename Container, typename Type>
@@ -35,6 +55,16 @@ namespace game_manager {
         std::for_each(objects.begin(), objects.end(), [&](Object::Ptr a){a->SetInteractor(shared_from_this());});
         std::for_each(terrain.begin(), terrain.end(), [&](Obstacle::Ptr a){a->SetInteractor(shared_from_this());});
     }
+    void State::InitApi() {
+        SessionApiDirector director;
+        api_validator_ = {
+            {MoveType::Walk, director.BuildWalk()},
+            {MoveType::Resign, director.BuildResign()},
+            {MoveType::PlaceBomb, director.BuildPlaceBomb()},
+            {MoveType::PlaceGun, director.BuildPlaceGun()}
+        };
+    }
+
     std::string State::tojson() const{
         nlohmann::json j = nlohmann::json{
             {"state", "playing"}, 
@@ -85,6 +115,9 @@ namespace game_manager {
         return shared_from_this();
     }
     void State::SetState(State&& state) {
+        state.UpdateStatePointers();
+        state.events_wrapper_->Clear();
+        state.id_counter_ = 2;
         *this = std::move(state);
     }
     std::shared_ptr<Player> State::GetCurrentPlayer() {
@@ -94,22 +127,54 @@ namespace game_manager {
         return login == player1()->login || login == player2()->login;
     }
     std::optional<Results> State::GetResults(){
-        
+        if(scoreboard_.size())
+            return std::nullopt;
+        return Results{scoreboard_[0].lock()->login, scoreboard_[1].lock()->login};
     } 
     GameApiStatus State::ApiMove(um::Uuid uuid, MoveData md) {
+        IncreaseMoveNumber();
+        Player::Ptr player;
+        if(uuid == player1()->login)
+            player = player1();
+        else if (uuid == player2()->login)
+            player = player2();
+        else return GameApiStatus::WrongMove;
+        if(auto status = api_validator_.at(md.move_type)(shared_from_this(), player, md); status != GameApiStatus::Ok)
+            return status;
 
+        switch(md.move_type) {
+        case MoveType::Walk:
+            ApiWalk(player, md);
+            break;
+        case MoveType::Resign:
+            ApiResign(player, md);
+            break;
+        case MoveType::PlaceBomb:
+            ApiPlaceBomb(player, md);
+            break;
+        case MoveType::PlaceGun:
+            ApiPlaceGun(player, md);
+            break;
+        }
+        AfterMove();
+        return GameApiStatus::Ok;
     }
-    GameApiStatus State::ApiWalk(Player::Ptr player, MoveData md) {
-        
+    void State::ApiWalk(Player::Ptr player, MoveData md) {
+        player->position.x = md.position.x;
+        player->position.y = md.position.y;
+        events_wrapper_->AddEvent(WalkEvent({{player->actor_id, PLAYER_WALK}, player->position}));
     }
-    GameApiStatus State::ApiResign(Player::Ptr player, MoveData md) {
-        
+    void State::ApiResign(Player::Ptr player, MoveData md) {
+        FinishSession(player1()->actor_id != player->actor_id);
+        events_wrapper_->AddEvent(EmptyEvent({player->actor_id, PLAYER_RESIGN}));
     }
-    GameApiStatus State::ApiPlaceBomb(Player::Ptr player, MoveData md) {
-        
+    void State::ApiPlaceBomb(Player::Ptr player, MoveData md) {
+        Bomb::Ptr bomb = PlaceBombObject(md.position, player->login);
+        events_wrapper_->AddEvent(BombEvent({{{player->actor_id, PLAYER_PLACE_BOMB}, bomb->position}, bomb->actor_id}));
     }
-    GameApiStatus State::ApiPlaceGun(Player::Ptr player, MoveData md) {
-        
+    void State::ApiPlaceGun(Player::Ptr player, MoveData md) {
+        Gun::Ptr gun = PlaceGunObject(md.position, md.direction, player->login);
+        events_wrapper_->AddEvent(GunEvent({{{{player->actor_id, PLAYER_PLACE_GUN}, gun->position}, gun->actor_id}, gun->direction}));
     }
 
     void State::AfterMove(){

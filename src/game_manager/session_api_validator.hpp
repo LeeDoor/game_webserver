@@ -1,12 +1,14 @@
 #pragma once
 #include <algorithm>
+#include <optional>
 #include "user.hpp"
 #include "position.hpp"
-#include "state.hpp"
 #include "move_data.hpp"
 #include "game_api_status.hpp"
+#include "player.hpp"
 
 namespace game_manager{
+    class State;
     class SessionApiValidator {
     public:
         SessionApiValidator();
@@ -37,7 +39,7 @@ namespace game_manager{
                 bool wall = false;
             };
             CellRestrictor(Restrictions rest);
-            bool operator ()(State::Ptr state, Position cell_pos) const;
+            bool operator ()(std::shared_ptr<State> state, Position cell_pos) const;
         private:
             Restrictions restrictions_;
         };
@@ -55,7 +57,7 @@ namespace game_manager{
         void SetCellRestrictor(CellRestrictor&& cr);
         void SetDistanceValidator(DistanceValidator&& dv);
 
-        GameApiStatus operator()(State::Ptr state, Player::Ptr player, MoveData md);
+        GameApiStatus operator()(std::shared_ptr<State> state, Player::Ptr player, MoveData md);
     private:
         MoveDependent move_dependent_;
         std::optional<CellSpread> cell_spread_;

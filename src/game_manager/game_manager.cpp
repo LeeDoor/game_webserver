@@ -6,6 +6,7 @@
 namespace game_manager{
     GameManager::GameManager(um::IUserManager::Ptr um, sm::ISessionManager::Ptr sm)
         :dm_(um), sm_(sm){
+        State::InitApi();
     }
 
     bool GameManager::CreateSession(um::Uuid&& player1, um::Uuid&& player2){
