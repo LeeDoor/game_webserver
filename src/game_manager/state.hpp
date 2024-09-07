@@ -2,13 +2,9 @@
 #include "player.hpp"
 #include "object.hpp"
 #include "obstacle.hpp"
-#include "bomb.hpp"
-#include "gun.hpp"
-#include "bullet.hpp"
+#include "i_move_api.hpp"
+#include "i_interaction_api.hpp"
 #include <vector>
-#include <list>
-#include <memory>
-#include <optional>
 namespace gm = game_manager;
 
 namespace game_manager {
@@ -20,7 +16,7 @@ namespace game_manager {
         Dimention height;
     };
 
-    class State : public std::enable_shared_from_this<State>{
+    class State : public IMoveApi, public IInteractionApi, public std::enable_shared_from_this<State>{
     public:
         using Players = std::vector<Player::Ptr>;
         using Objects = std::list<Object::Ptr>;
@@ -31,7 +27,6 @@ namespace game_manager {
         using OptCPtr = std::optional<CPtr>;
         
         State();
-
         bool operator==(const State& s) const;
 
         void UpdateStatePointers();
@@ -40,7 +35,16 @@ namespace game_manager {
         /// doesnt matter who is first and who is second player passed. function declares who is moving first.
         /// @param login1 first player
         /// @param login2 second player
-        void Init(const um::Login& login1, const um::Login& login2);
+    private:
+        void Init(const um::Login& login1, const um::Login& login2) override;
+        std::shared_ptr<const State> GetState() override;
+        void SetState(State&& state) override;
+        std::shared_ptr<Player> GetCurrentPlayer() override;
+
+        void ApiWalk(Player::Ptr player, MoveData md) override;
+        void ApiResign(Player::Ptr player, MoveData md) override;
+        void ApiPlaceBomb(Player::Ptr player, MoveData md) override;
+        void ApiPlaceGun(Player::Ptr player, MoveData md) override;
 
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();
@@ -50,14 +54,14 @@ namespace game_manager {
         /// @brief returns true if given cell is valid to walk on or to place an object.
         bool ValidCell(Position position);
 
-        void FinishSession(bool firstWinner);
-        Bomb::Ptr PlaceBombObject(Position position, Object::OwnerType login);
-        Gun::Ptr PlaceGunObject(Position position, Direction direction, Object::OwnerType login);
-        Bullet::Ptr PlaceBulletObject(Position position, Direction direction, Object::OwnerType login);
+        void FinishSession(bool firstWinner) override;
+        Bomb::Ptr PlaceBombObject(Position position, Object::OwnerType login) override;
+        Gun::Ptr PlaceGunObject(Position position, Direction direction, Object::OwnerType login) override;
+        Bullet::Ptr PlaceBulletObject(Position position, Direction direction, Object::OwnerType login) override;
 
-        void RemoveObject(ActorId actor_id);
-        void Explode(Position position);
-        std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet);
+        void RemoveObject(ActorId actor_id) override;
+        void Explode(Position position) override;
+        std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet) override;
 
         Player::Ptr player1(){return players.front();}
         Player::Ptr player2(){return players.back();}

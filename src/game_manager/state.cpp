@@ -55,6 +55,28 @@ namespace game_manager {
         UpdateStatePointers(); 
     }
 
+    std::shared_ptr<const State> State::GetState() {
+        return shared_from_this();
+    }
+    void State::SetState(State&& state) {
+        *this = std::move(state);
+    }
+    std::shared_ptr<Player> State::GetCurrentPlayer() {
+        return player1()->login == now_turn ? player1() : player2();
+    }
+    void State::ApiWalk(Player::Ptr player, MoveData md) {
+        
+    }
+    void State::ApiResign(Player::Ptr player, MoveData md) {
+        
+    }
+    void State::ApiPlaceBomb(Player::Ptr player, MoveData md) {
+        
+    }
+    void State::ApiPlaceGun(Player::Ptr player, MoveData md) {
+        
+    }
+
     void State::AfterMove(){
         for(size_t i = 0, len = objects.size(); i < objects.size(); ++i){
             auto it = objects.begin();

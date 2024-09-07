@@ -4,11 +4,11 @@
 #include <map>
 #include <variant>
 #include "user.hpp"
-#include "state.hpp"
 #include "event_manager.hpp"
 #include "move_data.hpp"
 #include "session_id.hpp"
 #include "session_api_validator.hpp"
+#include "i_move_api.hpp"
 
 namespace game_manager{
     class Event;
@@ -20,7 +20,7 @@ namespace game_manager{
         Session(um::Uuid player1, const um::Login& login1, um::Uuid player2, const um::Login& login2);
 
         static void InitApi();
-        
+
         bool HasPlayer(const um::Uuid& uuid);
         State::CPtr GetState();
         void SetState(State&& state);
@@ -35,18 +35,12 @@ namespace game_manager{
 
         GameApiStatus ApiMove(const um::Uuid& player_id, MoveData md);
     private:
-        void ApiWalk(Player::Ptr player, MoveData md);
-        void ApiResign(Player::Ptr player, MoveData md);
-        void ApiPlaceBomb(Player::Ptr player, MoveData md);
-        void ApiPlaceGun(Player::Ptr player, MoveData md);
-
-        void AfterMove();
 
         Player::Ptr player1(){return state_->players.front();}
         Player::Ptr player2(){return state_->players.back();}
         
         std::mutex move_mutex_;
-        State::Ptr state_;
+        IMoveApi::Ptr move_api_;
 
         um::Uuid player1_;
         um::Uuid player2_; 

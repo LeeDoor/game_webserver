@@ -28,11 +28,11 @@ namespace game_manager{
         --ticks_to_shot;
         if(!ticks_to_shot) {
             ticks_to_shot = shot_cooldown_;
-            ActorId bulletAI = state_->PlaceBulletObject(position, direction, owner)->actor_id;
+            ActorId bulletAI = interactor_->PlaceBulletObject(position, direction, owner)->actor_id;
             --shots_left;
             events.push_back(BulletEvent({{{{actor_id, GUN_SHOT}, position},bulletAI},direction}));
             if(!shots_left){
-                state_->RemoveObject(actor_id);
+                interactor_->RemoveObject(actor_id);
                 events.push_back(EmptyEvent({actor_id, GUN_DESTROY}));
                 return events;
             }

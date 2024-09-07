@@ -21,8 +21,8 @@ namespace game_manager{
         --ticks_left;
         if(ticks_left)
             return {EmptyEvent({actor_id, BOMB_TICKING})};
-        state_->Explode(position);
-        state_->RemoveObject(actor_id);
+        interactor_->Explode(position);
+        interactor_->RemoveObject(actor_id);
         return {EmptyEvent({actor_id, BOMB_EXPLODE})};
     }
 }

@@ -9,8 +9,7 @@ This module contains list of all sessions, creates, deletes them and provides ap
 * **Object** and **Obstacle** are some items on the map which can act on the field. The difference is that object needs to be updated after each move, while obstacle keeps static. State updates objects itself.
 * **IStateRelated** - every object related to the state is state related. It means, this object can interact with state.
 *  **IActor** - interface for every object that can interact with state and other objects.
-* **IPlaceable** - placeable objects can have their position on state. Automatically inherits from IActor and IStateRelated. 
-* **StateRelated** by default. Objects, Obstacles, Players - all of them are placeables.
+* **IPlaceable** - placeable objects can have their position on state. Automatically inherits from IActor and IStateRelated. Objects, Obstacles, Players - all of them are placeables.
 
 User should get all notifications about events happening in the game. All actions are listed and saved in special EventManager. It is required for reproducing the game state from it source state to actual state and for easier understanding about changed state.
 

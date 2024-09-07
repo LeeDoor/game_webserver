@@ -36,7 +36,7 @@ namespace game_manager{
 
         EventsType events;
 
-        std::optional<std::list<IPlaceable::Ptr>> collisions = state_->CollisionsOnCell(shared_from_this());
+        std::optional<std::list<IPlaceable::Ptr>> collisions = interactor_->CollisionsOnCell(shared_from_this());
         if(collisions) {
             if (collisions->size() == 0){
                 events.push_back(EmptyEvent({actor_id, BULLET_FLY}));
@@ -48,7 +48,7 @@ namespace game_manager{
             }
         }
 
-        state_->RemoveObject(actor_id);
+        interactor_->RemoveObject(actor_id);
         return {EmptyEvent({actor_id, BULLET_DESTROY})};
     }
 } 

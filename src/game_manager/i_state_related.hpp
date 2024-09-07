@@ -2,13 +2,13 @@
 #include <memory>
 
 namespace game_manager{
-    class State;
+    class IInteractionApi;
     class IStateRelated{
     public:
-        void SetState(std::shared_ptr<State> state){
-            state_ = state;
+        void SetInteractor(std::shared_ptr<IInteractionApi> inter){
+            interactor_ = inter;
         }
     protected:
-        std::shared_ptr<State> state_;
+        std::shared_ptr<IInteractionApi> interactor_;
     };
 }
