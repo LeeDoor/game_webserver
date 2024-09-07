@@ -6,17 +6,13 @@
 namespace game_manager{
     GameManager::GameManager(um::IUserManager::Ptr um, sm::ISessionManager::Ptr sm)
         :dm_(um), sm_(sm){
-        Session::InitApi();
     }
 
     bool GameManager::CreateSession(um::Uuid&& player1, um::Uuid&& player2){
         SessionId si = GenerateSessionId();
-        std::optional<um::User> ud1 = dm_->GetByUuid(player1);
-        std::optional<um::User> ud2 = dm_->GetByUuid(player2);
-        if(!ud1.has_value() || !ud2.has_value()) 
-            return false;
 
-        sessions_.emplace(si, std::make_shared<Session>(player1, ud1->login, player2, ud2->login)); 
+        sessions_.emplace(si, std::make_shared<State>()); 
+        sessions_.at(si)->Init(player1, player2);
         notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
 
@@ -28,7 +24,7 @@ namespace game_manager{
         return sessions_.contains(sid);
     }
     std::optional<SessionId> GameManager::HasPlayer(const um::Uuid& uuid) {
-        for(std::pair<SessionId, Session::Ptr> pair : sessions_){
+        for(std::pair<SessionId, IMoveApi::Ptr> pair : sessions_){
             if (pair.second->HasPlayer(uuid))
                 return pair.first;
         }
@@ -44,7 +40,7 @@ namespace game_manager{
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
-    bool GameManager::SetState(const SessionId& sessionId, State state) {
+    bool GameManager::SetState(const SessionId& sessionId, State&& state) {
         if(!sessions_.contains(sessionId))
             return false;
     
@@ -74,7 +70,7 @@ namespace game_manager{
             }
         }
     }
-    bool GameManager::FinishSession(const SessionId& sid, const Session::ResultsUuid& results) {
+    bool GameManager::FinishSession(const SessionId& sid, const Results& results) {
         sm_->AddLine({sid, results.winner, results.loser});
 
         notif::SessionStateNotifier::GetInstance()->Unsubscribe(sid);

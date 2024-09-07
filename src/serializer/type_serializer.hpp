@@ -2,8 +2,8 @@
 #include "registration_data.hpp"
 #include "public_user.hpp"
 #include "session_data.hpp"
-#include "../game_manager/session.hpp"
 #include "move_data.hpp"
+#include "state.hpp"
 using json = nlohmann::json;
 
 namespace http_handler {
@@ -16,9 +16,6 @@ namespace user_manager {
 }
 
 namespace game_manager{
-    void to_json(json& j, const State& v);
-    void from_json(const json& j, State& v);
-
     void to_json(json& j, const MoveData& v);
     void from_json(const json& j, MoveData& v);
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Position, x, y)

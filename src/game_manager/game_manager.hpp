@@ -1,5 +1,5 @@
 #pragma once
-#include "session.hpp"
+#include "state.hpp"
 #include <map>
 #include <string>
 #include <memory>
@@ -20,20 +20,20 @@ namespace game_manager{
         std::optional<SessionId> HasPlayer(const um::Uuid& uuid);
         std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
-        bool SetState(const SessionId& sessionId, State state);
+        bool SetState(const SessionId& sessionId, State&& state);
         std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
         std::optional<GameApiStatus> ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData move_data);
         
     private:
         void CheckStatus(const SessionId& sid, GameApiStatus status);
-        bool FinishSession(const SessionId& sid, const Session::ResultsUuid& results);
+        bool FinishSession(const SessionId& sid, const Results& results);
 
         SessionId GenerateSessionId();
 
         sm::ISessionManager::Ptr sm_;
         um::IUserManager::Ptr dm_;
-        std::map<SessionId, Session::Ptr> sessions_;
+        std::map<SessionId, IMoveApi::Ptr> sessions_;
         std::map<SessionId, std::mutex> session_mutex_;
     };
 }

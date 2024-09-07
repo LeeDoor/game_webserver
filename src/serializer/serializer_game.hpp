@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
 #include <optional>
-#include "../game_manager/session.hpp"
+#include "state.hpp"
+#include "move_data.hpp"
+#include "event_manager.hpp"
 
 namespace serializer{
     std::string Serialize(const gm::State& state);
@@ -12,5 +14,4 @@ namespace serializer{
     std::optional<int> DeserializeFromMove(const std::string& json);
 
     std::optional<gm::MoveData> DeserializeMoveData(const std::string& json);
-
 }

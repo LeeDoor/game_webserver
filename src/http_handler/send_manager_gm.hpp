@@ -1,6 +1,7 @@
 #pragma once
 #include "http_types.hpp"
-#include "../game_manager/session.hpp"
+#include "state.hpp"
+#include "session_id.hpp"
 namespace http_handler{
     void SendSessionId(SessionData rns, const gm::SessionId& session_id);
     void SendInTheMatch(SessionData rns, const gm::SessionId& sid);

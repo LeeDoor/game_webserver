@@ -68,7 +68,7 @@ namespace http_handler{
         auto state = serializer::DeserializeSessionState(rns.request.body());
         if(!state)
             return SendWrongBodyData(rns);
-        if(!gm_->SetState(map.at("sessionId"), *state))
+        if(!gm_->SetState(map.at("sessionId"), std::move(*state)))
             return SendWrongSessionId(rns);
         return SendSuccess(rns);
     }

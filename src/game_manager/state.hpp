@@ -4,6 +4,7 @@
 #include "obstacle.hpp"
 #include "i_move_api.hpp"
 #include "i_interaction_api.hpp"
+#include "game_api_status.hpp"
 #include <vector>
 namespace gm = game_manager;
 
@@ -21,7 +22,7 @@ namespace game_manager {
         using Players = std::vector<Player::Ptr>;
         using Objects = std::list<Object::Ptr>;
         using Terrain = std::list<Obstacle::Ptr>;
-        using NowTurn = Player::Login;
+        using NowTurn = Player::Id;
         using Ptr = std::shared_ptr<State>;
         using CPtr = std::shared_ptr<const State>;
         using OptCPtr = std::optional<CPtr>;
@@ -31,20 +32,24 @@ namespace game_manager {
 
         void UpdateStatePointers();
 
-        /// @brief sets map with login and uuid for both players, sets default map settings like obstacles.
-        /// doesnt matter who is first and who is second player passed. function declares who is moving first.
-        /// @param login1 first player
-        /// @param login2 second player
+        std::string tojson() const;
+        void fromjson(const std::string& str); 
     private:
-        void Init(const um::Login& login1, const um::Login& login2) override;
+        friend class SessionApiValidator;
+
+        void Init(const um::Uuid& login1, const um::Uuid& login2) override;
         std::shared_ptr<const State> GetState() override;
         void SetState(State&& state) override;
         std::shared_ptr<Player> GetCurrentPlayer() override;
+        EventListWrapper::CPtr GetEvents() override;
 
-        void ApiWalk(Player::Ptr player, MoveData md) override;
-        void ApiResign(Player::Ptr player, MoveData md) override;
-        void ApiPlaceBomb(Player::Ptr player, MoveData md) override;
-        void ApiPlaceGun(Player::Ptr player, MoveData md) override;
+        bool HasPlayer(um::Uuid id) override;
+        std::optional<Results> GetResults() override;
+        GameApiStatus ApiMove(um::Uuid uuid, MoveData md) override;
+        GameApiStatus ApiWalk(Player::Ptr player, MoveData md) override;
+        GameApiStatus ApiResign(Player::Ptr player, MoveData md) override;
+        GameApiStatus ApiPlaceBomb(Player::Ptr player, MoveData md) override;
+        GameApiStatus ApiPlaceGun(Player::Ptr player, MoveData md) override;
 
         /// @brief makes changes after each player's move. should be called at the end of API functions.
         void AfterMove();

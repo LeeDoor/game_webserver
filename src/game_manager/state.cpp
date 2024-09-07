@@ -1,6 +1,8 @@
 #include "state.hpp"
 #include "spdlog/spdlog.h"
 #include "event_manager.hpp"
+#include "nlohmann/json.hpp"
+#include "type_serializer.hpp"
 
 #define PLAYER_WON "player_won"
 
@@ -29,15 +31,36 @@ namespace game_manager {
     }
 
     void State::UpdateStatePointers(){
-        std::for_each(players.begin(), players.end(), [&](Player::Ptr a){a->SetState(shared_from_this());});
-        std::for_each(objects.begin(), objects.end(), [&](Object::Ptr a){a->SetState(shared_from_this());});
-        std::for_each(terrain.begin(), terrain.end(), [&](Obstacle::Ptr a){a->SetState(shared_from_this());});
+        std::for_each(players.begin(), players.end(), [&](Player::Ptr a){a->SetInteractor(shared_from_this());});
+        std::for_each(objects.begin(), objects.end(), [&](Object::Ptr a){a->SetInteractor(shared_from_this());});
+        std::for_each(terrain.begin(), terrain.end(), [&](Obstacle::Ptr a){a->SetInteractor(shared_from_this());});
+    }
+    std::string State::tojson() const{
+        nlohmann::json j = nlohmann::json{
+            {"state", "playing"}, 
+            {"players", players}, 
+            {"objects", objects}, 
+            {"terrain", terrain}, 
+            {"now_turn", now_turn},
+            {"map_size", map_size},
+            {"move_number", move_number},
+        };
+        return j.dump();
+    }
+    void State::fromjson(const std::string& str) {
+        nlohmann::json j = nlohmann::json::parse(str);
+        j.at("players").get_to(players);
+        j.at("objects").get_to(objects);
+        j.at("terrain").get_to(terrain);
+        j.at("now_turn").get_to(now_turn);
+        j.at("map_size").get_to(map_size);
+        j.at("move_number").get_to(move_number);
     }
 
-    void State::Init(const um::Login& login1, const um::Login& login2){
+    void State::Init(const um::Uuid& id1, const um::Uuid& id2){
         players = {
-            std::make_shared<Player>(gm::Position{4, 1}, GetId(), login1),
-            std::make_shared<Player>(gm::Position{3, 6}, GetId(), login2),
+            std::make_shared<Player>(gm::Position{4, 1}, GetId(), id1),
+            std::make_shared<Player>(gm::Position{3, 6}, GetId(), id2),
         };
         
         std::vector<Position> walls = {
@@ -50,9 +73,12 @@ namespace game_manager {
             terrain.push_back(std::make_shared<Obstacle>(pair, Obstacle::Type::Wall, GetId()));
         }
 
-        now_turn = login1;
+        now_turn = id1;
         map_size = {15,15};
         UpdateStatePointers(); 
+    }
+    EventListWrapper::CPtr State::GetEvents() {
+        return events_wrapper_;
     }
 
     std::shared_ptr<const State> State::GetState() {
@@ -64,16 +90,25 @@ namespace game_manager {
     std::shared_ptr<Player> State::GetCurrentPlayer() {
         return player1()->login == now_turn ? player1() : player2();
     }
-    void State::ApiWalk(Player::Ptr player, MoveData md) {
+    bool State::HasPlayer(um::Uuid login) {
+        return login == player1()->login || login == player2()->login;
+    }
+    std::optional<Results> State::GetResults(){
+        
+    } 
+    GameApiStatus State::ApiMove(um::Uuid uuid, MoveData md) {
+
+    }
+    GameApiStatus State::ApiWalk(Player::Ptr player, MoveData md) {
         
     }
-    void State::ApiResign(Player::Ptr player, MoveData md) {
+    GameApiStatus State::ApiResign(Player::Ptr player, MoveData md) {
         
     }
-    void State::ApiPlaceBomb(Player::Ptr player, MoveData md) {
+    GameApiStatus State::ApiPlaceBomb(Player::Ptr player, MoveData md) {
         
     }
-    void State::ApiPlaceGun(Player::Ptr player, MoveData md) {
+    GameApiStatus State::ApiPlaceGun(Player::Ptr player, MoveData md) {
         
     }
 
@@ -133,14 +168,14 @@ namespace game_manager {
     Bomb::Ptr State::PlaceBombObject(Position position, Object::OwnerType login) {
         Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId());
         obj->Place(position);
-        obj->SetState(shared_from_this());
+        obj->SetInteractor(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }
     Gun::Ptr State::PlaceGunObject(Position position, Direction direction, Object::OwnerType login) {
         Gun::Ptr obj = std::make_shared<Gun>(login, GetId());
         obj->Place(position, direction);
-        obj->SetState(shared_from_this());
+        obj->SetInteractor(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }
@@ -148,7 +183,7 @@ namespace game_manager {
     Bullet::Ptr State::PlaceBulletObject(Position position, Direction direction, Object::OwnerType login) {
         Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId());
         obj->Place(position, direction);
-        obj->SetState(shared_from_this());
+        obj->SetInteractor(shared_from_this());
         objects.emplace_back(obj);
         return obj;
     }

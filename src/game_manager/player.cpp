@@ -3,7 +3,7 @@
 
 namespace game_manager{
     Player::Player() : Player({0,0}, 0, "") {}
-    Player::Player(Position position, ActorId actor_id, Login login) 
+    Player::Player(Position position, ActorId actor_id, Id login) 
         : IPlaceable(actor_id), login(login){
         Place(position);
     }
@@ -12,7 +12,7 @@ namespace game_manager{
     }
 
     EventListWrapper::Vec Player::Die(){
-        state_->FinishSession(actor_id == 1);
+        interactor_->FinishSession(actor_id == 1);
         return {EmptyEvent({actor_id, PLAYER_DEAD})};
     }
 }

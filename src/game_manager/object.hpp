@@ -13,7 +13,7 @@ namespace game_manager{
     class Object : public IPlaceable {
     public:
         using Ptr = std::shared_ptr<Object>;
-        using OwnerType = Player::Login;
+        using OwnerType = Player::Id;
         using EventsType = EventListWrapper::Vec;
 
         Object(OwnerType owner, ActorId id);

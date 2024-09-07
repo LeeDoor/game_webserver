@@ -4,13 +4,9 @@
 #include "position.hpp"
 #include "state.hpp"
 #include "move_data.hpp"
+#include "game_api_status.hpp"
 
 namespace game_manager{
-    enum GameApiStatus{
-        Ok,
-        WrongMove,
-        NotYourMove,
-    };
     class SessionApiValidator {
     public:
         SessionApiValidator();

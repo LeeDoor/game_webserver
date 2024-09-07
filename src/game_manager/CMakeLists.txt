@@ -4,8 +4,6 @@ set(LIBRARY_NAME game_manager)
 add_library(${LIBRARY_NAME}
     game_manager.cpp
     game_manager.hpp
-    session.hpp
-    session.cpp
     session_id_generator.hpp
     matchmaking_balancer.hpp
     matchmaking_balancer.cpp
