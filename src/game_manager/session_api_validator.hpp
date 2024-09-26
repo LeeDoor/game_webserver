@@ -8,7 +8,7 @@
 #include "player.hpp"
 
 namespace game_manager{
-    class State;
+    class Session;
     class SessionApiValidator {
     public:
         SessionApiValidator();
@@ -39,7 +39,7 @@ namespace game_manager{
                 bool wall = false;
             };
             CellRestrictor(Restrictions rest);
-            bool operator ()(std::shared_ptr<State> state, Position cell_pos) const;
+            bool operator ()(std::shared_ptr<Session> state, Position cell_pos) const;
         private:
             Restrictions restrictions_;
         };
@@ -57,7 +57,7 @@ namespace game_manager{
         void SetCellRestrictor(CellRestrictor&& cr);
         void SetDistanceValidator(DistanceValidator&& dv);
 
-        GameApiStatus operator()(std::shared_ptr<State> state, Player::Ptr player, MoveData md);
+        GameApiStatus operator()(std::shared_ptr<Session> state, Player::Ptr player, MoveData md);
     private:
         MoveDependent move_dependent_;
         std::optional<CellSpread> cell_spread_;

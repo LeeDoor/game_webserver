@@ -119,7 +119,7 @@ namespace serializer{
     }
 
     // GAME // 
-    std::string Serialize(const gm::State& state) {
+    std::string Serialize(const gm::Session& state) {
         return state.tojson();
     }
     std::string Serialize(const gm::MoveData& wd) {
@@ -131,8 +131,8 @@ namespace serializer{
         return obj.dump();
     }
 
-    std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {
-        gm::State res;
+    std::optional<gm::Session>             DeserializeSessionState(const std::string& json_str) {
+        gm::Session res;
         try{
             res.fromjson(json_str);
         }

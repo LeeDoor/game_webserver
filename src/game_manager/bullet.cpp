@@ -1,5 +1,5 @@
 #include "bullet.hpp"
-#include "state.hpp"
+#include "session.hpp"
 
 namespace game_manager{
     Bullet::Bullet(OwnerType owner, ActorId actor_id) 

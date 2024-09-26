@@ -217,8 +217,8 @@ TEST_CASE("Serialize token map", "[jsonserializer]"){
 
 TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
     json j;
-    gm::State given;
-    gm::State example;
+    gm::Session given;
+    gm::Session example;
 
     SECTION("Serialize"){
         example.now_turn = "login1";

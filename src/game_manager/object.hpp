@@ -8,7 +8,7 @@
 #include "nlohmann/json.hpp"
 
 namespace game_manager{
-    struct State;
+    struct Session;
     
     class Object : public IPlaceable {
     public:

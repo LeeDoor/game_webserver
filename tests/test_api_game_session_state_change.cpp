@@ -59,7 +59,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> promise1, promise2;
@@ -111,7 +111,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> p1, p2, p3;
@@ -167,7 +167,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response = SessionStateChange(socket2, ld2.token, "ABOBUSSS", state.move_number);
@@ -184,7 +184,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response;
@@ -209,7 +209,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         um::Login& now_turn = state.now_turn;

@@ -1,5 +1,5 @@
 #include "player.hpp"
-#include "state.hpp"
+#include "session.hpp"
 
 namespace game_manager{
     Player::Player() : Player({0,0}, 0, "") {}

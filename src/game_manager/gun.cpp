@@ -1,5 +1,5 @@
 #include "gun.hpp"
-#include "state.hpp"
+#include "session.hpp"
 
 namespace game_manager{
     Gun::Gun(OwnerType owner, ActorId actor_id) 

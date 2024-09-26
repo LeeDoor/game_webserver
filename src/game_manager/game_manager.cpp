@@ -6,13 +6,13 @@
 namespace game_manager{
     GameManager::GameManager(um::IUserManager::Ptr um, sm::ISessionManager::Ptr sm)
         :dm_(um), sm_(sm){
-        State::InitApi();
+        Session::InitApi();
     }
 
     bool GameManager::CreateSession(um::Uuid&& player1, um::Uuid&& player2){
         SessionId si = GenerateSessionId();
 
-        sessions_.emplace(si, std::make_shared<State>()); 
+        sessions_.emplace(si, std::make_shared<Session>()); 
         auto l1 = dm_->GetByUuid(player1);
         auto l2 = dm_->GetByUuid(player2);
         if(!l1 || !l2) return false;
@@ -39,12 +39,12 @@ namespace game_manager{
             return std::nullopt;
         return sessions_.at(sessionId)->HasPlayer(id);
     }
-    State::OptCPtr GameManager::GetState(const SessionId& sessionId){
+    Session::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(!sessions_.contains(sessionId))
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
-    bool GameManager::SetState(const SessionId& sessionId, State::Ptr state) {
+    bool GameManager::SetState(const SessionId& sessionId, Session::Ptr state) {
         if(!sessions_.contains(sessionId))
             return false;
     

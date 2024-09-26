@@ -71,7 +71,7 @@ namespace http_handler{
         if(!sidopt)
             return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
-        gm::State::OptCPtr state = gm_->GetState(sid);
+        gm::Session::OptCPtr state = gm_->GetState(sid);
         if(!state){
             if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
                 return SendFinishedState(rns, *sd);

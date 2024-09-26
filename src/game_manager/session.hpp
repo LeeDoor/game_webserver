@@ -18,20 +18,20 @@ namespace game_manager {
         Dimention height;
     };
 
-    class State : public IMoveApi, public IInteractionApi, public std::enable_shared_from_this<State>{
+    class Session : public IMoveApi, public IInteractionApi, public std::enable_shared_from_this<Session>{
     public:
         using Players = std::vector<Player::Ptr>;
         using Objects = std::list<Object::Ptr>;
         using Terrain = std::list<Obstacle::Ptr>;
         using NowTurn = Player::Id;
-        using Ptr = std::shared_ptr<State>;
-        using CPtr = std::shared_ptr<const State>;
+        using Ptr = std::shared_ptr<Session>;
+        using CPtr = std::shared_ptr<const Session>;
         using OptCPtr = std::optional<CPtr>;
         
-        State();
-        State(State&& other);
-        State& operator=(State&&);
-        bool operator==(const State& s) const;
+        Session();
+        Session(Session&& other);
+        Session& operator=(Session&&);
+        bool operator==(const Session& s) const;
 
         void UpdateStatePointers();
         static void InitApi();
@@ -50,8 +50,8 @@ namespace game_manager {
         friend class SessionApiValidator;
 
         void Init(const Player::Id& login1, const Player::Id& login2) override;
-        std::shared_ptr<const State> GetState() override;
-        void SetState(State::Ptr state) override;
+        std::shared_ptr<const Session> GetState() override;
+        void SetState(Session::Ptr state) override;
         std::shared_ptr<Player> GetCurrentPlayer() override;
         EventListWrapper::CPtr GetEvents() override;
 

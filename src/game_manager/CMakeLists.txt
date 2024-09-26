@@ -7,7 +7,7 @@ add_library(${LIBRARY_NAME}
     session_id_generator.hpp
     matchmaking_balancer.hpp
     matchmaking_balancer.cpp
-    state.hpp
+    session.hpp
     player.hpp
     bomb.hpp
     object.hpp
@@ -23,7 +23,7 @@ add_library(${LIBRARY_NAME}
     custom_events.cpp
     directed_object.cpp
     player.cpp
-    state.cpp
+    session.cpp
     session_api_validator.cpp
     session_api_validator.hpp
     session_api_builder.cpp

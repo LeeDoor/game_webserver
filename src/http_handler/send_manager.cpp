@@ -35,7 +35,7 @@ namespace http_handler{
     void SendSessionId(SessionData rns, const gm::SessionId& session_id) {
         Send(rns, status::ok, serializer::SerializeMap({{"sessionId", session_id}}));
     }
-    void SendGameState(SessionData rns, const gm::State& state) {
+    void SendGameState(SessionData rns, const gm::Session& state) {
         Send(rns, status::ok, serializer::Serialize(state));
     }
     void SendFinishedState(SessionData rns, const session_manager::PublicSessionData& data) {

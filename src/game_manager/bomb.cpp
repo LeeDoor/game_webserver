@@ -1,6 +1,6 @@
 #include "bomb.hpp"
 #include "custom_events.hpp"
-#include "state.hpp"
+#include "session.hpp"
 
 namespace game_manager{
     Bomb::Bomb(OwnerType owner, ActorId id) 

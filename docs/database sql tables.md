@@ -5,6 +5,7 @@ CREATE TABLE users (
 	login VARCHAR(30) UNIQUE NOT NULL,
 	password VARCHAR(30) NOT NULL
 );
+CREATE INDEX idx_users_login ON users(login);
 ```
 # sessions
 ```SQL

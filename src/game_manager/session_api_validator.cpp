@@ -1,5 +1,5 @@
 #include "session_api_validator.hpp"
-#include "state.hpp"
+#include "session.hpp"
 
 namespace game_manager{
     SessionApiValidator::SessionApiValidator(){}
@@ -47,7 +47,7 @@ namespace game_manager{
 
     SessionApiValidator::CellRestrictor::CellRestrictor(Restrictions rest)
         : restrictions_(rest){}
-    bool SessionApiValidator::CellRestrictor::operator ()(State::Ptr state, Position cell_pos) const{
+    bool SessionApiValidator::CellRestrictor::operator ()(Session::Ptr state, Position cell_pos) const{
         if(!restrictions_.object){
             auto obj_iter = std::find_if(state->objects.begin(), state->objects.end(), [&](Object::Ptr obj){
                 return obj->position == cell_pos;
@@ -79,7 +79,7 @@ namespace game_manager{
                std::abs(player_pos.y - cell_pos.y) <= distance_;
     }
 
-    GameApiStatus SessionApiValidator::operator()(State::Ptr state, Player::Ptr player, MoveData md) {
+    GameApiStatus SessionApiValidator::operator()(Session::Ptr state, Player::Ptr player, MoveData md) {
         if(!move_dependent_(state->now_turn, player->login)) return GameApiStatus::NotYourMove;
         if(cell_spread_) {
             if(!(*cell_spread_)(player->position, md.position)) return GameApiStatus::WrongMove;

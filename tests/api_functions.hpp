@@ -52,10 +52,10 @@ struct SessionData{
     LoginData l1;
     LoginData l2;
     gm::SessionId sid;
-    gm::State state;
+    gm::Session state;
 };
 
-bool ValidCell(const gm::State& state, unsigned x, unsigned y);
+bool ValidCell(const gm::Session& state, unsigned x, unsigned y);
 // **Success functions does not require checking for validness of the answer and possibility to call.
 
 std::string SetUrlParameters(const std::string& url, const std::map<std::string, std::string>& parameters);
@@ -85,7 +85,7 @@ http::response<http::string_body> WaitForOpponent(tcp::socket&, const Token& tok
 game_manager::SessionId WaitForOpponentSuccess(tcp::socket&, const Token& token);
 
 http::response<http::string_body> SessionState(tcp::socket&, const Token& token, const gm::SessionId& sid);
-gm::State SessionStateSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
+gm::Session SessionStateSuccess(tcp::socket&, const Token& token, const gm::SessionId& sid);
 
 http::response<http::string_body> SessionStateChange(tcp::socket&, const Token& token, const gm::SessionId& sid, int from_move);
 
@@ -127,5 +127,5 @@ um::User UserSuccess(tcp::socket&, const um::Uuid& uuid);
 StringResponse MMQueue(tcp::socket&, std::string login, std::string password);
 std::vector<um::Uuid> MMQueueSuccess(tcp::socket&);
 
-StringResponse SetState(tcp::socket&, std::string login, std::string password, const gm::State& state, const gm::SessionId& sid);
-void SetStateSuccess(tcp::socket&, const gm::State& state, const gm::SessionId& sid);
+StringResponse SetState(tcp::socket&, std::string login, std::string password, const gm::Session& state, const gm::SessionId& sid);
+void SetStateSuccess(tcp::socket&, const gm::Session& state, const gm::SessionId& sid);
