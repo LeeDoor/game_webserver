@@ -2,7 +2,7 @@
 #include "api_functions.hpp"
 #include "serializer_session.hpp"
 #include "serializer_game.hpp"
-#include "session.hpp"
+#include "state.hpp"
 #include <thread>
 #include "nlohmann/json.hpp"
 #include "type_serializer.hpp"
@@ -59,7 +59,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> promise1, promise2;
@@ -111,7 +111,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         std::promise<void> p1, p2, p3;
@@ -167,7 +167,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response = SessionStateChange(socket2, ld2.token, "ABOBUSSS", state.move_number);
@@ -184,7 +184,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         StringResponse response;
@@ -202,26 +202,20 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
     }
 
     SECTION("multiple_moves_passed"){
-        if(MMQueueSuccess(socket).size() == 1)
-            EnqueueNewPlayer(socket);
-        LoginData ld1 = EnqueueNewPlayer(socket);
-        LoginData ld2 = EnqueueNewPlayer(socket);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
+        SessionData sd = CreateNewMatch(socket);
+        gm::State state = sd.state;
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
-        REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         um::Login& now_turn = state.now_turn;
         for(int i = 0; i < 4; ++i){
-            state = SessionStateSuccess(socket, ld1.token, sid);
+            state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
             um::Login& now_turn = state.now_turn;
-            LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
+            LoginData& ld = sd.l1.login == now_turn ? sd.l1 : sd.l2;
             gm::Player& player = * (state.players.front()->login == now_turn ? state.players.front() : state.players.back());
-            WalkSuccess(socket3, {player.position.x + 1, player.position.y}, ld.token, sid);
+            WalkSuccess(socket3, {player.position.x + 1, player.position.y}, ld.token, sd.sid);
         }
 
-        auto response = SessionStateChange(socket, ld1.token, sid, 1);
+        auto response = SessionStateChange(socket, sd.l1.token, sd.sid, 1);
         INFO(response.body());
         json j = json::parse(response.body());
         ValidateEvents(j);
@@ -232,7 +226,7 @@ TEST_CASE("ApiSessionStateChange", "[api][game][session_state_change][long_poll]
         INFO("!!! checking changing move_number");
         CHECK(res);
 
-        response = SessionStateChange(socket, ld2.token, sid, 3);
+        response = SessionStateChange(socket, sd.l2.token, sd.sid, 3);
         INFO(response.body());
         j = json::parse(response.body());
         ValidateEvents(j);

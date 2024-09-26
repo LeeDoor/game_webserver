@@ -21,7 +21,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
 
     SECTION("custom_room"){
         SessionData sd = CreateNewMatch(socket);
-        gm::Session& state = sd.state;
+        gm::State& state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
         state.players.front()->position.x = 0;
@@ -248,7 +248,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         um::Login& now_turn = state.now_turn;
@@ -280,7 +280,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         LoginData noname = EnqueueNewPlayer(socket);
@@ -299,7 +299,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         auto response = PlaceBomb(socket, {0,0}, ld1.token, "ABOBUS");
@@ -317,7 +317,7 @@ TEST_CASE("ApiPlaceBomb", "[api][game][move][place_bomb]"){
         gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
         REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
         
-        gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         um::Login& now_turn = state.now_turn;

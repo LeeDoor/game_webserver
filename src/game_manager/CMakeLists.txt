@@ -30,6 +30,7 @@ add_library(${LIBRARY_NAME}
     session_api_builder.hpp
     session_api_director.cpp
     session_api_director.hpp
+    state.hpp
 )
 
 #including and linking dependencies

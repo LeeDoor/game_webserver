@@ -13,7 +13,7 @@ TEST_CASE("ApiSetState", "[api][debug][set_state]"){
 
     SECTION("success"){
         SessionData sd = CreateNewMatch(socket);
-        gm::Session& new_state = sd.state;
+        gm::State& new_state = sd.state;
         new_state.map_size = {12, 12};
         new_state.move_number = 228;
         new_state.terrain = {std::make_shared<gm::Obstacle>(gm::Obstacle{{1,1},gm::Obstacle::Type::Wall}), std::make_shared<gm::Obstacle>(gm::Obstacle{{2,2},gm::Obstacle::Type::Wall})};
@@ -22,10 +22,11 @@ TEST_CASE("ApiSetState", "[api][debug][set_state]"){
         new_state.players.back()->position.x += 2;
         new_state.players.back()->position.y += 2;
         SetStateSuccess(socket, new_state, sd.sid);
-        gm::Session changed_state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
+        gm::State changed_state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
         
-        INFO(changed_state.tojson());
-        INFO(new_state.tojson());
+        nlohmann::json jbefore(new_state), jafter(changed_state);
+        INFO(jbefore.dump());
+        INFO(jafter.dump());
         CHECK(changed_state == new_state);
     }
 }

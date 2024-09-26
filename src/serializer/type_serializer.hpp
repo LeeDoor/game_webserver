@@ -3,7 +3,7 @@
 #include "public_user.hpp"
 #include "session_data.hpp"
 #include "move_data.hpp"
-#include "session.hpp"
+#include "state.hpp"
 using json = nlohmann::json;
 
 namespace http_handler {
@@ -22,6 +22,8 @@ namespace game_manager{
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Player, login, position, actor_id)
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Obstacle, actor_id, position, type)
     NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(MapSize, width, height)
+    void to_json(json& j, const State& v);
+    void from_json(const json& j, State& v);
     
     NLOHMANN_JSON_SERIALIZE_ENUM( Obstacle::Type, {
         {Obstacle::Type::Wall, "wall"},

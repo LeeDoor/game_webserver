@@ -217,8 +217,8 @@ TEST_CASE("Serialize token map", "[jsonserializer]"){
 
 TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
     json j;
-    gm::Session given;
-    gm::Session example;
+    gm::State given;
+    gm::State example;
 
     SECTION("Serialize"){
         example.now_turn = "login1";
@@ -245,7 +245,8 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
         std::string given_str;
         REQUIRE_NOTHROW(given_str = serializer::Serialize(std::move(example)));
         INFO(given_str);
-        REQUIRE_NOTHROW(given.fromjson(given_str));
+        REQUIRE_NOTHROW(j = json::parse(given_str));
+        REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
 
         example.map_size = {0,0};
@@ -267,7 +268,8 @@ TEST_CASE("Serialize & DeserializeSessionState", "[jsonserializer]"){
             std::make_shared<gm::Obstacle>(gm::Position{0,0},gm::Obstacle::Type::Wall)
         };
         REQUIRE_NOTHROW(given_str = serializer::Serialize(example));
-        REQUIRE_NOTHROW(given.fromjson(given_str));
+        REQUIRE_NOTHROW(j = json::parse(given_str));
+        REQUIRE_NOTHROW(given = j.template get<gm::State>());
         REQUIRE(example == given);
     }
 }   

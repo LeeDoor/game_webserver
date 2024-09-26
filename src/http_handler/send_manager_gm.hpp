@@ -5,6 +5,6 @@
 namespace http_handler{
     void SendSessionId(SessionData rns, const gm::SessionId& session_id);
     void SendInTheMatch(SessionData rns, const gm::SessionId& sid);
-    void SendGameState(SessionData rns, const gm::Session& session);
+    void SendGameState(SessionData rns, const gm::State& session);
     void SendEvents(SessionData rns, const gm::EventListWrapper& events, int from_move);
 }

@@ -10,7 +10,7 @@
 #include "nlohmann/json.hpp"
 #include "type_serializer.hpp"
 
-bool ValidCell(const gm::Session& state, unsigned x, unsigned y){
+bool ValidCell(const gm::State& state, unsigned x, unsigned y){
     auto& terrain = state.terrain;
     
     auto it = std::find_if(terrain.begin(), terrain.end(), 
@@ -42,7 +42,7 @@ SessionData CreateNewMatch(tcp::socket& socket) {
     LoginData ld2 = EnqueueNewPlayer(socket);
     gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
     REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
-    gm::Session state = SessionStateSuccess(socket, ld1.token, sid);
+    gm::State state = SessionStateSuccess(socket, ld1.token, sid);
     REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
     return {ld1, ld2, sid, std::move(state)};
@@ -157,13 +157,13 @@ http::response<http::string_body> SessionState(tcp::socket& socket, const Token&
 
     return response;
 }
-gm::Session SessionStateSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
+gm::State SessionStateSuccess(tcp::socket& socket, const Token& token, const gm::SessionId& sid) {
     http::response<http::string_body> response = SessionState(socket, token, sid);
     CheckStringResponse(response, 
         {.res = http::status::ok});
     INFO(response.body());
     REQUIRE(serializer::DefineSessionState(response.body()));
-    std::optional<gm::Session> state_opt = serializer::DeserializeSessionState(response.body());
+    std::optional<gm::State> state_opt = serializer::DeserializeSessionState(response.body());
     REQUIRE(state_opt);
     return std::move(*state_opt);
 }
@@ -338,11 +338,11 @@ std::vector<um::Uuid> MMQueueSuccess(tcp::socket& socket){
     return *given_vector;
 }
 
-StringResponse SetState(tcp::socket& socket, std::string login, std::string password, const gm::Session& state, const gm::SessionId& sid) {
+StringResponse SetState(tcp::socket& socket, std::string login, std::string password, const gm::State& state, const gm::SessionId& sid) {
     std::string target = SetUrlParameters(SET_STATE_API, {{"sessionId", sid}});
     http::request<http::string_body> request{http::verb::post, target, 11};
 
-    nlohmann::json j_state = nlohmann::json::parse(state.tojson()), j_admin(hh::RegistrationData(login, password));
+    nlohmann::json j_state(state), j_admin(hh::RegistrationData(login, password));
     j_state.update(j_admin);
 
     request.body() = j_state.dump();
@@ -350,7 +350,7 @@ StringResponse SetState(tcp::socket& socket, std::string login, std::string pass
 
     return GetResponseToRequest(false, request, socket);
 }
-void SetStateSuccess(tcp::socket& socket, const gm::Session& state, const gm::SessionId& sid) {
+void SetStateSuccess(tcp::socket& socket, const gm::State& state, const gm::SessionId& sid) {
     StringResponse response = SetState(socket, ADMIN_LOGIN, ADMIN_PASSWORD, state, sid);
     CheckStringResponse(response, {
         .body = serializer::SerializeEmpty(),

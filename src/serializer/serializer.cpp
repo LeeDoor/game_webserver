@@ -119,8 +119,9 @@ namespace serializer{
     }
 
     // GAME // 
-    std::string Serialize(const gm::Session& state) {
-        return state.tojson();
+    std::string Serialize(const gm::State& state) {
+        nlohmann::json obj(state);
+        return obj.dump();
     }
     std::string Serialize(const gm::MoveData& wd) {
         nlohmann::json obj(wd);
@@ -131,10 +132,11 @@ namespace serializer{
         return obj.dump();
     }
 
-    std::optional<gm::Session>             DeserializeSessionState(const std::string& json_str) {
-        gm::Session res;
+    std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {
+        gm::State res;
         try{
-            res.fromjson(json_str);
+            nlohmann::json j = nlohmann::json::parse(json_str);
+            res = j.get_to(res);
         }
         catch(std::exception& ex){
             return std::nullopt;

@@ -39,12 +39,12 @@ namespace game_manager{
             return std::nullopt;
         return sessions_.at(sessionId)->HasPlayer(id);
     }
-    Session::OptCPtr GameManager::GetState(const SessionId& sessionId){
+    State::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(!sessions_.contains(sessionId))
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
-    bool GameManager::SetState(const SessionId& sessionId, Session::Ptr state) {
+    bool GameManager::SetState(const SessionId& sessionId, State::Ptr state) {
         if(!sessions_.contains(sessionId))
             return false;
     

@@ -1,57 +1,29 @@
 #pragma once
-#include "player.hpp"
-#include "object.hpp"
-#include "obstacle.hpp"
 #include "i_move_api.hpp"
 #include "i_interaction_api.hpp"
 #include "game_api_status.hpp"
 #include <vector>
 #include "session_api_director.hpp"
+#include "state.hpp"
 namespace gm = game_manager;
 
 namespace game_manager {
 
-    struct MapSize{
-        bool operator == (const MapSize& other) const = default;
-
-        Dimention width;
-        Dimention height;
-    };
-
     class Session : public IMoveApi, public IInteractionApi, public std::enable_shared_from_this<Session>{
     public:
-        using Players = std::vector<Player::Ptr>;
-        using Objects = std::list<Object::Ptr>;
-        using Terrain = std::list<Obstacle::Ptr>;
-        using NowTurn = Player::Id;
         using Ptr = std::shared_ptr<Session>;
-        using CPtr = std::shared_ptr<const Session>;
-        using OptCPtr = std::optional<CPtr>;
         
         Session();
-        Session(Session&& other);
-        Session& operator=(Session&&);
-        bool operator==(const Session& s) const;
 
         void UpdateStatePointers();
         static void InitApi();
 
-        std::string tojson() const;
-        void fromjson(const std::string& str); 
-
-        int move_number = 0;
-        Players players;
-        Objects objects;
-        Terrain terrain;
-        NowTurn now_turn;
-        MapSize map_size;
-        
     private:
         friend class SessionApiValidator;
 
         void Init(const Player::Id& login1, const Player::Id& login2) override;
-        std::shared_ptr<const Session> GetState() override;
-        void SetState(Session::Ptr state) override;
+        std::shared_ptr<const State> GetState() override;
+        void SetState(State::Ptr state) override;
         std::shared_ptr<Player> GetCurrentPlayer() override;
         EventListWrapper::CPtr GetEvents() override;
 
@@ -76,16 +48,15 @@ namespace game_manager {
         void IncreaseMoveNumber();
         bool ValidCell(Position position);
 
-        Player::Ptr player1(){return players.front();}
-        Player::Ptr player2(){return players.back();}
+        Player::Ptr player1(){return state_->players.front();}
+        Player::Ptr player2(){return state_->players.back();}
 
         ActorId GetId(){return id_counter_++;}
         ActorId id_counter_ = 0;
 
+        State::Ptr state_;
         std::vector<std::weak_ptr<Player>> scoreboard_;  
         EventListWrapper::Ptr events_wrapper_;
-        
-
         static std::map<MoveType, SessionApiValidator> api_validator_; 
 
         const std::string PLAYER_WALK = "player_walk";

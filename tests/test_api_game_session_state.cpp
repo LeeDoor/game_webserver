@@ -24,7 +24,7 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
     gm::SessionId sid = WaitForOpponentSuccess(socket, ld.token);
 
     SECTION ("success"){
-        gm::Session state = SessionStateSuccess(socket, ld.token, sid);
+        gm::State state = SessionStateSuccess(socket, ld.token, sid);
         REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
         REQUIRE(state.players.size() == 2);
@@ -33,13 +33,13 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
 
         hh::RegistrationData rd = RegisterSuccess(socket);
         LoginData ld1 = LoginSuccess(socket, rd.login);
-        gm::Session state2 = SessionStateSuccess(socket, ld1.token, sid);
+        gm::State state2 = SessionStateSuccess(socket, ld1.token, sid);
         REQUIRE(state == state2);
     }
     SECTION ("success_multiple_sessions"){
         std::vector<LoginData> users;
         std::vector<gm::SessionId> sessions;
-        std::vector<gm::Session> states;
+        std::vector<gm::State> states;
         users.resize(10);
         sessions.resize(10);
         states.resize(10);
@@ -58,9 +58,9 @@ TEST_CASE("ApiSessionState", "[api][game][session_state]"){
         }
         for(int i = 0; i < 10; i+=2){
             REQUIRE(states[i] == states[i + 1]);
-            gm::Session& state = states[i];
+            gm::State& state = states[i];
             um::Login& nt = state.now_turn;
-            gm::Session::Players& players = state.players;
+            gm::State::Players& players = state.players;
             REQUIRE(players.size() == 2);
             gm::Player& player1 = *players.front();
             gm::Player& player2 = *players.back();

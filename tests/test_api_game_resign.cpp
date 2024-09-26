@@ -63,7 +63,7 @@ TEST_CASE("ApiResign", "[api][game][move][resign]"){
             .body = ACCESS_DENIED,
             .res = http::status::bad_request
         });
-        gm::Session state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
+        gm::State state = SessionStateSuccess(socket, sd.l1.token, sd.sid);
         CHECK(state == SessionStateSuccess(socket, sd.l2.token, sd.sid));
     }
     SECTION("cant_resign_twice"){

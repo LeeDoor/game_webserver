@@ -9,51 +9,16 @@
 namespace game_manager {
     std::map<MoveType, SessionApiValidator> Session::api_validator_ = {};
     Session::Session() :
-        events_wrapper_(std::make_shared<EventListWrapper>()){
-        events_wrapper_->SetMoveNumber(move_number);
+        events_wrapper_(std::make_shared<EventListWrapper>()),
+        state_(std::make_shared<State>()){
+        events_wrapper_->SetMoveNumber(state_->move_number);
     }
 
-    Session::Session(Session&& other) {
-        players = std::move(other.players);
-        objects = std::move(other.objects);
-        terrain = std::move(other.terrain);
-        now_turn = std::move(other.now_turn);
-        map_size = std::move(other.map_size);
-        move_number = std::move(other.move_number);
-    }
-
-    Session& Session::operator=(Session&& other) {
-        players = std::move(other.players);
-        objects = std::move(other.objects);
-        terrain = std::move(other.terrain);
-        now_turn = std::move(other.now_turn);
-        map_size = std::move(other.map_size);
-        move_number = std::move(other.move_number);
-        return *this;
-    }
-
-    template<template <typename> typename Container, typename Type>
-    bool comp_cont(Container<std::shared_ptr<Type>> c1, Container<std::shared_ptr<Type>> c2){
-        return std::equal(c1.begin(), c1.end(), c2.begin(), [](std::shared_ptr<Type> a, std::shared_ptr<Type> b){ return *a == *b; });
-    }
-    template<template <typename> typename Container, typename Type>
-    bool comp_cont_vtable(Container<std::shared_ptr<Type>> c1, Container<std::shared_ptr<Type>> c2){
-        return std::equal(c1.begin(), c1.end(), c2.begin(), [](std::shared_ptr<Type> a, std::shared_ptr<Type> b){ return *a == b; });
-    }
-
-    bool Session::operator==(const Session& s) const {
-        bool a = comp_cont(players, s.players);
-        a = a && comp_cont(terrain, s.terrain);
-        a = a && now_turn == s.now_turn;
-        a = a && map_size == s.map_size;
-        a = a && comp_cont_vtable(objects, s.objects);
-        return a;
-    }
 
     void Session::UpdateStatePointers(){
-        std::for_each(players.begin(), players.end(), [&](Player::Ptr a){a->SetInteractor(shared_from_this());});
-        std::for_each(objects.begin(), objects.end(), [&](Object::Ptr a){a->SetInteractor(shared_from_this());});
-        std::for_each(terrain.begin(), terrain.end(), [&](Obstacle::Ptr a){a->SetInteractor(shared_from_this());});
+        std::for_each(state_->players.begin(), state_->players.end(), [&](Player::Ptr a){a->SetInteractor(shared_from_this());});
+        std::for_each(state_->objects.begin(), state_->objects.end(), [&](Object::Ptr a){a->SetInteractor(shared_from_this());});
+        std::for_each(state_->terrain.begin(), state_->terrain.end(), [&](Obstacle::Ptr a){a->SetInteractor(shared_from_this());});
     }
     void Session::InitApi() {
         SessionApiDirector director;
@@ -65,30 +30,8 @@ namespace game_manager {
         };
     }
 
-    std::string Session::tojson() const{
-        nlohmann::json j = nlohmann::json{
-            {"state", "playing"}, 
-            {"players", players}, 
-            {"objects", objects}, 
-            {"terrain", terrain}, 
-            {"now_turn", now_turn},
-            {"map_size", map_size},
-            {"move_number", move_number},
-        };
-        return j.dump();
-    }
-    void Session::fromjson(const std::string& str) {
-        nlohmann::json j = nlohmann::json::parse(str);
-        j.at("players").get_to(players);
-        j.at("objects").get_to(objects);
-        j.at("terrain").get_to(terrain);
-        j.at("now_turn").get_to(now_turn);
-        j.at("map_size").get_to(map_size);
-        j.at("move_number").get_to(move_number);
-    }
-
     void Session::Init(const Player::Id& id1, const Player::Id& id2){
-        players = {
+        state_->players = {
             std::make_shared<Player>(gm::Position{4, 1}, GetId(), id1),
             std::make_shared<Player>(gm::Position{3, 6}, GetId(), id2),
         };
@@ -100,28 +43,28 @@ namespace game_manager {
             {4,5}, {7,5}
         };
         for(auto& pair : walls){
-            terrain.push_back(std::make_shared<Obstacle>(pair, Obstacle::Type::Wall, GetId()));
+            state_->terrain.push_back(std::make_shared<Obstacle>(pair, Obstacle::Type::Wall, GetId()));
         }
 
-        now_turn = id1;
-        map_size = {15,15};
+        state_->now_turn = id1;
+        state_->map_size = {15,15};
         UpdateStatePointers(); 
     }
     EventListWrapper::CPtr Session::GetEvents() {
         return events_wrapper_;
     }
 
-    std::shared_ptr<const Session> Session::GetState() {
-        return shared_from_this();
+    std::shared_ptr<const State> Session::GetState() {
+        return state_;
     }
-    void Session::SetState(Session::Ptr state) {
-        *this = std::move(*state);
+    void Session::SetState(State::Ptr state) {
+        state_ = state;
         UpdateStatePointers();
         events_wrapper_->Clear();
         id_counter_ = 2;
     }
     std::shared_ptr<Player> Session::GetCurrentPlayer() {
-        return player1()->login == now_turn ? player1() : player2();
+        return player1()->login == state_->now_turn ? player1() : player2();
     }
     bool Session::HasPlayer(const Player::Id& id) {
         return id == player1()->login || id == player2()->login;
@@ -136,7 +79,7 @@ namespace game_manager {
         if(id == player1()->login)
             player = player1();
         else player = player2();
-        if(auto status = api_validator_.at(md.move_type)(shared_from_this(), player, md); status != GameApiStatus::Ok)
+        if(auto status = api_validator_.at(md.move_type)(state_, player, md); status != GameApiStatus::Ok)
             return status;
 
         IncreaseMoveNumber();
@@ -176,35 +119,35 @@ namespace game_manager {
     }
 
     void Session::AfterMove(){
-        for(size_t i = 0, len = objects.size(); i < objects.size(); ++i){
-            auto it = objects.begin();
+        for(size_t i = 0, len = state_->objects.size(); i < state_->objects.size(); ++i){
+            auto it = state_->objects.begin();
             std::advance(it, i);
             if(!scoreboard_.empty()) break;
 
             Object::EventsType events = (*it)->UpdateTick();
             events_wrapper_->AddEvents(std::move(events));
-            if(len > objects.size()) --i;
-            len = objects.size();
+            if(len > state_->objects.size()) --i;
+            len = state_->objects.size();
         }
         if(!scoreboard_.empty())
             return events_wrapper_->AddEvent(EmptyEvent({scoreboard_[0].lock()->actor_id, PLAYER_WON}));
-        now_turn = now_turn == player1()->login? player2()->login : player1()->login;
+        state_->now_turn = state_->now_turn == player1()->login? player2()->login : player1()->login;
     }
 
     void Session::IncreaseMoveNumber() {
-        ++move_number;
-        events_wrapper_->SetMoveNumber(move_number);
+        ++state_->move_number;
+        events_wrapper_->SetMoveNumber(state_->move_number);
     }
 
     bool Session::ValidCell(Position position){
-        if (map_size.height <= position.y || map_size.width <= position.x){
-            spdlog::warn("cell is invalid: out of map size [{},{}]. map is {}x{}", position.x, position.y, map_size.width, map_size.height);
+        if (state_->map_size.height <= position.y || state_->map_size.width <= position.x){
+            spdlog::warn("cell is invalid: out of map size [{},{}]. map is {}x{}", position.x, position.y, state_->map_size.width, state_->map_size.height);
             return false;
         }
 
-        auto it = std::find_if(terrain.begin(), terrain.end(), 
+        auto it = std::find_if(state_->terrain.begin(), state_->terrain.end(), 
             [&](Obstacle::Ptr v){return v->position.x == position.x && v->position.y == position.y;});
-        if(it != terrain.end()){
+        if(it != state_->terrain.end()){
             spdlog::warn("cell is invalid: on the obstacle [{},{}]", position.x, position.y);
             return false;
         }
@@ -219,12 +162,12 @@ namespace game_manager {
 
     void Session::FinishSession(bool firstWinner) {
         if(firstWinner){
-            scoreboard_.push_back(players.front());
-            scoreboard_.push_back(players.back());
+            scoreboard_.push_back(state_->players.front());
+            scoreboard_.push_back(state_->players.back());
         }
         else{
-            scoreboard_.push_back(players.back());
-            scoreboard_.push_back(players.front());
+            scoreboard_.push_back(state_->players.back());
+            scoreboard_.push_back(state_->players.front());
         }
     }
 
@@ -232,14 +175,14 @@ namespace game_manager {
         Bomb::Ptr obj = std::make_shared<Bomb>(login, GetId());
         obj->Place(position);
         obj->SetInteractor(shared_from_this());
-        objects.emplace_back(obj);
+        state_->objects.emplace_back(obj);
         return obj;
     }
     Gun::Ptr Session::PlaceGunObject(Position position, Direction direction, Object::OwnerType login) {
         Gun::Ptr obj = std::make_shared<Gun>(login, GetId());
         obj->Place(position, direction);
         obj->SetInteractor(shared_from_this());
-        objects.emplace_back(obj);
+        state_->objects.emplace_back(obj);
         return obj;
     }
 
@@ -247,17 +190,17 @@ namespace game_manager {
         Bullet::Ptr obj = std::make_shared<Bullet>(login, GetId());
         obj->Place(position, direction);
         obj->SetInteractor(shared_from_this());
-        objects.emplace_back(obj);
+        state_->objects.emplace_back(obj);
         return obj;
     }
 
     void Session::RemoveObject(ActorId actor_id) {
-        objects.erase(std::find_if(objects.begin(), objects.end(), [&](Object::Ptr obj){return obj->actor_id == actor_id;}));
+        state_->objects.erase(std::find_if(state_->objects.begin(), state_->objects.end(), [&](Object::Ptr obj){return obj->actor_id == actor_id;}));
     }
 
     void Session::Explode(Position position) {
-        for(Dimention x = std::max(0, position.x - 1); x <= std::min(map_size.width - 1, position.x + 1); ++x){
-            for(Dimention y = std::max(0, position.y - 1); y <= std::min(map_size.height - 1, position.y + 1); ++y){
+        for(Dimention x = std::max(0, position.x - 1); x <= std::min(state_->map_size.width - 1, position.x + 1); ++x){
+            for(Dimention y = std::max(0, position.y - 1); y <= std::min(state_->map_size.height - 1, position.y + 1); ++y){
                 Position pos {x,y};
                 if(player1()->position == pos){
                     player1()->Die();
@@ -273,17 +216,17 @@ namespace game_manager {
 
     std::optional<std::list<IPlaceable::Ptr>> Session::CollisionsOnCell(Bullet::Ptr bullet) {
         Position& position = bullet->position;
-        if(position.x >= map_size.width || position.y >= map_size.height)
+        if(position.x >= state_->map_size.width || position.y >= state_->map_size.height)
             return std::nullopt;
 
         std::list<IPlaceable::Ptr> collisions;
-        std::copy_if(terrain.begin(), terrain.end(), std::back_inserter(collisions), 
+        std::copy_if(state_->terrain.begin(), state_->terrain.end(), std::back_inserter(collisions), 
             [&](Obstacle::Ptr o){ return o->position == position; });
 
-        std::copy_if(objects.begin(), objects.end(), std::back_inserter(collisions), 
+        std::copy_if(state_->objects.begin(), state_->objects.end(), std::back_inserter(collisions), 
             [&](Object::Ptr o){ return o->position == position && o->actor_id != bullet->actor_id; });
         
-        std::copy_if(players.begin(), players.end(), std::back_inserter(collisions), 
+        std::copy_if(state_->players.begin(), state_->players.end(), std::back_inserter(collisions), 
             [&](Player::Ptr p){ return p->position == position; });
         
         return collisions;
