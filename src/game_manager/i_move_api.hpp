@@ -8,15 +8,15 @@
 namespace game_manager{
     
     struct Results {
-        um::Uuid winner;
-        um::Uuid loser;
+        Player::Id winner;
+        Player::Id loser;
     };
     class IMoveApi : virtual public IState { 
     public:
         using Ptr = std::shared_ptr<IMoveApi>;
 
-        virtual bool HasPlayer(um::Login login) = 0;
-        virtual GameApiStatus ApiMove(um::Uuid uuid, MoveData md) = 0;
+        virtual bool HasPlayer(const Player::Id& login) = 0;
+        virtual GameApiStatus ApiMove(Player::Id id, MoveData md) = 0;
         virtual EventListWrapper::CPtr GetEvents() = 0;
         virtual std::optional<Results> GetResults() = 0;
     protected:

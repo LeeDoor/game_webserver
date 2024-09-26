@@ -38,18 +38,26 @@ namespace game_manager {
 
         std::string tojson() const;
         void fromjson(const std::string& str); 
+
+        int move_number = 0;
+        Players players;
+        Objects objects;
+        Terrain terrain;
+        NowTurn now_turn;
+        MapSize map_size;
+        
     private:
         friend class SessionApiValidator;
 
-        void Init(const um::Uuid& login1, const um::Uuid& login2) override;
+        void Init(const Player::Id& login1, const Player::Id& login2) override;
         std::shared_ptr<const State> GetState() override;
-        void SetState(State&& state) override;
+        void SetState(State::Ptr state) override;
         std::shared_ptr<Player> GetCurrentPlayer() override;
         EventListWrapper::CPtr GetEvents() override;
 
-        bool HasPlayer(um::Uuid id) override;
+        bool HasPlayer(const Player::Id& id) override;
         std::optional<Results> GetResults() override;
-        GameApiStatus ApiMove(um::Uuid uuid, MoveData md) override;
+        GameApiStatus ApiMove(Player::Id id, MoveData md) override;
         void ApiWalk(Player::Ptr player, MoveData md) override;
         void ApiResign(Player::Ptr player, MoveData md) override;
         void ApiPlaceBomb(Player::Ptr player, MoveData md) override;
@@ -76,13 +84,6 @@ namespace game_manager {
 
         std::vector<std::weak_ptr<Player>> scoreboard_;  
         EventListWrapper::Ptr events_wrapper_;
-
-        int move_number = 0;
-        Players players;
-        Objects objects;
-        Terrain terrain;
-        NowTurn now_turn;
-        MapSize map_size;
         
 
         static std::map<MoveType, SessionApiValidator> api_validator_; 

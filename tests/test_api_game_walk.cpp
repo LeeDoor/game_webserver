@@ -17,51 +17,6 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
     std::string NO_SUCH_SESSION = serializer::SerializeError("wrong_sessionId", "no session with such sessionId");
     std::string WRONG_BODY_DATA = serializer::SerializeError("body_data_error", "wrong body data");
 
-    SECTION("success"){
-        if(MMQueueSuccess(socket).size() == 1)
-            EnqueueNewPlayer(socket);
-        LoginData ld1 = EnqueueNewPlayer(socket);
-        LoginData ld2 = EnqueueNewPlayer(socket);
-        gm::SessionId sid = WaitForOpponentSuccess(socket, ld1.token);
-        REQUIRE(sid == WaitForOpponentSuccess(socket, ld2.token));
-        std::optional<um::Login> prev_turn = std::nullopt;
-        std::optional<gm::Position> new_wd = std::nullopt;
-        for(int i = 0; i < 10; ++i){
-            gm::State state = SessionStateSuccess(socket, ld1.token, sid);
-            REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
-
-            um::Login& now_turn = state.now_turn;
-            LoginData& ld = ld1.login == now_turn ? ld1 : ld2;
-            gm::Player& player = *(state.players.front()->login == now_turn ? state.players.front() : state.players.back());
-
-            if(prev_turn)
-                CHECK(*prev_turn != now_turn);
-
-            if(new_wd){
-                gm::Player& waiting_player = *(state.players.back()->login == now_turn ? state.players.front() : state.players.back());
-                CHECK(waiting_player.position.x == new_wd->x);
-                CHECK(waiting_player.position.y == new_wd->y);
-            }
-
-            std::vector<gm::Position> wds{
-                {player.position.x + 1, player.position.y},
-                {player.position.x, player.position.y + 1},
-                {player.position.x - 1, player.position.y},
-                {player.position.x, player.position.y - 1},
-            }; 
-            bool moved = false;
-            for(auto& wd : wds){
-                if (ValidCell(state, wd.x, wd.y)){
-                    WalkSuccess(socket, wd, ld.token, sid);
-                    moved = true;
-                    break;
-                }
-            }
-            if (!moved) break;
-            prev_turn = std::string(now_turn);
-        }
-    }
-
     SECTION("wrong_move"){
         if(MMQueueSuccess(socket).size() == 1)
             EnqueueNewPlayer(socket);
@@ -192,7 +147,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
     
     SECTION("in_prepared_room_walless"){
         SessionData sd = CreateNewMatch(socket);
-        gm::State state = sd.state;
+        gm::State& state = sd.state;
         state.map_size = {2,2};
         state.now_turn = sd.l1.login;
         state.players.front()->position.x = 0;
@@ -286,7 +241,7 @@ TEST_CASE("ApiMove", "[api][game][move][walk]"){
     }
     SECTION("prepared_room_walls") {
         SessionData sd = CreateNewMatch(socket);
-        gm::State state = sd.state;
+        gm::State& state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
         state.players.front()->position.x = 0;

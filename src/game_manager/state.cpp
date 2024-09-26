@@ -87,7 +87,7 @@ namespace game_manager {
         j.at("move_number").get_to(move_number);
     }
 
-    void State::Init(const um::Uuid& id1, const um::Uuid& id2){
+    void State::Init(const Player::Id& id1, const Player::Id& id2){
         players = {
             std::make_shared<Player>(gm::Position{4, 1}, GetId(), id1),
             std::make_shared<Player>(gm::Position{3, 6}, GetId(), id2),
@@ -114,34 +114,32 @@ namespace game_manager {
     std::shared_ptr<const State> State::GetState() {
         return shared_from_this();
     }
-    void State::SetState(State&& state) {
-        state.UpdateStatePointers();
-        state.events_wrapper_->Clear();
-        state.id_counter_ = 2;
-        *this = std::move(state);
+    void State::SetState(State::Ptr state) {
+        *this = std::move(*state);
+        UpdateStatePointers();
+        events_wrapper_->Clear();
+        id_counter_ = 2;
     }
     std::shared_ptr<Player> State::GetCurrentPlayer() {
         return player1()->login == now_turn ? player1() : player2();
     }
-    bool State::HasPlayer(um::Uuid login) {
-        return login == player1()->login || login == player2()->login;
+    bool State::HasPlayer(const Player::Id& id) {
+        return id == player1()->login || id == player2()->login;
     }
     std::optional<Results> State::GetResults(){
-        if(scoreboard_.size())
+        if(scoreboard_.empty())
             return std::nullopt;
         return Results{scoreboard_[0].lock()->login, scoreboard_[1].lock()->login};
     } 
-    GameApiStatus State::ApiMove(um::Uuid uuid, MoveData md) {
-        IncreaseMoveNumber();
+    GameApiStatus State::ApiMove(Player::Id id, MoveData md) {
         Player::Ptr player;
-        if(uuid == player1()->login)
+        if(id == player1()->login)
             player = player1();
-        else if (uuid == player2()->login)
-            player = player2();
-        else return GameApiStatus::WrongMove;
+        else player = player2();
         if(auto status = api_validator_.at(md.move_type)(shared_from_this(), player, md); status != GameApiStatus::Ok)
             return status;
 
+        IncreaseMoveNumber();
         switch(md.move_type) {
         case MoveType::Walk:
             ApiWalk(player, md);

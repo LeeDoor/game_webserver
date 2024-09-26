@@ -22,7 +22,7 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
 
     SECTION("custom room"){
         SessionData sd = CreateNewMatch(socket);
-        gm::State state = sd.state;
+        gm::State& state = sd.state;
         state.map_size = {3,3};
         state.now_turn = sd.l1.login;
         state.players.front()->position.x = 0;

@@ -10,6 +10,7 @@ namespace user_manager{
 
         virtual bool AddLine(const Login& login, const Password& password) = 0;
         virtual std::optional<User> GetByUuid(const Uuid& uuid) = 0;
+        virtual std::optional<User> GetByLogin(const Login& login) = 0;
         virtual std::optional<User> GetByLoginPassword(const Login& login, const Password& password) = 0;
     };
 }

@@ -45,7 +45,7 @@ SessionData CreateNewMatch(tcp::socket& socket) {
     gm::State state = SessionStateSuccess(socket, ld1.token, sid);
     REQUIRE(state == SessionStateSuccess(socket, ld2.token, sid));
 
-    return {ld1, ld2, sid, state};
+    return {ld1, ld2, sid, std::move(state)};
 }
 
 http::response<http::string_body> Register(tcp::socket& socket, const um::Login& login, const um::Password& password){
@@ -165,7 +165,7 @@ gm::State SessionStateSuccess(tcp::socket& socket, const Token& token, const gm:
     REQUIRE(serializer::DefineSessionState(response.body()));
     std::optional<gm::State> state_opt = serializer::DeserializeSessionState(response.body());
     REQUIRE(state_opt);
-    return *state_opt;
+    return std::move(*state_opt);
 }
 http::response<http::string_body> SessionStateChange(tcp::socket& socket, const Token& token, const gm::SessionId& sid, int from_move) {
     std::string target = SetUrlParameters(SESSION_STATE_CHANGE_API, {{"sessionId", sid}, {"from_move", std::to_string(from_move)}});
@@ -342,7 +342,7 @@ StringResponse SetState(tcp::socket& socket, std::string login, std::string pass
     std::string target = SetUrlParameters(SET_STATE_API, {{"sessionId", sid}});
     http::request<http::string_body> request{http::verb::post, target, 11};
 
-    nlohmann::json j_state(state), j_admin(hh::RegistrationData(login, password));
+    nlohmann::json j_state = nlohmann::json::parse(state.tojson()), j_admin(hh::RegistrationData(login, password));
     j_state.update(j_admin);
 
     request.body() = j_state.dump();

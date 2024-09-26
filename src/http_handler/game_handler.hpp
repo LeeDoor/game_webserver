@@ -3,6 +3,7 @@
 #include "http_types.hpp"
 #include "api_handler.hpp"
 #include "i_session_manager.hpp"
+#include "i_user_manager.hpp"
 
 namespace http_handler{
 
@@ -26,7 +27,7 @@ namespace http_handler{
         void DefineSessionState(SessionData rns, const gm::SessionId& sid);
 
         game_manager::GameManager::Ptr gm_;
-
+        um::IUserManager::Ptr um_;
         game_manager::IQueueManager::Ptr iqm_;
         token_manager::ITokenManager::Ptr tm_;
         sm::ISessionManager::Ptr sm_;

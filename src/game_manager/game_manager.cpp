@@ -13,7 +13,10 @@ namespace game_manager{
         SessionId si = GenerateSessionId();
 
         sessions_.emplace(si, std::make_shared<State>()); 
-        sessions_.at(si)->Init(player1, player2);
+        auto l1 = dm_->GetByUuid(player1);
+        auto l2 = dm_->GetByUuid(player2);
+        if(!l1 || !l2) return false;
+        sessions_.at(si)->Init(l1->login, l2->login);
         notif::QueueNotifier::GetInstance()->Notify(player1, {.additional_data=si });
         notif::QueueNotifier::GetInstance()->Notify(player2, {.additional_data=si });
 
@@ -24,28 +27,28 @@ namespace game_manager{
     bool GameManager::HasSession(const SessionId& sid){
         return sessions_.contains(sid);
     }
-    std::optional<SessionId> GameManager::HasPlayer(const um::Uuid& uuid) {
+    std::optional<SessionId> GameManager::HasPlayer(const Player::Id& id) {
         for(std::pair<SessionId, IMoveApi::Ptr> pair : sessions_){
-            if (pair.second->HasPlayer(uuid))
+            if (pair.second->HasPlayer(id))
                 return pair.first;
         }
         return std::nullopt;
     }
-    std::optional<bool> GameManager::HasPlayer(const um::Uuid& uuid, const SessionId& sessionId){
+    std::optional<bool> GameManager::HasPlayer(const Player::Id& id, const SessionId& sessionId){
         if (!sessions_.contains(sessionId))
             return std::nullopt;
-        return sessions_.at(sessionId)->HasPlayer(uuid);
+        return sessions_.at(sessionId)->HasPlayer(id);
     }
     State::OptCPtr GameManager::GetState(const SessionId& sessionId){
         if(!sessions_.contains(sessionId))
             return std::nullopt;
         return sessions_.at(sessionId)->GetState();
     }
-    bool GameManager::SetState(const SessionId& sessionId, State&& state) {
+    bool GameManager::SetState(const SessionId& sessionId, State::Ptr state) {
         if(!sessions_.contains(sessionId))
             return false;
     
-        sessions_.at(sessionId)->SetState(std::move(state));
+        sessions_.at(sessionId)->SetState(state);
         return true;
     }
     std::optional<EventListWrapper::CPtr> GameManager::GetEvents(const SessionId& sessionId) {
@@ -54,11 +57,11 @@ namespace game_manager{
         return sessions_.at(sessionId)->GetEvents();
     }
 
-    std::optional<GameApiStatus> GameManager::ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData data) {
+    std::optional<GameApiStatus> GameManager::ApiMove(Player::Id id, const gm::SessionId& sid, MoveData data) {
         if (!sessions_.contains(sid))
             return std::nullopt;
         std::unique_lock<std::mutex> locker (session_mutex_[sid]);
-        auto status = sessions_.at(sid)->ApiMove(uuid, data);
+        auto status = sessions_.at(sid)->ApiMove(id, data);
         CheckStatus(sid, status);
         return status;
     }
@@ -72,7 +75,12 @@ namespace game_manager{
         }
     }
     bool GameManager::FinishSession(const SessionId& sid, const Results& results) {
-        sm_->AddLine({sid, results.winner, results.loser});
+        auto winner = dm_->GetByLogin(results.winner);
+        auto loser = dm_->GetByLogin(results.loser);
+        if(!winner || !loser)
+            return false;
+
+        sm_->AddLine({sid, winner->uuid, loser->uuid});
 
         notif::SessionStateNotifier::GetInstance()->Unsubscribe(sid);
 

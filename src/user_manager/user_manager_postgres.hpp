@@ -12,6 +12,7 @@ namespace user_manager{
 
         bool AddLine(const Login& login, const Password& password) override;
         std::optional<User> GetByUuid(const Uuid& uuid) override;
+        std::optional<User> GetByLogin(const Login& login) override;
         std::optional<User> GetByLoginPassword(const Login& login, const Password& password) override;
 
     private:

@@ -7,11 +7,12 @@ namespace user_manager{
     : pool_(pool){}
 
     bool UserManagerPostgres::AddLine(const Login& login, const Password& password) {
+        Uuid uuid;
         try{
             cp::ConnectionPool::ConnectionWrapper cw = pool_->GetConnection();
             pqxx::work trans(*cw);
-            pqxx::row uuid_pqxx = trans.exec1("SELECT gen_random_uuid();");
-            trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", uuid_pqxx[0].as<Uuid>(), login, password);
+            uuid = trans.exec1("SELECT gen_random_uuid();")[0].as<Uuid>();
+            trans.exec_params0("INSERT INTO users VALUES ($1, $2, $3);", uuid, login, password);
             trans.commit();
             return true;
         }
@@ -32,6 +33,21 @@ namespace user_manager{
         } 
         catch (const std::exception& ex) {
             spdlog::error("PostgreSQL users GetByUuid({}) {}", uuid, ex.what());
+            return std::nullopt;
+        }
+    }
+    std::optional<User> UserManagerPostgres::GetByLogin(const Login& login) {
+        cp::ConnectionPool::ConnectionWrapper cw = pool_->GetConnection();
+        pqxx::read_transaction trans(*cw);
+
+        try {
+            pqxx::row res = 
+                trans.exec_params1("SELECT * FROM users WHERE login=$1;", login);
+            User ud = UserFromResult(res);
+            return ud;
+        } 
+        catch (const std::exception& ex) {  
+            spdlog::error("database GetByLoginPassword function terminated with {}", ex.what());
             return std::nullopt;
         }
     }

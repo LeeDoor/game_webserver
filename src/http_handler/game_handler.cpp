@@ -17,7 +17,8 @@ namespace http_handler{
      iqm_(handler_parameters.queue_manager),
      gm_(handler_parameters.game_manager),
      tm_(handler_parameters.token_manager),
-     sm_(handler_parameters.session_manager)
+     sm_(handler_parameters.session_manager),
+     um_(handler_parameters.user_manager)
       {}
 
     void GameHandler::Init() {
@@ -36,7 +37,11 @@ namespace http_handler{
     void GameHandler::ApiEnqueue(SessionData&& rns, const RequestData& rd){
         um::Uuid uuid = rd.uuid;
 
-        if(auto sid = gm_->HasPlayer(uuid))
+        auto user = um_->GetByUuid(uuid);
+        if(!user)
+            return SendInvalidToken(rns);
+
+        if(auto sid = gm_->HasPlayer(user->login))
             return SendInTheMatch(rns, *sid);
             
         bool res = iqm_->EnqueuePlayer(uuid);
@@ -115,12 +120,15 @@ namespace http_handler{
     }
 
     void GameHandler::ApiMove(SessionData&& rns, const RequestData& rd) {
-        um::Uuid uuid = rd.uuid;
+        const um::Uuid& uuid = rd.uuid;
         auto sidopt = ParseUrlSessionId(rns.request);
         if(!sidopt)
             return SendWrongUrlParameters(rns);
         auto sid = *sidopt;
-        auto res = gm_->HasPlayer(uuid, sid);
+        auto user_data = um_->GetByUuid(uuid);
+        if(!user_data)
+            return SendAccessDenied(rns);
+        auto res = gm_->HasPlayer(user_data->login, sid);
         if (!res)
             return DefineSessionState(rns, sid);
         if (!res.value())
@@ -133,7 +141,7 @@ namespace http_handler{
         if(!md)
             return SendWrongBodyData(rns);
 
-        status = gm_->ApiMove(uuid, sid, *md);
+        status = gm_->ApiMove(user_data->login, sid, *md);
         if(!status)
             return DefineSessionState(rns, sid);
         switch(*status){

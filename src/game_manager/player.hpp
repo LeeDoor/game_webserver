@@ -9,7 +9,7 @@ namespace game_manager{
     class Player : public IPlaceable{
     public:
         using Ptr = std::shared_ptr<Player>;
-        using Id = um::Uuid;
+        using Id = um::Login;
 
         Player();
         Player(Position position, ActorId actor_id, Id login);

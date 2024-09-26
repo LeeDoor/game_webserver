@@ -60,6 +60,8 @@ void CheckStatus(const StringResponse& given, http::status result){
 }
 
 void CheckStringResponse(const StringResponse& response, ResponseParams rp){
+    INFO("body: " << response.body());
+    INFO("status: " << response.result());
     if(rp.body)
         CheckBody(response, *rp.body, rp.head);
     if(rp.body)

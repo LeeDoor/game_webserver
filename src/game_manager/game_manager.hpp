@@ -17,13 +17,13 @@ namespace game_manager{
 
         bool CreateSession(um::Uuid&& player1, um::Uuid&& player2);
         bool HasSession(const SessionId& sid);
-        std::optional<SessionId> HasPlayer(const um::Uuid& uuid);
-        std::optional<bool> HasPlayer(const um::Uuid& uuid, const SessionId& sessionId);
+        std::optional<SessionId> HasPlayer(const Player::Id& id);
+        std::optional<bool> HasPlayer(const Player::Id& id, const SessionId& sessionId);
         State::OptCPtr GetState(const SessionId& sessionId);
-        bool SetState(const SessionId& sessionId, State&& state);
+        bool SetState(const SessionId& sessionId, State::Ptr state);
         std::optional<EventListWrapper::CPtr> GetEvents(const SessionId& sid);
 
-        std::optional<GameApiStatus> ApiMove(const um::Uuid& uuid, const gm::SessionId& sid, MoveData move_data);
+        std::optional<GameApiStatus> ApiMove(Player::Id id, const gm::SessionId& sid, MoveData move_data);
         
     private:
         void CheckStatus(const SessionId& sid, GameApiStatus status);
