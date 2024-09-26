@@ -1,7 +1,6 @@
 #pragma once
 #include <list>
 #include <functional>
-#include "event_manager.hpp"
 #include "player.hpp"
 #include "custom_events.hpp"
 #include "i_placeable.hpp"
@@ -14,7 +13,6 @@ namespace game_manager{
     public:
         using Ptr = std::shared_ptr<Object>;
         using OwnerType = Player::Id;
-        using EventsType = EventListWrapper::Vec;
 
         Object(OwnerType owner, ActorId id);
         virtual ~Object();

@@ -23,7 +23,7 @@ namespace game_manager{
         j["shots_left"] = shots_left;
     }
 
-    Object::EventsType Gun::UpdateTick() {
+    EventsType Gun::UpdateTick() {
         EventsType events;
         --ticks_to_shot;
         if(!ticks_to_shot) {

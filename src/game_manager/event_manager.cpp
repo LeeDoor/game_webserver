@@ -1,6 +1,7 @@
 #include "event_manager.hpp"
 #include <algorithm>
 #include <stdexcept>
+#include "interaction_event.hpp"
 
 namespace game_manager{
     void EventListWrapper::Clear(){
@@ -21,7 +22,11 @@ namespace game_manager{
         if(event->move_number == (value_.size() ? value_.back()->move_number + 1 : 1)){
             from_move_.push_back(value_.size());
         }
-        
+        if(InteractionEvent::Ptr ie = dynamic_pointer_cast<InteractionEvent>(event)){
+            for(Event::Ptr e : ie->happened){
+                e->move_number = move_number_;
+            }
+        }
         value_.push_back(event);
     }
     void EventListWrapper::AddEvents(Vec&& events) {

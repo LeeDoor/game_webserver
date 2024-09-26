@@ -16,6 +16,7 @@ namespace game_manager{
         bool operator == (const Player& other) const;
 
         EventListWrapper::Vec Die();
+        EventsType InteractWithBullet(std::shared_ptr<Bullet> bullet);
 
         Id login;
     private:

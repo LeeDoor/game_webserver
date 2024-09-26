@@ -14,7 +14,7 @@ namespace game_manager{
         j["type"] = "bullet";
     }
 
-    Object::EventsType Bullet::UpdateTick() {
+    EventsType Bullet::UpdateTick() {
         int mX = 0, mY = 0; // x and y modifiers.
         switch(direction){
         case Direction::Up:
@@ -44,11 +44,13 @@ namespace game_manager{
             }
 
             for(IPlaceable::Ptr coll : *collisions) {
-                
+                auto subevents = coll->InteractWithBullet(shared_from_this());
+                events.push_back(CreateInteractionEvent({{actor_id, BULLET_INTERACTION}, coll->actor_id, subevents}));
             }
         }
 
         interactor_->RemoveObject(actor_id);
-        return {EmptyEvent({actor_id, BULLET_DESTROY})};
+        events.push_back(EmptyEvent({actor_id, BULLET_DESTROY}));
+        return events;
     }
 } 

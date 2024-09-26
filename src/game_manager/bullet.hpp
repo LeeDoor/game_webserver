@@ -15,5 +15,6 @@ namespace game_manager{
     private:
         const std::string BULLET_DESTROY = "bullet_destroy";
         const std::string BULLET_FLY = "bullet_fly";
+        const std::string BULLET_INTERACTION = "bullet_interaction";
     };
 }

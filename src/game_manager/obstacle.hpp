@@ -16,6 +16,7 @@ namespace game_manager {
         }
 
         bool operator == (const Obstacle& other) const = default;
+
         Type type = Type::Wall;
     };
 }

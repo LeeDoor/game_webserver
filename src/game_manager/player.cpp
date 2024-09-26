@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include "session.hpp"
+#include "bullet.hpp"
 
 namespace game_manager{
     Player::Player() : Player({0,0}, 0, "") {}
@@ -14,5 +15,9 @@ namespace game_manager{
     EventListWrapper::Vec Player::Die(){
         interactor_->FinishSession(actor_id == 1);
         return {EmptyEvent({actor_id, PLAYER_DEAD})};
+    }
+
+    EventsType Player::InteractWithBullet(Bullet::Ptr bullet) {
+        return Die();
     }
 }

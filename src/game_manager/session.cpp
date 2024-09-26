@@ -124,7 +124,7 @@ namespace game_manager {
             std::advance(it, i);
             if(!scoreboard_.empty()) break;
 
-            Object::EventsType events = (*it)->UpdateTick();
+            EventsType events = (*it)->UpdateTick();
             events_wrapper_->AddEvents(std::move(events));
             if(len > state_->objects.size()) --i;
             len = state_->objects.size();

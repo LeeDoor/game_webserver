@@ -17,7 +17,7 @@ namespace game_manager{
         j["ticks_left"] = ticks_left;
     } 
 
-    Object::EventsType Bomb::UpdateTick() {
+    EventsType Bomb::UpdateTick() {
         --ticks_left;
         if(ticks_left)
             return {EmptyEvent({actor_id, BOMB_TICKING})};

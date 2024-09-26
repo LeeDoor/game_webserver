@@ -229,7 +229,7 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
             nlohmann::json j = nlohmann::json::parse(events_resp.body());
             INFO(j.dump());
             REQUIRE(j.is_array());
-            REQUIRE(j.size() == 7);
+            REQUIRE(j.size() == 8);
             CHECK(j[0]["event"] == "player_walk");
 
             CHECK(j[1]["event"] == "gun_shot");
@@ -247,11 +247,20 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
             CHECK(j[4]["event"] == "gun_waiting");
             CHECK(j[4]["actor_id"] == gunAI);
             
-            CHECK(j[5]["event"] == "bullet_destroy");
+            CHECK(j[5]["event"] == "bullet_interaction");
             CHECK(j[5]["actor_id"] == bulletAI);
+            CHECK(j[5]["interacted_actor_id"] == 1);
+            CHECK(j[5]["happened"].is_array());
+            CHECK(j[5]["happened"].size() == 1);
+            CHECK(j[5]["happened"][0]["event"] == "player_dead");
+            CHECK(j[5]["happened"][0]["move_number"] == 7);
+            CHECK(j[5]["happened"][0]["actor_id"] == 1);
 
-            CHECK(j[6]["event"] == "player_won");
-            CHECK(j[6]["actor_id"] == 0);
+            CHECK(j[6]["event"] == "bullet_destroy");
+            CHECK(j[6]["actor_id"] == bulletAI);
+
+            CHECK(j[7]["event"] == "player_won");
+            CHECK(j[7]["actor_id"] == 0);
         }
 
         sm::PublicSessionData psd = PublicSessionDataSuccess(socket, sd.sid, sd.l1.token);

@@ -9,4 +9,5 @@ namespace game_manager{
     NewDirObjectEvent::Ptr GunEvent(NewDirObjectEvent e);
     NewDirObjectEvent::Ptr BulletEvent(NewDirObjectEvent e);
     Event::Ptr EmptyEvent(Event e);
+    InteractionEvent::Ptr CreateInteractionEvent(InteractionEvent e);
 }

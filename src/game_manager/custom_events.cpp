@@ -20,4 +20,8 @@ namespace game_manager{
     Event::Ptr EmptyEvent(Event e){
         return std::make_shared<Event>(e);
     }
+
+    InteractionEvent::Ptr CreateInteractionEvent(InteractionEvent e){
+        return std::make_shared<InteractionEvent>(e);
+    }
 }
