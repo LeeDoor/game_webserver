@@ -1,16 +1,14 @@
 class Cell{
-    constructor(X,Y,type, selected){
-        this.X = X;
-        this.Y = Y;
+    constructor(position,type, selected){
+        this.position = position;
         this.type = type;
         this.selected = selected;
     }
 }
 
 class Player{
-    constructor(X,Y,us, actor_id){
-        this.X = X;
-        this.Y = Y;
+    constructor(position,us, actor_id){
+        this.position = position;
         this.us = us;
         this.actor_id = actor_id;
         this.state = "idle";
@@ -29,22 +27,40 @@ class Element{
 }
 
 class Object {
-    constructor(X, Y, actor_id, parent_aid){
-        this.X = X;
-        this.Y = Y;
+    constructor(position, actor_id, parent_aid){
+        this.position = position;
         this.type = "object";
         this.actor_id = actor_id;
         this.parent_aid = parent_aid;
     }
 }
 class Bomb {
-    constructor(X, Y, actor_id, parent_aid, ticks_left){
-        this.X = X;
-        this.Y = Y;
+    constructor(position, actor_id, parent_aid, ticks_left){
+        this.position = position;
         this.type = "bomb";
         this.actor_id = actor_id;
         this.parent_aid = parent_aid;
         this.ticks_left = ticks_left;
+    }
+}
+class Gun {
+    constructor(position, dir, actor_id, parent_aid, shots, cooldown){
+        this.position = position;
+        this.dir = dir;
+        this.type = "gun";
+        this.actor_id = actor_id;
+        this.parent_aid = parent_aid;
+        this.shots = shots;
+        this.cooldown = cooldown;
+    }
+}
+class Bullet {
+    constructor(position, dir, actor_id, parent_aid){
+        this.position = position;
+        this.dir = dir;
+        this.type = "bullet";
+        this.actor_id = actor_id;
+        this.parent_aid = parent_aid;
     }
 }
 class Effect{

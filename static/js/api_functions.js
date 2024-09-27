@@ -15,12 +15,11 @@ function move(data){
 function walk(){
     const data = {
         move_type: "walk",
-        X: selectedCell.X,
-        Y: selectedCell.Y
+        position: selectedCell.position
     };
     if(!now_turn)
         return false;
-    if(Math.abs(data.X - playerUs.X) + Math.abs(data.Y - playerUs.Y) != 1)
+    if(Math.abs(data.position.x - playerUs.position.x) + Math.abs(data.position.y - playerUs.position.y) != 1)
         return false;
 
     move(data);
@@ -30,13 +29,12 @@ function walk(){
 function placeBomb(){
     const data = {
         move_type: "place_bomb",
-        X: selectedCell.X,
-        Y: selectedCell.Y
+        position: selectedCell.position
     };
     if(!now_turn)
         return false;
-    if( Math.abs(data.X - playerUs.X) > 1 &&
-        Math.abs(data.Y - playerUs.Y) > 1)
+    if( Math.abs(data.position.x - playerUs.position.x) > 1 &&
+        Math.abs(data.position.y - playerUs.position.y) > 1)
         return false;
 
     move(data);

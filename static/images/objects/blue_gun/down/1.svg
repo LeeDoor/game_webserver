@@ -1,0 +1,18 @@
+<svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_16_296)">
+<path d="M35.475 374C191.875 358.4 209.642 284.833 198.975 250C315.808 195.833 480.675 96.8 205.475 134C-69.7251 171.2 -22.525 309.5 35.475 374Z" fill="#90F28E"/>
+<path d="M188.975 188C153.975 205.833 78.6749 260.2 57.4749 335" stroke="#5A7C59" stroke-opacity="0.81" stroke-width="14" stroke-linecap="round"/>
+<path d="M107.475 249.5C128.808 255.5 164.575 278 136.975 320" stroke="#5A7C59" stroke-opacity="0.81" stroke-width="14" stroke-linecap="round"/>
+<path d="M75.4749 290C64.1416 279.5 34.7749 265.6 7.97495 294" stroke="#5A7C59" stroke-opacity="0.81" stroke-width="14" stroke-linecap="round"/>
+<path d="M144.975 205C131.308 192.833 94.3749 171 55.9749 181" stroke="#5A7C59" stroke-opacity="0.81" stroke-width="14" stroke-linecap="round"/>
+<circle cx="244.006" cy="145.475" r="123" transform="rotate(90 244.006 145.475)" fill="#8B89FF"/>
+<path d="M268.506 341.475C236.615 260.932 366.506 142.475 366.506 142.475L123.006 142.475C123.006 142.475 260.22 259.431 228.506 341.475C208.842 392.343 139.416 295.965 123.006 347.975C93.1009 442.757 407.928 442.593 377.506 347.975C360.494 295.065 288.966 393.148 268.506 341.475Z" fill="#8B89FF"/>
+<ellipse cx="244" cy="221" rx="50" ry="29" transform="rotate(-180 244 221)" fill="#F0F0F0"/>
+<path d="M243.715 247C234.168 246.883 226.524 239.05 226.641 229.503C226.758 219.957 234.592 212.313 244.138 212.43C253.684 212.546 261.328 220.38 261.212 229.926C261.095 239.473 253.261 247.117 243.715 247Z" fill="#535353"/>
+</g>
+<defs>
+<clipPath id="clip0_16_296">
+<rect width="500" height="500" fill="white" transform="matrix(1 0 0 -1 0 500)"/>
+</clipPath>
+</defs>
+</svg>

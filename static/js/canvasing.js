@@ -4,7 +4,7 @@ function initGrid(){
     for(x = 0; x < gridSize; ++x){
         let col = [];
         for(y = 0; y < gridSize; ++y){
-            col.push(new Cell(x,y,"grass", false));
+            col.push(new Cell({x:x,y:y},"grass", false));
         }
         grid.push(col);
     }
@@ -27,15 +27,15 @@ async function resizeCanvas() {
 function getMousePos(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
-        X: event.clientX - rect.left,
-        Y: event.clientY - rect.top,
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
     };
 }
 
 // returns cell which is mouse hovered on
 function getCell(coordinates) {
-    const x = Math.floor(coordinates.X/(canvas.width / qualMult /gridSize));
-    const y = Math.floor(coordinates.Y/(canvas.height / qualMult/gridSize));
+    const x = Math.floor(coordinates.x/(canvas.width / qualMult /gridSize));
+    const y = Math.floor(coordinates.y/(canvas.height / qualMult/gridSize));
     const fit = x >= 0 && x < gridSize && y >= 0 && y < gridSize;
     if(fit)
         return grid[x][y];

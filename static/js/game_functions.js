@@ -1,35 +1,43 @@
-function walkPlayer(player, x, y){
-    player.X = x;
-    player.Y = y;
+function walkPlayer(player, position){
+    player.position = position;
 }
 
-function placeBombPlayer(x, y, actor_id, parent_aid, ticks_left){
-    objects.push(new Bomb(x, y, actor_id, parent_aid, ticks_left));
+function placeBombPlayer(position, actor_id, parent_aid, ticks_left){
+    objects.push(new Bomb(position, actor_id, parent_aid, ticks_left));
 }
-
+function placeGunPlayer(position, actor_id, parent_aid, shots, cooldown){
+    objects.push(new Gun(position, actor_id, parent_aid, shots, cooldown));
+}
+function placeBullet(position, actor_id, parent_aid){
+    objects.push(new Bullet(position, actor_id, parent_aid));
+}
 async function gameEnded(){
     window.location.href = 'http://' + IPADDR + '/session_state.html?sessionId='+sessionId;
 }
 
 function defineDir(player, x){
-    if(player.X == x)
+    if(player.position.x == x)
         return "";
-    if(player.X < x)
+    if(player.position.x < x)
         return "right";
     return "left";
 }
 
+const TICKS_LEFT = 3;
+const SHOTS_REMAINING = 3;
+const SHOT_COOLDOWN = 3;
+
 async function handleEvent(ev){
     const player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
-    switch(ev.event_type){
+    switch(ev.event){
     case "player_walk":
-        await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.data.place.X), 3);
-        walkPlayer(player, ev.data.place.X, ev.data.place.Y);
+        await SetStateFor(player, ["jump", "idle"], defineDir(player, ev.position.x), 3);
+        walkPlayer(player, ev.position);
         await SetStateFor(player, ["jump", "idle"], "", 3);
         break;
     case "player_place_bomb":
-        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.data.place.X), 2);
-        placeBombPlayer(ev.data.place.X, ev.data.place.Y, ev.data.new_object.actor_id, ev.actor_id, ev.data.ticks_left);
+        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.position.x), 2);
+        placeBombPlayer(ev.position, ev.new_actor_id, ev.actor_id, TICKS_LEFT);
         break;
     case "player_won":
         await gameEnded();
@@ -45,6 +53,34 @@ async function handleEvent(ev){
             objects.splice(index, 1); 
         }
         break;
+    case "player_place_gun":
+        await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.position.x), 2);
+        placeGunPlayer(ev.position, ev.new_actor_id, ev .actor_id, SHOTS_REMAINING, SHOT_COOLDOWN);
+        break;
+    case "gun_waiting":
+        const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+        --obj.cooldown;
+        break;  
+    case "gun_shot":
+        await GunShotAnimation(ev.actor_id);
+        --obj.shots;
+        obj.cooldown = SHOT_COOLDOWN;
+        
+        switch(ev.direction){
+        case "up":
+            ev.position.y--;
+            break;
+        case "left":
+            ev.position.x--;
+            break;
+        case "down":
+            ev.position.y++;
+            break;
+        case "right":
+            ev.position.x++;
+            break;
+        }
+        placeBullet(ev.position, ev.direction, ev.new_actor_id, ev.actor_id);
     }
 }
 
