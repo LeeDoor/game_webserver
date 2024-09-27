@@ -31,7 +31,17 @@ function initPlayers(players){
 function initObjects(objects_){
     objects = [];
     for (obj of objects_){
-        placeBombPlayer(obj.position, obj.id, obj.owner, obj.ticks_left);
+        switch(obj.type){
+        case "bomb":
+            placeBombPlayer(obj.position, obj.actor_id, obj.owner, obj.ticks_left);
+            break;
+        case "gun":
+            placeGunPlayer(obj.position, obj.direction, obj.actor_id, obj.owner, obj.shots_left, obj.ticks_to_shot);
+            break;
+        case "bullet":
+            placeBullet(obj.position, obj.direction, obj.actor_id, obj.owner);
+            break;
+        }
     }
 }
 
@@ -43,7 +53,7 @@ function initScene(){
     initTerrain(terrain);
     initPlayers(players);
     initObjects(objects);
-    gridSize == lastSessionState.map_size.width ? context.clearRect(0, 0, canvas.width, canvas.height) : null;
+    gridSize == lastSessionState.map_size.width ? ctx.clearRect(0, 0, canvas.width, canvas.height) : null;
     now_turn = lastSessionState.now_turn == login;
     last_move = lastSessionState.move_number + 1;
 }

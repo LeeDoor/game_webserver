@@ -5,8 +5,8 @@ function walkPlayer(player, position){
 function placeBombPlayer(position, actor_id, parent_aid, ticks_left){
     objects.push(new Bomb(position, actor_id, parent_aid, ticks_left));
 }
-function placeGunPlayer(position, actor_id, parent_aid, shots, cooldown){
-    objects.push(new Gun(position, actor_id, parent_aid, shots, cooldown));
+function placeGunPlayer(position, dir, actor_id, parent_aid, shots, cooldown){
+    objects.push(new Gun(position, dir, actor_id, parent_aid, shots, cooldown));
 }
 function placeBullet(position, actor_id, parent_aid){
     objects.push(new Bullet(position, actor_id, parent_aid));
@@ -55,32 +55,31 @@ async function handleEvent(ev){
         break;
     case "player_place_gun":
         await SetStateFor(player, ["swing", "throw", "idle"], defineDir(player, ev.position.x), 2);
-        placeGunPlayer(ev.position, ev.new_actor_id, ev .actor_id, SHOTS_REMAINING, SHOT_COOLDOWN);
+        placeGunPlayer(ev.position, ev.direction, ev.new_actor_id, ev.actor_id, SHOTS_REMAINING, SHOT_COOLDOWN);
         break;
     case "gun_waiting":
-        const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+        const obj = objects.filter(obj => obj.actor_id == ev.actor_id)[0];
         --obj.cooldown;
         break;  
-    case "gun_shot":
+    case "gun_shot":{
+        const obj = objects.filter(obj => obj.actor_id == ev.actor_id)[0];
         await GunShotAnimation(ev.actor_id);
         --obj.shots;
         obj.cooldown = SHOT_COOLDOWN;
-        
-        switch(ev.direction){
-        case "up":
-            ev.position.y--;
-            break;
-        case "left":
-            ev.position.x--;
-            break;
-        case "down":
-            ev.position.y++;
-            break;
-        case "right":
-            ev.position.x++;
-            break;
-        }
         placeBullet(ev.position, ev.direction, ev.new_actor_id, ev.actor_id);
+        break;
+    }
+    case "bullet_fly":
+        await bulletFlyAnimation(ev.actor_id);
+        break;
+    case "gun_destroy":
+    case "bullet_destroy":{
+        const index = objects.map(obj => obj.actor_id).indexOf(ev.actor_id);
+        if (index > -1) {
+            objects.splice(index, 1); 
+        }
+        break;
+    }
     }
 }
 

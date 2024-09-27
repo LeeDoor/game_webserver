@@ -44,11 +44,21 @@ function getCell(coordinates) {
 
 // click event
 function onClick(e) {
-    if(current_move_action == "walk"){
+    switch(current_move_action){
+    case "walk":
         walk();
-    }
-    else if (current_move_action == "bomb"){
+        break;
+    case "bomb":
         placeBomb();
+        break;
+    case "gun":
+        current_move_action = "gun_rotating";
+        break;
+    case "gun_rotating":
+        current_move_action = "gun";
+        placeGun();
+        
+        break;
     }
 }
 
@@ -62,12 +72,17 @@ function dropSelectedCell(){
 
 // mouse hovering event
 function onMouseOver(event){
-    dropSelectedCell();
     const mouse = getMousePos(canvas, event);
     const cell = getCell(mouse);
     if (!cell) return;
-    cell.selected = true;
-    selectedCell = cell;
+    if(current_move_action.includes("_rotating")){
+        selectedDirectionCell = cell;
+    }
+    else{
+        dropSelectedCell();
+        selectedCell = cell;
+        cell.selected = true;
+    }
 }
 
 // mouse out event
@@ -96,8 +111,6 @@ canvas.addEventListener('mousemove', onMouseOver, false);
 canvas.addEventListener('mouseout', onMouseOut, false);
 document.getElementById('resign-button').addEventListener('click', resign);
 
-
-
 document.getElementById('walk-button').addEventListener('click', (e)=>{
     current_move_action = "walk";
     radioButtons();
@@ -105,5 +118,10 @@ document.getElementById('walk-button').addEventListener('click', (e)=>{
 
 document.getElementById('bomb-button').addEventListener('click', (e)=>{
     current_move_action = "bomb";
+    radioButtons();
+});
+
+document.getElementById('gun-button').addEventListener('click', (e)=>{
+    current_move_action = "gun";
     radioButtons();
 });

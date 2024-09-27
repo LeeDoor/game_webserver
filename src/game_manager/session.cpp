@@ -47,7 +47,7 @@ namespace game_manager {
         }
 
         state_->now_turn = id1;
-        state_->map_size = {15,15};
+        state_->map_size = {8,8};
         UpdateStatePointers(); 
     }
     EventListWrapper::CPtr Session::GetEvents() {
@@ -216,7 +216,8 @@ namespace game_manager {
 
     std::optional<std::list<IPlaceable::Ptr>> Session::CollisionsOnCell(Bullet::Ptr bullet) {
         Position& position = bullet->position;
-        if(position.x >= state_->map_size.width || position.y >= state_->map_size.height)
+        if(position.x >= state_->map_size.width || position.y >= state_->map_size.height ||
+           position.x < 0 || position.y < 0)
             return std::nullopt;
 
         std::list<IPlaceable::Ptr> collisions;

@@ -41,6 +41,37 @@ function placeBomb(){
     return true;
 }
 
+function placeGun(){
+    let data = {
+        move_type: "place_gun",
+        position: selectedCell.position,
+    };
+
+    if(selectedCell.position.x > selectedDirectionCell.position.x){
+        data.direction = "left";
+    }
+    else if(selectedCell.position.x < selectedDirectionCell.position.x) {
+        data.direction = "right";
+    }
+    else if(selectedCell.position.y < selectedDirectionCell.position.y) {
+        data.direction = "down";
+    }
+    else {
+        data.direction = "up";
+    }
+    
+
+    if(!now_turn)
+        return false;
+    if( Math.abs(data.position.x - playerUs.position.x) > 1 &&
+        Math.abs(data.position.y - playerUs.position.y) > 1)
+        return false;
+
+    move(data);
+    return true;
+}
+
+
 function resign(){
     move({ move_type: "resign" });
 }

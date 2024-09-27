@@ -52,6 +52,7 @@ class Gun {
         this.parent_aid = parent_aid;
         this.shots = shots;
         this.cooldown = cooldown;
+        this.state = 0;
     }
 }
 class Bullet {
@@ -91,6 +92,7 @@ let playerUs = new Player(0,0, true, 0); // our player object
 let playerEnemy = new Player(0,0, false, 0); // enemy player object
 
 let selectedCell; // highlighted celected cell
+let selectedDirectionCell;
 
 let now_turn = true;
 let validCells = [];

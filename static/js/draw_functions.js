@@ -45,6 +45,7 @@ const object_sprites = {
         new Sprite(OBJECTS_DIR + "bomb3.svg"),
         new Sprite(OBJECTS_DIR + "bomb4.svg"),
     ],
+    bullet: new Sprite(OBJECTS_DIR + "bullet.svg"),
     gun: {
         left: [
             new Sprite(OBJECTS_DIR + "blue_gun/left/1.svg"),
@@ -166,9 +167,13 @@ function DefineValidCell() {
     if(!now_turn) return;
     switch(current_move_action) {
     case "bomb":
+    case "gun":
         AddSideCells(playerUs.position, validCells);
     case "walk":
         AddAxialCells(playerUs.position, validCells);
+        break;
+    case "gun_rotating":
+        AddAxialCells(selectedCell.position, validCells);
         break;
     }
 }
@@ -189,8 +194,12 @@ function drawObjects(){
         let sprite;
         if(obj.type == "bomb")
             sprite = object_sprites[obj.type][3 - obj.ticks_left];
-        if(obj.type == "gun")
-            sprite = object_sprites[obj.type][obj.dir][0];
+        else if(obj.type == "gun")
+            sprite = object_sprites[obj.type][obj.dir][obj.state];
+        else if(obj.type = "bullet")
+            sprite = object_sprites[obj.type];
+        else 
+            sprite = object_sprites["gun"]["left"][0];
         ctx.drawImage(sprite.image, element.l, element.t, element.w, element.h);
     }
 }
@@ -229,7 +238,7 @@ function getCellByActor(actor_id){
 async function SetStateFor(player, states, dir, repeat){
     if(dir != "")
         player.dir = dir;
-    const dur = 1000/repeat/states.length;
+    const dur = 400/repeat/states.length;
     for(i = 0; i < repeat; ++i){
         for(let state of states){
             player.state = state;
@@ -239,7 +248,7 @@ async function SetStateFor(player, states, dir, repeat){
 } 
 
 async function tickBomb(actor_id) {
-    const dur = 300;
+    const dur = 100;
     const repeat = 5;
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
     for(let i = 0; i < repeat; ++i){
@@ -252,13 +261,12 @@ async function tickBomb(actor_id) {
 }
 async function GunShotAnimation(actor_id) {
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
-    for(let i = 0; i < repeat; ++i){
-        --obj.cooldown;
-        await new Promise(r => setTimeout(r, dur));
-        ++obj.ticks_left;
-        await new Promise(r => setTimeout(r, dur));
+    
+    for(i = 1; i < 4; ++i){
+        obj.state = i;
+        await new Promise(r => setTimeout(r, 200));
     }
-    --obj.ticks_left;
+    obj.state = 0;
 }
 async function explodeAnimation(actor_id) {
     const dur = 500;
@@ -286,5 +294,38 @@ async function explodeAnimation(actor_id) {
             effects.splice(index, 1);         
         }
         await new Promise(r => setTimeout(r, dur));
+    }
+}
+async function bulletFlyAnimation(actor_id) {
+    const dur = 100;
+    const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
+    const before = obj.position;
+    let after = structuredClone(before);
+    
+    switch(obj.dir){
+    case "up":
+        after.y--;
+        break;
+    case "left":
+        after.x--;
+        break;
+    case "down":
+        after.y++;
+        break;
+    case "right":
+        after.x++;
+        break;
+    }
+    const reps = 10;
+    const equal_x = before.x == after.x;
+    const step = equal_x ? (after.y - before.y) / reps : (after.x - before.x) / reps;
+    for(i = 0; i < reps; ++i){
+        if(equal_x){
+            obj.position.y += step;
+        }
+        else {
+            obj.position.x += step;
+        }
+        await new Promise(r => setTimeout(r, dur/reps));
     }
 }
