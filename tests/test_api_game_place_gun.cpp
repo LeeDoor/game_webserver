@@ -225,7 +225,7 @@ TEST_CASE("ApiPlaceGun", "[api][game][move][place_gun]"){
 
         INFO("walk, shot, fly, walk, tick, destroy, player_won");
         {
-            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 6);
+            StringResponse events_resp = SessionStateChange(socket, sd.l1.token, sd.sid, 6); 
             nlohmann::json j = nlohmann::json::parse(events_resp.body());
             INFO(j.dump());
             REQUIRE(j.is_array());

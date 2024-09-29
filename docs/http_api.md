@@ -18,7 +18,6 @@
       + [API session_state](#api%20session_state)
       + [API session_state_change](#api%20session_state_change)
       + [API move](#api%20move)
-      + [API resign](#api%20resign)
 
 
 # Http request API
@@ -622,9 +621,12 @@ Function tells the game about player's move. SessionId must be passed as URL par
 #### **request body example**
 ```json
 {
-	"move_type": STRING,//"walk", "resign"
-	"X": UNSIGNED,
-	"Y":UNISIGNED
+	"move_type": STRING,//"walk", "resign", "place_bomb"
+	"position": {
+		"x": int,
+ 		"y":int
+	}
+	"direction": STRING // "left", "right", "up", "down"
 }
 ```
 

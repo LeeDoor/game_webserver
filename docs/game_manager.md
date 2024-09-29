@@ -61,6 +61,7 @@ class IStateRelated{
 }
 class IActor{
 + actor_id
++ InteractWithBullet(Bullet*)
 }
 class IPlaceable {
 + position
