@@ -1,10 +1,11 @@
 #include "bomb.hpp"
 #include "custom_events.hpp"
 #include "session.hpp"
+#include "const_variables.hpp"
 
 namespace game_manager{
     Bomb::Bomb(OwnerType owner, ActorId id) 
-        : Object(owner, id){}
+        : Object(owner, id), ticks_left(BOMB_TICKS_LEFT){}
     bool Bomb::operator==(Object::Ptr obj) const {
         Bomb::Ptr d = std::dynamic_pointer_cast<Bomb>(obj);
         return Object::operator==(obj) 

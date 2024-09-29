@@ -12,6 +12,8 @@ namespace game_manager{
         virtual void tojson(nlohmann::json& j) const;
 
         EventsType UpdateTick() override;
+
+        EventsType InteractWithBullet(std::shared_ptr<Bullet> bullet) override;
     private:
         const std::string BULLET_DESTROY = "bullet_destroy";
         const std::string BULLET_FLY = "bullet_fly";

@@ -76,7 +76,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const sessionId = urlParams.get('sessionId');
 const login = localStorage.getItem('login');
 
-const DEFAULT_TICKS_LEFT = 3;
+let TICKS_LEFT = 2;
+let BOMB_RADIUS = 2;
+let SHOTS_REMAINING = 5;
+let SHOT_COOLDOWN = 2;
+let GUN_PLACE_RADIUS;
+let BOMB_PLACE_RADIUS;
 
 const canvas = document.getElementById('canvas'); // canvas
 const ctx = canvas.getContext('2d'); // canvas context

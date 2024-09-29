@@ -1,11 +1,12 @@
 #include "gun.hpp"
 #include "session.hpp"
+#include "const_variables.hpp"
 
 namespace game_manager{
     Gun::Gun(OwnerType owner, ActorId actor_id) 
         :  DirectedObject(owner, actor_id),
-        shot_cooldown_(3),
-        shot_amount_(3){
+        shot_cooldown_(GUN_COOLDOWN),
+        shot_amount_(GUN_SHOTS){
             ticks_to_shot = shot_cooldown_; 
             shots_left = shot_amount_;
         }

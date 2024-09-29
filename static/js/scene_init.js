@@ -56,6 +56,7 @@ function initScene(){
     gridSize == lastSessionState.map_size.width ? ctx.clearRect(0, 0, canvas.width, canvas.height) : null;
     now_turn = lastSessionState.now_turn == login;
     last_move = lastSessionState.move_number + 1;
+    setConstVariables();
 }
 // loads and updates information from the server immediately
 async function loadScene(){

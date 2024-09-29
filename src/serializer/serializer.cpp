@@ -7,6 +7,7 @@
 #include "spdlog/spdlog.h"
 #include "json_type_converter.hpp"
 #include "type_serializer.hpp"
+#include "const_variables.hpp"
 #define EMPTY_JSON "{}"
 
 
@@ -130,6 +131,16 @@ namespace serializer{
     std::string Serialize(const gm::EventListWrapper::Vec& elwv) {
         nlohmann::json obj(elwv);
         return obj.dump();
+    }
+    std::string SerializeGameConst() {
+        nlohmann::json j;
+        j["bomb_ticks_left"] = BOMB_TICKS_LEFT;
+        j["bomb_explode_radius"] = BOMB_EXPLODE_RADIUS;
+        j["bomb_place_radius"] = BOMB_PLACE_RADIUS;
+        j["gun_cooldown"] = GUN_COOLDOWN;
+        j["gun_shots"] = GUN_SHOTS;
+        j["gun_place_radius"] = GUN_PLACE_RADIUS;
+        return j.dump();
     }
 
     std::optional<gm::State>             DeserializeSessionState(const std::string& json_str) {

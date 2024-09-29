@@ -53,4 +53,9 @@ namespace game_manager{
         events.push_back(EmptyEvent({actor_id, BULLET_DESTROY}));
         return events;
     }
+
+    EventsType Bullet::InteractWithBullet(std::shared_ptr<Bullet> bullet) {
+        interactor_->RemoveObject(actor_id);
+        return {EmptyEvent({actor_id, BULLET_DESTROY})};
+    }
 } 

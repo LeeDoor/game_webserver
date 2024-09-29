@@ -21,6 +21,7 @@ namespace http_handler{
         void ApiSessionState(SessionData&& rns, const RequestData& rd);
         void ApiSessionStateChange(SessionData&& rns, const RequestData& rd);
         void ApiMove(SessionData&& rns, const RequestData& rd);
+        void ApiGameConsts(SessionData&& rns, const RequestData& rd);
 
     private:
         std::optional<gm::SessionId> ParseUrlSessionId(const HttpRequest& request);

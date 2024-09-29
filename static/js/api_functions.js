@@ -33,8 +33,8 @@ function placeBomb(){
     };
     if(!now_turn)
         return false;
-    if( Math.abs(data.position.x - playerUs.position.x) > 1 &&
-        Math.abs(data.position.y - playerUs.position.y) > 1)
+    if( Math.abs(data.position.x - playerUs.position.x) > BOMB_PLACE_RADIUS &&
+        Math.abs(data.position.y - playerUs.position.y) > BOMB_PLACE_RADIUS)
         return false;
 
     move(data);
@@ -63,8 +63,8 @@ function placeGun(){
 
     if(!now_turn)
         return false;
-    if( Math.abs(data.position.x - playerUs.position.x) > 1 &&
-        Math.abs(data.position.y - playerUs.position.y) > 1)
+    if( Math.abs(data.position.x - playerUs.position.x) > GUN_PLACE_RADIUS &&
+        Math.abs(data.position.y - playerUs.position.y) > GUN_PLACE_RADIUS)
         return false;
 
     move(data);
@@ -92,5 +92,22 @@ function waitForStateChange() {
     }).then(async json=>{
         await handleEvents(json);
         waitForStateChange();
+    });
+}
+
+function setConstVariables(){
+    fetch('http://' + IPADDR + '/api/game/game_consts', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then(response => {return response.json()})
+    .then(json => {
+        TICKS_LEFT = json.bomb_ticks_left;
+        BOMB_RADIUS = json.bomb_explode_radius;
+        SHOTS_REMAINING = json.gun_shots;
+        SHOT_COOLDOWN = json.gun_cooldown;
+        GUN_PLACE_RADIUS = json.gun_place_radius;
+        BOMB_PLACE_RADIUS = json.bomb_place_radius;
     });
 }

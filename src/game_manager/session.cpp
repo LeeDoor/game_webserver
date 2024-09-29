@@ -3,6 +3,7 @@
 #include "event_manager.hpp"
 #include "nlohmann/json.hpp"
 #include "type_serializer.hpp"
+#include "const_variables.hpp"
 
 #define PLAYER_WON "player_won"
 
@@ -119,15 +120,31 @@ namespace game_manager {
     }
 
     void Session::AfterMove(){
-        for(size_t i = 0, len = state_->objects.size(); i < state_->objects.size(); ++i){
-            auto it = state_->objects.begin();
-            std::advance(it, i);
-            if(!scoreboard_.empty()) break;
+        std::list<Object::Ptr>::iterator it, prev; // first and second iterators
+        if(state_->objects.size() != 0){
+            do{
+                prev = state_->objects.begin(); // eventing first while it is changing
+                EventsType events = (*prev)->UpdateTick(); // if it is, we are eventing first 
+                events_wrapper_->AddEvents(std::move(events)); // element again
+            } while (prev != state_->objects.begin() && !state_->objects.empty());
+        }
+        if(state_->objects.size() != 0){
+            it = state_->objects.begin();
+            ++it;
+            while(it != state_->objects.end()){
+                if(!scoreboard_.empty()) break;
 
-            EventsType events = (*it)->UpdateTick();
-            events_wrapper_->AddEvents(std::move(events));
-            if(len > state_->objects.size()) --i;
-            len = state_->objects.size();
+                EventsType events = (*it)->UpdateTick();
+                events_wrapper_->AddEvents(std::move(events));
+
+                if(std::next(prev) != it) { // when we check if there were any changes with current element
+                    it = std::next(prev);
+                }
+                else{
+                    prev = it;
+                    ++it;
+                }
+            }
         }
         if(!scoreboard_.empty())
             return events_wrapper_->AddEvent(EmptyEvent({scoreboard_[0].lock()->actor_id, PLAYER_WON}));
@@ -199,8 +216,8 @@ namespace game_manager {
     }
 
     void Session::Explode(Position position) {
-        for(Dimention x = std::max(0, position.x - 1); x <= std::min(state_->map_size.width - 1, position.x + 1); ++x){
-            for(Dimention y = std::max(0, position.y - 1); y <= std::min(state_->map_size.height - 1, position.y + 1); ++y){
+        for(Dimention x = std::max(0, position.x -BOMB_EXPLODE_RADIUS); x <= std::min(state_->map_size.width - 1, position.x +BOMB_EXPLODE_RADIUS); ++x){
+            for(Dimention y = std::max(0, position.y -BOMB_EXPLODE_RADIUS); y <= std::min(state_->map_size.height - 1, position.y +BOMB_EXPLODE_RADIUS); ++y){
                 Position pos {x,y};
                 if(player1()->position == pos){
                     player1()->Die();

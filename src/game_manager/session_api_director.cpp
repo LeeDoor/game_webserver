@@ -1,4 +1,5 @@
 #include "session_api_director.hpp"
+#include "const_variables.hpp"
 
 namespace game_manager{
     SessionApiDirector::SessionApiDirector(){}
@@ -21,7 +22,7 @@ namespace game_manager{
         auto res = builder_
             .MakeTargetedToCell()
             .SetCellSpread(SpreadType::Square)
-            .SetDistanceValidator(1)
+            .SetDistanceValidator(BOMB_PLACE_RADIUS)
             .GetProduct();
         return std::move(res);
     }
@@ -29,7 +30,7 @@ namespace game_manager{
         auto res = builder_
             .MakeTargetedToCell()
             .SetCellSpread(SpreadType::Square)
-            .SetDistanceValidator(1)
+            .SetDistanceValidator(GUN_PLACE_RADIUS)
             .GetProduct();
         return std::move(res);
     }

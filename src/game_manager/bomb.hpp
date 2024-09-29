@@ -12,7 +12,7 @@ namespace game_manager{
 
         virtual void tojson(nlohmann::json& j) const;
 
-        unsigned ticks_left = 3;
+        unsigned ticks_left;
 
     private:
         const std::string BOMB_TICKING = "bomb_ticking";

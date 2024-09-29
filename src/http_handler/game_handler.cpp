@@ -32,6 +32,7 @@ namespace http_handler{
             {"/api/game/session_state", afd.GetSessionState(BIND_API(&GameHandler::ApiSessionState))},
             {"/api/game/session_state_change", afd.GetSessionStateChange(BIND_API(&GameHandler::ApiSessionStateChange))},
             {"/api/game/move", afd.GetMove(BIND_API(&GameHandler::ApiMove))},
+            {"/api/game/game_consts", afd.GetGameConsts(BIND_API(&GameHandler::ApiGameConsts))},
         };
     }
     void GameHandler::ApiEnqueue(SessionData&& rns, const RequestData& rd){
@@ -164,5 +165,10 @@ namespace http_handler{
         if(std::optional<session_manager::PublicSessionData> sd = sm_->GetPublicLine(sid))
             return SendSessionFinished(rns);
         return SendWrongSessionId(rns);
+    }
+
+    void GameHandler::ApiGameConsts(SessionData&& rns, const RequestData& rd) {
+        std::string res = serializer::SerializeGameConst();
+        return Send(rns, http::status::ok, std::move(res));
     }
 }

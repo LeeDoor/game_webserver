@@ -144,22 +144,28 @@ function ValidCell(x, y){
         && grid[x][y].type == "grass"; 
 }
 
-function AddSideCells(position, validCells){
-    const x = position.x;
-    const y = position.y;
-    if(ValidCell(x - 1, y - 1))validCells.push(grid[x - 1][y - 1]);
-    if(ValidCell(x + 1, y - 1))validCells.push(grid[x + 1][y - 1]);
-    if(ValidCell(x - 1, y + 1))validCells.push(grid[x - 1][y + 1]);
-    if(ValidCell(x + 1, y + 1))validCells.push(grid[x + 1][y + 1]);
+function AddSquareCells(position, validCells, radius){
+    const X = position.x;
+    const Y = position.y;
+    for(let x = X - radius; x <= X + radius; ++x){
+        for(let y = Y - radius; y <= Y + radius; ++y){
+            if(X == x && y == Y) continue;
+            if(ValidCell(x,y)) validCells.push(grid[x][y]);
+        }
+    }
 }
 
-function AddAxialCells(position, validCells){
-    const x = position.x;
-    const y = position.y;
-    if(ValidCell(x - 1, y))validCells.push(grid[x - 1][y]);
-    if(ValidCell(x + 1, y))validCells.push(grid[x + 1][y]);
-    if(ValidCell(x, y + 1))validCells.push(grid[x][y + 1]);
-    if(ValidCell(x, y - 1))validCells.push(grid[x][y - 1]);
+function AddAxialCells(position, validCells, radius){
+    const X = position.x;
+    const Y = position.y;
+    for(let x = X - radius; x <= X + radius; ++x){
+        if(X == x) continue;
+        if(ValidCell(x,Y)) validCells.push(grid[x][Y]);
+    }
+    for(let y = Y - radius; y <= Y + radius; ++y){
+        if(Y == y) continue;
+        if(ValidCell(X,y)) validCells.push(grid[X][y]);
+    }
 }
 
 function DefineValidCell() {
@@ -167,13 +173,16 @@ function DefineValidCell() {
     if(!now_turn) return;
     switch(current_move_action) {
     case "bomb":
+        AddSquareCells(playerUs.position, validCells, BOMB_PLACE_RADIUS);
+        break;
     case "gun":
-        AddSideCells(playerUs.position, validCells);
+        AddSquareCells(playerUs.position, validCells, GUN_PLACE_RADIUS);
+        break;
     case "walk":
-        AddAxialCells(playerUs.position, validCells);
+        AddAxialCells(playerUs.position, validCells, 1);
         break;
     case "gun_rotating":
-        AddAxialCells(selectedCell.position, validCells);
+        AddAxialCells(selectedCell.position, validCells, 1);
         break;
     }
 }
@@ -273,10 +282,10 @@ async function explodeAnimation(actor_id) {
     const repeat = 3;
     const obj = objects.filter(obj => obj.actor_id == actor_id)[0];
     let cellsToExplode = [];
-    for(let x = obj.position.x - 1; x <= obj.position.x + 1; ++x){
+    for(let x = obj.position.x - BOMB_RADIUS; x <= obj.position.x + BOMB_RADIUS; ++x){
         if (x < 0) continue;
         if (x >= gridSize) continue;
-        for(let y = obj.position.y - 1; y <= obj.position.y + 1; ++y){
+        for(let y = obj.position.y - BOMB_RADIUS; y <= obj.position.y + BOMB_RADIUS; ++y){
             if (y < 0) continue;
             if (y >= gridSize) continue;
             if (grid[x][y].type == "wall") continue;

@@ -23,9 +23,6 @@ function defineDir(player, x){
     return "left";
 }
 
-const TICKS_LEFT = 3;
-const SHOTS_REMAINING = 3;
-const SHOT_COOLDOWN = 3;
 
 async function handleEvent(ev){
     const player = ev.actor_id == playerUs.actor_id ? playerUs : playerEnemy;
