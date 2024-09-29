@@ -13,6 +13,11 @@ Walk across the field and look around by selecting the walk button and clicking 
 
 ![there should be a video...](docs/media/walk_video.gif) 
 
+
+You can place huge blue gun on the battlefield, which shoots with some circle things!
+
+![there should be a video...](docs/media/gun_video.gif)
+
 Now, when you get close to the enemy, drop a bomb on his head!
 
 ![there should be a video...](docs/media/bomb_video.gif)
