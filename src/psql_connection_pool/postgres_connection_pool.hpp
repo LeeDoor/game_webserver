@@ -43,7 +43,7 @@ namespace connection_pool{
             PoolType* pool_;
         };
 
-        ConnectionPool(bool is_test, std::string&& bd_credentials);
+        ConnectionPool(std::string&& bd_credentials);
         ConnectionWrapper GetConnection();
     private:
         void ReturnConnection(ConnectionPtr&& conn);

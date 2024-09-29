@@ -3,23 +3,11 @@
 #define MAX_CONNECTION_COUNT 80
 
 namespace connection_pool{
-    ConnectionPool::ConnectionPool(bool is_test, std::string&& bd_credentials) {
+    ConnectionPool::ConnectionPool(std::string&& bd_credentials) {
         pool_.reserve(MAX_CONNECTION_COUNT);
         for (size_t i = 0; i < MAX_CONNECTION_COUNT; ++i) {
             pool_.emplace_back(ConnectionFactory(bd_credentials));
-        }
-        if(is_test){
-            try{
-                cp::ConnectionPool::ConnectionWrapper cw = GetConnection();
-                pqxx::work trans(*cw);
-                trans.exec("DELETE FROM users;");
-                trans.exec("DELETE FROM sessions;");
-                trans.commit();
-            }
-            catch(std::exception& ex){
-                spdlog::error("test database clearance terminated with {}", ex.what());
-            }
-        }
+        } 
     }
 
     ConnectionPool::ConnectionWrapper ConnectionPool::GetConnection() {

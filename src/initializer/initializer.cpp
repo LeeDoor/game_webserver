@@ -94,7 +94,7 @@ int Initializer::StartServer(Args args) {
     }
 
     /// POSTGRES ///
-    cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(args.test, std::move(args.postgres_credentials));
+    cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(std::move(args.postgres_credentials));
 
     /// HANDLER ///
     http_handler::HandlerParameters hp;
