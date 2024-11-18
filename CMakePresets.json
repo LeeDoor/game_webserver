@@ -3,7 +3,7 @@
     "configurePresets": [
       {
         "name": "default",
-        "generator": "ninja",
+        "generator": "Ninja",
         "binaryDir": "${sourceDir}/build",
         "cacheVariables": {
           "VCPKG_INSTALL_OPTIONS": "--no-print-usage",
