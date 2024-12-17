@@ -7,7 +7,6 @@
         "binaryDir": "${sourceDir}/build",
         "cacheVariables": {
           "VCPKG_INSTALL_OPTIONS": "--no-print-usage",
-          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
           "DRUNTIME_OUTPUT_DIRECTORY": "/app"
         }
       }

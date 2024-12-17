@@ -5,15 +5,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 enable_testing()
 
+find_package(boost_program_options REQUIRED CONFIG)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(redis++ CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-find_package(boost_algorithm REQUIRED CONFIG)
-find_package(boost_asio REQUIRED CONFIG)
-find_package(boost_beast REQUIRED CONFIG)
-find_package(boost_program_options REQUIRED CONFIG)
 
 
 #options
