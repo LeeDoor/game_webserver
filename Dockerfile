@@ -15,29 +15,29 @@ RUN wget 'https://boostorg.jfrog.io/artifactory/main/release/1.87.0/source/boost
     #boost
 RUN cd /boost_1_87_0 && \ 
     ./bootstrap.sh --with-libraries="program_options" --prefix=/usr/local && \
-    ./b2 install && \
-    #catch2
-    cd /Catch2 && \ 
+    ./b2 install
+    
+RUN cd /Catch2 && \
     cmake -B build -S . -DBUILD_TESTING=OFF && \ 
-    cmake --build build/ --target install --parallel 16 && \
-    #libpqxx
-    cd /libpqxx && cmake . && cmake --build . --parallel 16 && cmake --install . && \
-    #hiredis(dep of redis++)
-    cd /hiredis && \
+    cmake --build build/ --target install --parallel 16
+    
+RUN cd /libpqxx && cmake . && cmake --build . --parallel 16 && cmake --install .
+    
+RUN cd /hiredis && \
     make -j 16 && \
-    make install && \
-    #redis++
-    cd /redis-plus-plus && mkdir build && cd build && \
+    make install
+    
+RUN cd /redis-plus-plus && mkdir build && cd build && \
     cmake -DCMAKE_PREFIX_PATH=/usr/local .. && \
     make -j 16 && \
-    make install && \
-    #spdlog
-    cd /spdlog && mkdir build && cd build &&\
+    make install
+    
+RUN cd /spdlog && mkdir build && cd build &&\
     cmake .. && cmake --build . --parallel 16 && \
-    cmake --install . && \
-    #nlohmann_json
-    mkdir /json/build && cd json/build && cmake .. && cmake --install .  
-# build project
+    cmake --install . 
+    
+RUN mkdir /json/build && cd json/build && cmake .. && cmake --install .  
+    
 COPY CMakeLists.txt CMakePresets.json /app/
 COPY ./src /app/src
 COPY ./static /app/static
