@@ -35,6 +35,7 @@ sudo docker run --name redis-server -d -p 6379:6379 --network=host redis --bind 
 
 # run
 > every docker command should be executed as root.
+
 Firstly you should build an application using:
 ```bash
 docker build -t leedoor/game_webserver .

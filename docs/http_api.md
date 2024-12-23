@@ -321,7 +321,7 @@ By given login and password in body, logins to get authorization token, which is
     - **no_such_user**: no user found with given login and password
 ---
 ### profile
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 
 #### **action diagram**
 ```mermaid
@@ -377,7 +377,7 @@ Session you are trying to get access is already finished. See the game's stats.
 }
 ```
 ### enqueue
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 
 #### **action diagram**
 ```mermaid
@@ -419,7 +419,7 @@ Body must be empty
 
 ---
 ### wait_for_opponent
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 #### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
 
 #### **action diagram**
@@ -470,7 +470,7 @@ Opponent found if body contains SessionId.
 ```
 ---
 ### session_state
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization) 
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization) 
 
 #### **allowed methods**
 ***`GET/HEAD`***
@@ -503,7 +503,7 @@ Session you are trying to get access to does not exist.
 ---
 ### session_state_change
 #### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 #### **action diagram**
 ```mermaid
 sequenceDiagram
@@ -559,7 +559,7 @@ Session you are trying to get access to does not exist.
 ```
 ---
 ### move
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
@@ -619,7 +619,7 @@ Body data is messed up. Check the example above.
 
 ---
 ### resign
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
+#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
