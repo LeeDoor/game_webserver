@@ -24,24 +24,36 @@ Now, when you get close to the enemy, drop a bomb on his head!
 
 and that is how to win on the battlefield! good luck! 
 # application
-if you want to launch this webserver on your machine, follow [docker](docs/docker.md) guide. 
+## Docker
+if you want to launch the webserver on your machine using docker, follow [docker](docs/docker.md) guide. 
 
-# documentation
-NOTE: I will try to change and supplement the structure of the code immediately along with the documentation.
-as i write my code i also try to documentate it. here is the list of readmes for each module:
-* [new module creation](docs/new_module_creation.md)
-* [initializer](docs/initializer.md)
-* [server](docs/server.md)
-* [http_handler](docs/http_handler.md)
-* [serializer(JSON)](docs/serializer.md)
-* [user_manager](docs/user_manager.md)
-* [token_manager](docs/token_manager.md)
-* [queue_manager](queue_manager.md)
-* [game_manager](docs/game_manager.md)
-* [session_manager](docs/session_manager.md)
-* [notification_system](docs/notification_system.md)
-* [API](docs/http_api.md)
-* [CLI parameters to executable](docs/CLI%20parameters%20to%20executable.md)
-* [session state](docs/session_state.md)
-* [SQL table init](docs/database%20sql%20tables.md)
-how to write tests, naming rules etc. [here](docs/tests.md)
+## Required libraries
+Don't forget to install all of the dependencies listed and guided [here](docs/install_deps.md). 
+
+## Required applications
+Webserver connects to databases such as [Redis](https://redis.io) and [PostgreSQL](https://postgresql.org/). If you would like to run them using docker, read docker's [database guide](docs/docker.md#databases).
+
+## Build & Run application
+You can run it without docker simply building it using CMake with bash scripts:
+```bash
+cd scripts
+./build_no_tests.sh
+./run_app.sh
+```
+> Here are [`build_no_tests.sh`](docs/bash_scripts.md#build_no_tests.sh) and [`run_app.sh`](docs/bash_scripts.md#run_app.sh) scripts used. 
+> 
+## Build & Run Tests
+If you want to test the webserver, as previous, prepare all of the dependencies as [before](docs/install_deps.md) and build run these scripts:
+```bash
+cd scripts
+./build_with_tests.sh
+./run_tests.sh
+```
+> Here are [`build_with_tests.sh`](docs/bash_scripts.md#build_with_tests.sh) and [`run_tests.sh`](docs/bash_scripts.md#run_tests.sh) scripts used. 
+
+## To see more about my bash scripts read [here](docs/bash_scripts.md)
+# Code documentation
+Src repo is separated on *modules*. All of the modules and their dependencies of each other shown in [dependency scheme](obsidian://open?vault=game_webserver&file=Obsidian%20Vault%2Fdependencies.canvas) and [code scheme](obsidian://open?vault=game_webserver&file=Obsidian%20Vault%2Fmain.canvas). To open it you need to use [obsidian](https://obsidian.md/) app.
+
+# Working with the webserver
+Webserver provides API for the users. [Full API documentation](docs/http_api.md) provided.

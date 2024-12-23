@@ -1,4 +1,4 @@
-# [http_handler](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/http_handler)
+# [http_handler](https://github.com/LeeDoor/game_webserver/tree/main/src/http_handler)
 ## What is it for
 This module contains a bunch of files to handle each http request. This module is used by [server](server.md) module via **HttpHandler** class.
 ## Classes

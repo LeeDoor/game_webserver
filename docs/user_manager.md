@@ -1,4 +1,4 @@
-# [user_manager](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/user_manager)
+# [user_manager](https://github.com/LeeDoor/game_webserver/tree/main/src/user_manager)
 ## What is it for?
 This module gives api for communicating with database. It contains multithread-safe connection pool and high-level classes for http_hanlder  
 

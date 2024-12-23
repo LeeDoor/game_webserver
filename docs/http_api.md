@@ -1,27 +1,27 @@
-- [http request API](#http%20request%20api)
-   * [static files](#static%20files)
+- [WWW](#www)
 - [API](#api)
-   * [Function Tags](#function%20tags)
-      + [Requires Authorization ](#requires%20authorization)
-      + [Long Poll](#long-poll)
-   * [Debug API](#debug%20api)
-      + [API player_tokens](#api%20player_tokens)
-      + [API user](#api%20user)
-      + [API matchmaking_queue](#api%20matchmaking_queue)
-   * [User API](#user%20api)
-      + [API register](#api%20register)
-      + [API login](#api%20login)
-      + [API profile](#api%20profile)
-   * [Game API](#game%20api)
-      + [API enqueue](#api%20enqueue)
-      + [API wait_for_opponent](#api%20wait_for_opponent)
-      + [API session_state](#api%20session_state)
-      + [API session_state_change](#api%20session_state_change)
-      + [API move](#api%20move)
+   * [Tags](#tags)
+      + [Requires-Authorization ](#requires-authorization)
+      + [Long-Poll](#long-poll)
+   * [Debug](#debug)
+      + [player_tokens](#player_tokens)
+      + [user](#user)
+      + [matchmaking_queue](#matchmaking_queue)
+   * [User](#user-1)
+      + [ping](#ping)
+      + [register](#register)
+      + [login](#login)
+      + [profile](#profile)
+   * [Game](#game)
+      + [enqueue](#enqueue)
+      + [wait_for_opponent](#wait_for_opponent)
+      + [session_state](#session_state)
+      + [session_state_change](#session_state_change)
+      + [move](#move)
+      + [resign](#resign)
 
 
-# Http request API
-## Static files
+# WWW
 To request static file from server, set relative path to root folder in request target like this: 
 ```
 127.0.0.1/folder1/index.html
@@ -43,8 +43,8 @@ All non-ok responses have same body type. For example:
     "description": "object that you are trying to access is not found"
 }
 ```
-## Function Tags
-### Requires Authorization 
+## Tags
+### Requires-Authorization 
 means that request must be authorized with `Authorization` header. Example:
 ```HTTP
 Authorization: Bearer FFAADDDDEE12161753563
@@ -85,7 +85,7 @@ This poll is closed and replaced with the other one.
 	"description":"SessionStateNotifier poll replaced by other"
 }
 ```
-## Debug API
+## Debug
 Debug api is required to get data from app structures. To execute them you need to send admin login and password.
 
 Example:
@@ -102,7 +102,7 @@ if admin credentials not provided, you get this errror: ***`UNAUTHORIZED`***
 	"description":"the administrator password is missing or incorrect"
 }
 ```
-### API player_tokens
+### player_tokens
 #### **description**
 Debug function for getting users' authentication tokens and uuids.
 #### **allowed methods**
@@ -130,7 +130,7 @@ Debug function for getting users' authentication tokens and uuids.
     }
     ```
 ---
-### API user
+### user
 #### **description**
 Debug function for getting users' profile info like login and password.
 #### **allowed methods**
@@ -160,7 +160,7 @@ Debug function for getting users' profile info like login and password.
     }
     ```
 ---
-### API matchmaking_queue
+### matchmaking_queue
 #### **description**
 Debug function for getting queue of users' uuids
 #### **allowed methods**
@@ -188,8 +188,8 @@ Debug function for getting queue of users' uuids
     }
     ```
 
-## User API
-### API ping
+## User
+### ping
 #### **allowed methods**
 ***`GET/HEAD`*** 
 #### **request target**  
@@ -205,36 +205,20 @@ Returns success.
 
 #### **responses**
 * `200 OK`  
-### API register
+### register
 #### **action diagram**
 ```mermaid
 ---
-
 Title: api registger diagram
-
 ---
-
-  
-
-SequenceDiagram
-Actor User
-
-ApiHandler->>Serializer: deserialize body data
-
-Serializer::>ApiHandler: returns login and password from body
-
-  
-
-ApiHandler->>ApiHandler: checks validness of data
-
-ApiHandler->>UserManager: adds user to database
-
-UserManager->>ApiHandler: returns error code
-
-  
-
-
-ApiHandler->>User: send registration state
+sequenceDiagram
+	Actor User
+	ApiHandler->>Serializer: deserialize body data
+	Serializer-->ApiHandler: returns login and password from body
+	ApiHandler->>ApiHandler: checks validness of data
+	ApiHandler->>UserManager: adds user to database
+	UserManager->>ApiHandler: returns error code
+	ApiHandler->>User: send registration state
 ```
 
 #### **allowed methods**
@@ -279,40 +263,22 @@ By given login and password in body, creates account. Data stored in db, you can
     - **login_taken**: login already taken
 
 ---
-### API login
+### login
 #### **action diagram**
 ```mermaid
 ---
-
 Title: api login diagram
-
 ---
-
-  
-
-SequenceDiagram
-Actor User
-
-ApiHandler->>Serializer: deserialize body data
-
-Serializer->>ApiHandler: returns login and password from body
-
-  
-
-ApiHandler->>ApiHandler: checks validness of data
-
-ApiHandler->>UserManager: searches for a user with such login and password
-
-UserManager->>ApiHandler: returns user or error code
-
-ApiHandler->>TokenManager: creates session with current user
-
-TokenManager->>ApiHandler: returns token of user's session
-
-  
-
-
-ApiHandler->>User: send login state and token
+sequenceDiagram
+	Actor User
+	ApiHandler->>Serializer: deserialize body data
+	Serializer->>ApiHandler: returns login and password from body
+	ApiHandler->>ApiHandler: checks validness of data
+	ApiHandler->>UserManager: searches for a user with such login and password
+	UserManager->>ApiHandler: returns user or error code
+	ApiHandler->>TokenManager: creates session with current user
+	TokenManager->>ApiHandler: returns token of user's session
+	ApiHandler->>User: send login state and token
 ```
 
 #### **allowed methods**
@@ -354,7 +320,7 @@ By given login and password in body, logins to get authorization token, which is
     - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
     - **no_such_user**: no user found with given login and password
 ---
-### API profile
+### profile
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 
 #### **action diagram**
@@ -362,7 +328,7 @@ By given login and password in body, logins to get authorization token, which is
 ---
 Title: api profile diagram
 ---
-SequenceDiagram
+sequenceDiagram
 Actor User
 ApiHandler->>ApiHandler: gets Authorization token
 ApiHandler->>TokenManager: gets user's uuid by token
@@ -392,7 +358,7 @@ Requires authorization token. By this token gets profile information from db.
     }
     ```
 ---
-## Game API
+## Game
 Some of game API functions are declared to some `session`. It's id should be passed as url parameter (see each function's description). This entails the possibility of the following errors:
 * `400 no_such_session`
 Session you are trying to get access to does not exist.
@@ -410,37 +376,21 @@ Session you are trying to get access is already finished. See the game's stats.
 	"description": "session is finished"
 }
 ```
-### API enqueue
+### enqueue
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 
 #### **action diagram**
 ```mermaid
 ---
-
 Title: api profile diagram
-
 ---
-
-  
-
-SequenceDiagram
-
+sequenceDiagram
 Actor User
-
 ApiHandler->>ApiHandler: gets Authorization token
-
-  
-
 ApiHandler->>TokenManager: gets user's uuid by token
-
 TokenManager->>ApiHandler: user's uuid
-
-  
-
 ApiHandler->>MMQueue: tries to enqueue player
-
 MMQueue->>ApiHandler: returns enqueuing status
-
 ApiHandler->>User: send enqueue status
 ```
 
@@ -468,7 +418,7 @@ Body must be empty
     - **enqueue_error**: error happened while enqueuing player (already in queue or wrong token)
 
 ---
-### API wait_for_opponent
+### wait_for_opponent
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
 
@@ -477,7 +427,7 @@ Body must be empty
 ---
 Title: api registger diagram
 ---
-SequenceDiagram
+sequenceDiagram
 Actor User 1
 Participant Server
 Actor User 2
@@ -519,7 +469,7 @@ Opponent found if body contains SessionId.
 }
 ```
 ---
-### API session_state
+### session_state
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization) 
 
 #### **allowed methods**
@@ -551,12 +501,12 @@ Session you are trying to get access to does not exist.
 }
 ```
 ---
-### API session_state_change
+### session_state_change
 #### [<span style="color:#f58a42"><b>Long-Poll</b></span>](http_api.md#Long-Poll)
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **action diagram**
 ```mermaid
-SequenceDiagram
+sequenceDiagram
 	Actor Player 1
 	Participant Server
 	Actor Player 2
@@ -608,7 +558,7 @@ Session you are trying to get access to does not exist.
 }
 ```
 ---
-### API move
+### move
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **allowed methods**
 ***`POST`***
@@ -668,7 +618,7 @@ Body data is messed up. Check the example above.
 ```
 
 ---
-### API resign
+### resign
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#Requires%20Authorization)
 #### **allowed methods**
 ***`POST`***

@@ -4,7 +4,7 @@ Project consists of several modules which a tied up with each other.
 Each node is clickable to read more info about module.
 
 # How to create module
-root contains bash script called [*add_dependency.sh*](https://github.com/LeeDoor/hex_chess_backend/blob/main/add_dependency.sh). Launch it with name of new module like:
+root contains bash script called [*add_dependency.sh*](https://github.com/LeeDoor/game_webserver/blob/main/add_dependency.sh). Launch it with name of new module like:
 ```
 ./add_dependency.sh initializer
 ```

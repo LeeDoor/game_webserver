@@ -1,4 +1,4 @@
-# [initializer](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/initializer)
+# [initializer](https://github.com/LeeDoor/game_webserver/tree/main/src/initializer)
 ## What is it for?
 This module has one source and one header file. Its only task is to launch server in different threads. This module is being used once in main. Cpp file.
 

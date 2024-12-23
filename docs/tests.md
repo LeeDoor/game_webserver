@@ -1,4 +1,4 @@
-## Testing
+# Testing
 i am testing my application using **[Catch2](https://github.com/catchorg/Catch2)** framework. All test source files are being built in one single executable. If you want to launch only one concrete test, you can use cli flags which catch 2 suggests. For example, if you want to run only api-oriented tests, you should go to *scripts* folder, build app with tests and launch them:
 ```sh
 cd scripts

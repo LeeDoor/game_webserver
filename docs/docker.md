@@ -17,31 +17,29 @@ To        Action  From
 8080      ALLOW   Anywhere                 
 8080 (v6) ALLOW   Anywhere (v6)
 ```
-## **PostgreSQL**
-install postgresql and make sure it is working. you need to change some configs. cd to `/etc/postgresql/<VERSION>/main`
- * `postgresql.conf`:  find line *listen_addresses*, edit and uncomment it like that: `listen_addresses = '*'		# what IP address(es) to listen on;`
-* `pg_hba.conf`: just add this line(its ok that file is empty by default): `host all all 0.0.0.0/0 scram-sha-256`
+## Databases
+For each database we are going to use docker and their standard images. For the network HOST will be applied for easier execution.
+### PostgreSQL
+To run postgreSQL database using docker, run as root: 
+```bash
+docker run --name postgresql -e POSTGRES_PASSWORD=<PASSWORD> --network=host -d 
+postgres
+```
+Password is 1234 by default.
 
-after saving changes ***restart postgresql***: `systemctl restart postgresql`
-
-now you need to create required tables. create all tables in order they are listed [here](database%20sql%20tables). 
-
-## **Redis**
-install redis and launch: `redis-server`. config files leave default.
-
-## **docker**
-install docker on your machine and cd to root directory.
+### Redis
+To run Redis database using docker, run as root:
+```bash
+sudo docker run --name redis-server -d -p 6379:6379 --network=host redis --bind 127.0.0.1
+```
 
 # run
 > every docker command should be executed as root.
-
-to build the container, run this command:
+Firstly you should build an application using:
 ```bash
-docker build -t leedoor/hex_chess .
+docker build -t leedoor/game_webserver .
 ```
-when building is finished, run:
+To run, use: 
 ```bash
-docker run -p 8080:8080 --network="host" leedoor/hex_chess
+docker run -it --network=host leedoor/game_webserver
 ```
-`-p` specifies incoming's port and in-docker port. 
-`--network="host"` allows container to connect to postgreSQL and Redis with localhost IP. you can change this property if you configure networks and put databases inside containers too.

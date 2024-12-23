@@ -1,4 +1,4 @@
-# [game_manager](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/game_manager)
+# [game_manager](https://github.com/LeeDoor/game_webserver/tree/main/src/game_manager)
 ## What is it for
 This module contains list of all sessions, creates, deletes them and provides api for [handler](http_handler) to control players in sessions.
 ##  classes

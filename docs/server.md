@@ -1,4 +1,4 @@
-# [server](https://github.com/LeeDoor/hex_chess_backend/tree/main/src/server)
+# [server](https://github.com/LeeDoor/game_webserver/tree/main/src/server)
 ## What is it for
 Server module launches server and starts handling incoming HTTP requests.
 ## Classes
