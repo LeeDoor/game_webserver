@@ -2,16 +2,15 @@ cmake_minimum_required(VERSION 3.24)
 project(application VERSION 0.1)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+set(NLOHMANNJSON_ROOT "${PROJECT_SOURCE_DIR}/lib/json")
 enable_testing()
+link_libraries(/usr/local/lib)
 
-find_package(boost_program_options REQUIRED CONFIG)
+find_package(libpqxx REQUIRED)
+find_package(Boost 1.78 COMPONENTS program_options REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
-find_package(libpqxx CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(redis++ CONFIG REQUIRED)
+find_package(nlohmann_json REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-
 
 #options
 option(BUILD_TESTS "build with tests" ON)

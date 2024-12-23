@@ -13,7 +13,5 @@ add_library(${LIBRARY_NAME}
 #including and linking dependencies
 target_link_libraries(${LIBRARY_NAME} 
     PUBLIC user_manager
-
-    PUBLIC redis++::redis++_static
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})

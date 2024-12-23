@@ -47,7 +47,6 @@ target_link_libraries(${LIBRARY_NAME}
     PRIVATE notification_system
     PRIVATE serializer
     
-    PUBLIC Boost::asio 
-    PUBLIC Boost::beast
+    ${Boost_LIBRARIES}
 )
 target_include_directories(${LIBRARY_NAME} PUBLIC ${DIRECTORIES})
