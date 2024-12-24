@@ -29,7 +29,7 @@ namespace connection_pool{
 
     ConnectionPool::ConnectionPtr ConnectionPool::ConnectionFactory(const std::string& bd_credentials){
         std::stringstream ss;
-        ss << "postgres://" << bd_credentials << "@localhost:5432/hex_chess";
+        ss << "postgres://" << bd_credentials << "@postgresql:5432/game_webserver";
         return std::make_shared<pqxx::connection>(ss.str());
     }
 }

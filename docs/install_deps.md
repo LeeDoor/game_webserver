@@ -40,7 +40,7 @@ cmake -B build -S . -DBUILD_TESTING=OFF
 cmake --build build/ --target install --parallel 16
 cd ..
 
-cd libpqxx && cmake . && cmake --build . --parallel 16 && cmake --install .
+cd libpqxx && cmake . -DSKIP_BUILD_TEST=on && cmake --build . --parallel 16 && cmake --install .
 cd ..
 
 cd hiredis

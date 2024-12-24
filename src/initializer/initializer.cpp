@@ -82,7 +82,7 @@ int Initializer::StartServer(Args args) {
 
     /// REDIS ///
     sw::redis::ConnectionOptions co;
-    co.host = "127.0.0.1";  
+    co.host = "redis-server";  
     co.password = args.redis_credentials;
     std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
 
