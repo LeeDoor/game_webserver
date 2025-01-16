@@ -4,7 +4,7 @@ RUN apt update && \
 apt install -y cmake=3.* libstdc++6 curl zip unzip tar bison flex gcc 
 # download libs
 RUN apt-get install -y libpqxx-dev
-RUN wget 'https://boostorg.jfrog.io/artifactory/main/release/1.87.0/source/boost_1_87_0.tar.bz2' && tar -xf boost_1_87_0.tar.bz2
+RUN wget 'https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2' && tar -xf boost_1_87_0.tar.bz2
 RUN git clone https://github.com/catchorg/Catch2.git --depth 1 
 RUN git clone https://github.com/jtv/libpqxx --depth 1 
 RUN git clone https://github.com/redis/hiredis.git --depth 1 
