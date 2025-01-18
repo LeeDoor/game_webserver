@@ -24,6 +24,17 @@ Now, when you get close to the enemy, drop a bomb on his head!
 
 and that is how to win on the battlefield! good luck! 
 # application
+## Clone
+First things first we need to clone our repo with the frontend submodule. to clone it properly, use:
+```bash
+git clone --recurse-submodules https://github.com/LeeDoor/game_webserver
+```
+> more about git submodules [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+
+as mentioned in docs, if you forgot to place `--recurse-submodules` in `git clone` command, use:
+```bash
+git submodule update --init
+```
 ## Docker
 if you want to launch the webserver on your machine using docker, follow [docker](docs/docker.md) guide. 
 

@@ -1,1 +1,0 @@
-IPADDR = 'localhost:8080';

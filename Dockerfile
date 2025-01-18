@@ -43,5 +43,8 @@ COPY ./src /app/src
 RUN mkdir /app/bulld && cd /app/bulld && \
 cmake --preset=default -DBUILD_TESTS=OFF ..
 RUN cd app/build/ && make -j 16 && ldconfig
-COPY ./static /app/static
-ENTRYPOINT ["/app/build/src/application", "--static_path", "/app/static", "--postgres_credentials", "postgres:1234"]    
+COPY ./game_webserver_frontend/ /game_webserver_frontend
+RUN apt install -y nodejs npm
+RUN cd /game_webserver_frontend && npm install typescript --save-dev
+RUN cd /game_webserver_frontend && npx tsc && cd / && cp game_webserver_frontend/www /app/www
+ENTRYPOINT ["/app/build/src/application", "--static_path", "/app/www", "--postgres_credentials", "postgres:1234"]    

@@ -1,5 +1,5 @@
 # setup
-so you are here to launch the server inside docker container. but first, you need some dependencies installed on your server.
+So you are here to launch the server inside docker container. but first, you need some dependencies installed on your server.
 ## Network
 if you are running application on your home machine you probably need to edit firewall settings on your machine **and in the router**.
 ### Windows firewall
@@ -50,7 +50,6 @@ NOT THE ACTUAL CODE TO COPY
 CREATE TABLE users ( ... 
 CREATE INDEX idx_users_login .. 
 CREATE TABLE sessions ( ..
-```SQL
 ```
 ### Redis
 To run Redis database using docker, run as root:
@@ -60,8 +59,7 @@ docker run --name redis-server -d -p 6379:6379 --network=dbnetwork redis
 
 # run
 > every docker command should be executed as root.
-
-Firstly you should build an application using:
+You should build an application using:
 ```bash
 docker build -t leedoor/game_webserver .
 ```
