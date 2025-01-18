@@ -1,9 +1,8 @@
 FROM gcc:13.2 AS build
 # install requirements
 RUN apt update && \
-apt install -y cmake=3.* libstdc++6 curl zip unzip tar bison flex gcc 
+apt install -y cmake=3.* libstdc++6 curl zip unzip tar bison flex gcc nodejs npm
 # download libs
-RUN apt-get install -y libpqxx-dev
 RUN wget 'https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2' && tar -xf boost_1_87_0.tar.bz2
 RUN git clone https://github.com/catchorg/Catch2.git --depth 1 
 RUN git clone https://github.com/jtv/libpqxx --depth 1 
@@ -44,7 +43,6 @@ RUN mkdir /app/bulld && cd /app/bulld && \
 cmake --preset=default -DBUILD_TESTS=OFF ..
 RUN cd app/build/ && make -j 16 && ldconfig
 COPY ./game_webserver_frontend/ /game_webserver_frontend
-RUN apt install -y nodejs npm
 RUN cd /game_webserver_frontend && npm install typescript --save-dev
-RUN cd /game_webserver_frontend && npx tsc && cd / && cp game_webserver_frontend/www /app/www
+RUN cd /game_webserver_frontend && npx tsc && cd / && cp -r game_webserver_frontend/www /app/www
 ENTRYPOINT ["/app/build/src/application", "--static_path", "/app/www", "--postgres_credentials", "postgres:1234"]    
