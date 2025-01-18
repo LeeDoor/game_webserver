@@ -43,5 +43,5 @@ COPY ./src /app/src
 RUN mkdir /app/bulld && cd /app/bulld && \
 cmake --preset=default -DBUILD_TESTS=OFF ..
 RUN cd app/build/ && make -j 16 && ldconfig
-COPY ./static /app/staticgiog
+COPY ./static /app/static
 ENTRYPOINT ["/app/build/src/application", "--static_path", "/app/static", "--postgres_credentials", "postgres:1234"]    

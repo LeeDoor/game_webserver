@@ -33,11 +33,25 @@ To run postgreSQL database using docker, run as root:
 docker run --name postgresql -e POSTGRES_PASSWORD=1234 --network=dbnetwork -p 5432:5432 -d postgres
 ```
 Password is 1234 by default.
-if you want to connect to database with CLI, use: 
+#### Database Setup
+Note that it's *necessary* to create database and tables. To connect to database with CLI, use: 
 ```bash
 psql -U postgres
 ```
 and enter the password which you provided with the `docker run` command.
+the code below creates a new database `game_webserver` and connects to it:
+```SQL
+CREATE DATABASE game_webserver;
+\c game_webserver
+```
+and then you need to copy-paste all of the SQL code from [this](postgresql_tables.md) file to the psql.
+```SQL
+NOT THE ACTUAL CODE TO COPY
+CREATE TABLE users ( ... 
+CREATE INDEX idx_users_login .. 
+CREATE TABLE sessions ( ..
+```SQL
+```
 ### Redis
 To run Redis database using docker, run as root:
 ```bash
