@@ -34,7 +34,7 @@ make install
 cd ..
 
 cd redis-plus-plus 
-cmake -DCMAKE_PREFIX_PATH=/usr/local ..
+cmake -DCMAKE_PREFIX_PATH=/usr/local .
 make -j 16
 make install
 cd ..
