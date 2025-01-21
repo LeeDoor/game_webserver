@@ -453,7 +453,7 @@ Body must be empty
 *response body:*
 ```json
 {
-"error_code": "enqueue_error",
+"error_name": "enqueue_error",
 "description": "error happened while enqueuing player (already in queue)"
 }
 ```
