@@ -548,7 +548,7 @@ Request to get session state. Session id should be passed as URL parameter.
 #### **responses**
 * `200 OK`  
 *response body:*
-***TO SEE RESPONSE EXAMPLE: [[session_state]]***
+***TO SEE RESPONSE EXAMPLE: [[session_state.md]]***
 * `422 UNPROCESSABLE_ENTITY`
 ```json
 {
@@ -605,7 +605,7 @@ Long-Poll function hangs until some action happens in the session. Once it is, p
 #### **responses**
 * `200 OK`  
 *response body:*
-	SEE [[event_list]]
+	SEE [[event_list.md]]
 * `422 UNPROCESSABLE_ENTITY`
 ```json
 {
@@ -635,7 +635,7 @@ Session you are trying to get access to does not exist.
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
-_/api/game/move? SessionId=SESSION_ID_
+_/api/game/move?sessionId=SESSION_ID_
 
 #### **function description**
 Function tells the game about player's move. SessionId must be passed as URL parameter, body should contain move information.
