@@ -1,3 +1,4 @@
 [submodule "game_webserver_frontend"]
 	path = game_webserver_frontend
 	url = https://github.com/LeeDoor/game_webserver_frontend
+	branch = main

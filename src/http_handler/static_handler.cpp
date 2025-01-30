@@ -21,7 +21,10 @@ namespace http_handler {
             spdlog::info("not a subdirectory");
             return SendNoAccessError(rns);
         }
-        if(!fs::exists(path) || fs::is_directory(path)) {
+	if(path_str == "/") {
+		return SendFile(static_path_ / "index.html", rns);
+	}
+	if(!fs::exists(path) || fs::is_directory(path)) {
             return SendWrongPathError(rns);
         }
         return SendFile(std::move(path), rns);

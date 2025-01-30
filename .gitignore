@@ -7,3 +7,5 @@ logs/
 dump.rdb
 vcpkg_installed/
 trash/
+application
+test_application

@@ -9,11 +9,10 @@ private:
     struct Args {
         int test;
         int port;
-        std::string db_login;
-        std::string db_password;
         std::string static_path;
         std::string postgres_credentials;
         std::string redis_credentials;
+        std::string log_dir;
     };
 
     int StartServer(Args args);
