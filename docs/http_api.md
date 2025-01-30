@@ -548,7 +548,7 @@ Request to get session state. Session id should be passed as URL parameter.
 #### **responses**
 * `200 OK`  
 *response body:*
-***TO SEE RESPONSE EXAMPLE: [[session_state.md]]***
+***TO SEE RESPONSE [EXAMPLE](session_state.md)***
 * `422 UNPROCESSABLE_ENTITY`
 ```json
 {
@@ -605,7 +605,7 @@ Long-Poll function hangs until some action happens in the session. Once it is, p
 #### **responses**
 * `200 OK`  
 *response body:*
-	SEE [[event_list.md]]
+	[SEE](event_list.md)
 * `422 UNPROCESSABLE_ENTITY`
 ```json
 {
