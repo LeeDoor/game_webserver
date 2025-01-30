@@ -710,3 +710,28 @@ Function tells the game about player's move. SessionId must be passed as URL par
 	"description":"no session with such sessionId"
 }
 ```
+
+---
+### API game_consts
+#### **allowed methods**
+***`GET/HEAD`*** 
+#### **request target**  
+_/api/game/game_consts_
+
+#### **function description**
+returns json object with game constant values for game rules.
+#### **request body example**
+
+```js
+{
+  "bomb_explode_radius": 1,
+  "bomb_place_radius": 2,
+  "bomb_ticks_left": 2,
+  "gun_cooldown": 3,
+  "gun_place_radius": 1,
+  "gun_shots": 3
+}
+```
+
+#### **responses**
+always returns true.
