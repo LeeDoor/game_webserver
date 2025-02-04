@@ -6,6 +6,7 @@
 #include <iostream>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include "user_manager_postgres.hpp"
 #include "token_manager_redis.hpp"
 #include "queue_manager_redis.hpp"
@@ -40,7 +41,8 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
         ("test", "test launch to use test bd")
         ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library")
         ("postgres_credentials", po::value(&args.postgres_credentials)->value_name("string"), "set bd postgres login and password like that: \"login:password\"")
-        ("redis_credentials", po::value(&args.redis_credentials)->value_name("string"), "set bd redis password");
+        ("redis_credentials", po::value(&args.redis_credentials)->value_name("string"), "set bd redis password")
+        ("log_dir", po::value(&args.log_dir)->value_name("string"), "set logging directory");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -51,22 +53,30 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     if(!vm.contains("postgres_credentials")){
         throw std::runtime_error("postgres_credentials is not specified");
     }
+    if(!vm.contains("log_dir")) {
+        args.log_dir = "";
+    }
     return args;
 }
 
 int Initializer::Init(int argc, char **argv) {
+    Args args = ParseParameters(argc, argv);
+    auto max_size = 1024*1024*5;
+    auto max_files = 3;
     try {
-        auto max_size = 1024*1024*5;
-        auto max_files = 3;
-        auto new_logger = spdlog::rotating_logger_mt("logs", "logs/logs.txt", max_size, max_files);
-        spdlog::set_default_logger(new_logger);    }
+        std::shared_ptr<spdlog::logger> new_logger;
+        if(args.log_dir.empty()) 
+            new_logger = spdlog::stdout_color_mt("console");
+        else 
+            new_logger = spdlog::rotating_logger_mt("logs", args.log_dir, max_size, max_files);
+        spdlog::set_default_logger(new_logger);
+    }
     catch (const spdlog::spdlog_ex &ex)
     {
         std::cout << "Log init failed: " << ex.what() << std::endl;
     }
     spdlog::flush_every(std::chrono::seconds(1));
     spdlog::flush_on(spdlog::level::info);
-    Args args = ParseParameters(argc, argv);
     return StartServer(args);
 }
 

@@ -24,11 +24,22 @@ Now, when you get close to the enemy, drop a bomb on his head!
 
 and that is how to win on the battlefield! good luck! 
 # application
+## Clone
+First things first we need to clone our repo with the frontend submodule. to clone it properly, use:
+```bash
+git clone --recurse-submodules https://github.com/LeeDoor/game_webserver
+```
+> more about git submodules [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+
+as mentioned in docs, if you forgot to place `--recurse-submodules` in `git clone` command, use:
+```bash
+git submodule update --init
+```
 ## Docker
 if you want to launch the webserver on your machine using docker, follow [docker](docs/docker.md) guide. 
 
 ## Required libraries
-Don't forget to install all of the dependencies listed and guided [here](docs/install_deps.md). 
+Don't forget to install all of the dependencies using script in **scripts/** directory called `install_deps.sh`. It will install a bunch of apps from apt, so be sure that you are `apt update`'d.  
 
 ## Required applications
 Webserver connects to databases such as [Redis](https://redis.io) and [PostgreSQL](https://postgresql.org/). If you would like to run them using docker, read docker's [database guide](docs/docker.md#databases).

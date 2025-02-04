@@ -1,6 +1,8 @@
+* `200 OK`
+*response_body:*
 ```json
 {
-	"error_name":"unathorized",
-	"description":"request must be authorized"
+	"error_name":"",
+	"description":""
 }
 ```

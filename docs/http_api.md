@@ -229,7 +229,7 @@ sequenceDiagram
 By given login and password in body, creates account. Data stored in db, you cant register with same login more than once. After registration you need to login to play the game and use other features. 
 
 #### **request body example**
-```js
+```json
     {
         "login": "user_login",
         "password": "user_password1"
@@ -240,27 +240,38 @@ By given login and password in body, creates account. Data stored in db, you can
 - Password size more or equal to **6**. Must contain at least 1 digit
 
 #### **responses**
-* `200 OK`\
-    Registration is ok, user added
-
-    *response body:*
-    ```js
-    {}
-    ```
-    
-* `400 bad_request`\
-    Body data is wrong or login and password are invalid
-
-    **error_name meanings**
-    - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
-    - **body_data_error**: body data is incorrect (watch example above)
-
-* `409 conflict`\
-    There is already a user with given login
-
-    **error_name meanings**
-    - **login_taken**: login already taken
-
+* `200 OK`
+*response_body:*
+```json
+{
+	"login": "very_login",
+	"password": "abcde 12345"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"body_data_error",
+	"description":"wrong body data"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"wrong_login_or_password",
+	"description":"login size >= 3 password size >= 6 with digit(s)"
+}
+```
+* `409 CONFLICT`
+*response_body:*
+```json
+{
+	"error_name":"login_taken",
+	"description":"login is already taken"
+}
+```
 ---
 ### login
 #### **action diagram**
@@ -290,7 +301,7 @@ sequenceDiagram
 By given login and password in body, logins to get authorization token, which is required to play. Only registered user can login.
 
 #### **body example**
-```js
+```json
     {
         "login": "user_login",
         "password": "user_password1"
@@ -298,26 +309,45 @@ By given login and password in body, logins to get authorization token, which is
 ```
 
 #### **responses**
-* `200 OK`\
-    Login is successful, token returned
-    
-    *response body"*
-    ```js
-    {
-        "token": "TOKEN"
-    }
-    ```
-    **login and password criteria**
-    - Login size more or equal to **3**
-    - Password size more or equal to **6**. Must contain at least 1 digit
-
-* `400 bad_request`\
-    Body data is wrong or login and password doesnt match to any registered user
-
-    **error_name meanings**
-    - **body_data_error**: body data is incorrect (watch example above)
-    - **wrong_login_or_password**: login or password are invalid (watch description with criteria)
-    - **no_such_user**: no user found with given login and password
+* `200 OK`
+*response body"*
+```json
+{
+	"token": "USER_TOKEN"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"body_data_error",
+	"description":"wrong body data"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"wrong_login_or_password",
+	"description":"login size >= 3 password size >= 6 with digit(s)"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"no_such_user",
+	"description":"no user with this login or password"
+}
+```
+* `503 SERVICE_UNAVAILABLE`
+*response_body:*
+```json
+{
+	"error_name":"login_error",
+	"description":"unable to add token to database."
+}
+```
 ---
 ### profile
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
@@ -347,15 +377,22 @@ ApiHandler->>User: send user data
 Requires authorization token. By this token gets profile information from db.
 
 #### **responses**
-* `200 OK`\
-    Authorization is correct, send profile data in response
-    *response body"*
-    ```js
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
-    ```
+* `200 OK`
+*response body"*
+```js
+{
+	"login": "loginlogin",
+	"password": "pass 123123"
+}
+```
+* `401 UNAUTHORIZED`
+*response_body:*
+```json
+{
+	"error_name":"person_removed",
+	"description":"person with this token is unavailable (prob. removed)"
+}
+```
 ---
 ## Game
 Some of game API functions are declared to some `session`. It's id should be passed as url parameter (see each function's description). This entails the possibility of the following errors:
@@ -408,14 +445,33 @@ Body must be empty
 #### **responses**
 * `200 OK`  
 *response body:*
-    ```js
-    {}
-    ```
-    
-* `200 OK`  
-**error_name meanings**
-    - **enqueue_error**: error happened while enqueuing player (already in queue or wrong token)
-
+```json
+{}
+```
+* `200 OK`
+*response body:*
+```json
+{
+"error_name": "enqueue_error",
+"description": "error happened while enqueuing player (already in queue)"
+}
+```
+* `400 BAD_REQUEST`
+*response body:*
+```json
+{
+"error_name": "in_the_match",
+"sessionId": "SESSION_ID"
+}
+```
+* `401 UNAUTHORIZED`
+*response body:*
+```json
+{
+"error_name": "invalid_token",
+"description": "request authorization is invalid"
+}
+```
 ---
 ### wait_for_opponent
 #### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
@@ -453,18 +509,26 @@ Long-poll function to read data about future session. Use it after enqueuing to 
 
 #### **request body example**
 
-```js
-
+```json
+{
+	"sessionId": "SESSION_ID"
+}
 ```
 
 #### **responses**
-
-* `200 success`
-Opponent found if body contains SessionId.
+* `200 OK`
 *response body:*
-```js
+```json
 {
-	"sessionid": "ADD 124558846"
+	"sessionid": "SESSION_ID"
+}
+```
+* `409 CONFLICT`
+*response_body:*
+```json
+{
+	"error_name":"poll_closed",
+	"description":"new poll connected"
 }
 ```
 ---
@@ -483,15 +547,15 @@ Request to get session state. Session id should be passed as URL parameter.
 #### **responses**
 * `200 OK`  
 *response body:*
-***TO SEE RESPONSE EXAMPLE: [[session_state]]***
-* `422 url_parameters_error`
+***TO SEE RESPONSE [EXAMPLE](session_state.md)***
+* `422 UNPROCESSABLE_ENTITY`
 ```json
 {
-	"error_name": "url_parameters_error"
+	"error_name": "url_parameters_error",
 	"description": "this api function requires url parameters"
 }
 ```
-* `400 no_such_session`
+* `400 BAD_REQUEST`
 Session you are trying to get access to does not exist.
 ```json
 {
@@ -528,7 +592,7 @@ _/api/game/session_state_change? SessionId=SESSION_ID_
 
 #### **request body example**
 
-```js
+```json
 {
 	"from_move": 3
 }
@@ -540,20 +604,28 @@ Long-Poll function hangs until some action happens in the session. Once it is, p
 #### **responses**
 * `200 OK`  
 *response body:*
-	SEE [[event_list]]
-* `422 url_parameters_error`
+	[SEE](event_list.md)
+* `422 UNPROCESSABLE_ENTITY`
 ```json
 {
-	"error_name": "url_parameters_error"
+	"error_name": "url_parameters_error",
 	"description": "this api function requires url parameters"
 }
 ```
-* `400 no_such_session`
+* `400 BAD_REQUEST`
 Session you are trying to get access to does not exist.
 ```json
 {
 	"error_name": "wrong_sessionId",
 	"description": "no session with such sessionId"
+}
+```
+* `409 CONFLICT`
+*response_body:*
+```json
+{
+	"error_name":"poll_closed",
+	"description":"new poll connected"
 }
 ```
 ---
@@ -562,7 +634,7 @@ Session you are trying to get access to does not exist.
 #### **allowed methods**
 ***`POST`***
 #### **request target**  
-_/api/game/move? SessionId=SESSION_ID_
+_/api/game/move?sessionId=SESSION_ID_
 
 #### **function description**
 Function tells the game about player's move. SessionId must be passed as URL parameter, body should contain move information.
@@ -580,60 +652,85 @@ Function tells the game about player's move. SessionId must be passed as URL par
 ```
 
 #### **responses**
-
-* `200 OK`  
-Everything is ok, now opponent is moving
-* `400 wrong_move`
-According to the game rules, player cant make such move.
+* `200 OK`
+*response_body:*
+```json
+{}
+```
+* `400 BAD_REQUEST`
 ```json
 {
 	"error_name": "wrong_move",
 	"description": "player cant make such move"
 }
 ```
-* `400 not_your_move`
-Now there is an enemy's move, you cant do anything.
+* `400 BAD_REQUEST`
 ```json
 {
 	"error_name": "not_your_move",
 	"description": "the opponent's move is now"
 }
 ```
-* `400 access_denied`
-You don't have access to make a move in this match. Probably you are not the player.
+* `400 BAD_REQUEST`
 ```json
 {
 	"error_name": "access_denied",
 	"description": "you have no access to do this action"
 }
 ```
-* `400 wrong_body_data`
-Body data is messed up. Check the example above.
+* `400 BAD_REQUEST`
 ```json
 {
 	"error_name": "body_data_error",
 	"description": "wrong body data"
 }
 ```
-
----
-### resign
-#### [<span style="color:#87ff8b"><b>requires authorization</b></span>](http_api.md#requires-authorization)
-#### **allowed methods**
-***`POST`***
-#### **request target**  
-_/api/game/resign? SessionId=SESSION_ID_
-
-#### **function description**
-Function calls about your resign and ends the game. Url parameter should contain sessionId, where you are resigning. Body is empty.
-
-#### **responses**
-* `200 OK`  
-* `400 access_denied`
-You cant resign with this login token. You should be one of the players.
+* `422 UNPROCESSABLE_ENTITY`
+*response_body:*
 ```json
 {
-	"error_name": "access_denied",
-	"description": "you have no access to do this action"
+	"error_name":"url_parameters_error",
+	"description":"this api function requires url parameters"
 }
 ```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"session_finished",
+	"description":"session is finished"
+}
+```
+* `400 BAD_REQUEST`
+*response_body:*
+```json
+{
+	"error_name":"wrong_sessionId",
+	"description":"no session with such sessionId"
+}
+```
+
+---
+### API game_consts
+#### **allowed methods**
+***`GET/HEAD`*** 
+#### **request target**  
+_/api/game/game_consts_
+
+#### **function description**
+returns json object with game constant values for game rules.
+#### **request body example**
+
+```js
+{
+  "bomb_explode_radius": 1,
+  "bomb_place_radius": 2,
+  "bomb_ticks_left": 2,
+  "gun_cooldown": 3,
+  "gun_place_radius": 1,
+  "gun_shots": 3
+}
+```
+
+#### **responses**
+always returns true.

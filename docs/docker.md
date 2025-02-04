@@ -1,5 +1,5 @@
 # setup
-so you are here to launch the server inside docker container. but first, you need some dependencies installed on your server.
+So you are here to launch the server inside docker container. but first, you need some dependencies installed on your server.
 ## Network
 if you are running application on your home machine you probably need to edit firewall settings on your machine **and in the router**.
 ### Windows firewall
@@ -33,11 +33,24 @@ To run postgreSQL database using docker, run as root:
 docker run --name postgresql -e POSTGRES_PASSWORD=1234 --network=dbnetwork -p 5432:5432 -d postgres
 ```
 Password is 1234 by default.
-if you want to connect to database with CLI, use: 
+#### Database Setup
+Note that it's *necessary* to create database and tables. To connect to database with CLI, use: 
 ```bash
 psql -U postgres
 ```
 and enter the password which you provided with the `docker run` command.
+the code below creates a new database `game_webserver` and connects to it:
+```SQL
+CREATE DATABASE game_webserver;
+\c game_webserver
+```
+and then you need to copy-paste all of the SQL code from [this](postgresql_tables.md) file to the psql.
+```SQL
+NOT THE ACTUAL CODE TO COPY
+CREATE TABLE users ( ... 
+CREATE INDEX idx_users_login .. 
+CREATE TABLE sessions ( ..
+```
 ### Redis
 To run Redis database using docker, run as root:
 ```bash
@@ -46,8 +59,7 @@ docker run --name redis-server -d -p 6379:6379 --network=dbnetwork redis
 
 # run
 > every docker command should be executed as root.
-
-Firstly you should build an application using:
+You should build an application using:
 ```bash
 docker build -t leedoor/game_webserver .
 ```
