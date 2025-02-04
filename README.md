@@ -46,6 +46,7 @@ Webserver connects to databases such as [Redis](https://redis.io) and [PostgreSQ
 
 ## Build & Run application
 You can run it without docker by building it using CMake with bash scripts:
+> don't forget to clone frontend repo and check for successful frontend build! you should have non-empty directory `game_webserver_frontend` containing `www/` directory filled with `*.js` files.
 ```bash
 cd scripts
 ./build_no_tests.sh

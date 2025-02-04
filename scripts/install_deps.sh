@@ -1,7 +1,7 @@
 cd ../
 mkdir trash
 cd trash
-apt install -y libstdc++6 curl zip unzip tar gcc wget cmake libpqxx-dev build-essential bison
+apt install -y libstdc++6 curl zip unzip tar gcc wget cmake libpqxx-dev build-essential bison nodejs npm
 if [ ! -f boost_1_87_0.tar.bz2 ]; then
 	wget 'https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.bz2' 
 fi
@@ -45,3 +45,6 @@ cmake --install .
 cd ..
 
 cd json && cmake . && cmake --install .
+
+cd ../game_webserver/game_webserver_frontend  && npm install typescript --save-dev
+npx tsc
