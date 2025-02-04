@@ -86,13 +86,12 @@ This poll is closed and replaced with the other one.
 }
 ```
 ## Debug
-Debug api is required to get data from app structures. To execute them you need to send admin login and password.
-
+Debug api is required to get data 
 Example:
-```js
+```json
 { 
-	"login": "very_login", 
-	"password": "abcde12345" 
+	"login": "user_login", 
+	"password": "user_password1" 
 }
 ```
 if admin credentials not provided, you get this errror: ***`UNAUTHORIZED`***
@@ -113,8 +112,8 @@ Debug function for getting users' authentication tokens and uuids.
 #### **request body example**
 ```js
     {
-        "login": "admin2009",
-        "password": "nadejni_parol2"
+        "login": "user_login",
+        "password": "user_password1"
     }
 ```
 
@@ -143,8 +142,8 @@ Debug function for getting users' profile info like login and password.
 #### **request body example**
 ```js
     {
-        "login": "admin2009",
-        "password": "nadejni_parol2"
+        "login": "user_login",
+        "password": "user_password1"
     }
 ```
 
@@ -155,8 +154,8 @@ Debug function for getting users' profile info like login and password.
     ```js
     {
 		"uuid":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-		"login":"thebestuserever100"
-		"password":"Oksano4kaCute"
+		"login":"user_login"
+		"password":"user_password1"
     }
     ```
 ---
@@ -171,8 +170,8 @@ Debug function for getting queue of users' uuids
 #### **request body example**
 ```js
     {
-        "login": "admin 2009",
-        "password": "nadejni_parol 2"
+        "login": "user_login",
+        "password": "user_password1"
     }
 ```
 
@@ -232,8 +231,8 @@ By given login and password in body, creates account. Data stored in db, you can
 #### **request body example**
 ```js
     {
-        "login": "very_login",
-        "password": "abcde 12345"
+        "login": "user_login",
+        "password": "user_password1"
     }
 ```
 #### **login and password criteria**
@@ -293,8 +292,8 @@ By given login and password in body, logins to get authorization token, which is
 #### **body example**
 ```js
     {
-        "login": "very_login",
-        "password": "abcde 12345"
+        "login": "user_login",
+        "password": "user_password1"
     }
 ```
 
@@ -305,7 +304,7 @@ By given login and password in body, logins to get authorization token, which is
     *response body"*
     ```js
     {
-        "token": "aabbbccc 123"
+        "token": "TOKEN"
     }
     ```
     **login and password criteria**
@@ -353,8 +352,8 @@ Requires authorization token. By this token gets profile information from db.
     *response body"*
     ```js
     {
-        "login": "loginlogin",
-        "password": "pass 123123"
+        "login": "user_login",
+        "password": "user_password1"
     }
     ```
 ---

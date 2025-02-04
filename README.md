@@ -34,16 +34,15 @@ Don't forget to install all of the dependencies listed and guided [here](docs/in
 Webserver connects to databases such as [Redis](https://redis.io) and [PostgreSQL](https://postgresql.org/). If you would like to run them using docker, read docker's [database guide](docs/docker.md#databases).
 
 ## Build & Run application
-You can run it without docker simply building it using CMake with bash scripts:
+You can run it without docker by building it using CMake with bash scripts:
 ```bash
 cd scripts
 ./build_no_tests.sh
 ./run_app.sh
 ```
-> Here are [`build_no_tests.sh`](docs/bash_scripts.md#build_no_tests.sh) and [`run_app.sh`](docs/bash_scripts.md#run_app.sh) scripts used. 
-> 
+> Here [`build_no_tests.sh`](docs/bash_scripts.md#build_no_tests.sh) and [`run_app.sh`](docs/bash_scripts.md#run_app.sh) scripts are used. 
 ## Build & Run Tests
-If you want to test the webserver, as previous, prepare all of the dependencies as [before](docs/install_deps.md) and build run these scripts:
+If you want to test the webserver, as previous, prepare all of the dependencies and build run these scripts:
 ```bash
 cd scripts
 ./build_with_tests.sh
