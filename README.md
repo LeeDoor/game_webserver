@@ -1,6 +1,6 @@
 ![alt text](docs/media/header.png)
 
-# DINOZAVRIKI
+# DINOZAVRIKI (2025)
 meet the best turn-based strategy about Dinosaurs battle! In this game, you face a difficult task: defeat the enemy using bombs, guns, whiskers, paws and tail.
 ## how to play?
 click on the link and go to the game page. enter your username and password in the registration field. After the message about the successful registration, click **play**! you will end up in the waiting queue of the opponent.
