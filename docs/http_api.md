@@ -47,7 +47,7 @@ All non-ok responses have same body type. For example:
 ### Requires-Authorization 
 means that request must be authorized with `Authorization` header. Example:
 ```HTTP
-Authorization: Bearer FFAADDDDEE12161753563
+Authorization: Bearer 91d2dde5805dddd67e2d1c709ec17fe5
 ```
 **includes these errors: **
 1. Status: ***`UNAUTHORIZED`***
@@ -110,24 +110,24 @@ Debug function for getting users' authentication tokens and uuids.
 */api/debug/player_tokens*
 
 #### **request body example**
-```js
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
+```json
+{
+	"login": "admin_login",
+	"password": "admin_password1"
+}
 ```
 
 #### **responses**
 * `200 OK` \
     Tokens sent successfully
     *response body example:*
-    ```js
-    {
-        "token1AV24":   "UUID173578",
-        "token22724":   "UUID116478",
-        "token3AVA324": "UUID1735788",
-    }
-    ```
+```json
+{
+	"91d2dde5805dddd67e2d1c709ec17fe5":"5269d7dd-3a07-4ffd-ad4b-5216bfa33493",
+	"db0a3f4132f93403d30bd189319c05d4":"1185deea-0dc4-46bf-89b0-7f6619bc49ed"
+}
+```
+> keys are players' tokens to authenticate, values are UUIDs.
 ---
 ### user
 #### **description**
@@ -140,24 +140,24 @@ Debug function for getting users' profile info like login and password.
 */api/debug/user? Login=USER_LOGIN&password=USER_PASS*
 
 #### **request body example**
-```js
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
+```json
+{
+	"login": "admin_login",
+	"password": "admin_password1"
+}
 ```
 
 #### **responses**
 * `200 OK` \
     User sent successfully
     *response body example:*
-    ```js
-    {
-		"uuid":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-		"login":"user_login"
-		"password":"user_password1"
-    }
-    ```
+```json
+{
+	"uuid":"1185deea-0dc4-46bf-89b0-7f6619bc49ed"
+	"login":"user_login"
+	"password":"user_password1"
+}
+```
 ---
 ### matchmaking_queue
 #### **description**
@@ -168,24 +168,23 @@ Debug function for getting queue of users' uuids
 */api/debug/matchmaking_queue*
 
 #### **request body example**
-```js
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
+```json
+{
+	"login": "admin_login",
+	"password": "admin_password1"
+}
 ```
 
 #### **responses**
 * `200 OK`\
     Matchmaking queue sent successfully
     *response body example:*
-    ```js
-    {
-        "UUID 123",
-        "UUID 124",
-        "UUID 125"
-    }
-    ```
+```json
+[
+	"5269d7dd-3a07-4ffd-ad4b-5216bfa33493",
+	"5123312d-3a07-1234-4312-abababab3493"
+]
+```
 
 ## User
 ### ping
@@ -230,10 +229,10 @@ By given login and password in body, creates account. Data stored in db, you can
 
 #### **request body example**
 ```json
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
+{
+	"login": "user_login",
+	"password": "user_password1"
+}
 ```
 #### **login and password criteria**
 - Login size more or equal to **3**
@@ -243,10 +242,7 @@ By given login and password in body, creates account. Data stored in db, you can
 * `200 OK`
 *response_body:*
 ```json
-{
-	"login": "very_login",
-	"password": "abcde 12345"
-}
+{}
 ```
 * `400 BAD_REQUEST`
 *response_body:*
@@ -302,10 +298,10 @@ By given login and password in body, logins to get authorization token, which is
 
 #### **body example**
 ```json
-    {
-        "login": "user_login",
-        "password": "user_password1"
-    }
+{
+	"login": "user_login",
+	"password": "user_password1"
+}
 ```
 
 #### **responses**
@@ -313,7 +309,7 @@ By given login and password in body, logins to get authorization token, which is
 *response body"*
 ```json
 {
-	"token": "USER_TOKEN"
+	"token": "db0a3f4132f93403d30bd189319c05d4"
 }
 ```
 * `400 BAD_REQUEST`
@@ -379,10 +375,10 @@ Requires authorization token. By this token gets profile information from db.
 #### **responses**
 * `200 OK`
 *response body"*
-```js
+```json
 {
-	"login": "loginlogin",
-	"password": "pass 123123"
+	"login": "user_login",
+	"password": "user_password1"
 }
 ```
 * `401 UNAUTHORIZED`
@@ -510,9 +506,7 @@ Long-poll function to read data about future session. Use it after enqueuing to 
 #### **request body example**
 
 ```json
-{
-	"sessionId": "SESSION_ID"
-}
+{}
 ```
 
 #### **responses**
@@ -520,7 +514,7 @@ Long-poll function to read data about future session. Use it after enqueuing to 
 *response body:*
 ```json
 {
-	"sessionid": "SESSION_ID"
+	"sessionId":"268d6b6d2fe7cb3b"
 }
 ```
 * `409 CONFLICT`
@@ -642,7 +636,7 @@ Function tells the game about player's move. SessionId must be passed as URL par
 #### **request body example**
 ```json
 {
-	"move_type": STRING,//"walk", "resign", "place_bomb"
+	"move_type": STRING,//"walk", "resign", "place_bomb", "place_gun"
 	"position": {
 		"x": int,
  		"y":int
@@ -721,7 +715,7 @@ _/api/game/game_consts_
 returns json object with game constant values for game rules.
 #### **request body example**
 
-```js
+```json
 {
   "bomb_explode_radius": 1,
   "bomb_place_radius": 2,
@@ -733,4 +727,4 @@ returns json object with game constant values for game rules.
 ```
 
 #### **responses**
-always returns true.
+always returns success.
