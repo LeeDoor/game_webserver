@@ -46,5 +46,5 @@ cd ..
 
 cd json && cmake . && cmake --install .
 
-cd ../game_webserver/game_webserver_frontend  && npm install typescript --save-dev
+cd ../game_webserver_frontend  && npm install typescript --save-dev
 npx tsc
