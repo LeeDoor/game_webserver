@@ -533,7 +533,7 @@ Long-poll function to read data about future session. Use it after enqueuing to 
 ***`GET/HEAD`***
 
 #### **request target**  
-_/api/game/session_state? SessionId=SESSION_ID_
+_/api/game/session_state?sessionId=SESSION_ID_
 
 #### **function description**
 Request to get session state. Session id should be passed as URL parameter.
@@ -582,16 +582,7 @@ sequenceDiagram
 #### **allowed methods**
 ***`GET/HEAD`***
 #### **request target**  
-_/api/game/session_state_change? SessionId=SESSION_ID_
-
-#### **request body example**
-
-```json
-{
-	"from_move": 3
-}
-```
-
+_/api/game/session_state_change?sessionId=SESSION_ID&from_move=2_
 #### **function description**
 Long-Poll function hangs until some action happens in the session. Once it is, poller gets response with new event_list. Pass from_move parameter in body to get list INCLUDING the move you started on and later ones.
 
