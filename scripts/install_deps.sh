@@ -7,6 +7,10 @@ if [ ! -f boost_1_87_0.tar.bz2 ]; then
 fi
 if [ ! -d boost_1_87_0 ]; then
 	tar -xf boost_1_87_0.tar.bz2 
+	cd boost_1_87_0
+	./bootstrap.sh --with-libraries="program_options" --prefix=/usr/local
+	./b2 install -j 16
+	cd ..
 fi
 git clone https://github.com/catchorg/Catch2.git --depth 1
 git clone https://github.com/jtv/libpqxx --depth 1
@@ -14,11 +18,6 @@ git clone https://github.com/redis/hiredis.git --depth 1
 git clone https://github.com/sewenew/redis-plus-plus.git --depth 1
 git clone https://github.com/gabime/spdlog.git --depth 1
 git clone https://github.com/nlohmann/json --depth 1
-
-cd boost_1_87_0
-./bootstrap.sh --with-libraries="program_options" --prefix=/usr/local
-./b2 install -j 16
-cd ..
 
 cd Catch2
 cmake -B build -S . -DBUILD_TESTING=OFF
@@ -46,5 +45,5 @@ cd ..
 
 cd json && cmake . && cmake --install .
 
-cd ../game_webserver_frontend  && npm install typescript --save-dev
+cd ../../game_webserver_frontend  && npm install typescript --save-dev
 npx tsc
