@@ -15,15 +15,33 @@ require('packer').startup(function(use)
     use 'L3MON4D3/LuaSnip'
     use 'saadparwaiz1/cmp_luasnip'
     use 'nvim-treesitter/nvim-treesitter'
+    use 'williamboman/mason.nvim' 
 end)
-local lspconfig = require('lspconfig')
 local cmp = require('cmp')
+local lspconfig = require('lspconfig')
 require'nvim-treesitter.configs'.setup {
     indent = {
         enable = true
     }
 }
-lspconfig.ts_ls.setup({})
+lspconfig.clangd.setup({})
+lspconfig.ts_ls.setup{
+  init_options = {
+    plugins = {
+      {
+        name = "@vue/typescript-plugin",
+        location = "/usr/local/lib/node_modules/@vue/typescript-plugin",
+        languages = {"javascript", "typescript", "vue"},
+      },
+    },
+  },
+  filetypes = {
+    "javascript",
+    "typescript",
+    "vue",
+  },
+}
+
 cmp.setup({
     snippet = {
         expand = function(args)

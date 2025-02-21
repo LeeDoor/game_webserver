@@ -11,7 +11,6 @@ find_path(HIREDIS_HEADER hiredis)
 target_include_directories(${PROJECT_NAME} PUBLIC ${HIREDIS_HEADER})
 
 find_library(HIREDIS_LIB hiredis)
-message("ABOBAAAA ${HIREDIS_LIB}")
 
 # <------------ add redis-plus-plus dependency -------------->
 # NOTE: this should be *sw* NOT *redis++*

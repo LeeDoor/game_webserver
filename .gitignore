@@ -9,3 +9,5 @@ vcpkg_installed/
 trash/
 application
 test_application
+.cache/
+compile_commands.json
