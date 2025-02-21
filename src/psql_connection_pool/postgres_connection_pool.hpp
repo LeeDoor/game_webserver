@@ -43,11 +43,11 @@ namespace connection_pool{
             PoolType* pool_;
         };
 
-        ConnectionPool(std::string&& bd_credentials);
+        ConnectionPool(std::string&& bd_credentials, std::string&& bd_address);
         ConnectionWrapper GetConnection();
     private:
         void ReturnConnection(ConnectionPtr&& conn);
-        ConnectionPtr ConnectionFactory(const std::string& bd_credentials);
+        ConnectionPtr ConnectionFactory(const std::string& bd_credentials, const std::string& bd_address);
 
         std::mutex mutex_;
         std::condition_variable cond_var_;
@@ -55,5 +55,4 @@ namespace connection_pool{
         size_t used_connections_ = 0;
     }; 
 }
-
 namespace cp = connection_pool;

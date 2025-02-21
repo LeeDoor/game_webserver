@@ -11,7 +11,9 @@ private:
         int port;
         std::string static_path;
         std::string postgres_credentials;
+        std::string postgres_address;
         std::string redis_credentials;
+        std::string redis_address;
         std::string log_dir;
     };
 

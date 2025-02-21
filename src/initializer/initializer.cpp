@@ -41,7 +41,9 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
         ("test", "test launch to use test bd")
         ("static_path", po::value(&args.static_path)->value_name("dir"), "set path to static library")
         ("postgres_credentials", po::value(&args.postgres_credentials)->value_name("string"), "set bd postgres login and password like that: \"login:password\"")
+        ("postgres_address", po::value(&args.postgres_address)->value_name("string"), "set bd postgres url address. example: \"123.121.15.2\", \"localhost\", \"postgresql\" (for docker)")
         ("redis_credentials", po::value(&args.redis_credentials)->value_name("string"), "set bd redis password")
+        ("redis_address", po::value(&args.redis_address)->value_name("string"), "set bd redis url address. example: \"123.121.15.2\", \"localhost\", \"redis\" (for docker)")
         ("log_dir", po::value(&args.log_dir)->value_name("string"), "set logging directory");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -52,6 +54,12 @@ Initializer::Args Initializer::ParseParameters(int argc, char** argv){
     }
     if(!vm.contains("postgres_credentials")){
         throw std::runtime_error("postgres_credentials is not specified");
+    }
+    if(!vm.contains("postgres_address")){
+        args.postgres_address = "localhost";
+    }
+    if(!vm.contains("redis_address")){
+        args.redis_address = "localhost";
     }
     if(!vm.contains("log_dir")) {
         args.log_dir = "";
@@ -92,7 +100,7 @@ int Initializer::StartServer(Args args) {
 
     /// REDIS ///
     sw::redis::ConnectionOptions co;
-    co.host = "redis-server";  
+    co.host = args.redis_address; 
     co.password = args.redis_credentials;
     std::shared_ptr<sw::redis::Redis> redis_ptr = std::make_shared<sw::redis::Redis>(co);
 
@@ -104,7 +112,7 @@ int Initializer::StartServer(Args args) {
     }
 
     /// POSTGRES ///
-    cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(std::move(args.postgres_credentials));
+    cp::ConnectionPool::Ptr connection_pool = std::make_shared<cp::ConnectionPool>(std::move(args.postgres_credentials), std::move(args.postgres_address));
 
     /// HANDLER ///
     http_handler::HandlerParameters hp;

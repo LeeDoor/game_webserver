@@ -38,6 +38,17 @@ git submodule update --init
 ## Docker
 if you want to launch the webserver on your machine using docker, follow [docker](docs/docker.md) guide. 
 
+## Setup databases
+Webserver is using two databases: Redis and Postgresql. They may be set up using docker (*see link above*) or manually on your machine.
+### PostgreSQL
+To install PostgreSQL on your Linux machine, you can install it using apt:
+```bash
+apt install postgresql
+```
+configure and setup databases as mentioned in [this guide](docs/docker.md).
+
+### Redis
+
 ## Required libraries
 Don't forget to install all of the dependencies using script in **scripts/** directory called `install_deps.sh`. It will install a bunch of apps from apt, so be sure that you are `apt update`'d.  
 
