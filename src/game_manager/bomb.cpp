@@ -2,6 +2,7 @@
 #include "custom_events.hpp"
 #include "session.hpp"
 #include "const_variables.hpp"
+#include <spdlog/spdlog.h>
 
 namespace game_manager{
     Bomb::Bomb(OwnerType owner, ActorId id) 
@@ -19,6 +20,7 @@ namespace game_manager{
     } 
 
     EventsType Bomb::UpdateTick() {
+        spdlog::info("ticking bomb");
         --ticks_left;
         if(ticks_left)
             return {EmptyEvent({actor_id, BOMB_TICKING})};

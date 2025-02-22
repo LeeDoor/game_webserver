@@ -120,15 +120,15 @@ namespace game_manager {
     }
 
     void Session::AfterMove(){
-        std::list<Object::Ptr>::iterator it, prev; // first and second iterators
-        if(state_->objects.size() != 0){
+        std::list<Object::Ptr>::iterator it, prev; 
+        if(state_->objects.size() != 0){ // update first element while it doesnt change
             do{
-                prev = state_->objects.begin(); // eventing first while it is changing
-                EventsType events = (*prev)->UpdateTick(); // if it is, we are eventing first 
-                events_wrapper_->AddEvents(std::move(events)); // element again
+                prev = state_->objects.begin(); 
+                EventsType events = (*prev)->UpdateTick(); 
+                events_wrapper_->AddEvents(std::move(events)); 
             } while (prev != state_->objects.begin() && !state_->objects.empty());
         }
-        if(state_->objects.size() != 0){
+        if(state_->objects.size() != 0){ // update all other elements
             it = state_->objects.begin();
             ++it;
             while(it != state_->objects.end()){
@@ -137,7 +137,7 @@ namespace game_manager {
                 EventsType events = (*it)->UpdateTick();
                 events_wrapper_->AddEvents(std::move(events));
 
-                if(std::next(prev) != it) { // when we check if there were any changes with current element
+                if(std::next(prev) != it) {
                     it = std::next(prev);
                 }
                 else{
