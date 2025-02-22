@@ -126,14 +126,12 @@ namespace game_manager {
                 prev = state_->objects.begin(); 
                 EventsType events = (*prev)->UpdateTick(); 
                 events_wrapper_->AddEvents(std::move(events)); 
-            } while (prev != state_->objects.begin() && !state_->objects.empty());
+            } while (scoreboard_.empty() && prev != state_->objects.begin() && !state_->objects.empty());
         }
         if(state_->objects.size() != 0){ // update all other elements
             it = state_->objects.begin();
             ++it;
-            while(it != state_->objects.end()){
-                if(!scoreboard_.empty()) break;
-
+            while(scoreboard_.empty() && it != state_->objects.end()){
                 EventsType events = (*it)->UpdateTick();
                 events_wrapper_->AddEvents(std::move(events));
 
