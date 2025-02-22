@@ -48,7 +48,10 @@ apt install postgresql
 configure and setup databases as mentioned in [this guide](docs/docker.md).
 
 ### Redis
-
+All you need is just install redis. all other things server will do automatically.
+```bash
+apt install redis-server
+```
 ## Required libraries
 Don't forget to install all of the dependencies using script in **scripts/** directory called `install_deps.sh`. It will install a bunch of apps from apt, so be sure that you are `apt update`'d.  
 

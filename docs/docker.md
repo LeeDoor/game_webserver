@@ -51,6 +51,11 @@ CREATE TABLE users ( ...
 CREATE INDEX idx_users_login .. 
 CREATE TABLE sessions ( ..
 ```
+Also server has a special parameter flags: `--postgres_credentials` and `--postgres_address` to present *login:password* and *URL address* respectively. By default in `./run_app.sh` script server is using **postgres** role to connect with password *1234*. To set this password, run:
+```SQL
+ALTER USER postgres WITH PASSWORD '1234';
+```
+Sure you can change password to any other more safe than that. Also it would be nice to create a special role for the database.
 ### Redis
 To run Redis database using docker, run as root:
 ```bash
