@@ -3,7 +3,7 @@
 #include "i_interaction_api.hpp"
 #include "game_api_status.hpp"
 #include <vector>
-#include "session_api_director.hpp"
+#include "session_api_validator.hpp"
 #include "state.hpp"
 namespace gm = game_manager;
 
@@ -44,12 +44,15 @@ namespace game_manager {
         void Explode(Position position) override;
         std::optional<std::list<IPlaceable::Ptr>> CollisionsOnCell(Bullet::Ptr bullet) override;
 
+        void TimerAbort(int move_number, Player::Ptr player);
         void AfterMove();
         void IncreaseMoveNumber();
         bool ValidCell(Position position);
 
         Player::Ptr player1(){return state_->players.front();}
         Player::Ptr player2(){return state_->players.back();}
+        Player::Ptr player(){return state_->now_turn == player1()->login ? player1() : player2();}
+        Player::Ptr playerOther(){return state_->now_turn == player1()->login ? player2() : player1();}
 
         ActorId GetId(){return id_counter_++;}
         ActorId id_counter_ = 0;
@@ -63,6 +66,7 @@ namespace game_manager {
         const std::string PLAYER_RESIGN = "player_resign";
         const std::string PLAYER_PLACE_BOMB = "player_place_bomb";
         const std::string PLAYER_PLACE_GUN = "player_place_gun";
+        const std::string TIME_IS_UP = "time_is_up";
     };
 
 }

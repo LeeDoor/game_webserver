@@ -4,6 +4,7 @@
 #include "nlohmann/json.hpp"
 #include "type_serializer.hpp"
 #include "const_variables.hpp"
+#include <future>
 
 #define PLAYER_WON "player_won"
 
@@ -119,6 +120,12 @@ namespace game_manager {
         events_wrapper_->AddEvent(GunEvent({{{{player->actor_id, PLAYER_PLACE_GUN}, gun->position}, gun->actor_id}, gun->direction}));
     }
 
+    void Session::TimerAbort(int move_number, Player::Ptr player) {
+        if(state_->move_number == move_number) {
+            events_wrapper_->AddEvent(EmptyEvent({player->actor_id, TIME_IS_UP}));    
+            FinishSession(player->login == state_->now_turn);
+        }
+    }
     void Session::AfterMove(){
         std::list<Object::Ptr>::iterator it, prev; 
         if(state_->objects.size() != 0){ // update first element while it doesnt change
@@ -146,7 +153,12 @@ namespace game_manager {
         }
         if(!scoreboard_.empty())
             return events_wrapper_->AddEvent(EmptyEvent({scoreboard_[0].lock()->actor_id, PLAYER_WON}));
-        state_->now_turn = state_->now_turn == player1()->login? player2()->login : player1()->login;
+        state_->now_turn = playerOther()->login; 
+        auto future_void = std::async(std::launch::async, 
+            [self = this->shared_from_this()](int move_number, Player::Ptr player){
+                std::this_thread::sleep_for(std::chrono::seconds(5));
+                self->TimerAbort(move_number, player);
+            }, state_->move_number, player()); 
     }
 
     void Session::IncreaseMoveNumber() {
